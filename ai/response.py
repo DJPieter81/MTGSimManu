@@ -900,22 +900,22 @@ class ResponseDecider:
         """True iff this counter is castable via the mana-free PITCH
         alternative cost right now.
 
-        Mirrors the engine's `can_cast` alternative-cost path for "exile a
-        {color} card from your hand rather than pay this spell's mana cost"
-        (game_state.py:880-903): the pitch path is live only on the
-        opponent's turn.  Classification is by MECHANIC (oracle
-        alternative-cost clause), not by printed cost — a 1-CMC
-        hard-paid counter is NOT a pitch counter even though its mana
-        cost matches the pitch card-cost representation.
+        Reads the engine's own check for "exile a {color} card from your
+        hand rather than pay this spell's mana cost" (CR 118.9;
+        `CastManager.alternative_exile_candidates`): a card of the colour
+        in hand, under the cost's printed condition ("if it's not your
+        turn").  Classification is by MECHANIC (the typed alternative
+        cost), not by printed cost — a 1-CMC hard-paid counter is NOT a
+        pitch counter even though its mana cost matches the pitch
+        card-cost representation.
 
         Single classification site: `_effective_counter_cost` (cost
         ranking) and the chain-fuel hold exemption in
         `decide_response` (M2 Wave-2) both consult this predicate.
         """
-        return (
-            getattr(instant.template, 'has_alternate_exile_cost', False)
-            and getattr(game, 'active_player', None) != self.player_idx
-        )
+        from engine.cast_manager import CastManager
+        return bool(CastManager.alternative_exile_candidates(
+            game, self.player_idx, instant))
 
     @staticmethod
     def _counter_can_target(instant: "CardInstance", stack_item) -> bool:

@@ -1973,7 +1973,7 @@ class CardDatabase:
             parse_reanimates_from_graveyard,
             parse_exiles_cards_bound_for_graveyard,
             parse_requires_creature_target,
-            parse_has_alternate_exile_cost,
+            parse_alternate_exile_cost,
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
             parse_cast_trigger_token, parse_enters_type_counter,
@@ -2207,7 +2207,10 @@ class CardDatabase:
         template.reanimates_from_graveyard = parse_reanimates_from_graveyard(oracle)
         template.exiles_cards_bound_for_graveyard = parse_exiles_cards_bound_for_graveyard(oracle)
         template.requires_creature_target = parse_requires_creature_target(oracle)
-        template.has_alternate_exile_cost = parse_has_alternate_exile_cost(oracle)
+        alt_exile = parse_alternate_exile_cost(oracle)
+        if alt_exile is not None:
+            (template.alternate_exile_color,
+             template.alternate_exile_not_your_turn) = alt_exile
         template.has_discard_effect = parse_has_discard_effect(oracle)
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)

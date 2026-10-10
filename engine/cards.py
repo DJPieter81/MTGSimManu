@@ -915,9 +915,12 @@ class CardTemplate:
     # Requires creature target -- True when oracle needs a creature or creature-spell target.
     # Populated by oracle_parser.parse_requires_creature_target.
     requires_creature_target: bool = False
-    # Alternate exile cost -- True for Grief/Solitude 'exile a ... rather than pay' pattern.
-    # Populated by oracle_parser.parse_has_alternate_exile_cost.
-    has_alternate_exile_cost: bool = False
+    # Alternative cost "exile a <colour> card from your hand rather than pay
+    # this spell's mana cost" (CR 118.9): the colour, and whether it holds
+    # only when it's not your turn (the Forces). Populated by
+    # oracle_parser.parse_alternate_exile_cost.
+    alternate_exile_color: Optional[Color] = None
+    alternate_exile_not_your_turn: bool = False
     # Spectacle alternate cost (CR 702.131): cast for this cost instead of mana cost if
     # an opponent lost life this turn. None when the card has no spectacle.
     # Populated by oracle_parser.parse_spectacle_cost.

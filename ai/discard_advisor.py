@@ -319,6 +319,17 @@ def choose_card_to_exile_from_hand(game: "GameState", player_idx: int,
         c.template.cmc or 0))
 
 
+def exile_instead_of_paying(game: "GameState", player_idx: int,
+                            card: "CardInstance", can_pay_mana: bool) -> bool:
+    """Pay a spell's alternative cost that exiles a card from hand (CR
+    118.9) rather than its mana cost? Only when the mana cost cannot be
+    paid: a card in hand outlasts the turn, while mana spent on the
+    opponent's turn -- where the Forces' "if it's not your turn" cost
+    lives -- untaps on the next. Which card goes, when one must, is
+    `choose_card_to_exile_from_hand`'s."""
+    return not can_pay_mana
+
+
 # Role buckets whose last reachable copy strands the declared plan.
 # These are gameplan card_roles KEYS (role vocabulary), not card names:
 # payoffs/enablers are the execution conjunction, protection keeps the

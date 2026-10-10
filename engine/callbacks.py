@@ -56,8 +56,18 @@ class GameCallbacks(Protocol):
         candidates: List[CardInstance]
     ) -> Optional[CardInstance]:
         """Which card does a cost that exiles a card from the caster's
-        hand take (an evoke cost, CR 702.74a)? One of `candidates`, or
-        None to decline paying the cost (the cast does not happen)."""
+        hand take (an evoke cost, CR 702.74a; "exile a blue card from your
+        hand rather than pay this spell's mana cost", CR 118.9)? One of
+        `candidates`, or None to decline paying the cost."""
+        ...
+
+    def should_exile_instead_of_paying(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        can_pay_mana: bool
+    ) -> bool:
+        """Pay this spell's alternative cost that exiles a card from hand
+        (CR 118.9) rather than its mana cost? `can_pay_mana` says whether
+        the mana cost could be paid instead."""
         ...
 
     def should_kick(
@@ -242,6 +252,13 @@ class DefaultCallbacks:
     ) -> Optional[CardInstance]:
         """Default: the first card the cost may take, in hand order."""
         return candidates[0] if candidates else None
+
+    def should_exile_instead_of_paying(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        can_pay_mana: bool
+    ) -> bool:
+        """Default: only when the mana cost cannot be paid."""
+        return not can_pay_mana
 
     def should_kick(
         self, game: GameState, player_idx: int, card: CardInstance

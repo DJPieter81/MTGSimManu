@@ -7,7 +7,7 @@
   "engine/card_database.py": 0,
   "engine/card_effects.py": 25,
   "engine/cards.py": 1,
-  "engine/cast_manager.py": 12,
+  "engine/cast_manager.py": 11,
   "engine/clause_resolver.py": 0,
   "engine/combat_manager.py": 0,
   "engine/constants.py": 0,

@@ -13,8 +13,8 @@ finisher_simulator.py.
 
 # Mechanic: alternate exile cost (rule, not a card)
 
-parse_has_alternate_exile_cost covers 'exile a … rather than pay' pattern
-— replaces runtime check in response.py _is_pitch_counter.
+parse_alternate_exile_cost types the 'exile a … rather than pay' cost
+read by response.py _is_pitch_counter (through the engine's check).
 
 # Mechanic: recurring trigger + token_maker tag combination (rule, not a card)
 
@@ -29,7 +29,7 @@ import pytest
 from engine.oracle_parser import (
     parse_requires_creature_target,
     parse_has_discard_effect,
-    parse_has_alternate_exile_cost,
+    parse_alternate_exile_cost,
     parse_has_recurring_trigger,
 )
 
@@ -89,20 +89,20 @@ class TestHasAlternateExileCostResponsePitchCheck:
 
     def test_force_of_will_pattern(self):
         # Force of Will / Force of Negation pattern
-        assert parse_has_alternate_exile_cost(
+        assert parse_alternate_exile_cost(
             "If it's not your turn, you may exile a blue card from your hand "
             "rather than pay this spell's mana cost."
-        ) is True
+        ) is not None
 
-    def test_exile_without_rather_than_is_false(self):
+    def test_exile_without_rather_than_is_none(self):
         # Leyline Binding exiles but is not a pitch spell
-        assert parse_has_alternate_exile_cost(
+        assert parse_alternate_exile_cost(
             "Exile target nonland nontoken permanent."
-        ) is False
+        ) is None
 
-    def test_empty_oracle_is_false(self):
-        assert parse_has_alternate_exile_cost("") is False
-        assert parse_has_alternate_exile_cost(None) is False
+    def test_empty_oracle_is_none(self):
+        assert parse_alternate_exile_cost("") is None
+        assert parse_alternate_exile_cost(None) is None
 
 
 class TestRecurringTriggerTokenMakerCombination:

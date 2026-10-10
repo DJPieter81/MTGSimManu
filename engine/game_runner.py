@@ -242,6 +242,11 @@ class AICallbacks(GameCallbacks):
         from ai.discard_advisor import choose_card_to_exile_from_hand
         return choose_card_to_exile_from_hand(game, player_idx, candidates)
 
+    def should_exile_instead_of_paying(self, game, player_idx, card,
+                                       can_pay_mana):
+        from ai.discard_advisor import exile_instead_of_paying
+        return exile_instead_of_paying(game, player_idx, card, can_pay_mana)
+
     def should_kick(self, game, player_idx, card):
         # CR 702.33: how many times to kick. v1 policy in ai/board_eval
         # (_eval_kick) returns the kick count (0 unless the kicked payoff

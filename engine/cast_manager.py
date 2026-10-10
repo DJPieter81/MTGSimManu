@@ -653,32 +653,12 @@ class CastManager:
                 # Improvise reduces generic only (CR 702.125a); coloured pips
                 # still require real coloured sources — fall through to MRV.
 
-        # Force alternate cost: "exile a [color] card from your hand
-        # rather than pay this spell's mana cost" — only on opp's turn
-        oracle_lower = (template.oracle_text or '').lower()
-        if getattr(template, 'has_alternate_exile_cost', False):
-            if game.active_player != player_idx:
-                import re
-                m = re.search(
-                    r'exile an? (\w+) card from your hand', oracle_lower)
-                if m:
-                    color_word = m.group(1)
-                    color_map = {'blue': 'U', 'green': 'G', 'red': 'R',
-                                 'white': 'W', 'black': 'B'}
-                    req_color = color_map.get(color_word, '')
-                    if req_color:
-                        from .cards import Color
-                        color_enum = {'U': Color.BLUE, 'G': Color.GREEN,
-                                      'R': Color.RED,
-                                      'W': Color.WHITE,
-                                      'B': Color.BLACK}.get(req_color)
-                        has_exile_target = any(
-                            c != card
-                            and color_enum in c.template.color_identity
-                            for c in player.hand
-                        )
-                        if has_exile_target:
-                            return True  # Can cast for free
+        # An alternative cost that exiles a card from hand (CR 118.9):
+        # castable whenever a card of its colour is in hand under the
+        # cost's printed condition; whether to pay it that way is the
+        # controller's choice at cast time (`cast_spell`).
+        if CastManager.alternative_exile_candidates(game, player_idx, card):
+            return True
 
         # Quantity floor: the cheapest the cost can get is the printed
         # cost minus every Phyrexian pip life can cover (computed here, after
@@ -1053,12 +1033,35 @@ class CastManager:
         if (t.evoke_exile_color is not None
                 and not CastManager.evoke_exile_candidates(player, card)):
             return False
-        if cost.cmc == 0:
-            return True
+        return cost.cmc == 0 or CastManager.mana_payable(game, player_idx,
+                                                         cost)
+
+    @staticmethod
+    def mana_payable(game: "GameState", player_idx: int, cost) -> bool:
+        """`cost` can be paid from the player's mana now: quantity, then
+        colour -- the check an alternative cost's mana reads."""
+        player = game.players[player_idx]
         total = (player.untapped_mana_capacity() + player.mana_pool.total()
                  + player._tron_mana_bonus())
         return (total >= cost.cmc and CastManager._can_pay_colored_pips(
             game, player_idx, player.untapped_mana_sources, cost))
+
+    @staticmethod
+    def alternative_exile_candidates(game: "GameState", player_idx: int,
+                                     card) -> list:
+        """The cards the alternative cost "exile a <colour> card from your
+        hand rather than pay this spell's mana cost" may take now (CR
+        118.9): every other card in the hand whose colour is that colour
+        (CR 105.2), while the cost's printed condition holds ("if it's not
+        your turn"). Empty when the spell prints no such cost."""
+        t = card.template
+        color = t.alternate_exile_color
+        if color is None:
+            return []
+        if t.alternate_exile_not_your_turn and game.active_player == player_idx:
+            return []
+        return [c for c in game.players[player_idx].hand
+                if c is not card and color in c.colors]
 
     @staticmethod
     def _can_pay_colored_pips(game: "GameState", player_idx: int,
@@ -1702,37 +1705,33 @@ class CastManager:
                                                  card_name=template.name):
                     return False
             elif not evoked:
-                # Force alternate cost: exile a card from hand instead of mana
-                oracle_lower = (template.oracle_text or '').lower()
+                # An alternative cost that exiles a card from hand (CR
+                # 118.9), paid instead of the mana cost when the controller
+                # chooses it (`should_exile_instead_of_paying`, told whether
+                # the mana cost can be paid) with the card they pick; with
+                # no payable mana cost, declining the pick casts nothing.
                 force_cast = False
-                if (getattr(template, 'has_alternate_exile_cost', False)
-                        and game.active_player != player_idx):
-                    import re
-                    m = re.search(r'exile an? (\w+) card from your hand', oracle_lower)
-                    if m:
-                        color_word = m.group(1)
-                        color_map = {'blue': 'U', 'green': 'G', 'red': 'R',
-                                     'white': 'W', 'black': 'B'}
-                        req_color = color_map.get(color_word, '')
-                        if req_color:
-                            from .cards import Color
-                            color_enum = {'U': Color.BLUE, 'G': Color.GREEN, 'R': Color.RED,
-                                          'W': Color.WHITE, 'B': Color.BLACK}.get(req_color)
-                            exile_candidates = [
-                                c for c in player.hand
-                                if c != card and color_enum in c.template.color_identity
-                            ]
-                            if exile_candidates:
-                                # Exile the least valuable card
-                                exile_candidates.sort(key=lambda c: c.template.cmc or 0)
-                                exiled = exile_candidates[0]
-                                player.hand.remove(exiled)
-                                exiled.zone = "exile"
-                                player.exile.append(exiled)
-                                force_cast = True
-                                game.log.append(
-                                    f"T{game.display_turn} P{player_idx+1}: "
-                                    f"Pay alternate cost: exile {exiled.name} for {template.name}")
+                alt_candidates = CastManager.alternative_exile_candidates(
+                    game, player_idx, card)
+                if alt_candidates:
+                    can_pay_mana = CastManager.mana_payable(
+                        game, player_idx, template.mana_cost)
+                    ask = getattr(game.callbacks,
+                                  "should_exile_instead_of_paying", None)
+                    if (ask(game, player_idx, card, can_pay_mana)
+                            if ask is not None else not can_pay_mana):
+                        exiled = CastManager._choose_exile_from_hand(
+                            game, player_idx, card, alt_candidates)
+                        if exiled is not None:
+                            game.zone_mgr.move_card(
+                                game, exiled, "hand", "exile",
+                                cause=f"alternative cost of {template.name}")
+                            force_cast = True
+                            game.log.append(
+                                f"T{game.display_turn} P{player_idx+1}: "
+                                f"Pay alternate cost: exile {exiled.name} for {template.name}")
+                        elif not can_pay_mana:
+                            return False
 
                 if not force_cast:
                     # Delve: pay reduced cost if we exiled cards

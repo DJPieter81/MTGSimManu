@@ -4642,19 +4642,31 @@ def parse_requires_creature_target(oracle: str) -> bool:
     return 'target creature' in lo or 'creature spell' in lo
 
 
-def parse_has_alternate_exile_cost(oracle: str) -> bool:
-    """Return True for spells with an 'exile a card from your hand' alternate cost.
+_ALTERNATE_EXILE_RE = re.compile(
+    r"(?:(?P<cond>if it's not your turn), )?(?:you may )?exile an? "
+    r"(?P<color>white|blue|black|red|green) card from your hand rather than "
+    r"pay this spell's mana cost")
 
-    Matches Grief / Solitude / Ephemerate-family pattern: 'exile a' +
-    'rather than pay' in oracle text.
 
-    Class size: ~10 Modern-legal Evoke elementals and similar (Grief,
-    Subtlety, Solitude, Endurance, Fury).
+def parse_alternate_exile_cost(oracle: str):
+    """The alternative cost "exile a <colour> card from your hand rather
+    than pay this spell's mana cost" (CR 118.9) as (colour, whether it
+    holds only when it's not your turn), or None.
+
+    The five Forces print "If it's not your turn, you may exile ...";
+    Snapback prints no condition. A card "with mana value X" (the Shoals),
+    a graveyard card (Stalwart Valkyrie) and a cost of no card (Mindbreak
+    Trap) are other shapes.
     """
     if not oracle:
-        return False
-    lo = oracle.lower()
-    return 'exile a' in lo and 'rather than pay' in lo
+        return None
+    m = _ALTERNATE_EXILE_RE.search(oracle.lower())
+    if m is None:
+        return None
+    from .mana import Color
+    color = {"white": Color.WHITE, "blue": Color.BLUE, "black": Color.BLACK,
+             "red": Color.RED, "green": Color.GREEN}[m.group("color")]
+    return color, m.group("cond") is not None
 
 
 def parse_has_mana_value_wipe(oracle: str) -> bool:
