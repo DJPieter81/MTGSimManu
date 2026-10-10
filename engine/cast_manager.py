@@ -387,7 +387,15 @@ class CastManager:
                     return True
             return False  # in exile but not a re-castable warp card
 
-        if card.zone != "hand" and card.zone != "graveyard":
+        # A permission to play or cast this object from exile (CR 601.2a:
+        # "you may play those cards"): the cast then meets every normal
+        # check below -- timing, cost, targets.
+        exile_permitted = (card.zone == "exile"
+                           and card in player.exile
+                           and rules_query.play_permitted(game, player_idx,
+                                                          card))
+        if card.zone != "hand" and card.zone != "graveyard" \
+                and not exile_permitted:
             return False
 
         # Grafdigger's Cage (and functional reprints): "Players can't
@@ -1875,6 +1883,9 @@ class CastManager:
         cast_with_flashback = False
         if card in player.exile:
             player.exile.remove(card)
+            # CR 400.7: the spell is a new object; a permission that named
+            # the exiled card no longer names it.
+            game.continuous_effects.forget_object(card.instance_id)
         elif card in player.hand:
             player.hand.remove(card)
         elif card in player.graveyard:

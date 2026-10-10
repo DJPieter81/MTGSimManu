@@ -20,13 +20,14 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # ── Casting ──────────────────────────────────────────────────────────
 
-def _covering(game: "GameState", player_idx: int, kind, action: str):
-    """Rule effects of `kind`/`action` whose selector covers the player and
-    whose printed condition holds now (CR 611.3a) — resolved (stored) and
-    static (derived) alike."""
+def _covering(game: "GameState", player_idx: int, kind, action):
+    """Rule effects of `kind`/`action` (one action, or a tuple of them)
+    whose selector covers the player and whose printed condition holds now
+    (CR 611.3a) — resolved (stored) and static (derived) alike."""
     from engine.effect_conditions import rule_condition_holds
+    actions = action if isinstance(action, tuple) else (action,)
     return [e for e in game.continuous_effects.rule_effects(game)
-            if e.modification.kind is kind and e.modification.action == action
+            if e.modification.kind is kind and e.modification.action in actions
             and e.selector.covers_player(player_idx)
             and rule_condition_holds(game, e.controller, e.condition)]
 
@@ -73,6 +74,35 @@ def cast_time_restricted(game: "GameState", player_idx: int) -> bool:
         return False
     return not (game.active_player == player_idx and game.stack.is_empty
                 and game.current_phase in (Phase.MAIN1, Phase.MAIN2))
+
+
+def permitted_objects(game: "GameState", player_idx: int) -> dict:
+    """{instance id: (zone, actions)} for every object a resolved "you may
+    play / cast those cards" lets this player play now (CR 305.1, 601.2a)
+    -- one pass over the rule effects for a whole zone's query."""
+    from engine.effect_model import ModKind
+    out: dict = {}
+    for e in _covering(game, player_idx, ModKind.PERMIT, ("play", "cast")):
+        zone = e.modification.get("zone")
+        for oid in e.modification.get("objects") or ():
+            out.setdefault(oid, (zone, set()))[1].add(e.modification.action)
+    return out
+
+
+def play_permitted(game: "GameState", player_idx: int, card,
+                   permitted: Optional[dict] = None) -> bool:
+    """A permission lets this player play this object where it is (CR
+    305.1, 601.2a): a resolved "you may play / cast those cards" naming it,
+    while it lasts and while the object is still in the zone it named.
+    "Cast" covers spells only; a land needs "play". `permitted` is a
+    `permitted_objects` answer the caller already holds."""
+    entry = (permitted if permitted is not None
+             else permitted_objects(game, player_idx)).get(card.instance_id)
+    if entry is None or card.zone != entry[0]:
+        return False
+    actions = entry[1]
+    return "play" in actions or (not card.template.is_land
+                                 and "cast" in actions)
 
 
 def cast_as_though_flash(game: "GameState", player_idx: int, template) -> bool:

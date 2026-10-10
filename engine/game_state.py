@@ -975,15 +975,22 @@ class GameState:
 
     # ─── QUERIES ─────────────────────────────────────────────────
 
+    def land_play_available(self, player_idx: int) -> bool:
+        """The player may play a land now (CR 305.2, 505.6b): a land play
+        left this turn, in their own main phase, with an empty stack --
+        from hand or from wherever a permission lets them play one."""
+        player = self.players[player_idx]
+        return (player.lands_played_this_turn < (1 + player.extra_land_drops)
+                and self.current_phase in (Phase.MAIN1, Phase.MAIN2)
+                and self.active_player == player_idx
+                and self.stack.is_empty)
+
     def get_legal_plays(self, player_idx: int) -> List[CardInstance]:
         player = self.players[player_idx]
         legal = []
         for card in player.hand:
             if card.template.is_land:
-                if player.lands_played_this_turn < (1 + player.extra_land_drops) and \
-                   self.current_phase in (Phase.MAIN1, Phase.MAIN2) and \
-                   self.active_player == player_idx and \
-                   self.stack.is_empty:
+                if self.land_play_available(player_idx):
                     legal.append(card)
             elif self.can_cast(player_idx, card):
                 legal.append(card)
@@ -998,6 +1005,21 @@ class GameState:
         # gate; this branch surfaces those cards to the legal-play set.
         for card in player.exile:
             if getattr(card, '_warped', False) and self.can_cast(player_idx, card):
+                legal.append(card)
+        # Include exiled cards a permission lets the player play ("you may
+        # play those cards", CR 305.1, 601.2a): a land as the land play, a
+        # spell when can_cast allows it (normal timing and cost).
+        from . import rules_query
+        permitted = rules_query.permitted_objects(self, player_idx) \
+            if player.exile else {}
+        for card in (player.exile if permitted else ()):
+            if card in legal or not rules_query.play_permitted(
+                    self, player_idx, card, permitted):
+                continue
+            if card.template.is_land:
+                if self.land_play_available(player_idx):
+                    legal.append(card)
+            elif self.can_cast(player_idx, card):
                 legal.append(card)
         # Include cycling cards from hand (cycling is a special action, not casting)
         for card in player.hand:

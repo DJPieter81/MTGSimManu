@@ -81,6 +81,11 @@ class ZoneManager:
         # ── Remove from source zone ────────────────────────────────
         if card in source_list:
             source_list.remove(card)
+        if from_zone == "exile":
+            # CR 400.7: a card leaving exile is a new object; an effect
+            # that named the exiled object (a permission to play it) no
+            # longer names it.
+            game.continuous_effects.forget_object(card.instance_id)
 
         # ── Clean up state when leaving battlefield ─────────────────
         if from_zone == "battlefield":

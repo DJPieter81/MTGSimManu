@@ -282,6 +282,19 @@ def permit_cast_as_flash(player: int, types, duration: Duration,
                   controller=player)
 
 
+def permit_play(player: int, objects, action: str, duration: Duration,
+                source_id: int = 0) -> Effect:
+    """"You may play / cast those cards" (CR 305.1, 601.2a): `player` may
+    play (lands and spells) or cast (spells only) the objects -- instance
+    ids, in exile -- for `duration`."""
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.PERMIT, action=action,
+                               data=(("objects", tuple(sorted(objects))),
+                                     ("zone", "exile"))),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=player)
+
+
 def cost_delta_effect(player: int, rule: dict, duration: Duration,
                       source_id: int = 0, origin: "OriginKind" = OriginKind.RESOLVED) -> Effect:
     """"<spells> you cast cost {N} less" — the parse_cost_reduction rule shape

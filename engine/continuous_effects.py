@@ -151,6 +151,31 @@ class ContinuousEffectsManager:
     def drop_rule_effects(self, predicate) -> None:
         self._rule_effects = [e for e in self._rule_effects if not predicate(e)]
 
+    def forget_object(self, instance_id: int) -> None:
+        """CR 400.7: an object a stored effect names (a permission to play
+        exiled cards, `effect_model.permit_play`) left the zone the effect
+        named, so the card is a new object the effect no longer names: it
+        leaves every stored effect's objects, and an effect left naming
+        none ends. Called where a card leaves exile -- the cast and the
+        land play from exile, and the zone funnel (`ZoneManager.move_card`).
+        Known gap, shared with `effect_resolver.Handle`: a card returned to
+        exile by a direct zone write (no funnel) after leaving it another
+        unfunnelled way is not seen leaving."""
+        import dataclasses
+        kept = []
+        for e in self._rule_effects:
+            objects = e.modification.get("objects")
+            if objects and instance_id in objects:
+                rest = tuple(o for o in objects if o != instance_id)
+                if not rest:
+                    continue
+                data = tuple((k, rest if k == "objects" else v)
+                             for k, v in e.modification.data)
+                e = dataclasses.replace(e, modification=dataclasses.replace(
+                    e.modification, data=data))
+            kept.append(e)
+        self._rule_effects = kept
+
     def rule_effects(self, game: "GameState") -> list:
         """Stored resolved effects plus the static ones permanents have
         right now (derived fresh, never stored — CR 611.3a)."""

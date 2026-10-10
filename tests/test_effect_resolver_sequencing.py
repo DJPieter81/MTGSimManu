@@ -200,12 +200,15 @@ def run(er, monkeypatch):
 
 def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     """A family lands by registering its verbs' executors (section 14);
-    no other verb is executable, and no family has widened its filters or
-    tolerated residue yet."""
+    no other verb is executable, and no family has tolerated residue yet.
+    One filter is widened: the card-flow EXILE evaluates "the top N cards
+    of your library" itself, by taking the top N (unit I)."""
     from engine.effect_executors import FAMILIES
+    from engine.effect_spec import CardFilter, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
     assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE}
-    assert er.EXECUTOR_FILTER_KEYS == {}
+    assert er.EXECUTOR_FILTER_KEYS == {Verb.EXILE: frozenset(CardFilter(
+        zone="library", owner="you", position="top").as_tuple())}
     assert er.LEGACY_RESIDUE_TOLERATED == {}
 
 

@@ -30,22 +30,28 @@ through the zone funnel (`ZoneManager.move_card`). A MOVE slot no target was
 chosen for is the controller's pick out of the legal cards the legality
 owner enumerates (`target_solver.enumerate_legal_targets`), asked through
 `callbacks.choose_cards` (A35): the executor validates the answer and never
-scores.
+scores. Unit I (impulse draw): EXILE of the top N cards of the controller's
+library through the zone funnel, and the CONTINUOUS PERMIT "you may play
+those cards <duration>" through the one rule-effect store
+(`continuous_effects.register_effect`, read by `rules_query.play_permitted`).
 
 Family `tokens_counters` (unit D): KEYWORD_ACTION "amass <subtype> N" through
 the one amass owner, `GameState.amass` (CR 701.47a).
 """
 from __future__ import annotations
 
+import dataclasses
 from typing import Any, Tuple
 
 from . import effect_conditions as conditions
-from .effect_resolver import (CONDITION_EVALUATORS, EXECUTORS, Handle,
-                              Outcome, Resolution, event_player, handle_of,
-                              is_event_player)
-from .effect_model import Selector, SelectorKind
-from .effect_spec import (Chooser, Condition, ConditionKind, Destination,
-                          EffectSpec, KeywordAction, Ref, RefKind, Verb)
+from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_FILTER_KEYS,
+                              EXECUTORS, Handle, Outcome, Resolution,
+                              event_player, handle_of, is_event_player)
+from .effect_model import (DurationKind, Modification, ModKind, Selector,
+                           SelectorKind)
+from .effect_spec import (CardFilter, Chooser, Condition, ConditionKind,
+                          Destination, EffectSpec, KeywordAction, Ref,
+                          RefKind, RefPart, Verb)
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
@@ -55,7 +61,8 @@ FAMILY_TOKENS_COUNTERS = "tokens_counters"
 # tests/test_effect_resolver_sequencing.py).
 FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                       Verb.GAIN_LIFE}),
-            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE}),
+            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
+                                         Verb.CONTINUOUS}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION})}
 
 
@@ -386,6 +393,114 @@ execute_move_to_hand.supports = _move_to_hand_supported
 execute_move_to_hand.picks_unbound_slots = True
 
 
+# ── EXILE the top N cards of your library; PERMIT to play them
+#    (family card_flow, unit I: impulse draw) ────────────────────────────
+
+# The one exiled object group this executor binds: the controller's own
+# library, from the top (the filter leaf's library-position row). The
+# executor evaluates these filter entries itself, by taking the top N.
+_LIBRARY_TOP = CardFilter(zone="library", owner="you", position="top")
+
+
+def _is_library_top(f: Any) -> bool:
+    return isinstance(f, CardFilter) and f == dataclasses.replace(
+        _LIBRARY_TOP, raw=f.raw)
+
+
+def _exile_top_supported(s: EffectSpec) -> bool:
+    """"Exile the top <N> cards of your library": the controller's top N
+    library cards move to exile through the zone funnel, face up (CR 406);
+    no draw (CR 121.1c). Any other exile is refused."""
+    if s.verb is not Verb.EXILE or not _is_library_top(s.filter):
+        return False
+    if s.flags or s.optional or s.alternatives or s.group is not None \
+            or s.dest is not None or s.payload is not None \
+            or s.duration is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.target is not None or s.target_slot is not None \
+            or not _acts_as_controller(s.actor):
+        return False
+    return conditions.amount_supported(s.amount)
+
+
+def execute_exile(ctx: Resolution, s: EffectSpec,
+                  actors: Tuple[int, ...]) -> Outcome:
+    n = _amount(ctx, s)
+    player = ctx.game.players[ctx.controller]
+    cards = list(player.library[:max(0, n)])
+    cause = getattr(_source_object(ctx), "name", "")
+    moved = []
+    for card in cards:
+        if ctx.game.zone_mgr.move_card(ctx.game, card, "library", "exile",
+                                       cause=cause):
+            moved.append(handle_of(card))
+    return Outcome(bool(moved), {ctx.controller: tuple(moved)})
+
+
+execute_exile.supports = _exile_top_supported
+
+# The durations a permission to play is bound with: "this turn" and "until
+# the end of your next turn" (bound to the controller and the turn now).
+_PERMIT_DURATIONS = frozenset({DurationKind.THIS_TURN,
+                               DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN})
+
+
+def _permit_supported(s: EffectSpec) -> bool:
+    """"You may play / cast those cards <duration>" (CR 305.1, 601.2a): the
+    controller may play (or cast) the objects an earlier spec of the host
+    produced, while the bound duration lasts, through the one rule-effect
+    owner (`continuous_effects.register_effect`, read by
+    `rules_query.play_permitted`)."""
+    m = s.payload
+    if s.verb is not Verb.CONTINUOUS or not isinstance(m, Modification) \
+            or m.kind is not ModKind.PERMIT or m.action not in ("play", "cast") \
+            or m.data:
+        return False
+    ref = s.ref
+    if not (isinstance(ref, Ref) and ref.kind is RefKind.RESULT
+            and isinstance(ref.index, int) and ref.of is None
+            and ref.n is None and ref.part is RefPart.ALL):
+        return False
+    if s.duration is None or s.duration.kind not in _PERMIT_DURATIONS:
+        return False
+    if s.flags or s.optional or s.alternatives or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.amount is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    return (s.subject is None and s.other is None and s.target is None
+            and s.target_slot is None and _acts_as_controller(s.actor))
+
+
+def execute_permit(ctx: Resolution, s: EffectSpec,
+                   actors: Tuple[int, ...]) -> Outcome:
+    from .effect_model import THIS_TURN as _THIS_TURN
+    from .effect_model import permit_play, until_end_of_your_next_turn
+    produced = [v for per in (ctx.results.get(s.ref.index) or {}).values()
+                for v in per]
+    objects = []
+    for h in produced:
+        if not isinstance(h, Handle) or h.zone != "exile":
+            continue
+        # CR 608.2b: an exiled card that has since left exile is not "those
+        # cards" any more.
+        card = ctx.game.get_card_by_id(h.instance_id)
+        if card is not None and card.zone == "exile":
+            objects.append(card.instance_id)
+    if not objects:
+        return Outcome(False, {})
+    duration = (_THIS_TURN if s.duration.kind is DurationKind.THIS_TURN
+                else until_end_of_your_next_turn(ctx.controller,
+                                                 ctx.game.turn_number))
+    ctx.game.continuous_effects.register_effect(permit_play(
+        ctx.controller, objects, s.payload.action, duration,
+        source_id=ctx.source.instance_id))
+    return Outcome(True, {ctx.controller: tuple(objects)})
+
+
+execute_permit.supports = _permit_supported
+
+
 # ── KEYWORD_ACTION: amass (family tokens_counters, unit D) ────────────
 
 def _amass_supported(s: EffectSpec) -> bool:
@@ -438,4 +553,7 @@ EXECUTORS[Verb.GAIN_LIFE] = execute_gain_life
 EXECUTORS[Verb.SURVEIL] = execute_surveil
 EXECUTORS[Verb.MOVE] = execute_move_to_hand
 EXECUTORS[Verb.KEYWORD_ACTION] = execute_keyword_action
+EXECUTORS[Verb.EXILE] = execute_exile
+EXECUTORS[Verb.CONTINUOUS] = execute_permit
+EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple())
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state

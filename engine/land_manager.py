@@ -33,7 +33,8 @@ class LandManager:
     @staticmethod
     def play_land(game: "GameState", player_idx: int,
                   card: "CardInstance") -> None:
-        """Play a land from hand to battlefield.
+        """Play a land from hand -- or from exile under a permission to
+        play it (CR 305.1) -- to the battlefield.
 
         Hand→battlefield is dispatched through
         `engine.zone_transfer.transfer(..., kind=TransferKind.ETB)` so
@@ -50,10 +51,23 @@ class LandManager:
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
             return
-        if card not in player.hand:
+        # A land is played from hand, or from exile under a permission to
+        # play it ("you may play those cards", CR 305.1); either way it is
+        # the turn's land play (CR 305.2).
+        from . import rules_query
+        if card in player.hand:
+            src_zone = "hand"
+        elif card in player.exile and rules_query.play_permitted(
+                game, player_idx, card):
+            src_zone = "exile"
+        else:
             return
 
-        player.hand.remove(card)
+        getattr(player, src_zone).remove(card)
+        if src_zone == "exile":
+            # CR 400.7: the land is a new object; the permission that
+            # named the exiled card no longer names it.
+            game.continuous_effects.forget_object(card.instance_id)
         player.lands_played_this_turn += 1
         card.controller = player_idx
 
@@ -83,7 +97,7 @@ class LandManager:
         #    (`EFFECT_REGISTRY.execute(EffectTiming.ETB)` + generic
         #    `resolve_etb_from_oracle`).
         transfer(game, card,
-                 src_zone="hand", dst_zone="battlefield",
+                 src_zone=src_zone, dst_zone="battlefield",
                  kind=TransferKind.ETB, controller=player_idx)
 
         # ── Post-entry tapped-state finalisation ──
