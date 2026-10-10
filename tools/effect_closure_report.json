@@ -988,6 +988,13 @@
     "strict": true
    },
    {
+    "card": "Hex Magic",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
     "card": "Lava Dart",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1023,10 +1030,10 @@
     "strict": true
    }
   ],
-  "executable": 137,
+  "executable": 138,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 7,
+   "mainboard": 8,
    "pool": 130,
    "sideboard": 0
   },
@@ -1034,11 +1041,12 @@
    "E1": 102,
    "E2": 26,
    "E3": 3,
-   "E5": 6
+   "E5": 7
   },
-  "strict": 137,
+  "strict": 138,
   "sub_kinds": {},
   "verb_sets": {
+   "CONTINUOUS,DRAW,EXILE": 1,
    "CONTINUOUS,EXILE": 6,
    "DAMAGE": 102,
    "MOVE": 26,
@@ -1720,11 +1728,11 @@
   "steps": {
    "E1": 155,
    "E2": 347,
-   "E3": 139,
+   "E3": 141,
    "E4": 155,
    "E5": 256,
    "E6": 33,
-   "none": 416
+   "none": 414
   },
   "strict": 251,
   "sub_kinds": {
@@ -1740,7 +1748,7 @@
    "GAIN_LIFE": 35,
    "MOVE": 103,
    "PUT_COUNTERS": 50,
-   "UNMODELLED": 300
+   "UNMODELLED": 299
   }
  },
  "mass_reanimate": {

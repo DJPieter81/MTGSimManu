@@ -798,7 +798,8 @@ _PERMIT_FLASH_RE = re.compile(r"(?:you )?may cast (?P<obj>.+?) as though "
                               r"(?:it|they) had flash\b")
 _PERMIT_PLAY_RE = re.compile(r"(?:(?:you )?may )?(?P<act>play|cast) "
                              r"(?P<obj>that card|those cards|it|them|"
-                             r"the exiled cards?)\b")
+                             r"the exiled cards?|"
+                             r"(?:the )?cards? exiled this way)\b")
 _PREVENT_RE = re.compile(r"prevent all (?P<combat>combat )?damage\b"
                          r"(?: that would be dealt)?")
 

@@ -297,8 +297,10 @@ def _classify(word: str) -> Optional[Tuple[str, Any]]:
 
 # ── Determiners and connectors ─────────────────────────────────────────
 
+# "all the <noun>" is "all <noun>": the article after "all" names no
+# referent ("exile all the cards from your hand").
 _DET_RE = re.compile(
-    r"(?:(?P<q>all|each|every) "
+    r"(?:(?P<q>all(?: the)?|each|every) "
     r"|up to (?P<upto>%s|that many) "
     r"|(?P<thatmany>that many) "
     r"|(?P<anynum>any number of) "
@@ -314,7 +316,8 @@ def _determiner(t: str) -> Tuple[int, Optional[Amount], FrozenSet[str], bool]:
     if m is None:
         return 0, None, frozenset(), False
     if m.group("q"):
-        return m.end(), None, frozenset({ALL if m.group("q") == "all" else EACH}), False
+        q = m.group("q")
+        return m.end(), None, frozenset({ALL if q.startswith("all") else EACH}), False
     if m.group("thatmany"):
         return m.end(), _THAT_MUCH, frozenset(), False
     if m.group("upto"):

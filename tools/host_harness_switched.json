@@ -2384,6 +2384,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Hex Magic",
+    "SPELL:0:0"
+   ],
+   "reason": "Exile your hand, draw that many (unit HX): every card in the controller's hand goes to exile through the zone funnel, the controller draws as many cards as were exiled (CR 608.2c: the earlier instruction's result), and may play the cards exiled this way until the end of their next turn (CR 406, 601.2a); legacy resolved nothing for this text."
   }
  ],
  "pairs": [

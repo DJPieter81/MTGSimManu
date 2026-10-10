@@ -203,14 +203,15 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     no other verb is executable, and no family has tolerated residue yet.
     One filter is widened: the card-flow EXILE evaluates "the top N cards
     of your library" -- or of the trigger event's player's library, "that
-    player's" (R2) -- itself, by taking the top N (unit I)."""
+    player's" (R2) -- itself, by taking the top N (unit I), and "all cards
+    from your hand" by taking the whole hand (unit HX)."""
     from engine.effect_executors import FAMILIES
     from engine.effect_spec import CardFilter, Ref, RefKind, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
     assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE}
     assert er.EXECUTOR_FILTER_KEYS == {Verb.EXILE: frozenset(CardFilter(
         zone="library", owner="you", position="top").as_tuple()) | {
-            ("owner", Ref(RefKind.EVENT_PLAYER))}}
+            ("owner", Ref(RefKind.EVENT_PLAYER)), ("zone", "hand")}}
     assert er.LEGACY_RESIDUE_TOLERATED == {}
 
 

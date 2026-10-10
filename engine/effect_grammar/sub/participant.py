@@ -316,7 +316,11 @@ _PARTITIVE_RE = re.compile(
 _PARTITIVE_OF_RE = re.compile(r"(?<![\w'])of (?:them|those)(?![\w'])")
 _REST_RE = re.compile(r"^the (?:(?P<rest>rest)|(?P<others>others)|(?P<other>other))"
                       r"(?: of (?:them|those (?P<noun>.+)|the (?P<pnoun>.+)))?$")
-_THIS_WAY_RE = re.compile(r"^the (?P<noun>.+?) (?P<part>[a-z]+ed) this way$")
+# "the cards exiled this way", and the bare one-word plural "cards exiled
+# this way". A bare noun phrase of more words ("creature and land cards
+# revealed this way") stays with the filter, which reads its members.
+_THIS_WAY_RE = re.compile(r"^(?:the (?P<noun>.+?)|(?P<bare>[a-z]+)) "
+                          r"(?P<part>[a-z]+ed) this way$")
 
 
 def _count(word: str) -> Optional[Amount]:
@@ -409,7 +413,7 @@ def _object_ref(t: str) -> Optional[_Rel]:
                    {OBJECT}, None, pending)
     m = _THIS_WAY_RE.match(t)
     if m is not None:
-        r = _noun(m.group("noun"))
+        r = _noun(m.group("noun") or m.group("bare"))
         if r is None or m.group("part") not in _PARTICIPLES:
             return None
         return _ok(Anaphor(noun=r[0], plural=r[1], participle=m.group("part")),

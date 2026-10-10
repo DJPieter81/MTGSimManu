@@ -320,7 +320,10 @@ def strict_removal(h: AbilityEffects) -> bool:
 # library" and "<duration>, you may play / cast those cards" -- the one
 # EXILE and the one CONTINUOUS card flow takes, each by its typed shape, so
 # another family's exile or continuous effect never reads as card flow.
-_IMPULSE_VERBS = frozenset({Verb.EXILE, Verb.CONTINUOUS})
+# The exile may take the controller's whole hand instead ("exile all the
+# cards from your hand", unit HX), and a draw of "that many" -- the number
+# that exile moved (CR 608.2c) -- may follow it.
+_IMPULSE_VERBS = frozenset({Verb.EXILE, Verb.CONTINUOUS, Verb.DRAW})
 
 
 def _library_top_exile(s) -> bool:
@@ -328,6 +331,21 @@ def _library_top_exile(s) -> bool:
     return (s.verb is Verb.EXILE and f is not None
             and (getattr(f, "zone", None), getattr(f, "owner", None),
                  getattr(f, "position", None)) == ("library", "you", "top"))
+
+
+def _hand_exile(s) -> bool:
+    f = s.filter
+    return (s.verb is Verb.EXILE and f is not None
+            and (getattr(f, "zone", None), getattr(f, "owner", None),
+                 getattr(f, "position", None)) == ("hand", "you", None))
+
+
+def _draw_of_exiled(s, exiled) -> bool:
+    """A draw of "that many" over one of `exiled` (spec seqs): the count is
+    the exile's result. A draw of any other count is not this shape."""
+    from .effect_executors import result_count
+    return (s.verb is Verb.DRAW and result_count(s.amount)
+            and s.amount.ref.index in exiled)
 
 
 def _permission_over(s, exiled) -> bool:
@@ -350,17 +368,21 @@ _CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE})
 
 def strict_card_flow(h: AbilityEffects) -> bool:
     """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
-    impulse pair: an EXILE of the top of the controller's library and a
-    permission over what it exiled, the permission the one spec with a
-    duration."""
+    impulse shape: an EXILE of the top of the controller's library or of
+    the controller's whole hand, a permission over what it exiled (the one
+    spec with a duration), and a draw of "that many" of it. A draw of any
+    other count stays with its legacy carrier (A38)."""
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS,
                         durations=True, conditions=True):
         return False
-    exiled = {s.seq for s in iter_specs(h.specs) if _library_top_exile(s)}
+    exiled = {s.seq for s in iter_specs(h.specs)
+              if _library_top_exile(s) or _hand_exile(s)}
     for s in iter_specs(h.specs):
         if s.verb is Verb.EXILE and s.seq not in exiled:
             return False
         if s.verb is Verb.CONTINUOUS and not _permission_over(s, exiled):
+            return False
+        if s.verb is Verb.DRAW and not _draw_of_exiled(s, exiled):
             return False
         if s.duration is not None and s.verb is not Verb.CONTINUOUS:
             return False

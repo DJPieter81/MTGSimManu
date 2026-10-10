@@ -49,9 +49,10 @@ from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_FILTER_KEYS,
                               event_player, handle_of, is_event_player)
 from .effect_model import (DurationKind, Modification, ModKind, Selector,
                            SelectorKind)
-from .effect_spec import (CardFilter, Chooser, Condition, ConditionKind,
-                          Destination, EffectSpec, KeywordAction, Ref,
-                          RefKind, RefPart, TokenSpec, Verb)
+from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
+                          Condition, ConditionKind, Destination, EffectSpec,
+                          KeywordAction, Ref, RefKind, RefPart, TokenSpec,
+                          Verb)
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
@@ -88,7 +89,24 @@ def _plain_participants(s: EffectSpec) -> bool:
             and s.duration is None and s.chooser is Chooser.CONTROLLER)
 
 
+def result_count(a: Any) -> bool:
+    """"That many": the number of objects an earlier instruction of the
+    host produced (CR 608.2c) -- THAT_MUCH over that instruction's whole
+    RESULT, read from the resolution, never from the game state."""
+    r = getattr(a, "ref", None)
+    return (isinstance(a, Amount) and a.kind is AmountKind.THAT_MUCH
+            and a.quantity is None and a.inner is None and not a.rounding
+            and not a.evenly and isinstance(r, Ref)
+            and r.kind is RefKind.RESULT and r.index is not None
+            and r.part is RefPart.ALL and r.n is None and r.of is None
+            and not r.per_actor)
+
+
 def _amount(ctx: Resolution, s: EffectSpec) -> int:
+    if result_count(s.amount):
+        # A35: an unperformed instruction's result is empty, so 0.
+        return sum(len(v) for v in
+                   (ctx.results.get(s.amount.ref.index) or {}).values())
     return conditions.amount_value(ctx.game, ctx.controller, s.amount,
                                    ctx.x_value)
 
@@ -421,26 +439,97 @@ def _library_owner(ctx: Resolution, f: CardFilter):
     return event_player(ctx)
 
 
+def _plain_exile(s: EffectSpec) -> bool:
+    """An exile with nothing the executor does not perform: no choice, no
+    branch, no destination or payload, the controller moves the cards."""
+    return not (s.flags or s.optional or s.alternatives
+                or s.group is not None or s.dest is not None
+                or s.payload is not None or s.duration is not None
+                or s.chooser is not Chooser.CONTROLLER
+                or s.ref is not None or s.other is not None
+                or s.target is not None or s.target_slot is not None
+                or not _acts_as_controller(s.actor))
+
+
 def _exile_top_supported(s: EffectSpec) -> bool:
     """"Exile the top <N> cards of your library" (or "of that player's
     library"): that library's top N cards move to exile through the zone
     funnel, face up (CR 406), into their owner's exile (CR 400.3); no draw
-    (CR 121.1c). Any other exile is refused."""
+    (CR 121.1c)."""
     if s.verb is not Verb.EXILE or not _is_library_top(s.filter):
         return False
-    if s.flags or s.optional or s.alternatives or s.group is not None \
-            or s.dest is not None or s.payload is not None \
-            or s.duration is not None or s.chooser is not Chooser.CONTROLLER:
-        return False
-    if s.subject is not None or s.ref is not None or s.other is not None \
-            or s.target is not None or s.target_slot is not None \
-            or not _acts_as_controller(s.actor):
+    if not _plain_exile(s) or s.subject is not None:
         return False
     return conditions.amount_supported(s.amount)
 
 
+# "Exile all [the] cards from your hand" and "exile your hand": the whole of
+# the controller's hand. The grammar types the quantifier two ways: as the
+# spec's subject, a filter over every card it names ("all cards from your
+# hand"), or as the zone taken whole ("your hand").
+_YOUR_HAND = CardFilter(zone="hand", owner="you")
+_YOUR_HAND_ENTRIES = (("zone", "hand"), ("owner", "you"))
+
+
+def _is_your_hand(f: Any) -> bool:
+    return isinstance(f, CardFilter) and \
+        f == dataclasses.replace(_YOUR_HAND, raw=f.raw)
+
+
+def _whole_hand(s: EffectSpec) -> bool:
+    a, subj = s.amount, s.subject
+    if subj is None:
+        return (isinstance(a, Amount) and a.kind is AmountKind.WHOLE_ZONE
+                and a == Amount(AmountKind.WHOLE_ZONE))
+    return (a is None and isinstance(subj, Selector)
+            and subj.kind is SelectorKind.FILTER and subj.player is None
+            and subj.obj is None
+            and sorted(subj.filter or ()) == sorted(_YOUR_HAND_ENTRIES))
+
+
+def _exile_hand_supported(s: EffectSpec) -> bool:
+    """"Exile all cards from your hand" / "exile your hand": every card in
+    the controller's hand moves to exile through the zone funnel, face up
+    (CR 406). Face down, a part of the hand, or another player's hand is
+    refused."""
+    return (s.verb is Verb.EXILE and _is_your_hand(s.filter)
+            and _plain_exile(s) and _whole_hand(s))
+
+
+def _exile_supported(s: EffectSpec) -> bool:
+    """The top N of a library, or the controller's whole hand. Any other
+    exile is refused."""
+    return _exile_top_supported(s) or _exile_hand_supported(s)
+
+
+def _audit_hand_exiled(ctx: Resolution, player: Any) -> None:
+    """CR 406, restated from the zone itself: after "exile all cards from
+    your hand" no card is left in that hand. Observation only."""
+    from . import rules_audit
+    if rules_audit.enabled():
+        rules_audit.check(
+            "406/exile_all_cards_from_hand", not player.hand,
+            f"{len(player.hand)} card(s) left in hand after "
+            f"{getattr(_source_object(ctx), 'name', '?')} exiled it",
+            game=ctx.game)
+
+
+def _exile_hand(ctx: Resolution) -> Outcome:
+    player = ctx.game.players[ctx.controller]
+    cause = getattr(_source_object(ctx), "name", "")
+    moved = []
+    for card in list(player.hand):
+        if ctx.game.zone_mgr.move_card(ctx.game, card, "hand", "exile",
+                                       cause=cause):
+            moved.append(handle_of(card))
+    _audit_hand_exiled(ctx, player)
+    return Outcome(bool(moved), {ctx.controller: tuple(moved)})
+
+
 def execute_exile(ctx: Resolution, s: EffectSpec,
                   actors: Tuple[int, ...]) -> Outcome:
+    if _is_your_hand(s.filter):
+        return _exile_hand(ctx)
     n = _amount(ctx, s)
     owner = _library_owner(ctx, s.filter)
     if owner is None:
@@ -455,7 +544,7 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
     return Outcome(bool(moved), {ctx.controller: tuple(moved)})
 
 
-execute_exile.supports = _exile_top_supported
+execute_exile.supports = _exile_supported
 
 # The durations a permission to play is bound with: "this turn" and "until
 # the end of your next turn" (bound to the controller and the turn now).
@@ -536,7 +625,7 @@ def _draw_supported(s: EffectSpec) -> bool:
             or s.target is not None or s.target_slot is not None \
             or not _acts_as_controller(s.actor):
         return False
-    return conditions.amount_supported(s.amount)
+    return conditions.amount_supported(s.amount) or result_count(s.amount)
 
 
 def execute_draw(ctx: Resolution, s: EffectSpec,
@@ -651,5 +740,5 @@ EXECUTORS[Verb.CONTINUOUS] = execute_permit
 EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
-    ("owner", _EVENT_PLAYER)}
+    ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
