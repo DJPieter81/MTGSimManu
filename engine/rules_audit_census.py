@@ -77,9 +77,20 @@ _FIELD_FOR_WORD = {
 
 _ENUM_NAMES = {k.name.lower().replace("_", " ") for k in Keyword}
 
+# Characteristic-defining abilities (CR 604.3) whose only rule MTGJSON
+# already encodes in the card's printed characteristics, mapped to the
+# `CardTemplate` field that carries them. Such a word is modelled while
+# every rule reads that field: devoid means "this object is colorless"
+# (CR 702.114a), carried by `colors`, and the colour-identity ratchet
+# (tests/test_color_is_a_characteristic_not_identity.py) pins every
+# colour read to it.
+_CHARACTERISTIC_FOR_WORD = {
+    "devoid": "colors",
+}
+
 
 def _modelled(word: str, template) -> bool:
-    if word in _ENUM_NAMES:
+    if word in _ENUM_NAMES or word in _CHARACTERISTIC_FOR_WORD:
         return True
     field = _FIELD_FOR_WORD.get(word)
     if field and getattr(template, field, None):
