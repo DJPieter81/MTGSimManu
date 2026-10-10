@@ -538,7 +538,10 @@ def _row_continuous(m: _M, a: int, b: int) -> None:
     m.take("payload", r.span)
     m.pending.extend(kv for kv in r.pending if kv[0] in ("granted",))
     subj = m.fields.pop("_subject")
-    if mod.kind is ModKind.SET_CONTROLLER:
+    # A permission to play or cast objects (CR 305.1, 601.2): the subject
+    # is the player permitted, the objects are the rest after the verb.
+    permit = mod.kind is ModKind.PERMIT and mod.action in ("play", "cast")
+    if mod.kind is ModKind.SET_CONTROLLER or permit:
         _slot(m, subj, "actor")
     else:
         _slot(m, subj, "principal")
@@ -565,11 +568,12 @@ def _row_continuous(m: _M, a: int, b: int) -> None:
         x, y = _trim(h, *s)
         if x >= y:
             continue
-        if mod.kind is ModKind.SET_CONTROLLER and "principal" not in \
-                [k for k, _ in m.consumed]:
+        if (mod.kind is ModKind.SET_CONTROLLER or permit) and \
+                "principal" not in [k for k, _ in m.consumed]:
             _slot(m, (x, y), "principal")
-            if any(role == "principal" and "player" in req.types
-                   for role, req, _s in m.targets):
+            if mod.kind is ModKind.SET_CONTROLLER and any(
+                    role == "principal" and "player" in req.types
+                    for role, req, _s in m.targets):
                 # CR 722: controlling another player is not gaining
                 # control of an object.
                 m.refuse(Stage.CLAUSE, "player_control")
@@ -756,9 +760,13 @@ def _match(m: _M, end: int) -> str:
         # Only a "may" the clause prints makes it optional. One inherited
         # with the antecedent's subject ("X may A, B, then C") is the
         # head's single choice (CR 608.2d): the follower is not optional
-        # on its own, and L5 nests it under the head (A29).
+        # on its own, and L5 nests it under the head (A29). The "may" of a
+        # permission ("you may play those cards", CR 305.1, 601.2) is the
+        # permission itself: what it grants is optional to use, the grant
+        # is not.
         if mm.start() >= m.off:
-            m.fields["optional"] = True
+            if entry.mod_kind is not ModKind.PERMIT:
+                m.fields["optional"] = True
             m.take("may", (mm.start(), mm.end()))
         sa, sb = _trim(h, sa, mm.start())
     # The causative "you [may] have <NP> <verb>": the controller has NP

@@ -1021,6 +1021,20 @@ Four are view-side and stay UNEXPLAINED as leads:
 - `has_may_play_or_cast` (Hidetsugu and Kairi, Kylox): the view counts a PERMIT, not a resolution-time free cast (CAST_FREE).
 - `has_recurring_trigger` (Kylox): the legacy flag reads any "whenever" trigger, the view only "at the beginning of".
 
+Rows unmasked by typing permissions to play (2026-10-10). The same unit types "you may play / cast <that card | those cards | it | them | the exiled card(s)>" as a CONTINUOUS PERMIT (CR 305.1, 601.2). The permitted player is the actor, and the objects are a participant the linker binds ("those cards": the RESULT of the exile before it). The "may" is the grant, not an optional flag. The flash permission ("as though it had flash") keeps its reading.
+
+Effects:
+- 133 clauses leave the CLAUSE refusal (`payload.modification_unknown`); 13 reach the duration leaf instead ("until the end of your next turn", typed by the next step).
+- `has_may_play_or_cast` agrees on 87 more cards.
+- `next_turn_effect` now labels only a `cast_as_flash` permission `flash_permission`. The legacy field has no kind for a permission to play named objects (Nivix, Aerie of the Firemind).
+
+The impulse-as-draw row (`draw_effect_reads_impulse`) is a pattern row mirroring `parse_has_draw_effect`'s predicate; it explains 41 unmasked `has_draw_effect` pairs.
+
+About 45 further pairs on 27 cards are unmasked: the hosts printing a permission are now fully typed. They stay UNEXPLAINED, locked with their counts. By field and dominant cause:
+- `has_recurring_trigger` 19: the legacy flag reads any "whenever".
+- `has_graveyard_recursion` 5: a permission to cast an exiled graveyard card, read as recursion.
+- `deals_targeted_damage` 3, `has_pump_grant` 3, `can_target_player` 3, and 1-2 each in nine other fields: the legacy flags read the whole printed text, the views read the typed specs.
+
 Lines checked and found in full agreement: loot draw/discard (174), put-counter kind and amount (135), pump P/T (290), direct-damage amount (79), the soft-counter condition, and delayed timing (102 agree, grammar strictly broader).
 
 **Diff classes.** As before (REMINDER_TEXT, UNMODELLED_CLAUSE, RESIDUE_WIDENING, LEGACY_* quirk classes, DERIVED_COVERAGE_GROWTH, SEMANTIC_FIX, UNEXPLAINED), plus three:

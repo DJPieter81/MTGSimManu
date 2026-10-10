@@ -150,8 +150,8 @@
    "id": "draw_effect_reads_impulse",
    "class": "LEGACY_DRAW_SCOPE",
    "fields": ["has_draw_effect"],
-   "cards": ["Kylox, Visionary Inventor"],
-   "reason": "The legacy flag counts impulse draw ('exile the top ... you may cast') as a draw by design (parse_has_draw_effect: card advantage for the AI); the view reads DRAW specs, and an exile with a permission to cast is no draw (CR 121.1). Masked until 2026-10-10 by the card's refused 'exile the top N cards of your library' (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the impulse unit types that library position as the exile's object, which unmasks the pair.",
+   "pattern": "exile the top[\\s\\S]*(?:you may play|you may cast|play those cards|cast them)",
+   "reason": "The legacy flag counts impulse draw ('exile the top ... you may play / you may cast') as a draw by design (parse_has_draw_effect, whose predicate this pattern mirrors: card advantage for the AI); the view reads DRAW specs, and an exile with a permission to play is no draw (CR 121.1). Masked until 2026-10-10 by the refused library position and permission on the same host; the impulse unit types both, which unmasks the pairs.",
    "source": "design doc section 10, rows unmasked by typing library positions (2026-10-10)"
   },
   {

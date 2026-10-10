@@ -1429,7 +1429,10 @@ def _next_turn_effect(effects, key=None, template=None):
                         else "yours"}
             if m is not None and m.kind is ModKind.COST_DELTA:
                 return {"kind": "cost_reduction"}
-            if m is not None and m.kind is ModKind.PERMIT:
+            if m is not None and m.kind is ModKind.PERMIT and \
+                    m.action == "cast_as_flash":
+                # a flash permission; a permission to play or cast named
+                # objects (impulse, Nivix) is no next-turn effect kind
                 return {"kind": "flash_permission"}
     return None
 

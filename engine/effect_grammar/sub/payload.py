@@ -796,8 +796,9 @@ _REQUIRE_RE = re.compile(r"(?P<act>attacks?|blocks?) each combat if able\b"
                          r"|must be blocked\b")
 _PERMIT_FLASH_RE = re.compile(r"(?:you )?may cast (?P<obj>.+?) as though "
                               r"(?:it|they) had flash\b")
-_PERMIT_PLAY_RE = re.compile(r"(?:you )?may (?P<act>play|cast) (?P<obj>that card|"
-                             r"those cards|it|them|the exiled cards?)\b")
+_PERMIT_PLAY_RE = re.compile(r"(?:(?:you )?may )?(?P<act>play|cast) "
+                             r"(?P<obj>that card|those cards|it|them|"
+                             r"the exiled cards?)\b")
 _PREVENT_RE = re.compile(r"prevent all (?P<combat>combat )?damage\b"
                          r"(?: that would be dealt)?")
 
@@ -969,8 +970,12 @@ def _modification_rel(t: str) -> _Rel:
                      object=m.group("obj")), None, m.end(), None, (), ())
     m = _PERMIT_PLAY_RE.match(t)
     if m:
-        return (_mod(ModKind.PERMIT, action=m.group("act"),
-                     object=m.group("obj")), None, m.end(), None, (), ())
+        # CR 305.1, 601.2: a permission to play or cast the objects the
+        # reference names. The object is a participant the clause slots
+        # (the rest after the verb) and the linker binds ("those cards":
+        # the cards an earlier spec exiled), never a raw string.
+        return (_mod(ModKind.PERMIT, action=m.group("act")), None,
+                m.start("obj"), None, (), ())
     m = _PREVENT_RE.match(t)
     if m:
         return (_mod(ModKind.PREVENT_DAMAGE,

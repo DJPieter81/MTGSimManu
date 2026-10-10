@@ -20,10 +20,10 @@
    "target.union:triggered": 1,
    "target.unparsed": 9
   },
-  "deck_typed_share": 0.7488,
+  "deck_typed_share": 0.7523,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
-   "CLAUSE": 29,
+   "CLAUSE": 26,
    "CONDITION": 19,
    "DURATION": 8,
    "FILTER": 29,
@@ -95,33 +95,33 @@
    "UNPARSED": 390,
    "WIDENING": 865
   },
-  "typed_share": 0.7287,
+  "typed_share": 0.7308,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7891,
+   "ACTIVATED": 0.7932,
    "ALTERNATIVE_COST": 0.0,
-   "CHAPTER": 0.7439,
+   "CHAPTER": 0.7454,
    "KEYWORD": 0.0,
-   "LOYALTY": 0.7642,
+   "LOYALTY": 0.7711,
    "MANA_ABILITY": 0.9498,
-   "MODE": 0.773,
+   "MODE": 0.7736,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7281,
+   "SPELL": 0.729,
    "STATIC": 0.6223,
-   "TRIGGERED": 0.789,
+   "TRIGGERED": 0.792,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
-   "AMOUNT": 784,
-   "CLAUSE": 1935,
+   "AMOUNT": 788,
+   "CLAUSE": 1802,
    "CONDITION": 1163,
    "DELAY": 16,
-   "DURATION": 100,
-   "FILTER": 1543,
+   "DURATION": 113,
+   "FILTER": 1550,
    "ITERATION": 110,
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1371,
+   "REFERENCE": 1387,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1185,
@@ -132,9 +132,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7891,
+    "share": 0.7932,
     "specs": 6634,
-    "typed": 5235
+    "typed": 5262
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -142,9 +142,9 @@
     "typed": 0
    },
    "CHAPTER": {
-    "share": 0.7439,
+    "share": 0.7454,
     "specs": 699,
-    "typed": 520
+    "typed": 521
    },
    "KEYWORD": {
     "share": 0.0,
@@ -152,9 +152,9 @@
     "typed": 0
    },
    "LOYALTY": {
-    "share": 0.7642,
+    "share": 0.7711,
     "specs": 1302,
-    "typed": 995
+    "typed": 1004
    },
    "MANA_ABILITY": {
     "share": 0.9498,
@@ -162,9 +162,9 @@
     "typed": 1513
    },
    "MODE": {
-    "share": 0.773,
+    "share": 0.7736,
     "specs": 1758,
-    "typed": 1359
+    "typed": 1360
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -172,9 +172,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7281,
+    "share": 0.729,
     "specs": 9992,
-    "typed": 7275
+    "typed": 7284
    },
    "STATIC": {
     "share": 0.6223,
@@ -182,9 +182,9 @@
     "typed": 3346
    },
    "TRIGGERED": {
-    "share": 0.789,
+    "share": 0.792,
     "specs": 15272,
-    "typed": 12049
+    "typed": 12095
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -213,9 +213,9 @@
   "deck": {
    "by_host_kind": {
     "ACTIVATED": {
-     "share": 0.8013,
+     "share": 0.8077,
      "specs": 156,
-     "typed": 125
+     "typed": 126
     },
     "CHAPTER": {
      "share": 0.8667,
@@ -243,9 +243,9 @@
      "typed": 0
     },
     "SPELL": {
-     "share": 0.8424,
+     "share": 0.8478,
      "specs": 184,
-     "typed": 155
+     "typed": 156
     },
     "STATIC": {
      "share": 0.4156,
@@ -253,9 +253,9 @@
      "typed": 32
     },
     "TRIGGERED": {
-     "share": 0.8634,
+     "share": 0.8683,
      "specs": 205,
-     "typed": 177
+     "typed": 178
     },
     "UNKNOWN": {
      "share": 0.0,
@@ -274,7 +274,7 @@
     "typed_share": 0.8533
    },
    "specs": 868,
-   "typed": 650
+   "typed": 653
   },
   "keyword_lines": [
    [
@@ -1233,9 +1233,9 @@
     2
    ]
   ],
-  "typed": 32292,
-  "unmodelled": 12025,
-  "unmodelled_row_count": 1978,
+  "typed": 32385,
+  "unmodelled": 11932,
+  "unmodelled_row_count": 1988,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1269,18 +1269,6 @@
    ],
    [
     "CLAUSE",
-    "play",
-    "payload.modification_unknown",
-    182
-   ],
-   [
-    "CLAUSE",
-    "cast",
-    "payload.modification_unknown",
-    160
-   ],
-   [
-    "CLAUSE",
     "attach",
     "patterns.no_row:attach",
     155
@@ -1296,6 +1284,12 @@
     "regenerate",
     "lexicon.unsupported:regenerate",
     138
+   ],
+   [
+    "CLAUSE",
+    "cast",
+    "payload.modification_unknown",
+    132
    ],
    [
     "CLAUSE",
@@ -1332,6 +1326,12 @@
     "exile",
     "clauses.structure_condition",
     89
+   ],
+   [
+    "CLAUSE",
+    "play",
+    "payload.modification_unknown",
+    77
    ],
    [
     "CONDITION",
@@ -1380,6 +1380,12 @@
     "",
     "structure.class_level",
     54
+   ],
+   [
+    "DURATION",
+    "play",
+    "duration.until_end_of_your_next_turn",
+    53
    ],
    [
     "CLAUSE",
@@ -1457,12 +1463,6 @@
     "CLAUSE",
     "become",
     "payload.modification_unknown",
-    43
-   ],
-   [
-    "DURATION",
-    "play",
-    "duration.until_end_of_your_next_turn",
     43
    ],
    [
