@@ -215,6 +215,22 @@ def test_casting_a_card_whose_permission_ends_this_turn_spends_no_held_card():
                           player_idx=0).my_hand_size == snap.my_hand_size - 1
 
 
+def test_a_spell_cast_from_exile_counts_for_storm_like_any_other_cast():
+    """CR 702.40a: storm counts the spells cast this turn, from wherever.
+    Casting a card whose permission ends this turn spends no held card,
+    but it is a spell cast."""
+    from ai.ev_evaluator import _project_spell, snapshot_from_game
+    game = _game()
+    game.turn_number = 5
+    now = _put(game, _template("ThisTurn"), "exile")
+    held = _put(game, _template("InHand"), "hand")
+    _permit(game, [now])
+    snap = snapshot_from_game(game, 0)
+    for card in (now, held):
+        assert _project_spell(card, snap, game=game,
+                              player_idx=0).storm_count == snap.storm_count + 1
+
+
 def test_a_card_whose_permission_ends_this_turn_is_never_deferred():
     from ai.ev_evaluator import (_enumerate_this_turn_signals,
                                  snapshot_from_game)
