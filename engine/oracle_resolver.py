@@ -717,18 +717,8 @@ def _resolve_x_creature_tutor(game: "GameState", card: "CardInstance",
                          {Keyword.HASTE})
 
     finish_library_search(game, controller)
-
-    if spec.get('self_shuffle_into_library') and card in player.graveyard:
-        # "Shuffle ~ into its owner's library" replaces the card's own
-        # trip to the graveyard.  The spell is still ON THE STACK while
-        # its effects execute (ResolutionManager moves it off afterwards),
-        # so this fires only when the card has already reached the
-        # graveyard — the pre-existing semantics of this rider, preserved
-        # verbatim.  Making it unconditional needs a zone-replacement hook
-        # in the stack-exit path, which is a different subsystem.
-        game.zone_mgr.move_card(game, card, "graveyard", "library",
-                                cause=f"{card.name} shuffles itself back")
-        game.rng.shuffle(player.library)
+    # "Shuffle ~ into its owner's library" is the stack exit's to perform
+    # (`ResolutionManager._own_destination`, CR 608.2n).
     return True
 
 

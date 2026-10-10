@@ -39,10 +39,67 @@ class ResolutionManager:
     """Stack resolution + permanent ETB + spell-effect dispatch."""
 
     @staticmethod
-    def _move_resolved_spell_off_stack(game: "GameState", card: "CardInstance"):
+    def _own_destination(card: "CardInstance"):
+        """Where an instant or sorcery's own text puts it as it resolves
+        (CR 608.2n): (zone, position, nth) of an unconditional move of the
+        spell itself in its spell host -- "shuffle ~ into its owner's
+        library", "put ~ on the bottom of its owner's library", "return ~
+        to its owner's hand", "exile ~". None when it prints none (a
+        conditional or optional move stays with its handler): the
+        graveyard."""
+        from .effect_spec import RefKind, Verb
+        effects = getattr(card.template, 'effects', None)
+        host = effects.spell(0) if effects is not None else None
+        if host is None:
+            return None
+        for s in host.specs:
+            if (s.condition is not None or s.optional or s.alternatives
+                    or s.ref is None or s.ref.kind is not RefKind.SELF):
+                continue
+            if s.verb is Verb.EXILE:
+                return ("exile", None, None)
+            d = s.dest
+            if s.verb is Verb.MOVE and d is not None and \
+                    d.zone in ("library", "hand"):
+                return (d.zone, d.position, d.nth)
+        return None
+
+    @staticmethod
+    def _audit_resolved_destination(game: "GameState",
+                                    card: "CardInstance") -> None:
+        """CR 608.2n, restated from the spell's raw typed specs: a resolved
+        instant or sorcery whose text moves it ends in that zone, and one
+        whose text does not ends in the graveyard. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        from .effect_spec import RefKind, Verb
+        host = card.template.effects.spell(0)
+        printed = "graveyard"
+        for s in (host.specs if host is not None else ()):
+            if s.condition is None and not s.optional \
+                    and s.ref is not None and s.ref.kind is RefKind.SELF:
+                if s.verb is Verb.EXILE:
+                    printed = "exile"
+                    break
+                if s.verb is Verb.MOVE and s.dest is not None \
+                        and s.dest.zone in ("library", "hand"):
+                    printed = s.dest.zone
+                    break
+        rules_audit.check(
+            "608.2n/resolved_spell_destination", card.zone == printed,
+            f"{card.name} resolved into {card.zone}, its text puts it in "
+            f"{printed}", game=game)
+
+    @staticmethod
+    def _move_resolved_spell_off_stack(game: "GameState", card: "CardInstance",
+                                       resolved: bool = False):
         """Move an instant/sorcery off the stack to its correct zone,
         applying the alternate-cast zone-replacement effects (CR
         702.33a flashback, CR 702.86 rebound, CR 707.10a spell copy).
+        `resolved`: the spell resolved, so its own instruction to move
+        itself applies (CR 608.2n); a countered or fizzled spell performs
+        no instruction and goes to the graveyard.
 
         These replacements are tied to HOW the spell was cast, not to
         how it left the stack — they apply identically whether the
@@ -82,9 +139,38 @@ class ResolutionManager:
                 game, card, "expired_copy", cause="spell copy ceases (CR 707.10a)"
             )
         else:
-            game.zone_mgr.move_card_from_stack(
-                game, card, "graveyard", cause="resolution"
-            )
+            own = (ResolutionManager._own_destination(card)
+                   if resolved else None)
+            if own is None:
+                game.zone_mgr.move_card_from_stack(
+                    game, card, "graveyard", cause="resolution"
+                )
+            else:
+                zone, position, nth = own
+                game.zone_mgr.move_card_from_stack(
+                    game, card, zone,
+                    cause="its own instruction (CR 608.2n)")
+                if card.zone == "library":
+                    ResolutionManager._place_in_library(game, card,
+                                                        position, nth)
+            if resolved:
+                ResolutionManager._audit_resolved_destination(game, card)
+
+    @staticmethod
+    def _place_in_library(game: "GameState", card: "CardInstance",
+                          position, nth) -> None:
+        """The library position a spell's own instruction names: shuffled
+        in, on the top or bottom, or Nth from the top (index 0 is the
+        top; the stack exit appended the card at the bottom)."""
+        library = game.players[card.owner].library
+        if position == "shuffle":
+            game.rng.shuffle(library)
+        elif position == "top":
+            library.remove(card)
+            library.insert(0, card)
+        elif position == "nth" and nth:
+            library.remove(card)
+            library.insert(min(len(library), int(nth) - 1), card)
 
     @staticmethod
     def _move_countered_stack_item(game: "GameState", stack_item: "StackItem",
@@ -272,7 +358,8 @@ class ResolutionManager:
                 # Cascade: exile from top until lower CMC, cast free
                 if Keyword.CASCADE in template.keywords:
                     game._handle_cascade(item)
-                ResolutionManager._move_resolved_spell_off_stack(game, card)
+                ResolutionManager._move_resolved_spell_off_stack(
+                    game, card, resolved=True)
             else:
                 # Permanent enters battlefield
                 card.controller = item.controller
