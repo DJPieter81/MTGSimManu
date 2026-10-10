@@ -6779,3 +6779,69 @@ Root causes found on replays of flipped seeds:
 - **Cori Mountain Monastery's activation** (Boros Ponza) types fully -- exile the top card, play it until the end of your next turn -- and the unit I executors run it, but its effect kind is UNCLASSIFIED, so the activation carrier has no family for it and it does nothing. An activation route for typed card-flow hosts would take it.
 - **Unmodelled impulse shapes:** "you may play up to two of those cards" (March of Reckless Joy) and Glimpse the Impossible's end-step cleanup are refused whole (each moved cards to hand before); "that card" from another player's library.
 - **CR 400.7 outside the funnels:** a permitted card that leaves exile by a direct zone write and returns is still named (the known gap of `effect_resolver.Handle`).
+
+## Unit P: the turn planner's board builds for a hand holding spells (2026-10-10)
+
+**Defect:** `ai/evaluator.estimate_spell_value` read `_game_phase(...)` and `GamePhase`, names no module defines. They were deleted before this history's first commit. `turn_planner.extract_virtual_board` values every spell in hand through it, so it raised NameError whenever the hand held a spell: 54 of 61 calls over nine games. Both callers catch every exception:
+- `ev_player`'s combat planner fell back to its free-attacker heuristic;
+- `response.py`'s `TurnPlanner.evaluate_response` fell back to the legacy response path.
+
+The architecture's planners ran only on spell-free hands. (Unit I's lead said `phase` was never read. It is: the ramp bonus reads it, so the fix is not a deleted line.)
+
+**Steps:**
+- **P `d194031`:**
+  - the ramp bonus reads the clock's stage of the game, `ai.clock.life_phase`: DEVELOP gets the early bonus, GRIND the mid bonus, PANIC or LETHAL the late bonus (no turn threshold; the snapshot is taken only for a ramp or mana-source spell);
+  - `engine/permanent_effects` imports the `Set` its annotations name;
+  - **`tests/test_engine_and_ai_load_no_undefined_names.py`:** a static scan pinned at zero. Every name a module in `engine/` or `ai/` loads is bound in it or a builtin, so a NameError can no longer hide behind a broad `except`. There were 5 unbound loads.
+  - With the fix, 12 games build 55 boards, 19 attack plans and 36 response evaluations with no exception.
+- **P.2 `94b055d`:** the revived response planner built its candidates from every instant in hand, skipping the printed counter-target restrictions the legacy path enforced; it cast Consign to Memory at Orcish Bowmasters (`tests/test_colorless_only_counter_not_cast_at_colored_spell.py` went red on P). `ResponseDecider._counter_can_target` is now the one check both paths read: a spell, its class (noncreature, instant or sorcery), colorless only.
+
+**Digest:** P changes 9 of 26 games with no winner change (`82dcf1f4`); P.2 changes one more with the same winner (`1230c85c`). The anchor drifts in turns only.
+
+## Unit W: warp from the rules (2026-10-10)
+
+**Rule (CR 702.185a):** "Warp [cost]" means "You may cast this card from your hand by paying [cost] rather than its mana cost" and "If this spell's warp cost was paid, exile the permanent this spell becomes at the beginning of the next end step. Its owner may cast this card after the current turn has ended for as long as it remains exiled."
+
+**Defect:**
+- The engine required an artifact on the battlefield to warp from hand (`can_cast` and `cast_spell`) and to cast the exiled card again; no rule asks for one.
+- It charged that re-cast the warp cost; the warp cost is a cast from the hand only.
+
+Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Azorius Blink; ×2 in Instant Reanimator) could never be warped in an artifact-free deck. The pool has 32 warp cards.
+
+**Steps (`3a1de08`):**
+- The warp cost is payable from hand with no other condition.
+- The end-step warp exile registers the owner's permission to cast the card from exile, through the one rule-effect store (`permit_play` gains an optional first turn: from the next turn on). The permission path (unit I) gives the re-cast its normal timing and cost, and leaving exile ends it (CR 400.7).
+- The special `_warped` branches in `can_cast` and `get_legal_plays` are deleted: a flag on an exiled card grants nothing.
+- Two older tests pinned the invented artifact gate and a flag-driven re-cast for the warp cost; they now pin the rule.
+
+**Digest:** 9 games change, each with a warp deck, and one winner flips (Boros Energy vs Domain Zoo s58000 g3 goes to Domain Zoo); `440c520d`. Anchor:
+- Jeskai Blink vs 4c Omnath s50000 and Pinnacle Affinity vs 4/5c Control s50000 flip;
+- Affinity vs Domain Zoo s50500 and Instant Reanimator vs Boros Ponza s51500 change turns only;
+- all of them are warp decks.
+
+**Suites:** locally both chunks pass on the head (4480 + 2711). P and W alone each fail only the Consign test that P.2 fixes.
+
+**Measured (same-seed n=20 Bo3, all 25 rows):**
+- **P arm** (`73d998a`, with the counter defect P.2 fixes), pre = unit I's arm:
+  - 370 of 600 cells changed: attacks and responses are planned in every deck now.
+  - No deck moves 5 pp. Azorius Control (WST) −4.5, Azorius Blink +2.4, Hollow One +2.1, Dimir Midrange +2.0, Izzet Prowess +1.5; every other deck within ±1.4.
+  - Audit findings 486 → 486, violations 0; 0 aborts.
+- **P.2 + W arm** (`86f7fac`), pre = the P arm:
+  - 269 cells changed.
+  - The Quantum Riddler decks gain: Instant Reanimator +4.6, 4c Omnath +4.3, Jeskai Blink +2.4. Affinity +5.7.
+  - Dimir Midrange −2.2, Eldrazi Ramp −2.0, Domain Zoo −1.8, Azorius Control (WST) −1.7; every other deck within ±1.2.
+  - Audit findings 486 → 492, violations 0; 0 aborts.
+- **Cumulative, against unit I's arm:** Affinity +6.2, Azorius Control (WST) −6.1, 4c Omnath +3.9, Instant Reanimator +3.2, Domain Zoo −3.0; the rest within ±2.6.
+- **Over 5 pp, replayed:**
+  - **Affinity (W).** Before W, Pinnacle Emissary was refused 50 times from exile in 20 Bo1 games against Living End. The old branch admitted it for its warp cost, then the payment charged the full cost, and each refusal burned a main-phase action. After W there are 0 refusals and 5 legal re-casts for its mana cost.
+  - **Azorius Control (WST) (P).** The response planner now decides 48 of 81 response windows against Domain Zoo, with choices the legacy path did not make (instant-speed removal; counters at different threats). An attribution run (Bo1, 100 games against Domain Zoo, Dimir Midrange, Hollow One, Amulet Titan and Azorius Control, both seats) gives 50.0% with both planners, 54.0% with the response planner off and 51.0% with the combat planner off: within noise, pointing at the response planner (lead below).
+- The W-only arm was cancelled by the matrix workflow when the next arm was queued; P.2 changes one digest game, so the second arm's movement is W's.
+
+**Leads (not built):**
+- **The response planner for counterspell decks:** compare `TurnPlanner.evaluate_response`'s choice with the legacy path's window by window (Azorius Control (WST) against Domain Zoo first), and decide which owner decides, folding the legacy heuristics (triage, counter-tax deadness) into one.
+- **Living End's Endurance is refused from hand** about 63 times per 20 games (`can_cast` admits, `cast_spell` refuses), before and after these units.
+- **Combat-damage-to-a-player triggers** (465 pool hosts; registered: Psychic Frog's draw, Ragavan's Treasure and exile) still run an oracle-substring block in `combat_manager`:
+  - any "draw a card" draws;
+  - any "treasure" makes a Treasure;
+  - any "exile the top card" exiles the defending player's top card. Even cards that exile from their own library (Prophetic Flamespeaker, Moria Marauder) take it, and the cast permission is put into the attacker's hand by substring.
+  - The typed carrier (unit D's pattern) needs DRAW and CREATE_TOKEN executors, "that player's library", and a permission over another player's exiled card.
