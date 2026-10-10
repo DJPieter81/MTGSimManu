@@ -491,6 +491,9 @@ _FROM_RE = re.compile(r" (?=from (?:exile|the battlefield|the stack|among"
 # (CR 401.5), which no CardFilter row of the filter leaf states yet.
 _LIBRARY_POSITION_RE = re.compile(
     r"^(?:the )?(?:top|bottom) (?:[a-z0-9]+ )?cards? of [a-z~' ]+ librar(?:y|ies)\b")
+# The verbs whose object may be a typed library position (see
+# `_participant_rel`).
+_LIBRARY_POSITION_LEMMAS = frozenset({"exile"})
 _UNION_RE = re.compile(r",? (?:and/or|and|or) ")
 # Conjunctions inside one participant phrase, never a union.
 _FIXED_ORS = ("he or she", "him or her", "his or her")
@@ -555,7 +558,8 @@ def _member(t: str) -> bool:
     return _mine(t) or _filter.parse_filter(t, (0, len(t))).value is not None
 
 
-def _participant_rel(host: str, a: int, b: int, zone: str) -> _Rel:
+def _participant_rel(host: str, a: int, b: int, zone: str,
+                     lemma: str = "") -> _Rel:
     t = host[a:b]
     if not t:
         return _fail("empty")
@@ -570,6 +574,15 @@ def _participant_rel(host: str, a: int, b: int, zone: str) -> _Rel:
                               and _NARROWING_RE.search(m.group("poss"))):
         return _fail("characteristic")
     if _LIBRARY_POSITION_RE.match(t):
+        # Staged by verb: the controller's own top cards (the filter leaf's
+        # row) as the object of an exile -- the verb whose executor lands
+        # with them (impulse draw, unit I). Every other verb's library
+        # position ("look at", "reveal", "put") stays refused until its own
+        # executor and views are reconciled.
+        if lemma in _LIBRARY_POSITION_LEMMAS:
+            r = _group(t, zone)
+            if r[4] is None:
+                return r
         return _fail("library_position")
     r = _single(t)
     if r is not None:
@@ -618,7 +631,7 @@ def parse_participant(host: str, span: Optional[Span] = None, *,
     body = trimmed.rstrip(" .,;")
     start = a + lead
     value, flags, amount, pending, failure = _participant_rel(
-        host, start, start + len(body), zone)
+        host, start, start + len(body), zone, lemma)
     rest: Tuple[Span, ...] = ()
     if failure is not None and failure[0] != "targeted":
         # A reference moved out of a zone prints its source zone ("return
@@ -629,7 +642,8 @@ def parse_participant(host: str, span: Optional[Span] = None, *,
         m = _FROM_RE.search(body)
         if m is not None:
             cut = start + m.start()
-            v, f, am, pe, fail = _participant_rel(host, start, cut, zone)
+            v, f, am, pe, fail = _participant_rel(host, start, cut, zone,
+                                                  lemma)
             if fail is None and GROUP not in f:
                 value, flags, amount, pending, failure = v, f, am, pe, None
                 rest = rest_spans_after(host, cut, start + len(body))

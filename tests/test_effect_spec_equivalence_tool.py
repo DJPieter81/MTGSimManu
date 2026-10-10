@@ -1416,6 +1416,10 @@ UNMASKED_ROWS = {
     "targeted_damage_reads_untargeted_damage",
     "destroy_or_exile_reads_reminder_and_cost",
     "graveyard_hate_reads_self_exile_cost",
+    # unmasked by typing library positions (impulse unit, 2026-10-10)
+    "untargeted_damage_unmasked_by_library_position",
+    "draw_effect_reads_impulse",
+    "graveyard_recursion_reads_exile_linked_return",
 }
 
 

@@ -1011,6 +1011,16 @@ Rows unmasked by typing "during your turn" (2026-10-09). The cast-timing unit ty
 
 One unmasked pair is grammar-side and stays UNEXPLAINED (`can_target_planeswalker`, Sorin, Vengeful Bloodlord): `target_solver.parse` types "target player or planeswalker" as players only. That is a target-solver lead, not an allowlist row.
 
+Rows unmasked by typing library positions (2026-10-10). The impulse unit types "the top card / the top N cards of your library" (the filter leaf: zone library, owner you, position top) as the object of an exile. It is staged by verb: "look at", "reveal" and "put" keep `participant.library_position` until their executors land. 156 exile clauses are typed. Nine pool comparisons on four cards lose their coincidental UNMODELLED_CLAUSE explanation. Five are legacy-side readings, recorded as 3 allowlist rows:
+- **Untargeted damage read as targeted** (`deals_targeted_damage`, Culmination of Studies).
+- **Impulse draw read as a draw** (`has_draw_effect`, Kylox). `parse_has_draw_effect` counts "exile the top ... you may cast" as card advantage by design, and an exile with a permission is no draw (CR 121.1).
+- **An exile-linked return read as graveyard recursion** (`has_graveyard_recursion`, `mass_graveyard_return`, `reanimates_from_graveyard`, Yggdrasil). The card returns from exile.
+
+Four are view-side and stay UNEXPLAINED as leads:
+- `can_target_player` (Hidetsugu and Kairi): the view reads target slots of specs, not a target player who is the spec's actor ("target opponent loses life").
+- `has_may_play_or_cast` (Hidetsugu and Kairi, Kylox): the view counts a PERMIT, not a resolution-time free cast (CAST_FREE).
+- `has_recurring_trigger` (Kylox): the legacy flag reads any "whenever" trigger, the view only "at the beginning of".
+
 Lines checked and found in full agreement: loot draw/discard (174), put-counter kind and amount (135), pump P/T (290), direct-damage amount (79), the soft-counter condition, and delayed timing (102 agree, grammar strictly broader).
 
 **Diff classes.** As before (REMINDER_TEXT, UNMODELLED_CLAUSE, RESIDUE_WIDENING, LEGACY_* quirk classes, DERIVED_COVERAGE_GROWTH, SEMANTIC_FIX, UNEXPLAINED), plus three:

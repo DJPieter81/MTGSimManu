@@ -546,10 +546,40 @@ def _first_word(t: str, pos: int) -> str:
     return m.group(0) if m else ""
 
 
+# "the top card of your library" / "the top <N> cards of your library": the
+# first N cards of the controller's own library, a position in a hidden zone
+# (CR 401.5). Every other possessor ("target player's", "each player's",
+# "their"), the bottom, and an unread count stay unplaced here and keep the
+# participant leaf's library_position refusal.
+_TOP_OF_YOUR_LIBRARY_RE = re.compile(
+    r"the top (?:(?P<n>[a-z0-9]+) )?(?P<noun>cards?) of your library")
+
+
+def _library_top(t: str) -> Optional[_Rel]:
+    m = _TOP_OF_YOUR_LIBRARY_RE.fullmatch(t)
+    if m is None:
+        return None
+    word, plural = m.group("n"), m.group("noun") == "cards"
+    if word is None:
+        if plural:
+            return None              # "the top cards": no count printed
+        amount = Amount(AmountKind.LITERAL, n=1)
+    else:
+        amount = _number(word)
+        if amount is None or (amount.kind is AmountKind.LITERAL
+                              and (amount.n == 1) == plural):
+            return None              # a count the noun's number contradicts
+    return (CardFilter(zone="library", owner="you", position="top", raw=t),
+            None, amount, frozenset(), ())
+
+
 @lru_cache(maxsize=CACHE_SIZE)
 def _filter_rel(t: str, zone: str) -> _Rel:
     if not t:
         return _fail("empty")
+    top = _library_top(t)
+    if top is not None:
+        return top
     pos, amount, flags, other = _determiner(t)
     items = [_Item()]
     pending: List[Tuple[str, str]] = []

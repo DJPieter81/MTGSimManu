@@ -161,8 +161,8 @@
   "can_target_player": {
    "AGREE": 21602,
    "DERIVED_COVERAGE_GROWTH": 22,
-   "UNEXPLAINED": 502,
-   "UNMODELLED_CLAUSE": 612
+   "UNEXPLAINED": 503,
+   "UNMODELLED_CLAUSE": 611
   },
   "cast_prohibition": {
    "AGREE": 22734,
@@ -237,9 +237,9 @@
   "deals_targeted_damage": {
    "AGREE": 20972,
    "DERIVED_COVERAGE_GROWTH": 23,
-   "LEGACY_TARGETED_DAMAGE_SCOPE": 5,
+   "LEGACY_TARGETED_DAMAGE_SCOPE": 6,
    "UNEXPLAINED": 876,
-   "UNMODELLED_CLAUSE": 862
+   "UNMODELLED_CLAUSE": 861
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -386,11 +386,11 @@
    "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
-   "AGREE": 20671,
-   "DERIVED_COVERAGE_GROWTH": 28,
+   "AGREE": 20804,
+   "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
    "UNEXPLAINED": 911,
-   "UNMODELLED_CLAUSE": 1123
+   "UNMODELLED_CLAUSE": 986
   },
   "has_discard_effect": {
    "AGREE": 22268,
@@ -401,8 +401,9 @@
   "has_draw_effect": {
    "AGREE": 20918,
    "DERIVED_COVERAGE_GROWTH": 273,
+   "LEGACY_DRAW_SCOPE": 1,
    "UNEXPLAINED": 652,
-   "UNMODELLED_CLAUSE": 895
+   "UNMODELLED_CLAUSE": 894
   },
   "has_dual_land_search": {
    "AGREE": 22682,
@@ -433,9 +434,9 @@
   "has_graveyard_recursion": {
    "AGREE": 21472,
    "DERIVED_COVERAGE_GROWTH": 29,
-   "LEGACY_GRAVEYARD_RECURSION": 3,
+   "LEGACY_GRAVEYARD_RECURSION": 4,
    "UNEXPLAINED": 700,
-   "UNMODELLED_CLAUSE": 534
+   "UNMODELLED_CLAUSE": 533
   },
   "has_graveyard_target": {
    "AGREE": 22121,
@@ -472,8 +473,8 @@
   "has_may_play_or_cast": {
    "AGREE": 21223,
    "REMINDER_TEXT": 4,
-   "UNEXPLAINED": 639,
-   "UNMODELLED_CLAUSE": 872
+   "UNEXPLAINED": 641,
+   "UNMODELLED_CLAUSE": 870
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -502,8 +503,8 @@
   },
   "has_recurring_trigger": {
    "AGREE": 17533,
-   "UNEXPLAINED": 4130,
-   "UNMODELLED_CLAUSE": 1075
+   "UNEXPLAINED": 4131,
+   "UNMODELLED_CLAUSE": 1074
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -622,8 +623,9 @@
   "mass_graveyard_return": {
    "AGREE": 22690,
    "DERIVED_COVERAGE_GROWTH": 18,
+   "LEGACY_GRAVEYARD_RECURSION": 1,
    "UNEXPLAINED": 5,
-   "UNMODELLED_CLAUSE": 25
+   "UNMODELLED_CLAUSE": 24
   },
   "modes[removal]": {
    "AGREE": 1358,
@@ -673,8 +675,9 @@
   "reanimates_from_graveyard": {
    "AGREE": 22302,
    "DERIVED_COVERAGE_GROWTH": 9,
+   "LEGACY_GRAVEYARD_RECURSION": 1,
    "UNEXPLAINED": 259,
-   "UNMODELLED_CLAUSE": 168
+   "UNMODELLED_CLAUSE": 167
   },
   "removal_mv_condition": {
    "AGREE": 22738
@@ -763,21 +766,22 @@
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813212,
-  "DERIVED_COVERAGE_GROWTH": 7826,
+  "AGREE": 2813345,
+  "DERIVED_COVERAGE_GROWTH": 7830,
   "LEGACY_COST_REDUCTION_SCOPE": 13,
+  "LEGACY_DRAW_SCOPE": 1,
   "LEGACY_GRAVEYARD_HATE": 1,
-  "LEGACY_GRAVEYARD_RECURSION": 3,
+  "LEGACY_GRAVEYARD_RECURSION": 6,
   "LEGACY_HASH_ORDER": 13,
   "LEGACY_PUMP_GRANT_SCOPE": 11,
   "LEGACY_RITUAL_MANA": 1,
-  "LEGACY_TARGETED_DAMAGE_SCOPE": 5,
+  "LEGACY_TARGETED_DAMAGE_SCOPE": 6,
   "LEGACY_TARGET_ZONE": 14,
   "LEGACY_TEAM_GRANT_SCOPE": 1,
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 202,
-  "UNEXPLAINED": 17917,
-  "UNMODELLED_CLAUSE": 10306
+  "UNEXPLAINED": 17921,
+  "UNMODELLED_CLAUSE": 10160
  }
 }

@@ -2,7 +2,7 @@
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
   "deck_removal_ready_share": 0.0116,
-  "deck_removal_typed_share": 0.834,
+  "deck_removal_typed_share": 0.8533,
   "deck_residue_by_code": {
    "target.colored": 3,
    "target.exclude_source": 4,
@@ -20,7 +20,7 @@
    "target.union:triggered": 1,
    "target.unparsed": 9
   },
-  "deck_typed_share": 0.7431,
+  "deck_typed_share": 0.7488,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
    "CLAUSE": 29,
@@ -30,7 +30,7 @@
    "ITERATION": 2,
    "NO_LEMMA": 14,
    "RECOGNIZED_UNSUPPORTED": 6,
-   "REFERENCE": 26,
+   "REFERENCE": 21,
    "REPLACEMENT": 59,
    "STRUCTURE": 3,
    "TARGET": 19,
@@ -95,19 +95,19 @@
    "UNPARSED": 390,
    "WIDENING": 865
   },
-  "typed_share": 0.7251,
+  "typed_share": 0.7287,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7843,
+   "ACTIVATED": 0.7891,
    "ALTERNATIVE_COST": 0.0,
-   "CHAPTER": 0.7396,
+   "CHAPTER": 0.7439,
    "KEYWORD": 0.0,
-   "LOYALTY": 0.7527,
+   "LOYALTY": 0.7642,
    "MANA_ABILITY": 0.9498,
-   "MODE": 0.7685,
+   "MODE": 0.773,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7251,
+   "SPELL": 0.7281,
    "STATIC": 0.6223,
-   "TRIGGERED": 0.7845,
+   "TRIGGERED": 0.789,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
@@ -121,7 +121,7 @@
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1527,
+   "REFERENCE": 1371,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1185,
@@ -132,9 +132,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7843,
+    "share": 0.7891,
     "specs": 6634,
-    "typed": 5203
+    "typed": 5235
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -142,9 +142,9 @@
     "typed": 0
    },
    "CHAPTER": {
-    "share": 0.7396,
+    "share": 0.7439,
     "specs": 699,
-    "typed": 517
+    "typed": 520
    },
    "KEYWORD": {
     "share": 0.0,
@@ -152,9 +152,9 @@
     "typed": 0
    },
    "LOYALTY": {
-    "share": 0.7527,
+    "share": 0.7642,
     "specs": 1302,
-    "typed": 980
+    "typed": 995
    },
    "MANA_ABILITY": {
     "share": 0.9498,
@@ -162,9 +162,9 @@
     "typed": 1513
    },
    "MODE": {
-    "share": 0.7685,
+    "share": 0.773,
     "specs": 1758,
-    "typed": 1351
+    "typed": 1359
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -172,9 +172,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7251,
+    "share": 0.7281,
     "specs": 9992,
-    "typed": 7245
+    "typed": 7275
    },
    "STATIC": {
     "share": 0.6223,
@@ -182,9 +182,9 @@
     "typed": 3346
    },
    "TRIGGERED": {
-    "share": 0.7845,
+    "share": 0.789,
     "specs": 15272,
-    "typed": 11981
+    "typed": 12049
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -213,19 +213,19 @@
   "deck": {
    "by_host_kind": {
     "ACTIVATED": {
-     "share": 0.7949,
+     "share": 0.8013,
      "specs": 156,
-     "typed": 124
+     "typed": 125
     },
     "CHAPTER": {
-     "share": 0.8,
+     "share": 0.8667,
      "specs": 15,
-     "typed": 12
+     "typed": 13
     },
     "LOYALTY": {
-     "share": 0.7636,
+     "share": 0.7818,
      "specs": 55,
-     "typed": 42
+     "typed": 43
     },
     "MANA_ABILITY": {
      "share": 0.9333,
@@ -243,9 +243,9 @@
      "typed": 0
     },
     "SPELL": {
-     "share": 0.8315,
+     "share": 0.8424,
      "specs": 184,
-     "typed": 153
+     "typed": 155
     },
     "STATIC": {
      "share": 0.4156,
@@ -270,11 +270,11 @@
     "met": false,
     "ready": 3,
     "ready_share": 0.0116,
-    "typed": 216,
-    "typed_share": 0.834
+    "typed": 221,
+    "typed_share": 0.8533
    },
    "specs": 868,
-   "typed": 645
+   "typed": 650
   },
   "keyword_lines": [
    [
@@ -1233,8 +1233,8 @@
     2
    ]
   ],
-  "typed": 32136,
-  "unmodelled": 12181,
+  "typed": 32292,
+  "unmodelled": 12025,
   "unmodelled_row_count": 1978,
   "unmodelled_rows": [
    [
@@ -1260,12 +1260,6 @@
     "cost",
     "payload.modification_unknown",
     228
-   ],
-   [
-    "REFERENCE",
-    "exile",
-    "participant.library_position",
-    207
    ],
    [
     "CLAUSE",
@@ -1403,6 +1397,12 @@
     "AMOUNT",
     "prevent",
     "amount.scaler:to",
+    51
+   ],
+   [
+    "REFERENCE",
+    "exile",
+    "participant.library_position",
     51
    ],
    [

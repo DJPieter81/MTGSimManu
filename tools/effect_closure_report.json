@@ -679,10 +679,10 @@
    "E1": 1,
    "E2": 2,
    "E3": 422,
-   "E4": 52,
+   "E4": 53,
    "E5": 116,
    "E6": 34,
-   "none": 279
+   "none": 278
   },
   "strict": 267,
   "sub_kinds": {
@@ -839,7 +839,7 @@
    "CREATE_TOKEN,DESTROY": 10,
    "CREATE_TOKEN,MOVE": 10,
    "CREATE_TOKEN,PUT_COUNTERS": 9,
-   "CREATE_TOKEN,UNMODELLED": 29,
+   "CREATE_TOKEN,UNMODELLED": 28,
    "UNMODELLED": 15
   }
  },
@@ -1311,8 +1311,8 @@
    "DELAYED": 1
   },
   "verb_sets": {
-   "CONTINUOUS,CREATE_TRIGGER,UNMODELLED": 1,
-   "UNMODELLED": 4
+   "CONTINUOUS,CREATE_TRIGGER,EXILE,UNMODELLED": 1,
+   "EXILE,UNMODELLED": 4
   }
  },
  "land_destruction": {
@@ -1675,7 +1675,7 @@
    "GAIN_LIFE": 35,
    "MOVE": 103,
    "PUT_COUNTERS": 50,
-   "UNMODELLED": 306
+   "UNMODELLED": 300
   }
  },
  "mass_reanimate": {
@@ -1899,7 +1899,7 @@
    "CREATE_TOKEN": 5,
    "DAMAGE": 36,
    "DAMAGE,GAIN_LIFE": 5,
-   "DAMAGE,UNMODELLED": 9,
+   "DAMAGE,UNMODELLED": 8,
    "UNMODELLED": 26
   }
  },
@@ -2146,7 +2146,7 @@
    "CONTINUOUS,GAIN_LIFE": 6,
    "CONTINUOUS,PUT_COUNTERS": 11,
    "CONTINUOUS,SCRY": 15,
-   "CONTINUOUS,UNMODELLED": 63,
+   "CONTINUOUS,UNMODELLED": 61,
    "CONTINUOUS,UNTAP": 19
   }
  },

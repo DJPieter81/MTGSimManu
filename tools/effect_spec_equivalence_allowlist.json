@@ -137,6 +137,30 @@
    "cards": ["Leonin Surveyor"],
    "reason": "The legacy flag reads a cost that exiles the card itself from its owner's graveyard ('Exile this card from your graveyard: Draw a card') as graveyard hate; the view reads an EXILE effect on graveyard cards. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
    "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "untargeted_damage_unmasked_by_library_position",
+   "class": "LEGACY_TARGETED_DAMAGE_SCOPE",
+   "fields": ["deals_targeted_damage"],
+   "cards": ["Culmination of Studies"],
+   "reason": "The legacy flag reads damage with no target ('deals 1 damage to each opponent') as targeted damage; the view requires a DAMAGE spec with a target slot. Masked until 2026-10-10 by the card's refused 'exile the top N cards of your library' (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the impulse unit types that library position as the exile's object, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing library positions (2026-10-10)"
+  },
+  {
+   "id": "draw_effect_reads_impulse",
+   "class": "LEGACY_DRAW_SCOPE",
+   "fields": ["has_draw_effect"],
+   "cards": ["Kylox, Visionary Inventor"],
+   "reason": "The legacy flag counts impulse draw ('exile the top ... you may cast') as a draw by design (parse_has_draw_effect: card advantage for the AI); the view reads DRAW specs, and an exile with a permission to cast is no draw (CR 121.1). Masked until 2026-10-10 by the card's refused 'exile the top N cards of your library' (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the impulse unit types that library position as the exile's object, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing library positions (2026-10-10)"
+  },
+  {
+   "id": "graveyard_recursion_reads_exile_linked_return",
+   "class": "LEGACY_GRAVEYARD_RECURSION",
+   "fields": ["has_graveyard_recursion", "mass_graveyard_return", "reanimates_from_graveyard"],
+   "cards": ["Yggdrasil, Rebirth Engine"],
+   "reason": "The legacy flags read 'exile all creature cards from your graveyard' together with 'put a creature card exiled with ~ onto the battlefield' as graveyard recursion and reanimation; the card returns from exile (a linked MOVE), never from the graveyard, which is what the views read. Masked until 2026-10-10 by the card's refused 'exile the top N cards of your library' (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the impulse unit types that library position as the exile's object, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing library positions (2026-10-10)"
   }
  ],
  "unsurfaced": [
