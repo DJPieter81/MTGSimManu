@@ -79,10 +79,6 @@
    "TRIGGERED:0:0"
   ],
   [
-   "Hex Magic",
-   "SPELL:0:0"
-  ],
-  [
    "Inevitable Betrayal",
    "SPELL:0:1"
   ],
@@ -291,5 +287,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 171
+ "state_changing_floor": 172
 }
