@@ -7250,3 +7250,30 @@ The dispatcher-tables pin gains the hand zone. The legacy self-check's no-op set
 - The 10 legacy-field disagreements above.
 - Endurance's MOVE ("puts all the cards from their graveyard on the bottom of their library in a random order") has no executor.
 - Escape to the Wilds and Chandra, Heart of Fire now type their permission, but their other clauses ("you may play an additional land", the discard) keep them on legacy.
+
+## Unit DR: a spell that draws for its caster is read from its typed DRAW (2026-10-10)
+
+**Rule (CR 121.1):** a spell that makes its controller draw cards draws, whatever its count's wording: "draw four cards", "draw seven cards", "draw that many cards". An impulse draw (exile the top N, may play them) is no draw (CR 121.1c).
+
+**Defect:** the AI asks two questions of a spell, and both read `has_draw_effect`, a substring list that stops at "draw three cards":
+- does casting it deliver card draw this turn (the same-turn signal the main phase's deferral filter reads)?
+- is it a dig (payoff reachability, the ritual gate's digs)?
+
+"Draw four cards" (Tidings, Into the Story, Thoughtflare) and "draw that many cards" (Hex Magic) drew nothing as far as the AI could see. So the main phase deferred Hex Magic outside a last-turn signal, even once unit HX made it resolve.
+
+**Class:** 20 pool instants and sorceries whose resolution draws for the caster in a form the substring list misses. Registered: Hex Magic (Ruby Storm ×4).
+- The whole-card view would also have caught Griselbrand (an activation), Ral (a back-face loyalty ability) and Fable (a later chapter). None of those is what casting the card draws this turn, so the predicate reads the spell host only.
+
+**Steps (`6971314`):** `ai.predicates.spell_draws` reads the spell's typed DRAW with no other drawer printed ("each player draws" and "target player draws" are not the caster's draw). The card_draw signal and `_is_real_dig` read it alongside the legacy field, which still carries the impulse and look-at-the-top dig shapes.
+
+**Tests (red first):** `tests/test_a_spell_that_draws_is_read_from_its_typed_draw.py` (13: the predicate both ways, the signal, the dig).
+
+**Digest / anchor / suites:**
+- Digest: 4 Ruby Storm games change. bo1 4c Omnath vs Ruby Storm 57500 flips to Storm (T8 → T6): Storm casts Hex Magic on its third turn, exiling four cards it may still play and drawing four. Replayed, intended.
+- Anchor: one turn-only drift refreshed (Boros Energy vs Ruby Storm s50500, same winner, T7 → T6).
+- Suites 4579 + 2713 passed.
+
+**Measured (`dr-post` `4f25256`, pre = `hx-post`):** 44 of 600 cells change, every one in Ruby Storm's row or column.
+- Ruby Storm +2.0 (26.1 → 28.1). Individual Storm cells swing by up to ±30 in both directions, because a Hex Magic cast changes every later draw of the game.
+- Every other deck moves by at most ±0.9.
+- Audit findings 421 → 418, violations 0; 0 aborts. No deck moves more than 5 pp.
