@@ -104,240 +104,21 @@ class TransferKind(Enum):
 # ─── trigger fan-out implementations ───────────────────────────────
 
 
-def _is_free_first_draw_of_step(game: "GameState",
-                                 player: "PlayerState") -> bool:
-    """Predicate: is THIS draw the free first draw of the draw step?
-
-    Per Bowmasters' Oracle ("whenever an opponent draws a card except
-    the first one they draw in each of their draw steps"), the
-    triggered ability skips the draw step's free draw. The "first draw
-    of the draw step" is the one drawn by the turn-based action in
-    untap/upkeep/draw (CR 504); the active player's `cards_drawn_this_turn`
-    counter reads 1 right after that draw. Higher values mean the
-    player has drawn additional cards via spells/abilities; those DO
-    trigger Bowmasters.
-
-    Lives here (not as a magic literal `<= 1`) so the rule is named
-    once and reused. The existing inline check at
-    `engine/game_state.py:260-261` is the duplicate that Wave 1a-1
-    (R1+M1-engine) will collapse onto this predicate.
-    """
-    from .game_state import Phase
-    return (game.current_phase == Phase.DRAW
-            and player.cards_drawn_this_turn <= FIRST_DRAW_STEP_COUNT)
-
-
-# CR 504.3 — the turn-based draw-step action draws exactly one card.
-# `cards_drawn_this_turn` reads this value after that action; values
-# above this represent spell/ability-induced draws which DO trigger
-# "whenever you draw" abilities.  Named so the predicate above doesn't
-# carry a bare `1`.
-FIRST_DRAW_STEP_COUNT = 1
-
-
-def _apply_damage_to_player(game: "GameState", player_idx: int,
-                            source: "CardInstance", amount: int) -> None:
-    """Apply `amount` damage from `source` to player `player_idx`.
-
-    Damage decreases life (CR 119.3) and books the dealing player's
-    `damage_dealt_this_turn` counter so dashboard stats reflect the
-    on-draw damage source's contribution.
-    """
-    game.players[player_idx].life -= amount
-    game.players[source.controller].damage_dealt_this_turn += amount
-
-
-def _apply_life_loss_to_player(game: "GameState", player_idx: int,
-                               source: "CardInstance", amount: int) -> None:
-    """Apply `amount` life loss to player `player_idx`. Life loss is
-    distinct from damage (CR 119 vs CR 704.5b): no lifelink, no
-    prevention, no damage-replacement effects. The book-keeping side
-    deliberately omits `damage_dealt_this_turn` because no damage was
-    dealt.
-    """
-    game.players[player_idx].life -= amount
-
-
-def _apply_life_gain_to_player(game: "GameState", player_idx: int,
-                               source: "CardInstance", amount: int) -> None:
-    """Apply `amount` life gain to player `player_idx`. Routes through
-    `game.gain_life` so existing lifegain bookkeeping (life_gained_this_turn,
-    Soul Sister-style triggers) is consistent."""
-    game.gain_life(player_idx, amount, source.name)
-
-
-# ─── on-draw handler dispatch table ────────────────────────────────
-
-
-class _OnDrawHandler:
-    """Bundle the side, verb regex, and application function for one
-    on-draw classifier tag. The fan-out reads tags, then dispatches
-    through this triple; new tags extend the table, never the if-chain.
-    """
-    __slots__ = ("side", "verb_regex", "skip_free_first", "apply")
-
-    def __init__(self, side: str, verb_regex: str, skip_free_first: bool,
-                 apply):
-        self.side = side          # "own" or "opp" (whose battlefield)
-        self.verb_regex = verb_regex
-        self.skip_free_first = skip_free_first
-        self.apply = apply        # (game, drawer_idx, source, amount)
-
-
-def _build_on_draw_handlers():
-    """Build the on-draw tag → handler dispatch table.
-
-    Defined as a function so the `Tag` import is local (avoids a
-    module-load circular: oracle_classifier imports no engine; engine
-    imports oracle_classifier lazily).
-    """
-    from ai.oracle_classifier import Tag
-    return {
-        # Bowmasters / Underworld Dreams shape: source on opp's
-        # battlefield deals damage to the drawing player on opp draws,
-        # exempting the free first draw of the draw step.
-        Tag.ON_DRAW_DAMAGE: _OnDrawHandler(
-            side="opp",
-            verb_regex=r"deals?\s+(\d+)\s+damage",
-            skip_free_first=True,
-            apply=_apply_damage_to_player,
-        ),
-        # Sheoldred shape: source on opp's battlefield makes the
-        # drawing player lose life on opp draws. Sheoldred has no
-        # "except the first draw" exemption in its oracle, so this
-        # fires on every opponent draw (matches the legacy inline
-        # `'whenever' in oracle and 'lose' in oracle and 'life' in oracle`
-        # branch in game_state.draw_cards which also did not gate on
-        # first_draw_step_draw).
-        Tag.ON_OPP_DRAW_LIFE_LOSS: _OnDrawHandler(
-            side="opp",
-            verb_regex=r"lose\s+(\d+)\s+life",
-            skip_free_first=False,
-            apply=_apply_life_loss_to_player,
-        ),
-        # Sheoldred shape: source on the drawing player's battlefield
-        # gains them life on their own draws.
-        Tag.ON_OWN_DRAW_LIFE_GAIN: _OnDrawHandler(
-            side="own",
-            verb_regex=r"gain\s+(\d+)\s+life",
-            skip_free_first=False,
-            apply=_apply_life_gain_to_player,
-        ),
-    }
-
-
-_ON_DRAW_HANDLERS = _build_on_draw_handlers()
-
-
-def _parse_amount_or_assert(card: "CardInstance", verb_regex: str,
-                            tag_name: str, trigger_phrase: str) -> int:
-    """Parse the integer amount from `card.template.oracle_text` using
-    `verb_regex` (which must contain a single `(\\d+)` group).
-
-    Assert-fails if the regex doesn't match anywhere — the dispatch is
-    by tag, and a tagged card whose oracle doesn't parse means the
-    classifier and the oracle are out of sync. Loud is correct; silent
-    fallthrough was the W0-C bug shape.
-
-    Clause-scoped (E5): when the oracle has MULTIPLE `verb_regex`
-    matches (e.g. an ETB-damage clause and an on-draw-damage clause,
-    each with a different amount), the amount is taken from the clause
-    containing `trigger_phrase` — the trigger word of the mechanic this
-    handler dispatches on. With exactly one match the legacy whole-text
-    parse is kept, so currently-tagged cards stay byte-identical.
-    """
-    import re
-
-    from engine.oracle_clauses import split_clauses
-
-    oracle = (card.template.oracle_text or "").lower()
-    matches = list(re.finditer(verb_regex, oracle))
-    if not matches:
-        raise AssertionError(
-            f"{card.name!r} carries {tag_name} but its oracle text does "
-            f"not match {verb_regex!r} — classifier and oracle are out "
-            f"of sync."
-        )
-    if len(matches) == 1:
-        return int(matches[0].group(1))
-    # Multiple amount clauses: prefer the one carrying the dispatching
-    # trigger phrase (CR 603.1 — trigger and effect share a sentence).
-    for clause in split_clauses(oracle):
-        if trigger_phrase in clause:
-            m = re.search(verb_regex, clause)
-            if m:
-                return int(m.group(1))
-    # No clause pairs the trigger phrase with the verb — legacy
-    # whole-text first match.
-    return int(matches[0].group(1))
-
-
 def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
                            controller: int) -> None:
-    """Fan-out for `TransferKind.DRAW`.
+    """Fan-out for `TransferKind.DRAW` (CR 121.1, 603.2): `controller`
+    drew `card`.
 
-    Three distinct on-draw mechanics are dispatched here, each gated
-    by its own classifier tag. The amount parse is targeted: after the
-    tag confirms the source, a single verb-regex extracts the
-    numerical amount. Cards whose oracle text doesn't parse assert-fail
-    rather than silently default.
-
-      * `Tag.ON_DRAW_DAMAGE` (opp permanent → player takes damage)
-        — Bowmasters, Underworld Dreams. "deals N damage" shape.
-      * `Tag.ON_OPP_DRAW_LIFE_LOSS` (opp permanent → player loses life)
-        — Sheoldred's "they lose N life" clause. Distinct from damage
-        under CR (no lifelink/prevention/replacement).
-      * `Tag.ON_OWN_DRAW_LIFE_GAIN` (own permanent → controller gains
-        life) — Sheoldred's "you gain N life" clause.
-
-    The `_ON_DRAW_HANDLERS` dispatch table maps each tag to a
-    `(side, verb_regex, apply_fn)` triple. Extending coverage is
-    "extend the table", never "add an if-branch".
-
-    The `_is_free_first_draw_of_step` predicate is applied uniformly:
-    Bowmasters' "except the first one they draw in each of their draw
-    steps" wording is shared by every on-opp-draw trigger in modern
-    practice (no current Modern card omits the exemption). Future
-    cards that omit it can register a separate handler without changing
-    the predicate.
+    The draw carrier (`effect_carrier.dispatch_draw_triggers`) resolves
+    every permanent's draw-triggered abilities from their typed trigger
+    heads -- who draws, which card of the turn, the printed draw-step
+    exemption -- through the effect dispatcher and the owners. No
+    classifier tag decides a draw trigger (CR 113.1): the tag-gated
+    handlers this fan-out ran for three cached cards are retired.
     """
-    from ai.oracle_classifier import tags_for
     from .effect_carrier import dispatch_draw_triggers
 
-    # The draw carrier first: every permanent whose draw-triggered
-    # abilities it takes from their typed heads resolves there, and its
-    # tag handlers below do not run (a card is taken whole or not at all).
-    taken, fired = dispatch_draw_triggers(game, controller)
-    if game.game_over:
-        return
-
-    player = game.players[controller]
-    opp = game.players[1 - controller]
-    free_first = _is_free_first_draw_of_step(game, player)
-
-    # Inspect both battlefields once each: own permanents fire
-    # "whenever you draw" effects, opp permanents fire "whenever an
-    # opponent draws" effects. The handler triple decides side, verb,
-    # and application.
-    for source_player, role in ((player, "own"), (opp, "opp")):
-        for src_card in source_player.battlefield:
-            if src_card.instance_id in taken:
-                continue
-            src_tags = tags_for(src_card.name)
-            for tag, handler in _ON_DRAW_HANDLERS.items():
-                if tag not in src_tags:
-                    continue
-                if handler.side != role:
-                    continue
-                if handler.skip_free_first and free_first:
-                    continue
-                amount = _parse_amount_or_assert(
-                    src_card, handler.verb_regex, tag.name,
-                    # This fan-out dispatches on-draw mechanics; every
-                    # on-draw trigger clause contains "draw".
-                    trigger_phrase="draw")
-                handler.apply(game, controller, src_card, amount)
-                fired = True
+    fired = dispatch_draw_triggers(game, controller)
 
     # CR 704.3 — state-based actions are checked as soon as a player
     # would receive priority, which is immediately after each of these
@@ -346,8 +127,8 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
     # acting, and life gained later in the same turn "un-kills" them —
     # the failure behind
     # docs/diagnostics/2026-08-27_dimir_overperformance_root_cause.md's
-    # draw-7 evidence. Only run the pass when a handler actually
-    # applied something, so the common no-on-draw-permanent draw stays
+    # draw-7 evidence. Only run the pass when a trigger actually
+    # performed something, so the common no-on-draw-permanent draw stays
     # free.
     if fired:
         game.check_state_based_actions()

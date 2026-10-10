@@ -559,7 +559,7 @@
     "Fate Unraveler",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -567,7 +567,7 @@
     "Gixian Puppeteer",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -575,7 +575,7 @@
     "Horizon Chimera",
     "TRIGGERED:0:2"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -583,7 +583,7 @@
     "Irencrag Pyromancer",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -591,7 +591,7 @@
     "Kang, Temporal Tyrant",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -599,7 +599,7 @@
     "Mindless Conscription",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -607,7 +607,7 @@
     "Niv-Mizzet, Parun",
     "TRIGGERED:0:2"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -615,7 +615,7 @@
     "Niv-Mizzet, the Firemind",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -623,7 +623,7 @@
     "Ob Nixilis, the Hate-Twisted",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -631,7 +631,7 @@
     "Orcish Bowmasters",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit D.4 (draw carrier): the legacy tag handler dealt 1 damage to the drawing player directly and never amassed; the dispatcher resolves the printed ability: 1 damage to the target its controller picks as the trigger is put on the stack (CR 603.3d; by default the opponent's face, the drawer here), through the damage owner, then amass Orcs 1 through the one owner (CR 701.47a: a 0/0 Orc Army token, then a +1/+1 counter on the Army)."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -639,7 +639,7 @@
     "Psychosis Crawler",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -647,7 +647,7 @@
     "Queza, Augur of Agonies",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -655,7 +655,7 @@
     "Raven Eagle",
     "TRIGGERED:0:2"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -663,7 +663,15 @@
     "Scrawling Crawler",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Sheoldred, the Apocalypse",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -671,7 +679,7 @@
     "Sheoldred, the Apocalypse",
     "TRIGGERED:0:2"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy tag handler wrote the drawing player's life directly (`life -=`: no log, no life-lost booking, and for damage a damage_dealt_this_turn booking nothing reads); the dispatcher makes that player lose the life, or deals the damage, through the owners (engine.damage, oracle_resolver.deal_damage_to; CR 119.3, 120.3), which book the loss and log the damage. Verified per board: the same life totals on both sides."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -679,7 +687,7 @@
     "Spiteful Visions",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -687,7 +695,7 @@
     "Underworld Dreams",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy tag handler wrote the drawing player's life directly (`life -=`: no log, no life-lost booking, and for damage a damage_dealt_this_turn booking nothing reads); the dispatcher makes that player lose the life, or deals the damage, through the owners (engine.damage, oracle_resolver.deal_damage_to; CR 119.3, 120.3), which book the loss and log the damage. Verified per board: the same life totals on both sides."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -695,7 +703,7 @@
     "Zimone and Dina",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
   },
   {
    "pair": [
@@ -2160,11 +2168,6 @@
    "dispatched",
    "Volcanic Hammer",
    "SPELL:0:0"
-  ],
-  [
-   "draw:dispatch",
-   "Sheoldred, the Apocalypse",
-   "TRIGGERED:0:1"
   ]
  ],
  "seeds": [

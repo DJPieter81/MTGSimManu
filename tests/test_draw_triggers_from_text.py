@@ -208,3 +208,60 @@ def test_the_ai_aims_a_draw_triggers_damage_with_its_damage_aim(card_db):
         assert rager.zone == "graveyard" and _lives(game) == [20, 20]
     else:
         assert rager.zone == "battlefield" and _lives(game) == [20, 19]
+
+
+def test_a_classifier_tag_alone_never_makes_a_draw_trigger(card_db, monkeypatch):
+    """CR 113.1: a permanent with no draw-triggered text does nothing on a
+    draw, however it is tagged."""
+    import ai.oracle_classifier as oc
+    monkeypatch.setattr(oc, "tags_for", lambda name: frozenset(
+        {oc.Tag.ON_DRAW_DAMAGE, oc.Tag.ON_OPP_DRAW_LIFE_LOSS,
+         oc.Tag.ON_OWN_DRAW_LIFE_GAIN}))
+    game = _game()
+    _put(game, card_db, 0, "Grizzly Bears")
+    _draw(game, card_db, 1)
+    _draw(game, card_db, 0)
+    assert _lives(game) == [20, 20]
+
+
+def test_a_draw_triggers_amount_is_its_own_clauses(card_db):
+    """Two damage clauses with different amounts: the draw trigger deals
+    the amount its own clause prints, not the enter trigger's."""
+    from engine.cards import CardTemplate, CardType, ManaCost
+    t = CardTemplate(
+        name="Synthetic Two Clauses", card_types=[CardType.CREATURE],
+        mana_cost=ManaCost(), power=1, toughness=1,
+        oracle_text=("When this creature enters, it deals 3 damage to any "
+                     "target.\nWhenever an opponent draws a card, this "
+                     "creature deals 1 damage to that player."))
+    game = _game()
+    c = CardInstance(template=t, owner=0, controller=0,
+                     instance_id=game.next_instance_id(), zone="battlefield")
+    c._game_state = game
+    c.enter_battlefield()
+    game.players[0].battlefield.append(c)
+    _draw(game, card_db, 1)
+    assert _lives(game) == [20, 19]
+
+
+@pytest.fixture
+def audit(monkeypatch):
+    from engine import rules_audit
+    monkeypatch.setenv("MTG_RULES_AUDIT", "1")
+    rules_audit.reset()
+    yield rules_audit
+    rules_audit.reset()
+
+
+def test_the_audit_records_a_draw_trigger_no_carrier_resolves(card_db, audit):
+    """Rules audit `603.2/draw_trigger_unresolved` (a census, once per
+    card): a typed draw head names the draw, but no carrier resolves the
+    card's draw triggers (Faerie Mastermind: "you draw a card", a verb no
+    executor owns yet). A trigger the carrier resolves is not recorded."""
+    game = _game()
+    _put(game, card_db, 0, "Faerie Mastermind")
+    _put(game, card_db, 0, "Underworld Dreams")
+    _draw(game, card_db, 1, 2)
+    keys = {f["key"] for f in audit.drain()
+            if f["rule"] == "603.2/draw_trigger_unresolved"}
+    assert keys == {"Faerie Mastermind"}

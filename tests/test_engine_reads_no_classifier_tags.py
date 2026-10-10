@@ -21,7 +21,6 @@ REPO = Path(__file__).resolve().parent.parent
 
 # The tag-gated engine rules still on their way to the card's text.
 STILL_READING_TAGS = {
-    "engine/zone_transfer.py",        # on-draw triggers (unit D)
     "engine/clause_resolver.py",      # impulse draw (unit I)
 }
 

@@ -303,18 +303,19 @@ def _face_hosts(card: Any) -> tuple:
     return faces[face]
 
 
-def dispatch_draw_triggers(game: Any, drawer: int) -> tuple:
+def dispatch_draw_triggers(game: Any, drawer: int) -> bool:
     """The draw carrier (CR 603.2): each permanent's draw-triggered
     abilities whose typed head names this draw (`draw_matches`), resolved
     through the dispatcher with the drawer as the trigger event's player
     ("that player") and targets picked as they are put on the stack
     (`trigger_targets`). In stack order: the non-active player's triggers
-    are put on the stack last and resolve first (CR 603.3b). Returns (the
-    ids of the sources the carrier took for this draw -- their legacy
-    handlers do not run -- and whether any host performed anything)."""
+    are put on the stack last and resolve first (CR 603.3b). A card whose
+    draw triggers the carrier cannot take resolves none of them; the
+    rules audit records it (`603.2/draw_trigger_unresolved`). Returns
+    whether any host performed anything."""
     if not er.dispatch_enabled():
-        return frozenset(), False
-    taken, performed = set(), False
+        return False
+    performed = False
     ap = game.active_player
     order = [p for p in range(len(game.players)) if p != ap] + [ap]
     event = er.TriggerEvent(player=drawer)
@@ -324,11 +325,12 @@ def dispatch_draw_triggers(game: Any, drawer: int) -> tuple:
             if template is None or getattr(template, "is_loyalty_clause",
                                            False):
                 continue
-            plan = draw_plan(_face_hosts(src))
-            if plan is None:
-                continue
-            taken.add(src.instance_id)
+            hosts = _face_hosts(src)
+            plan = draw_plan(hosts)
             controller = src.controller
+            if plan is None:
+                _audit_unresolved_draw_trigger(game, src, hosts, drawer)
+                continue
             for h, family in plan:
                 if not draw_matches(game, h.trigger.draw, controller, drawer):
                     continue
@@ -339,8 +341,29 @@ def dispatch_draw_triggers(game: Any, drawer: int) -> tuple:
                     game, er.handle_of(src), controller, h, chosen,
                     family=family, event=event, source_object=src))
                 if game.game_over:
-                    return frozenset(taken), performed
-    return frozenset(taken), performed
+                    return performed
+    return performed
+
+
+def _audit_unresolved_draw_trigger(game: Any, src: Any, hosts: Iterable[Any],
+                                   drawer: int) -> None:
+    """Rules audit, a census once per card: a draw-triggered head of `src`
+    names this draw (or is a draw head the grammar could not type), but
+    no carrier resolves the card's draw triggers -- the trigger silently
+    does nothing (CR 603.2)."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .effect_spec import EventHint, HostKind
+    for h in hosts:
+        if h.kind is not HostKind.TRIGGERED or h.trigger is None \
+                or EventHint.DRAW not in h.trigger.event_hints:
+            continue
+        d = h.trigger.draw
+        if d is None or draw_matches(game, d, src.controller, drawer):
+            rules_audit.census("603.2/draw_trigger_unresolved", src.name,
+                               detail=h.trigger.raw, game=game)
+            return
 
 
 def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
