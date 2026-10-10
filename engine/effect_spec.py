@@ -240,6 +240,7 @@ class EventHint(Enum):
     LANDFALL = "landfall"
     COUNTERS_PUT = "counters_put"
     CYCLE = "cycle"
+    DRAW = "draw"            # "<player> draws ..." (CR 121.1); TriggerHead.draw types it
     TAPPED_FOR_MANA = "tapped_for_mana"
     REFLEXIVE = "reflexive"
     DELAYED = "delayed"
@@ -580,6 +581,19 @@ class EffectSpec:
 
 
 @dataclass(**_FROZEN)
+class DrawEvent:
+    """The draw a draw-triggered head names (CR 121.1, 603.2): who draws,
+    relative to the ability's controller ('you', 'opponent' or 'player');
+    which card of that player's turn it must be (`nth`, "your second card
+    each turn"; None for any card); and whether the first card the drawer
+    draws in each of their draw steps is excepted ("except the first one
+    they draw in each of their draw steps")."""
+    drawer: str
+    nth: Optional[int] = None
+    except_first_in_draw_step: bool = False
+
+
+@dataclass(**_FROZEN)
 class TriggerHead:
     event_hints: Tuple[EventHint, ...] = ()      # disjunctive heads keep every hint (A11)
     raw: str = ""
@@ -593,6 +607,10 @@ class TriggerHead:
     # The linker's host antecedent reads these, never the raw head.
     names_player: bool = False
     names_object: bool = False
+    # The draw a DRAW head names, from a closed table of printed shapes
+    # (`structure._draw_event`); None on a DRAW head with a rider the table
+    # does not read, which no carrier resolves as a plain draw trigger.
+    draw: Optional[DrawEvent] = None
 
 
 @dataclass(**_FROZEN)

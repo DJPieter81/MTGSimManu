@@ -104,9 +104,9 @@ from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
                                        unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
-from engine.effect_spec import (Amount, Condition, CostSnapshot, EventHint,
-                                HostKind, KeywordSpec, Stage, TriggerHead,
-                                Unmodelled, freeze_cost)
+from engine.effect_spec import (Amount, Condition, CostSnapshot, DrawEvent,
+                                EventHint, HostKind, KeywordSpec, Stage,
+                                TriggerHead, Unmodelled, freeze_cost)
 from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
                                   split_activation_riders,
                                   strip_reminder_text)
@@ -389,6 +389,8 @@ def _part_hints(part: str) -> Tuple[Tuple[EventHint, ...], str]:
         return (EventHint.COMBAT_DAMAGE_TO_PLAYER,), ""
     if re.search(r"\bcounters? (?:is|are) put on\b", body):
         return (EventHint.COUNTERS_PUT,), ""
+    if _DRAW_WORD_RE.search(body):
+        return (EventHint.DRAW,), ""
     verbs = list(_VERB_RE.finditer(body))
     if not verbs:
         return (EventHint.OTHER,), ""
@@ -408,6 +410,38 @@ def _part_hints(part: str) -> Tuple[Tuple[EventHint, ...], str]:
             else:
                 hints.append(_OTHER_HINT.get(key, EventHint.OTHER))
     return tuple(hints), ""
+
+
+# A draw event's head (CR 121.1): "<player> draws ...". The beginning of a
+# draw step is a step trigger, matched before this.
+_DRAW_WORD_RE = re.compile(r"\bdraws?\b")
+_DRAWERS = {"you": "you", "an opponent": "opponent", "a player": "player"}
+# The closed table of draw-event shapes: who draws, any card or the Nth card
+# of the turn, and the draw-step exemption. Any other rider ("during an
+# opponent's turn", "your first or second card", "enchanted opponent")
+# leaves the head a DRAW head with no typed event.
+_DRAW_EVENT_RE = re.compile(
+    r"(?:whenever|when) (?P<who>%s) draws? "
+    r"(?:a card|(?:your|their) (?P<nth>%s) card (?:each|in a) turn)"
+    r"(?P<exc> except the first one (?:they|you) draws? in each of "
+    r"(?:their|your) draw steps)?"
+    % ("|".join(_DRAWERS), "|".join(condition.ORDINALS)))
+
+
+def _draw_event(head: str) -> Optional[DrawEvent]:
+    """The draw the head's one DRAW disjunct names, read from the closed
+    table (`_DRAW_EVENT_RE`); None when the head has no DRAW disjunct, more
+    than one, or one with a rider the table does not read."""
+    parts = [p for p in _DISJUNCT_RE.split(head)
+             if EventHint.DRAW in _part_hints(p)[0]]
+    if len(parts) != 1:
+        return None
+    m = _DRAW_EVENT_RE.fullmatch(parts[0])
+    if m is None:
+        return None
+    nth = condition.ORDINALS[m.group("nth")] if m.group("nth") else None
+    return DrawEvent(drawer=_DRAWERS[m.group("who")], nth=nth,
+                     except_first_in_draw_step=m.group("exc") is not None)
 
 
 def _event_hints(head: str) -> Tuple[Tuple[EventHint, ...], str]:
@@ -710,8 +744,9 @@ def _head(hints, raw: str, **kw) -> TriggerHead:
     """A trigger head, with what its event names typed by the participant
     leaf (the one noun table)."""
     player, obj = participant.head_names(raw)
+    draw = _draw_event(raw) if EventHint.DRAW in hints else None
     return TriggerHead(event_hints=hints, raw=raw, names_player=player,
-                       names_object=obj, **kw)
+                       names_object=obj, draw=draw, **kw)
 
 
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:

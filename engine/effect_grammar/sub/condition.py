@@ -532,6 +532,8 @@ _DAY_NIGHT = {"it's day": "day", "it's night": "night",
 
 _ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5,
              "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10}
+# The one ordinal table, read by the structure leaf's draw-event row too.
+ORDINALS = _ORDINALS
 _ORDINAL_RE = re.compile(
     r"(?:this|it)(?: is|'s) the (?P<o>%s) time"
     r"(?: this ability has resolved this turn)?" % "|".join(_ORDINALS))
