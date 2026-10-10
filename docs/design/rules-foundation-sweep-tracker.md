@@ -6725,3 +6725,57 @@ Program: the engine rules that read oracle-classifier tags move onto the card's 
 - **The AI's per-draw damage projection** (`ai/bhi._per_event_taxes_table`) still reads tags; derive it from the typed draw heads.
 - **The other 70 draw hosts** (counters, tokens, draws, transforms) resolve nothing until their families' executors land. The census ranks them.
 - **"The first card in each of their draw steps"** is counted from the drawer's own draw step; a draw in another player's draw step is not an exemption.
+
+## Engine rules read card text, never classifier tags — unit I: impulse draw (2026-10-10)
+
+**Rule (CR 305.1, 400.7, 406, 601.2a, 601.2f, 611.2, 121.1c):** "Exile the top N cards of your library. <Duration>, you may play those cards" exiles the cards, never puts them in hand, and is no draw. The cards may be played from exile with the normal timing and cost, a land as the turn's land play, while the permission lasts. A card that leaves exile is a new object the permission no longer names. A classifier tag neither adds nor removes the effect.
+
+**Before:** a tag-gated clause handler moved the seven tagged cards' "revealed" cards into the hand, forever. The rest of the class (118 pool cards by text) did nothing. Ruby Storm's Reckless Impulse and Wrenn's Resolve (4 each) were a permanent two-card draw.
+
+**Steps:**
+- **I.1a `c03b519`, grammar:** "the top N cards of your library" is a typed library position (`CardFilter(zone="library", owner="you", position="top")`), staged to the exile verb only.
+- **I.1b `22d81c2`, grammar:** "you may play / cast those cards" is a PERMIT over the exile's RESULT (the "may" is the grant, not an optional effect).
+- **I.1c/I.2 `69cd02c`, temporal:** `DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN`, bound to the controller and the creation turn; `ClockEvent.turn` stamped by `emit`.
+- **I.3a `11366d2`, the permission engine:**
+  - card-flow EXILE (the top N through the zone funnel, not a draw) and CONTINUOUS PERMIT executors;
+  - `rules_query.permitted_objects` / `play_permitted`: the one read path ("cast" covers spells only; the object must still be in exile);
+  - `can_cast`, `play_land` and `get_legal_plays` admit a permitted exiled card (normal timing and cost; a land is the land play);
+  - CR 400.7: a card that leaves exile (cast, played, or moved by the zone funnel) leaves every permission (`ContinuousEffectsManager.forget_object`), so a ritual cast from exile and exiled again by flashback is not castable again.
+- **I.3b `a95b1d7`, the switch:** the strict card-flow view admits the impulse pair by its typed shape; card flow joins `SPELL_FAMILIES`; the tag handler is deleted. **No engine module reads a classifier tag** (`STILL_READING_TAGS` 1 → 0). The closure models that an unswitched handler that accepts a spell keeps it (three surveil spells).
+- **I.3c `506192f`, payment:** the mana payment found the spell by name in hand and graveyard only, so a spell cast from exile got no cost reduction (Ruby Medallion) and was refused after `can_cast` admitted it. It now reads the zones a spell is cast from.
+- **I.4 `7c05b2b`, the AI:**
+  - `ai/playable_cards`: the one AI owner of the cards a plan can play (hand + permitted exile), the held cards (those that outlast this turn) and `plan_view`;
+  - the plan readers take the playable cards: combo readiness and modifier, the storm chain estimator, payoff reachability, the reducer-deploy signal, the goal engine's payoff checks, the lethal-line assembler;
+  - the position counts held cards; a card whose permission ends this turn spends no held card, is never deferred (signal `permission_ends_this_turn`, from the engine's one expiry predicate), and an expiring land outscores a land in hand by one held card (`card_clock_impact`).
+- **I.5 `3affd88`, retire:** the AI's two impulse draw counters read the parsed spell (`ai.predicates.is_impulse_draw`); the classifier coverage gate, which existed only because an engine rule read the tag, is retired with its CI step.
+
+**Switched pairs:** 375 (167 proven identical, 208 intended changes with reasons). Unit I added 42 intended: 5 impulse spells (exile with a permission; legacy moved tagged ones to hand), 26 regrowth spells (legacy resolved nothing for the text; unit E's MOVE executor now does) and 11 impulse enter triggers (legacy nothing). Commune with Lava is proven.
+
+**Local diagnosis (Ruby Storm, 200 Bo1 games vs Dimir Midrange, Boros Energy, Domain Zoo, Azorius Control; seeds 50000+500i):**
+
+| Code | Storm |
+|---|---|
+| tag shortcut (cards to hand forever, `11366d2`) | 29.5% |
+| I.3c, the rules-correct engine alone | 11.5% |
+| I.3c + I.4 | 26.5% |
+
+Root causes found on replays of flipped seeds:
+- s51000: Artist's Talent from exile refused at payment (the I.3c bug).
+- s52500: the chain stopped because payoff reachability read the hand only; the old win also rode a false positive (a fetchland counts as a "dig", lead below).
+- s52500, turn 7: four permitted cards expired while the AI spent its mana on a draw it could make any turn (the expiry signal and the held-card accounting).
+
+**Matrix (same-seed n=20 Bo3, all 25 rows; pre = draw-d-post `39bef1d`):**
+- I.3b arm (`9d94fca`, with the payment bug): Ruby Storm 18.3 → 4.0 (−14.4); every other deck +0.1 to +1.2 (Storm's opponents); 42 cells changed; audit findings 496 → 486, violations 0.
+- I.3c arm (`a190f49`, the rules-correct engine alone): Ruby Storm 18.3 → 5.1 (−13.2); 43 cells changed, every one Storm's; every other deck +0.1 to +1.4; audit findings 496 → 481, violations 0; 0 aborts. Storm moved more than 5 pp: replayed above, the mechanisms named and fixed in I.3c and I.4.
+- **I.4 arm (`2e493f2`, the unit as shipped; I.5 is byte-identical):** Ruby Storm 18.3 → 15.4 (−2.9; +10.3 over the engine-alone arm); 33 cells changed, every one Storm's; every other deck within ±0.7; audit findings 496 → 486, violations 0; 0 aborts. No deck moves more than 5 pp. Storm's −2.9 is the rules cost of impulse draw: the tag shortcut was a permanent two-card draw, and the cards now expire.
+- Provenance: the proxy blocks the raw-log host, so some shard logs were transcribed from the MCP tool's inline output (cross-checked against each log's progress lines where present); every non-Storm cell of both arms equals the pre arm, which checks those transcriptions.
+
+**Leads (not built):**
+- **The turn planner's board is dead code in practice:** `ai/evaluator.estimate_spell_value` reads an undefined `_game_phase`, so `turn_planner.extract_virtual_board` raises NameError whenever the hand holds a spell; both callers (`ev_player`'s combat planner, `response.py`'s response evaluation) swallow it in `except Exception` and fall back. Measured on 9 games (Boros Energy vs Domain Zoo, Jeskai Blink vs Dimir Midrange, Affinity vs Eldrazi Tron, 3 seeds each): 54 of 61 calls raised; the planners ran only on spell-free hands. The assignment is dead (`phase` is never read), so the fix is one line, but it switches the planners on for every deck: its own unit, measured.
+- **A fetchland is a "dig" toward a payoff:** `ev_evaluator._is_real_dig` counts every `is_tutor` card, and a fetchland's search makes `_payoff_reachable_this_turn` true.
+- **Graveyard and stack casts are charged a held card** by `_project_spell` (`my_hand_size - 1`): flashback and escape casts look a card dearer; `response.py` projects an opponent's spell already on the stack as if cast from hand (the counter-tax caller compensates, that one does not).
+- **Warp's re-cast from exile:** `can_cast` admits it for the warp cost with an artifact; the re-cast is for the mana cost, so `cast_spell` refuses it (Quantum Riddler, pre-existing).
+- **Ragavan's combat-damage exile** (Boros Energy, Jeskai Blink, Domain Zoo) still runs an oracle-substring path in `combat_manager` that puts the opponent's card into the attacker's hand (a land in it can be played; the card changes controller). It is a "cast that card this turn" permission over a card in its owner's exile; `permitted_cards` reads the player's own exile until that carrier lands. Its exile of "the top card of that player's library" is still refused by the grammar (`participant.library_position`). The Legend of Roku's chapter I (name-keyed handler, to hand) is the same class.
+- **Cori Mountain Monastery's activation** (Boros Ponza) types fully -- exile the top card, play it until the end of your next turn -- and the unit I executors run it, but its effect kind is UNCLASSIFIED, so the activation carrier has no family for it and it does nothing. An activation route for typed card-flow hosts would take it.
+- **Unmodelled impulse shapes:** "you may play up to two of those cards" (March of Reckless Joy) and Glimpse the Impossible's end-step cleanup are refused whole (each moved cards to hand before); "that card" from another player's library.
+- **CR 400.7 outside the funnels:** a permitted card that leaves exile by a direct zone write and returns is still named (the known gap of `effect_resolver.Handle`).
