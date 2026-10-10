@@ -17,6 +17,18 @@ from ai.combo_calc import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _mock_fuel_is_cast(monkeypatch):
+    """Mock cards carry none of the typed fields the main phase's
+    same-turn filter reads: every mock card here is a cast the main phase
+    makes. The filter itself (a hold never waits for a deferred cast) is
+    pinned on real cards in
+    tests/test_combo_holds_count_only_plays_the_ai_makes.py."""
+    from ai import ev_evaluator
+    monkeypatch.setattr(ev_evaluator, "cast_is_deferred",
+                        lambda *a, **k: False)
+
+
 # ─── Helpers ──────────────────────────────────────────────────
 
 def _make_snap(opp_life=20, my_mana=3, **kwargs):

@@ -904,19 +904,30 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
     return float((post_pif_storm + 1) / max(1, snap.opp_life))
 
 
-def _has_draw_in_hand(card, me) -> bool:
-    """Any cantrip / card-advantage / draw spell in hand (excluding `card`).
-
-    Uses `predicates.is_draw_engine` for the tag check so the
-    "what counts as a draw engine" definition lives in one place.
-    """
-    from ai.predicates import is_draw_engine
-    return any(
-        is_draw_engine(c)
-        for c in me.hand
-        if c.instance_id != card.instance_id
-        and not c.template.is_land
-    )
+def _digs_the_ai_will_make(card, me, snap, game, player_idx) -> list:
+    """The digs the AI will make this turn once the ritual `card`
+    resolves: `card` itself when it digs (a ritual that draws is its own
+    dig), and each other dig among the plan's cards that the main phase
+    does not defer (`cast_is_deferred`) and whose effective cost the mana
+    left after `card` pays -- ritual mana empties at the end of the phase
+    (CR 500.4, 106.4), so a dig it cannot fund this turn is no dig. A dig
+    puts new cards in hand or play (`ev_evaluator._is_real_dig`, the typed
+    draw / tutor fields), never a classifier tag."""
+    from ai.effective_cmc import effective_cmc
+    from ai.ev_evaluator import _is_real_dig, cast_is_deferred
+    rdata = getattr(card.template, 'ritual_mana', None)
+    mana_after = (snap.my_mana
+                  - effective_cmc(card, snap, game=game, player_idx=player_idx)
+                  + (rdata[1] if rdata else 0))
+    digs = [card] if _is_real_dig(card) else []
+    digs += [c for c in me.hand
+             if c.instance_id != card.instance_id
+             and not c.template.is_land
+             and _is_real_dig(c)
+             and effective_cmc(c, snap, game=game,
+                               player_idx=player_idx) <= mana_after
+             and not cast_is_deferred(c, snap, game, player_idx)]
+    return digs
 
 
 def card_combo_modifier(card, assessment, snap, me, game, player_idx):
@@ -935,6 +946,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     """
     from engine.cards import Keyword as Kw
     from ai.clock import scarce_payoff_commit_ev
+    from ai.ev_evaluator import cast_is_deferred
 
     a = assessment
     if not a or not a.resource_zone:
@@ -995,7 +1007,10 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # Cards without either qualification (creatures like Ral,
         # filler spells) add 1 to storm if cast but don't enable
         # more spells — holding the finisher for them strands the
-        # chain when mana runs out.
+        # chain when mana runs out.  A cast the main phase defers
+        # (`cast_is_deferred`: no same-turn signal) is never made, so
+        # it is no fuel either: the hold would wait for nothing and the
+        # turn would pass with the finisher in hand.
         from ai.predicates import is_chain_fuel
         total_fuel = sum(
             1 for c in me.hand
@@ -1003,6 +1018,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             and not c.template.is_land
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and (is_chain_fuel(c) or _tutor_has_payoff_access(c, me))
+            and not cast_is_deferred(c, snap, game, player_idx)
         )
         if total_fuel > 0:
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
@@ -1087,6 +1103,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # passes at 1 life with 2 Wishes uncast because 2 Ral
         # creatures counted as `non_tutor_fuel`.  Filtering by
         # chain-extending tags gives non_tutor_fuel=0 → tutor fires.
+        # A deferred cast is no fuel (see the storm branch above).
         from ai.predicates import is_chain_fuel
         non_tutor_fuel = sum(
             1 for c in me.hand
@@ -1095,6 +1112,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and 'tutor' not in getattr(c.template, 'tags', set())
             and is_chain_fuel(c)
+            and not cast_is_deferred(c, snap, game, player_idx)
         )
         if non_tutor_fuel > 0:
             return -non_tutor_fuel / opp_life * a.combo_value
@@ -1272,11 +1290,14 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # ═══ MID-CHAIN RITUAL GATE (storm >= 1) ═══
     # Phase 2c.3 port: when we're already mid-chain but no finisher
     # path is reachable, the rituals' mana empties at phase end.
-    # Hard-clamp when no draws remain (no way to dig); soft-penalize
-    # with storm-coverage escalation + draw-miss cascade risk when
-    # draws still exist.  Sentinel constants (HALF_LETHAL,
-    # MIN_CHAIN_DEPTH, CASCADE_DRAW_FLOOR) are derived from CR damage
-    # rules and STORM-profile fuel thresholds, not tuning weights.
+    # Hard-clamp when no dig the AI will make remains (no way to find
+    # the closer); soft-penalize with storm-coverage escalation +
+    # draw-miss cascade risk while one does.  The digs are those the AI
+    # will make (`_digs_the_ai_will_make`): a ritual that draws is its
+    # own dig, so the gate never admits rituals on a dig it then holds.
+    # Sentinel constants (HALF_LETHAL, MIN_CHAIN_DEPTH,
+    # CASCADE_DRAW_FLOOR) are derived from CR damage rules and
+    # STORM-profile fuel thresholds, not tuning weights.
     if role == 'fuel' and storm >= 1 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
         ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
@@ -1289,8 +1310,10 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         if not has_finisher and pif_viability == 0.0:
             opp_clock = getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
             if not snap.am_dead_next and opp_clock > 2:
-                if not _has_draw_in_hand(card, me):
-                    # No finisher, no flashback, no draws → hard hold.
+                digs = _digs_the_ai_will_make(card, me, snap, game,
+                                              player_idx)
+                if not digs:
+                    # No finisher, no flashback, no dig → hard hold.
                     return STORM_HARD_HOLD
                 # Draws remain — soft penalty with two refinements.
                 # (A) Storm-coverage escalation: when storm/opp_life
@@ -1308,14 +1331,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                 #     from collapse.  Penalty scales with library
                 #     miss probability times coverage.
                 if storm >= COMBO_MIN_CHAIN_DEPTH:
-                    draw_count = sum(
-                        1 for c in me.hand
-                        if c.instance_id != card.instance_id
-                        and not c.template.is_land
-                        and any(dt in getattr(c.template, 'tags', set())
-                                for dt in ('cantrip', 'card_advantage', 'draw'))
-                    )
-                    if draw_count <= COMBO_CASCADE_DRAW_FLOOR:
+                    if len(digs) <= COMBO_CASCADE_DRAW_FLOOR:
                         lethal_gap = max(0, opp_life - storm)
                         library_size = max(1, len(me.library))
                         miss_risk = min(1.0, lethal_gap / library_size)

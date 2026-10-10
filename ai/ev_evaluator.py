@@ -1069,6 +1069,16 @@ def _grants_graveyard_flashback(oracle: str) -> bool:
     return False
 
 
+def cast_is_deferred(card: "CardInstance", snap: EVSnapshot,
+                     game: "GameState" = None, player_idx: int = 0) -> bool:
+    """The main phase defers this cast: no same-turn signal fires
+    (`_enumerate_this_turn_signals`), so `compute_play_ev` scores it at
+    its exposure cost and `decide_main_phase` passes rather than cast it.
+    The one deferral predicate: a hold that waits for a later play reads
+    it, so it never waits for a cast the AI will not make."""
+    return not _enumerate_this_turn_signals(card, snap, game, player_idx)
+
+
 def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                                   game: "GameState" = None,
                                   player_idx: int = 0,
