@@ -273,6 +273,16 @@ class AICallbacks(GameCallbacks):
         from ai.activation_ev import choose_tutor_delivery
         return choose_tutor_delivery(game, player_idx, eligible, source=source)
 
+    # Resolution-time choices (A35): the dispatcher's "you may" and its
+    # executors' card picks, answered by the AI (ai/resolution_choices).
+    def choose_optional_effect(self, ctx, spec) -> bool:
+        from ai.resolution_choices import perform_optional_effect
+        return perform_optional_effect(ctx.game, ctx, spec)
+
+    def choose_cards(self, ctx, spec, pool, n):
+        from ai.resolution_choices import pick_cards
+        return pick_cards(ctx.game, ctx, spec, pool, n)
+
     def choose_mana_color(self, game, player_idx, source, options):
         """Pick an entry-choice colour from the deck's actual mana needs.
 

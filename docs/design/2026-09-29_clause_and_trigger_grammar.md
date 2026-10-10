@@ -1219,7 +1219,11 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 - **Duration.** Bound with player and object as before.
 - **Simultaneous zone moves.** Multi-actor MOVE, EXILE and SACRIFICE call one owner per spec, never one call per actor. In E2, `zone_transfer.move_simultaneously(game, moves, defer_etb=True)` is extracted from the legacy Living End phases 1–3 and keeps the legacy player-index physical order, so the E2 switch stays byte-identical (A33). Universal deferral is T2 (M5).
 
-**Callbacks declared in E0, not wired.** `choose_optional_effect(ctx, spec)`, `choose_amount(ctx, spec, lo, hi, remaining_specs)`, `choose_cards(ctx, spec, pool, n)`, `choose_division(ctx, spec, slots, total)`. The default implementations raise `NotImplementedError`; nothing calls them in E0. AI-choice heuristics embedded in legacy handlers move into these callbacks unchanged at switch time:
+**Callbacks declared in E0, not wired.** `choose_optional_effect(ctx, spec)`, `choose_amount(ctx, spec, lo, hi, remaining_specs)`, `choose_cards(ctx, spec, pool, n)`, `choose_division(ctx, spec, slots, total)`. The default implementations raise `NotImplementedError`; nothing calls them in E0. (Unit E, 2026-10-10, wires two:
+- `choose_optional_effect`, asked by the dispatcher. The default performs; the AI answer is `ai/resolution_choices.perform_optional_effect`.
+- `choose_cards`, asked by the card-flow MOVE executor for a slot no target was chosen for. The default is `callbacks.default_card_pick`; the AI answer is `ai/resolution_choices.pick_cards`, the hand-delivery choice.
+
+`choose_amount` and `choose_division` still raise.) AI-choice heuristics embedded in legacy handlers move into these callbacks unchanged at switch time:
 - the reanimate max P+T pick;
 - the energy spend `min(toughness remaining, energy)`, where `remaining_specs` lets the callback see the DAMAGE target.
 

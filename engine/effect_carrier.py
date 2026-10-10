@@ -101,19 +101,38 @@ def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
 
 
 # The families whose hosts the enter-trigger carrier takes. Card flow only:
-# an enter trigger with a target (damage, removal) is still chosen by its
-# legacy resolver, which picks on entry; the dispatcher's unbound slot would
-# not choose the same object (A36).
+# an enter trigger whose target another family resolves (damage, removal)
+# is still chosen by its legacy resolver, which picks on entry; the
+# dispatcher's unbound slot would go to that owner's rule (A36), not to the
+# same object.
 ETB_FAMILIES = ("card_flow",)
+
+
+def _slots_picked_by_executors(host: Any) -> bool:
+    """Is every spec of `host` that uses a target slot executed by an
+    executor that picks an unbound slot itself (`picks_unbound_slots`: the
+    controller's choice out of the legal objects, A35)? The enter-trigger
+    carrier binds no targets -- the engine resolves enter triggers on entry
+    -- so only such a host resolves as printed through it."""
+    from .effect_spec import _SPEC_OWN_FIELDS, RefKind, _refs
+    for s in iter_specs(host.specs):
+        uses = s.target_slot is not None or any(
+            r.kind is RefKind.TARGET
+            for name in _SPEC_OWN_FIELDS for r in _refs(getattr(s, name)))
+        if uses and not getattr(er.EXECUTORS.get(s.verb),
+                                "picks_unbound_slots", False):
+            return False
+    return True
 
 
 def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     """The enter-trigger carrier's plan for one face: ``[(host, family)]``
     for every TRIGGERED(SELF_ENTERS) host of `face_hosts` when each is in an
-    `ETB_FAMILIES` family's strict shape, executable and untargeted; None
-    when the face has no such host or any one of them does not qualify (a
-    card is taken whole or not at all, so no trigger of it resolves twice
-    or not at all). One owner, read by the carrier and the closure."""
+    `ETB_FAMILIES` family's strict shape, executable, and has its slots
+    picked by its own executors (`_slots_picked_by_executors`); None when
+    the face has no such host or any one of them does not qualify (a card
+    is taken whole or not at all, so no trigger of it resolves twice or not
+    at all). One owner, read by the carrier and the closure."""
     from .effect_spec import EventHint, HostKind
     from .effect_views import STRICT
     hosts = [h for h in face_hosts
@@ -125,7 +144,7 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     for h in hosts:
         family = next((f for f in ETB_FAMILIES
                        if STRICT[f](h) and er.can_execute(h, f)
-                       and not h.targets), None)
+                       and _slots_picked_by_executors(h)), None)
         if family is None:
             return None
         plan.append((h, family))
@@ -137,8 +156,9 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
     permanent's TRIGGERED(SELF_ENTERS) hosts on the face it shows, resolved
     through the dispatcher when `etb_plan` takes the face; None otherwise,
     and the legacy resolver runs. The engine resolves enter triggers on
-    entry, with no targets: a slot reaches its owner unbound. Returns
-    whether any host performed anything."""
+    entry, so every slot reaches its executor unbound and the controller
+    picks there (CR 603.3d, A35). Returns whether any host performed
+    anything."""
     template = getattr(card, "template", None)
     if template is None or getattr(template, "is_loyalty_clause", False) \
             or not er.dispatch_enabled():
@@ -151,8 +171,10 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
         return None
     performed = False
     for h, family in plan:
-        performed |= bool(dispatch(game, card, controller, h, (),
-                                   family=family))
+        performed |= bool(er.resolve_ability(
+            game, er.handle_of(card), controller, h,
+            tuple(() for _ in h.targets), family=family,
+            source_object=card))
     return performed
 
 

@@ -990,6 +990,13 @@
     "strict": true
    },
    {
+    "card": "Eternal Witness",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
     "card": "Hedge Maze",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -1046,19 +1053,21 @@
     "strict": true
    }
   ],
-  "executable": 47,
+  "executable": 79,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 10,
-   "pool": 37,
+   "mainboard": 11,
+   "pool": 68,
    "sideboard": 0
   },
   "steps": {
+   "E2": 32,
    "E3": 47
   },
-  "strict": 47,
+  "strict": 79,
   "sub_kinds": {},
   "verb_sets": {
+   "MOVE": 32,
    "SURVEIL": 47
   }
  },
@@ -1950,7 +1959,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 6,
   "family": "removal",
   "hosts": {
    "mainboard": 2,

@@ -156,10 +156,11 @@ class GameCallbacks(Protocol):
     # ── Resolution-time choices (design doc 2026-09-29, A35) ──────────
     # One channel per KIND of choice a resolving ability asks of its
     # controller. `ctx` is the resolution context, `spec` the typed
-    # EffectSpec asking. Declared ahead of play use: in E0 their only
-    # caller is engine/effect_resolver, which nothing calls yet
-    # (tests/test_effect_resolver_sequencing.py pins both), and the
-    # default raises rather than guessing an answer.
+    # EffectSpec asking. The effect dispatcher asks `choose_optional_effect`
+    # and its card-flow executors ask `choose_cards` (unit E, enter
+    # triggers); `choose_amount` and `choose_division` have no caller yet
+    # and their default raises rather than guessing an answer
+    # (tests/test_effect_resolver_sequencing.py pins the callers).
 
     def choose_optional_effect(self, ctx: Any, spec: Any) -> bool:
         """Perform this optional ("you may") effect? True = perform."""
@@ -174,8 +175,11 @@ class GameCallbacks(Protocol):
 
     def choose_cards(self, ctx: Any, spec: Any, pool: Sequence[Any],
                      n: int) -> List[Any]:
-        """Pick `n` cards (or up to `n`, per the spec) out of `pool`, the
-        engine-enumerated legal choices."""
+        """Pick up to `n` cards out of `pool`, the engine-enumerated legal
+        choices. Returning a non-member, a duplicate or more than `n` is
+        outside the contract: the engine keeps only the distinct members,
+        at most `n`, and a required choice the answer leaves short is
+        filled by `default_card_pick`."""
         raise NotImplementedError
 
     def choose_division(self, ctx: Any, spec: Any, slots: Sequence[Any],
@@ -326,15 +330,31 @@ class DefaultCallbacks:
             return None
         return max(eligible, key=default_tutor_rank)
 
-    # Resolution-time choices (A35): declared, uncalled in E0, no default.
+    # Resolution-time choices (A35).
     def choose_optional_effect(self, ctx, spec) -> bool:
-        raise NotImplementedError
+        """Default: perform. The controller takes what the text offers --
+        what every legacy resolver did with the optional effects it
+        resolved. AI implementations decline where performing would hurt."""
+        return True
 
     def choose_amount(self, ctx, spec, lo, hi, remaining_specs) -> int:
         raise NotImplementedError
 
     def choose_cards(self, ctx, spec, pool, n):
-        raise NotImplementedError
+        """Default: `default_card_pick`, printed card data only."""
+        return default_card_pick(pool, n)
 
     def choose_division(self, ctx, spec, slots, total):
         raise NotImplementedError
+
+
+def default_card_pick(pool: Sequence[Any], n: int) -> List[Any]:
+    """The engine's default card choice: up to `n` of `pool` by its own
+    delivery ranking (`activated_effects.default_tutor_rank`, the ranking
+    `DefaultCallbacks.choose_tutor_target` delivers by), highest first, ties
+    in pool order. Printed card data only -- a deterministic reading, never
+    a strategic one."""
+    from .activated_effects import default_tutor_rank
+    if n <= 0:
+        return []
+    return sorted(pool, key=default_tutor_rank, reverse=True)[:n]

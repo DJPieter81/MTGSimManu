@@ -23,6 +23,14 @@ conditions printed upgrades read. A chosen target is re-checked on
 resolution (CR 608.2b): an illegal one is not affected and its damage is
 never redirected; a slot no target was chosen for reaches the owner unbound
 and the owner's own rule decides (A36).
+
+Family `card_flow` (unit E, enter triggers): SURVEIL through
+`GameState.surveil`, and MOVE from the controller's graveyard to its hand
+through the zone funnel (`ZoneManager.move_card`). A MOVE slot no target was
+chosen for is the controller's pick out of the legal cards the legality
+owner enumerates (`target_solver.enumerate_legal_targets`), asked through
+`callbacks.choose_cards` (A35): the executor validates the answer and never
+scores.
 """
 from __future__ import annotations
 
@@ -31,8 +39,9 @@ from typing import Any, Tuple
 from . import effect_conditions as conditions
 from .effect_resolver import (CONDITION_EVALUATORS, EXECUTORS, Handle,
                               Outcome, Resolution, handle_of)
-from .effect_spec import (Chooser, Condition, ConditionKind, EffectSpec, Ref,
-                          RefKind, Verb)
+from .effect_model import Selector, SelectorKind
+from .effect_spec import (Chooser, Condition, ConditionKind, Destination,
+                          EffectSpec, Ref, RefKind, Verb)
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
@@ -41,7 +50,7 @@ FAMILY_CARD_FLOW = "card_flow"
 # tests/test_effect_resolver_sequencing.py).
 FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                       Verb.GAIN_LIFE}),
-            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL})}
+            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -55,8 +64,9 @@ def _source_object(ctx: Resolution) -> Any:
 
 
 def _plain_participants(s: EffectSpec) -> bool:
-    """No part of the spec this family does not bind: no optional choice
-    (its callback is not wired), no alternatives, no untargeted filter, no
+    """No part of the spec these executors do not bind: no optional choice
+    (none of them is valued yet: `ai.resolution_choices.
+    perform_optional_effect`), no alternatives, no untargeted filter, no
     simultaneity group, no destination, payload or duration, and the
     controller chooses."""
     return (not s.optional and not s.alternatives and s.filter is None
@@ -246,6 +256,119 @@ def execute_surveil(ctx: Resolution, s: EffectSpec,
 execute_surveil.supports = _surveil_supported
 
 
+# ── MOVE graveyard -> hand (family card_flow, E3) ─────────────────────
+
+# The type words `target_solver` evaluates for a card in a graveyard.
+_GRAVEYARD_CARD_TYPES = frozenset({
+    "card", "creature", "artifact", "enchantment", "planeswalker", "land",
+    "instant", "sorcery", "permanent", "permanent_nonland"})
+# The one destination this executor binds: the owner's hand, nothing else
+# about it printed (no position, no tapped, no counters, no controller).
+_TO_HAND = Destination(zone="hand")
+
+
+def _acts_as_controller(actor: Any) -> bool:
+    """No acting player printed, or "you" (a PLAYER selector the dispatcher
+    binds to the controller): the controller chooses and moves."""
+    return actor is None or (isinstance(actor, Selector)
+                             and actor.kind is SelectorKind.PLAYER
+                             and actor.filter is None)
+
+
+def _move_to_hand_supported(s: EffectSpec) -> bool:
+    """"[You may] return target <card> from your graveyard to your hand":
+    the cards chosen for the slot, still legal on resolution (CR 608.2b),
+    move from their owner's graveyard to its hand through the zone funnel
+    (CR 400.7: each is a new object there). "You may" is the dispatcher's
+    question (A35), asked before this runs."""
+    if s.verb is not Verb.MOVE or s.flags or s.dest != _TO_HAND:
+        return False
+    if s.alternatives or s.filter is not None or s.group is not None \
+            or s.payload is not None or s.duration is not None \
+            or s.amount is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or not _acts_as_controller(s.actor):
+        return False
+    req = s.target
+    return (s.target_slot is not None and req is not None
+            and req.zone == "graveyard" and req.owner_scope == "you"
+            and req.count_max >= 1 and req.mode_group is None
+            and not req.max_mana_value_is_x
+            and bool(req.types) and set(req.types) <= _GRAVEYARD_CARD_TYPES)
+
+
+def _legal_graveyard_cards(ctx: Resolution, req: Any, source: Any) -> list:
+    """The cards the slot may name now (CR 601.2c at the choice, 608.2b on
+    resolution): the legality owner's enumeration."""
+    from .target_solver import enumerate_legal_targets
+    return enumerate_legal_targets(ctx.game, ctx.controller, req,
+                                   source=source)
+
+
+def _owner_picks(ctx: Resolution, s: EffectSpec, source: Any) -> list:
+    """A36 for an unbound slot: the controller picks out of the legal cards
+    (`choose_cards`, A35). Only distinct members of the pool count, at most
+    `count_max`; a required target (CR 601.2c, 603.3d) the answer leaves
+    short is filled by the engine's default pick."""
+    from .callbacks import default_card_pick
+    req = s.target
+    pool = _legal_graveyard_cards(ctx, req, source)
+    n = min(req.count_max, len(pool))
+    if n <= 0:
+        return []
+    picked: list = []
+    for c in ctx.game.callbacks.choose_cards(ctx, s, list(pool), n) or ():
+        if len(picked) < n and any(c is p for p in pool) \
+                and all(c is not x for x in picked):
+            picked.append(c)
+    short = min(req.count_min, n) - len(picked)
+    if short > 0:
+        picked += default_card_pick(
+            [c for c in pool if all(c is not x for x in picked)], short)
+    return picked
+
+
+def _bound_cards(ctx: Resolution, s: EffectSpec, source: Any,
+                 slot: tuple) -> list:
+    """CR 608.2b for chosen values: a card binds if it is still the object
+    chosen in the graveyard (A34; graveyard identity is the Handle's known
+    gap) and still a legal choice for the slot; anything else is not
+    affected."""
+    legal = _legal_graveyard_cards(ctx, s.target, source)
+    out = []
+    for value in slot:
+        if not isinstance(value, Handle) or value.zone != "graveyard":
+            continue
+        card = ctx.game.get_card_by_id(value.instance_id)
+        if card is not None and card.zone == "graveyard" \
+                and any(card is c for c in legal) \
+                and all(card is not x for x in out):
+            out.append(card)
+    return out
+
+
+def execute_move_to_hand(ctx: Resolution, s: EffectSpec,
+                         actors: Tuple[int, ...]) -> Outcome:
+    source = _source_object(ctx)
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    cards = (_bound_cards(ctx, s, source, slot) if slot
+             else _owner_picks(ctx, s, source))
+    cause = getattr(source, "name", "")
+    moved = []
+    for card in cards:
+        if ctx.game.zone_mgr.move_card(ctx.game, card, "graveyard", "hand",
+                                       cause=cause):
+            moved.append(handle_of(card))
+    return Outcome(bool(moved), {ctx.controller: tuple(moved)})
+
+
+execute_move_to_hand.supports = _move_to_hand_supported
+# An unbound slot is the controller's choice through `choose_cards`, so a
+# carrier with no targets to bind (the enter-trigger carrier) may take it.
+execute_move_to_hand.picks_unbound_slots = True
+
+
 # ── Conditions ────────────────────────────────────────────────────────
 
 def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
@@ -261,4 +384,5 @@ EXECUTORS[Verb.DAMAGE] = execute_damage
 EXECUTORS[Verb.LOSE_LIFE] = execute_lose_life
 EXECUTORS[Verb.GAIN_LIFE] = execute_gain_life
 EXECUTORS[Verb.SURVEIL] = execute_surveil
+EXECUTORS[Verb.MOVE] = execute_move_to_hand
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state

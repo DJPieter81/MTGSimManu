@@ -38,17 +38,29 @@ def test_resolution_choice_callbacks_are_declared_on_the_protocol_and_defaults()
 
 
 def test_an_unanswered_resolution_choice_raises_rather_than_guessing():
+    """The choices no executor asks yet have no answer to guess."""
     from engine.callbacks import DefaultCallbacks
     from engine.game_runner import AICallbacks
     for impl in (DefaultCallbacks(), AICallbacks()):
         with pytest.raises(NotImplementedError):
-            impl.choose_optional_effect(None, None)
-        with pytest.raises(NotImplementedError):
             impl.choose_amount(None, None, 0, 1, ())
         with pytest.raises(NotImplementedError):
-            impl.choose_cards(None, None, (), 1)
-        with pytest.raises(NotImplementedError):
             impl.choose_division(None, None, (), 2)
+
+
+def test_the_engine_default_performs_an_optional_effect_and_picks_by_its_own_rank():
+    """Unit E wires the two choices its executors ask: by default the
+    controller takes what the text offers (the legacy resolvers' answer),
+    and a card choice is the engine's printed-data delivery rank, at most
+    `n` cards (`callbacks.default_card_pick`)."""
+    from engine.callbacks import DefaultCallbacks
+    impl = DefaultCallbacks()
+    assert impl.choose_optional_effect(None, None) is True
+    cards = [SimpleNamespace(template=SimpleNamespace(cmc=v, power=None,
+                                                      toughness=None))
+             for v in (1, 3, 2)]
+    assert impl.choose_cards(None, None, cards, 2) == [cards[1], cards[2]]
+    assert impl.choose_cards(None, None, cards, 0) == []
 
 
 def _calls_to(names, roots=("engine", "ai"), exclude=()):
@@ -75,16 +87,17 @@ def _calls_to(names, roots=("engine", "ai"), exclude=()):
     return hits
 
 
-# The dispatcher (section 11) is the one caller the callbacks were declared
-# for; it has no caller of its own in E0 (pinned by
-# test_no_engine_or_ai_module_imports_the_dispatcher_in_e0), so play code
-# still reaches no resolution-choice callback.
-_CALLERLESS_DISPATCHER = ("engine/effect_resolver.py",)
+# The callers the callbacks were declared for (section 11): the dispatcher
+# asks "you may" (choose_optional_effect) and the family executors ask the
+# choices they bind (choose_cards for a slot no target was chosen for, A36).
+# No other engine or AI code asks a resolution-time choice.
+_RESOLUTION_CHOICE_CALLERS = ("engine/effect_resolver.py",
+                              "engine/effect_executors.py")
 
 
-def test_resolution_choice_callbacks_are_declared_but_not_called_by_play_code():
+def test_resolution_choice_callbacks_are_called_only_by_the_dispatcher_and_its_executors():
     assert _calls_to(set(RESOLUTION_CHOICES),
-                     exclude=_CALLERLESS_DISPATCHER) == []
+                     exclude=_RESOLUTION_CHOICE_CALLERS) == []
 
 
 # ═══════════════════════════════════════════════════════════════════════

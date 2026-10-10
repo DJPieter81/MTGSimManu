@@ -355,6 +355,17 @@ def _plan_role_map(game: "GameState", player_idx: int):
     return roles
 
 
+def serves_plan_from_graveyard(game: "GameState", player_idx: int,
+                               card: "CardInstance") -> bool:
+    """Does `card`, in `player_idx`'s graveyard, still serve its plan role
+    there (`_usable_from_graveyard`: the reanimation resource, a
+    self-recurring spell) while that graveyard is safe? The discard advisor
+    pitches such a card without losing it; a regrowth leaves it where it
+    already works (`ai.resolution_choices.pick_cards`)."""
+    return _usable_from_graveyard(card, _graveyard_is_safe(game, player_idx),
+                                  _reanimation_fuel_min_cmc(game, player_idx))
+
+
 def _usable_from_graveyard(card: "CardInstance", gy_safe: bool,
                             reanimation_min_cmc) -> bool:
     """Would this card still serve its plan role FROM the graveyard?

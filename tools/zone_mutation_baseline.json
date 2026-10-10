@@ -33,7 +33,7 @@
   "engine/optional_costs.py": 0,
   "engine/oracle_clauses.py": 0,
   "engine/oracle_parser.py": 0,
-  "engine/oracle_resolver.py": 3,
+  "engine/oracle_resolver.py": 2,
   "engine/permanent_effects.py": 2,
   "engine/planeswalker_manager.py": 0,
   "engine/player_state.py": 0,

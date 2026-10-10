@@ -278,7 +278,8 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                 if "target_solver" in m:      # the legality owner, no parse
                     assert {a.name for a in node.names} <= {
                         "can_be_targeted", "slot_admits_permanent",
-                        "slot_admits_player"}, node.lineno
+                        "slot_admits_player",
+                        "enumerate_legal_targets"}, node.lineno
         if isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
             targets = list(node.targets if isinstance(node, ast.Assign)
                            else [node.target])
@@ -294,7 +295,10 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                     root = root.value
                 own_table = (isinstance(t, ast.Subscript) and isinstance(root, ast.Name)
                              and root.id in ("EXECUTORS", "CONDITION_EVALUATORS"))
-                own_attr = (isinstance(t, ast.Attribute) and t.attr == "supports"
+                # an executor's declarations: the shapes it binds, and that
+                # it picks an unbound slot itself
+                own_attr = (isinstance(t, ast.Attribute)
+                            and t.attr in ("supports", "picks_unbound_slots")
                             and isinstance(t.value, ast.Name))
                 assert own_table or own_attr, f"line {node.lineno}"
 
