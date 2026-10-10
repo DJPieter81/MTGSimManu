@@ -518,7 +518,6 @@ def estimate_spell_value(spell: "CardInstance",
     template = spell.template
     tags = template.tags
     role = assess_role(game, player_idx)
-    phase = _game_phase(game.turn_number, game, player_idx)
 
     value = 0.0
 
@@ -693,9 +692,16 @@ def estimate_spell_value(spell: "CardInstance",
 
     # --- Ramp / mana ---
     if "ramp" in tags or "mana_source" in tags:
-        if phase == GamePhase.EARLY:
+        # The stage of the game is the clock's (`ai.clock.life_phase`):
+        # extra mana compounds while the game develops, matters less once
+        # both clocks are committed, and rarely once a player is losing
+        # the race or facing lethal.
+        from ai.clock import LifePhase, life_phase
+        from ai.ev_evaluator import snapshot_from_game
+        stage = life_phase(snapshot_from_game(game, player_idx))
+        if stage is LifePhase.DEVELOP:
             value += RAMP_EARLY_GAME_BONUS
-        elif phase == GamePhase.MID:
+        elif stage is LifePhase.GRIND:
             value += RAMP_MID_GAME_BONUS
         else:
             value += RAMP_LATE_GAME_BONUS

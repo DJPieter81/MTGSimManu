@@ -21,7 +21,7 @@ matching the manager pattern used across engine/*.py.
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Set
 
 from .cards import (COUNTER_KIND_MINUS,
     CardInstance, CardTemplate, CardType, Keyword, Supertype, Color,
