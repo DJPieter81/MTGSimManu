@@ -1,10 +1,10 @@
 {
-  "combined": "dec4b8e5aa60fbf65a8f59f7a8db267de1968767ba997b341f25d9d57f14073a",
+  "combined": "0057379e22b4128146f18bbfbeb2502e69b5fda618b006182c8ee017ab29c6fa",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
-      "lines": 759,
-      "sha256": "0b54e71cbcd9514965ae581308c492ab6c7db285affa5cfaa8ce0c88e46954cc",
+      "lines": 760,
+      "sha256": "c475f247939c93137f4811150fed988f55925f90c23e8c02a0d130448175be0e",
       "turns": 11,
       "winner": "4c Omnath"
     },
@@ -99,14 +99,14 @@
       "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
-      "lines": 1373,
-      "sha256": "695b553c936297ad60bbb166fa7d58fb08d62fdbcbd385fc108a81d7c75f72ee",
-      "turns": 18,
+      "lines": 1287,
+      "sha256": "bc6b06cc9b51f6363cf23266bb6fc106559bf6962017543edf27c457a734dc86",
+      "turns": 16,
       "winner": "Azorius Control"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g2": {
-      "lines": 1119,
-      "sha256": "981eaccc67cb3b54e9530457273937ec8f700a5cc44a5fc8b1868a46d6f95de3",
+      "lines": 1133,
+      "sha256": "fcef918b2b767e15519f43c23a52707ed7aab664789b9c7a478377857ef85864",
       "turns": 14,
       "winner": "Azorius Control"
     },

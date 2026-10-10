@@ -393,3 +393,17 @@ def test_an_enter_trigger_impulse_exiles_and_permits_as_printed(card_db,
     assert game.players[0].exile == [top]
     assert _permitted(game) == {top.instance_id}
     assert game.players[0].library == [below]
+
+
+def test_a_spell_cast_from_exile_pays_its_cost_less_the_same_reductions(card_db):
+    """CR 601.2f: a cost reduction applies to the spell wherever it is cast
+    from. The payment charges an exiled spell's cost less the same
+    reductions `can_cast` counted, so a permitted cast it allows is paid."""
+    game = _game()
+    _put(game, card_db, 0, "Ruby Medallion", "battlefield")
+    mountain = _put(game, card_db, 0, "Mountain", "battlefield")
+    (resolve,) = _library(game, card_db, ["Wrenn's Resolve"])   # {1}{R}
+    _resolve(game, card_db, "Reckless Impulse")
+    assert game.can_cast(0, resolve)
+    assert game.cast_spell(0, resolve)
+    assert mountain.tapped and resolve.zone == "stack"

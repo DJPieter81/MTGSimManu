@@ -290,8 +290,15 @@ class ManaPayment:
         reduction = 0
         # Domain cost reduction (from oracle-derived template property)
         # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
+        # The zones a spell is cast from: hand, graveyard (flashback,
+        # escape) and exile (a permission to cast it, warp; CR 601.2a). A
+        # reduction applies wherever the spell is cast from (CR 601.2f),
+        # so the payment reads the same zones `can_cast` admits.
+        cast_zones = (game.players[player_idx].hand,
+                      game.players[player_idx].graveyard,
+                      game.players[player_idx].exile)
         if card_name:
-            for c in list(game.players[player_idx].hand) + list(game.players[player_idx].graveyard):
+            for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name and c.template.domain_reduction > 0:
                     domain = ManaPayment.count_domain(game, player_idx)
                     reduction += c.template.domain_reduction * domain
@@ -300,9 +307,8 @@ class ManaPayment:
         player = game.players[player_idx]
         has_improvise = False
         if card_name:
-            # Check hand, graveyard, and stack for the card (flashback casts are from GY)
-            all_cards = list(player.hand) + list(player.graveyard)
-            for c in all_cards:
+            # The card in the zone it is cast from (`cast_zones` above).
+            for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name:
                     # Generic cost reduction from permanents
                     from .oracle_resolver import (count_cost_reducers,
