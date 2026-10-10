@@ -2827,7 +2827,8 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "activated_abilities": _CONTAINER, "loyalty_abilities": _CONTAINER,
     "back_face_loyalty_abilities": _CONTAINER,
     # keyword costs and keyword facts
-    "evoke_cost": _KEYWORD, "dash_cost": _KEYWORD, "warp_cost": _KEYWORD,
+    "evoke_cost": _KEYWORD, "evoke_exile_color": _KEYWORD,
+    "dash_cost": _KEYWORD, "warp_cost": _KEYWORD,
     "plot_cost": _KEYWORD, "escape_cost": _KEYWORD,
     "escape_exile_count": _KEYWORD, "equip_cost": _KEYWORD,
     "has_delve": _KEYWORD, "cycling_cost_data": _KEYWORD,
