@@ -6845,3 +6845,34 @@ Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Az
   - any "treasure" makes a Treasure;
   - any "exile the top card" exiles the defending player's top card. Even cards that exile from their own library (Prophetic Flamespeaker, Moria Marauder) take it, and the cast permission is put into the attacker's hand by substring.
   - The typed carrier (unit D's pattern) needs DRAW and CREATE_TOKEN executors, "that player's library", and a permission over another player's exiled card.
+
+## Unit R1: a cast permission over another player's exiled card (2026-10-10)
+
+**Rule (CR 108.3, 400.3, 601.2a):** "Exile the top card of that player's library. Until end of turn, you may cast that card." The card stays in its **owner's** exile, and the permitted player may cast it from there with its normal timing and cost. Cast this way, it is the caster's spell: a permanent enters under the caster's control, and an instant or sorcery goes to its owner's graveyard. "Cast" never covers a land.
+
+**Defect:** Ragavan, Nimble Pilferer (×4 in Boros Energy, Jeskai Blink and Domain Zoo) put the exiled card into the attacker's hand, changed its controller, flagged it to go back to exile at end of turn and marked it a free cast. So:
+- a land exiled this way was a playable land in hand;
+- the card counted as a held card;
+- the AI scored a cast it pays for as free.
+
+**Steps (`5f24dcf`):**
+- `combat_manager`: the defending player's top card moves to their exile through the zone funnel, and the attacker gets a cast-only permission this turn (`effect_model.permit_play`). The end-of-turn "returned to exile" block in `turn_manager` is deleted (the permission ends in the cleanup step, CR 514.2).
+- Every permission read path now finds the card in its owner's exile:
+  - `rules_query.permitted_cards` (every player's exile);
+  - `can_cast` and `cast_spell` (the removal and the CR 400.7 forget);
+  - the land play;
+  - the payment's cost-reduction zones (`can_cast` counted the reduction, but the payment found no card and charged the full cost);
+  - the AI's `playable_cards`.
+- Zone mutation 62 → 59.
+
+**Digest:** 5 games change, with no winner change.
+- In Boros Energy vs Affinity s50000, Ragavan's Claws of Gix ({0}) is now cast in main 2. Before, the false free-cast bonus scored it +1.5, but casting it from hand spent a held card, so passing won. From exile, under a permission that ends this turn, it is not held.
+- The other four change log lines only.
+- Anchor unchanged.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `ragavan-r1-post`, pre = `planner-p2-post`):** no deck moves more than 1.0 pp (Living End −1.0, Domain Zoo −0.6, Eldrazi Ramp +0.5; every other deck within ±0.4). 73 of 600 cells change at n=20, the largest in Ragavan matchups (Domain Zoo vs Living End +25, Living End vs Jeskai Blink −15, Jeskai Blink vs Domain Zoo +15). Auditor: 0 violations (findings 492 → 485). No deck crosses the 5 pp replay threshold.
+
+## A spell cast from exile counts for storm in the play projection (2026-10-10)
+
+**Defect:** `_project_spell` incremented the projected storm count by the held cards a cast spends. Since I.4, a card whose permission ends this turn spends none, so casting an impulse-exiled card counted for no storm (CR 702.40a) in every plan reading the projection. Fixed in `3932277`: the storm count is charged for every cast, and the hand only for a held card. Digest byte-identical.
+
