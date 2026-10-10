@@ -288,6 +288,7 @@ class HostCase:
 def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
     """(resolvable cases, skipped cases) of every host of `template`."""
     from engine.cards import ActivationEffectKind, CardType
+    from engine.effect_carrier import activation_family
     from engine.effect_spec import EventHint, HostKind
     from engine.planeswalker_manager import EXECUTABLE_LOYALTY_KINDS
     ok, skipped = [], []
@@ -309,12 +310,15 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
             ok.append(HostCase(template.name, f"{label}:mode{h.mode_index}",
                                "MODE", h.mode_index))
         elif h.kind is HostKind.ACTIVATED and h.activation_index in acts \
-                and acts[h.activation_index].effect_kind not in (
-                    None, ActivationEffectKind.UNCLASSIFIED):
+                and acts[h.activation_index].effect_kind is not None and (
+                    acts[h.activation_index].effect_kind
+                    is not ActivationEffectKind.UNCLASSIFIED
+                    or activation_family(acts[h.activation_index], h)):
             # an UNCLASSIFIED activation is refused by the activation
             # path (its legacy owner, if any, is another carrier: a fetch
             # land's sacrifice-and-search, a land's own manager), so
-            # `resolve_activated_ability` is not its apply
+            # `resolve_activated_ability` is not its apply -- unless the
+            # dispatcher takes its typed host (unit A), when it is
             ok.append(HostCase(template.name, label, "ACTIVATED",
                                h.activation_index))
         elif h.kind is HostKind.LOYALTY and \

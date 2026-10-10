@@ -981,6 +981,25 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                     continue
                 out.append((perm, ability.index, [], ev, reason))
                 continue
+            elif kind is _K.UNCLASSIFIED:
+                # An ability the legacy classifier does not read resolves
+                # from its typed text when the dispatcher can take it
+                # (`effect_carrier.activation_family`). An impulse draw is
+                # projected as the cards it lets the player play past this
+                # turn (`ai.predicates.impulse_cards_held`): the hand those
+                # cards would have been as a draw.
+                from engine.effect_carrier import activation_family
+                from ai.predicates import impulse_cards_held
+                _host = perm.template.effects.activated(ability.index)
+                if activation_family(ability, _host) is None:
+                    continue
+                held = impulse_cards_held(_host)
+                if not held:
+                    continue
+                updates["my_hand_size"] = (
+                    updates.get("my_hand_size", snap.my_hand_size) + held)
+                after = snap.fast_replace(**updates)
+                reason = f"activate: exile the top {held} to play next turn"
             else:
                 continue
 

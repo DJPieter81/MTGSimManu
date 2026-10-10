@@ -433,6 +433,44 @@
    "MOVE,SHUFFLE,UNMODELLED": 1
   }
  },
+ "activated_effects:UNCLASSIFIED": {
+  "deck_hosts": [
+   {
+    "card": "Colossal Skyturtle",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Cori Mountain Monastery",
+    "host": "ACTIVATED:0:2",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 68,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 66,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 26,
+   "E3": 30,
+   "E5": 12
+  },
+  "strict": 68,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,EXILE": 12,
+   "EXILE": 4,
+   "MOVE": 22,
+   "SURVEIL": 30
+  }
+ },
  "activated_effects:UNTAP_TARGET_PERMANENT": {
   "deck_hosts": [
    {

@@ -110,6 +110,33 @@ def is_impulse_draw(template) -> bool:
                for s in iter_specs(host.specs))
 
 
+def impulse_cards_held(host) -> int:
+    """The cards an impulse-draw host -- an EXILE of the top N cards of its
+    controller's own library and a permission to play them -- lets the
+    controller play past this turn: N when the permission outlasts the
+    turn ("until the end of your next turn"), 0 when it ends this turn
+    (cards that expire at cleanup are not held, `ai.playable_cards`) or
+    the host is no impulse draw with a printed count. Read from the typed
+    host, never a tag."""
+    from engine.effect_model import DurationKind
+    from engine.effect_spec import AmountKind, Verb, iter_specs
+    if host is None:
+        return 0
+    specs = list(iter_specs(host.specs))
+    exiles = [s for s in specs if s.verb is Verb.EXILE
+              and (getattr(s.filter, 'zone', None),
+                   getattr(s.filter, 'owner', None),
+                   getattr(s.filter, 'position', None))
+              == ('library', 'you', 'top')]
+    if len(exiles) != 1 or exiles[0].amount is None \
+            or exiles[0].amount.kind is not AmountKind.LITERAL:
+        return 0
+    lasting = any(s.verb is Verb.CONTINUOUS and s.duration is not None
+                  and s.duration.kind is DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN
+                  for s in specs)
+    return int(exiles[0].amount.n or 0) if lasting else 0
+
+
 def is_storm_payoff(card: "CardInstance") -> bool:
     """Card is a chain-payoff finisher — its effect scales with the
     storm count or its damage/token output ends the chain.

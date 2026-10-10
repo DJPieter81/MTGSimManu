@@ -1727,11 +1727,13 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
     assert parity["failures"] == []
     # E1: the damage family's switched carriers; unit E: the enter-trigger
     # carrier's card-flow hosts; unit D: the draw carrier (Orcish
-    # Bowmasters); R2: the combat-damage carrier (Ragavan, Psychic Frog).
-    # Nothing else.
+    # Bowmasters); R2: the combat-damage carrier (Ragavan, Psychic Frog);
+    # unit A: UNCLASSIFIED activations the dispatcher takes (Cori Mountain
+    # Monastery, Colossal Skyturtle). Nothing else.
     assert {p.handler for p in pairs if p.new_path} == {
         "direct_damage", "activated_effects:DAMAGE_ANY_TARGET", "dispatched",
-        "etb:dispatch", "draw:dispatch", "combat_damage:dispatch"}
+        "etb:dispatch", "draw:dispatch", "combat_damage:dispatch",
+        "activated_effects:UNCLASSIFIED"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

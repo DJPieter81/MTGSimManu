@@ -117,9 +117,16 @@ class ActivationManager:
         # 9b. An effect kind the resolver cannot execute must be refused
         # BEFORE any cost is charged — paying a cost for a recorded-unhandled
         # no-op is strictly worse than refusing. ANIMATE_SELF_UEOT is owned by
-        # the land-animation path and must not be double-executed here.
+        # the land-animation path and must not be double-executed here. An
+        # UNCLASSIFIED ability resolves when the dispatcher takes its typed
+        # host (`effect_carrier.activation_family`, unit A).
         if ability.effect_kind not in ActivationManager.RESOLVABLE_EFFECT_KINDS:
-            return False
+            from .cards import ActivationEffectKind as _AEK
+            from .effect_carrier import activation_family
+            if ability.effect_kind is not _AEK.UNCLASSIFIED or \
+                    activation_family(ability, perm.template.effects.activated(
+                        ability.index)) is None:
+                return False
 
         # 9b-pc. A put-counter line whose shape did not parse is schema
         # incoherence — the resolver reads `kind`/`amount` off

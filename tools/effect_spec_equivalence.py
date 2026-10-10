@@ -989,7 +989,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     draw_dispatch_switched = _is_switched(_resolve_path(DRAW_DISPATCH_APPLY))
     combat_dispatch_switched = _is_switched(
         _resolve_path(COMBAT_DAMAGE_DISPATCH_APPLY))
-    from engine.effect_carrier import combat_damage_plan, draw_plan, etb_plan
+    from engine.effect_carrier import (activation_family, combat_damage_plan,
+                                       draw_plan, etb_plan)
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1058,14 +1059,22 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         # activated abilities by effect kind
         for ab in getattr(t, "activated_abilities", None) or ():
             kind = getattr(ab.effect_kind, "name", None)
-            if kind is None or kind == "UNCLASSIFIED":
+            if kind is None:
                 continue
-            rec = v.DERIVATIONS.get(f"ActivatedAbility.effect_kind[{kind}]")
             h = ce.activated(ab.index)
             if h is None:
                 continue
-            out.append(_pair(f"activated_effects:{kind}",
-                             rec.family if rec else "?", t, h,
+            if kind == "UNCLASSIFIED":
+                # no legacy apply: a pair only when the carrier takes the
+                # typed host (`effect_carrier.activation_family`, unit A)
+                family = activation_family(ab, h)
+                if family is None:
+                    continue
+            else:
+                rec = v.DERIVATIONS.get(
+                    f"ActivatedAbility.effect_kind[{kind}]")
+                family = rec.family if rec else "?"
+            out.append(_pair(f"activated_effects:{kind}", family, t, h,
                              _host_label(h), part,
                              act_switched and places_legacy_targets(h)))
         # ETB carriers

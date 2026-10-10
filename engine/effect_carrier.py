@@ -90,14 +90,37 @@ def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
     if template is None or not any(
             a is ability for a in (template.activated_abilities or ())):
         return None
-    from .effect_views import DERIVATIONS
+    host = template.effects.activated(ability.index)
+    family = activation_family(ability, host)
+    if family is None:
+        return None
+    return dispatch(game, source, controller, host, legacy_targets,
+                    family=family, x_value=x_value)
+
+
+# The families an UNCLASSIFIED activation -- one the legacy classifier does
+# not read, so it has no legacy apply and nothing can regress -- resolves
+# in, when its typed host is in the family's strict shape (A38) and the
+# dispatcher can execute it: card flow (unit A, an activated impulse draw:
+# Cori Mountain Monastery).
+UNCLASSIFIED_ACTIVATION_FAMILIES = ("card_flow",)
+
+
+def activation_family(ability: Any, host: Any) -> Optional[str]:
+    """The family an activated ability dispatches in (one owner, read by
+    the carrier, the closure and the harness): the one its effect kind's
+    derivation names; for an UNCLASSIFIED ability, the first of
+    `UNCLASSIFIED_ACTIVATION_FAMILIES` whose strict shape takes its typed
+    host and that the dispatcher can execute; None otherwise."""
+    from .effect_views import DERIVATIONS, STRICT
     kind = getattr(ability.effect_kind, "name", None)
     rec = DERIVATIONS.get(f"ActivatedAbility.effect_kind[{kind}]")
-    if rec is None:
+    if rec is not None:
+        return rec.family
+    if kind != "UNCLASSIFIED" or host is None:
         return None
-    return dispatch(game, source, controller,
-                    template.effects.activated(ability.index), legacy_targets,
-                    family=rec.family, x_value=x_value)
+    return next((f for f in UNCLASSIFIED_ACTIVATION_FAMILIES
+                 if STRICT[f](host) and er.can_execute(host, f)), None)
 
 
 # The families whose hosts the enter-trigger carrier takes. Card flow only:

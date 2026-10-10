@@ -11,6 +11,494 @@
  "intended": [
   {
    "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Blood Fountain",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Buried Ruin",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Charforger",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Coastal Bulwark",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Codex Shredder",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Colossal Skyturtle",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Cori Mountain Monastery",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Corpse Hauler",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Dark-Dweller Oracle",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Dawnhand Dissident",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Diversion Specialist",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Doom Whisperer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Draugr Recruiter",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Emergent Haunting",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Fields of Strife",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Font of Return",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Forum of Amity",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Geistflame Reservoir",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Glarb, Calamity's Augur",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Golgari Guildmage",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Grim Bauble",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "House Guildmage",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Kishla Village",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Larder Zombie",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Lilypad Village",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Lunatic Pandora",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Memorial to Folly",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Meria, Scholar of Antiquity",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Mind Drill Assailant",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Mystic Forge",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Nyx Weaver",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Ominous Asylum",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Paradox Gardens",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Precognition Field",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Professional Face-Breaker",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Rona, Disciple of Gix",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Rune-Sealed Wall",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Salvage Scout",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Sanguine Spy",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Savage Mansion",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Sinister Hideout",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Sinister Starfish",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Snowslope Hunter",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Soul Stair Expedition",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Soul of Innistrad",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Soul of Innistrad",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Spectacle Summit",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Suburban Sanctuary",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Surveillance Phantasm",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "The Underworld Cookbook",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Titan's Grave",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Tocasia's Dig Site",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Trading Post",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Tuskeri Firewalker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Umbral Collar Zealot",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Undertaker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "University Campus",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Wretched Doll",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Yggdrasil, Rebirth Engine",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Zahur, Glory's Past",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Zuko, Exiled Prince",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
     "combat_damage:dispatch",
     "Barbed Servitor",
     "TRIGGERED:0:2"
@@ -2388,6 +2876,41 @@
    "activated_effects:DAMAGE_ANY_TARGET",
    "Weather Maker",
    "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Auriok Salvagers",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Dowsing Shaman",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Jessica Jones, Private Eye",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Marwyn, the Preserver",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Memorial Vault",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Skull of Orm",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Tragic Poet",
+   "ACTIVATED:0:0"
   ],
   [
    "direct_damage",
