@@ -6626,3 +6626,48 @@ Program: the engine rules that read oracle-classifier tags move onto the card's 
 - **"Target player or planeswalker" is typed players-only** in `target_solver.parse`: Lava Spike-class burn, Sorin's +2.
 - **Fires of Invention's self-restriction** stays refused.
 - **Mana abilities:** a your-turn activation restriction (Grand Abolisher, Myrel) covers mana abilities of artifacts, creatures and enchantments, which the payment path does not consult.
+
+## Engine rules read card text, never classifier tags — unit E: enter-trigger surveil and regrowth (2026-10-10)
+
+**Rule (CR 113.1, 603.2, 603.3d, 608.2b, 701.42):** an enter trigger is an ability its permanent has because its text says so. "When ~ enters, surveil N" surveils; "When ~ enters, [you may] return target card from your graveyard to your hand" returns a legal card its controller picks. A classifier tag neither adds nor removes the trigger.
+
+**Before:**
+- The enter resolver surveilled only for the ten surveil lands tagged `ETB_SURVEIL_N`.
+- It regrew only for Eternal Witness (`ETB_RETURN_FROM_GY_TO_HAND`). It chose the card by an in-engine score (nonland, then mana value) and moved it outside the zone funnel.
+- Every untagged member entered and did nothing, unseen by the silent-miss diagnostic: 50 surveil hosts and 53 regrowth cards by text.
+
+**What changed:**
+- **E.1 `c28405c` — enter-trigger carrier and SURVEIL:**
+  - `effect_carrier.dispatch_etb` resolves a face's TRIGGERED(SELF_ENTERS) hosts through the dispatcher. `etb_plan` takes them whole or not at all, card-flow family only, after the typed-field branches.
+  - The card-flow SURVEIL executor goes through `GameState.surveil`.
+  - The harness gains an ETB host kind; its legacy apply follows the engine's order (registry handler, else the enter resolver).
+  - Gate parity 234 → 281.
+- **E.1b `f13b220` — the surveil tag branch is deleted.** A tag alone never surveils.
+- **E.2 `500c321` — regrowth:**
+  - **Executor:** the card-flow MOVE executor moves graveyard → hand through `ZoneManager.move_card`.
+    - An unbound slot is the controller's pick out of `target_solver.enumerate_legal_targets`, through the A35 `choose_cards` callback.
+    - The engine keeps only distinct pool members, at most `count_max`, and fills a required target (CR 601.2c, 603.3d) by `callbacks.default_card_pick`.
+    - A chosen card is re-checked on resolution (CR 608.2b).
+  - **Callbacks:** the dispatcher's `choose_optional_effect` and the executors' `choose_cards` are answered.
+    - Default: perform, and pick by the engine's delivery rank.
+    - AI (`ai/resolution_choices.py`): perform; pick by `choose_tutor_delivery`, leaving a card that serves its plan from the graveyard (`discard_advisor.serves_plan_from_graveyard`) unless a required target needs it.
+  - The regrowth tag branch is deleted.
+  - Gate parity 281 → 313.
+  - Ratchets: effect-parser (b) 106 → 103, zone mutation 63 → 62.
+  - `f88a18f` locks in the census rise it caused (deck removal ready share 0 → 0.0116).
+- **Pin:** `engine/oracle_resolver.py` reads no classifier tag. `STILL_READING_TAGS` 3 → 2 (`zone_transfer.py`, `clause_resolver.py`).
+
+**Harness:** 313 pairs on the new path, 166 proven and 147 intended. The intended pairs are the 79 enter-trigger hosts whose legacy side resolved nothing, untagged or, since the branches' deletion, at all. The self-check is unchanged: 237 hosts, 0 divergences.
+
+**Digest:** byte-identical (`e38f25a5`) at every step.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = ctime2-post (`4c0a99a`, code `a8868f4`); post = etb-e-post (`5ed6cd7`, code `500c321`).
+- 22 of 600 cells changed, every one with 4/5c Control, the Eternal Witness deck: its regrowth is now the AI's delivery choice, not the engine's (nonland, mana value) pick.
+- 4/5c Control 66.7 → 67.2 (+0.5); every other deck within ±0.3.
+- 0 aborts; audit findings 463 → 459, violations 0.
+- No deck moved more than 5 pp.
+
+**Leads (not built):**
+- **"Instant or sorcery card" leaves `target.union` residue:** Archaeomancer, Mnemonic Wall, Izzet Chronarch and Scholar of the Ages stay off the carrier. It is a grammar unit of its own.
+- **Optional damage, life and surveil specs** are still refused by those executors (`_plain_participants`). The callback is wired; each family adds its own AI valuation (`ai.resolution_choices.perform_optional_effect`).
+- **Targeted ETB damage and removal** keep their legacy resolvers (A36): the carrier binds no targets, and those executors resolve an unbound slot by the owner's rule.
