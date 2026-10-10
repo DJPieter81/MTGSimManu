@@ -7191,3 +7191,62 @@ A dig puts new cards in hand or play (`_is_real_dig`: the typed draw and tutor f
 - A finisher held for fuel the AI casts can strand itself: the fuel's cost may leave the finisher unaffordable. The hold does not ask whether the finisher stays castable after the fuel.
 - Two finishers in reach (Grapeshot in hand plus Wish for another) are not added up as one lethal line. Each finisher's lethal check sees only its own damage.
 - Past in Flames is tagged `cantrip`, so `combo_continuation` fires for it over an empty graveyard.
+
+## Unit HX: "exile all the cards from your hand, then draw that many" and "you may play cards exiled this way" parse and resolve (2026-10-10)
+
+**Rule (CR 406, 121.1, 601.2a, 608.2c):** the text says to exile every card in the controller's hand, then draw as many cards as that instruction moved, then let the controller play the exiled cards until the end of their next turn. "That many" is the result of an earlier instruction, and "cards exiled this way" names the cards the exile moved, not the result of the nearest instruction.
+
+**Defect:** Hex Magic (Ruby Storm ×4) resolved to nothing. It was the rules-audit census's top unhandled spell.
+- The grammar refused "all the cards from your hand", because the filter took "the" for a reference.
+- It refused "you may play cards exiled this way": the permission's object list knew "those cards", not a bare "this way" reference.
+- The card-flow family had no executor for a whole-hand exile and no count for "that many".
+
+The main phase deferred Hex Magic in any case (unit DR), so four main-deck cards were blank.
+
+**Class:**
+- "<play/cast> … exiled this way": 10 pool cards.
+- The determiner "all the <noun>": 17 pool cards.
+- Exiling a whole hand: 7 pool cards.
+
+Registered: Hex Magic (Ruby Storm ×4). Endurance (Living End ×4 and others) parses further, but its MOVE still has no executor, so it stays legacy.
+
+**Steps (`338b0b5`, fixture `d1d0b25`):**
+- **Grammar:**
+  - The determiner "all the" is "all".
+  - The bare one-word "cards exiled this way" is a reference to the earlier action it names. A longer bare phrase ("creature and land cards revealed this way") stays with the filter, after a census diff caught three regressions.
+  - The permission takes "(the) cards exiled this way" as its object.
+  - 18 cards parse further, none regresses (census FILTER 1550 → 1534, CLAUSE 1806 → 1803).
+- **Engine (card-flow family):**
+  - EXILE takes the controller's whole hand, in both typed forms. Face-down and partial exiles are refused.
+  - "That many" is the number of objects the referenced instruction produced (CR 608.2c), read from the resolution's results.
+  - The strict shape admits a DRAW only as "that many" of an exile in the same host, so a plain "draw N" stays on its legacy carrier (A38). That is pinned for Divination and Consider.
+- **Auditor:** `406/exile_all_cards_from_hand`, a whole-hand exile leaves no card in hand, restated from the zone itself.
+
+**Tests (red first):** `tests/test_exile_your_hand_then_draw_that_many.py` (12; 8 red):
+- grammar: "all the" is "all", and "this way" binds the exile;
+- engine: the whole hand goes to exile, that many cards are drawn, and the permission lasts until the end of the next turn;
+- the empty hand; the family boundary; the auditor both ways.
+
+The dispatcher-tables pin gains the hand zone. The legacy self-check's no-op set drops Hex Magic, and the state-changing floor goes 171 → 172.
+
+**Harness and equivalence:**
+- Harness: 472 new-path pairs (+1, Hex Magic: an intended change, since legacy resolved nothing).
+- Spec equivalence re-recorded:
+  - 15 DERIVED_COVERAGE_GROWTH (typed discards and draws the legacy substring fields miss);
+  - 10 pairs, newly compared once their clause was typed, disagree with legacy fields: Barbed Shocker and Book Devourer (`deals_targeted_damage`, recurring-trigger fields), Collective Defiance and Incendiary Command (`can_target_planeswalker`), Endurance (`can_target_player`, `has_destroy_or_exile`, `has_graveyard_recursion`), Shattered Perception.
+
+**Digest / anchor / suites:**
+- Digest: 2 Ruby Storm games change. bo1 Ruby Storm vs Dimir Midrange 50500 flips to Storm (T10): Hex Magic exiles Ral and draws, and the chain reaches Reckless Impulse → Wish → Grapeshot for 14 at storm 13. Replayed, intended.
+- Anchor 29 passed.
+- Suites 4566 + 2713 passed with the fixture fix.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `hx-post` `1cfb573`, pre = `rg-post`):** 43 of 600 cells change, every one in Ruby Storm's row or column.
+- Ruby Storm +6.9 (19.3 → 26.1). Every other deck moves by at most ±0.7, which is its cells against Ruby Storm.
+- Audit findings 436 → 421, violations 0; 0 aborts.
+- **Replay of the >5 pp move** (`_run_pair` path, Ruby Storm vs Affinity, the cell 5 → 25; 1/20 → 5/20 locally).
+  - At s53000 game 1, T5, Hex Magic exiles Storm's four-card hand (two Past in Flames, Ral, Wooded Foothills) and draws four. The chain runs on: Manamorphose, a second Hex Magic, then a Past in Flames cast from exile under the permission and a flashback run. Storm wins on T5, where before Hex Magic resolved to nothing.
+
+**Leads (not built):**
+- The 10 legacy-field disagreements above.
+- Endurance's MOVE ("puts all the cards from their graveyard on the bottom of their library in a random order") has no executor.
+- Escape to the Wilds and Chandra, Heart of Fire now type their permission, but their other clauses ("you may play an additional land", the discard) keep them on legacy.
