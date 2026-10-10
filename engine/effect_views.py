@@ -1964,12 +1964,18 @@ def _cost_deltas(effects, zone: str):
                     yield h, m
 
 
-def _cost_reduction_rule(effects, key=None, template=None):
-    for h, m in _cost_deltas(effects, "battlefield"):
-        if _mod_get(m, "sign", -1) < 0:
-            return {"target": "all", "amount": _lit(_mod_get(m, "amount")),
-                    "color": None}
-    return None
+def _cost_reduction_amounts(effects, key=None, template=None):
+    """The amounts of a face's static spell-cost reductions, in printed
+    order; the subject's qualities are not compared until the grammar types
+    them."""
+    return tuple(_lit(_mod_get(m, "amount"))
+                 for h, m in _cost_deltas(effects, "battlefield")
+                 if _mod_get(m, "sign", -1) < 0
+                 and _mod_get(m, "cost_of") == "cast")
+
+
+def _template_reduction_amounts(template, key=None):
+    return tuple(r['amount'] for r in (template.cost_reduction_rules or ()))
 
 
 def _self_reduction(effects):
@@ -2747,8 +2753,8 @@ _row("sacrifice_mana_units", S, "A", "E6", _sacrifice_mana_units,
      default=[], partial=True)
 _row("conditional_mana", S, "A", "E6", _conditional_mana,
      compare=("bonus",), partial=True)
-_row("cost_reduction_rule", S, "A", "E6", _cost_reduction_rule,
-     compare=("target", "amount"), partial=True)
+_row("cost_reduction_rules", S, "A", "E6", _cost_reduction_amounts,
+     legacy=_template_reduction_amounts, default=(), partial=True)
 _row("self_cost_reduction_amount", S, "A", "E6", _self_cost_amount,
      default=0)
 _row("self_cost_reduction_unit", S, "A", "E6", _self_cost_unit, default="")
@@ -2929,6 +2935,10 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "back_face_types": _BACK, "back_face_subtypes": _BACK,
     "back_face_power": _BACK, "back_face_toughness": _BACK,
     "back_face_keywords": _BACK,
+    "back_face_cost_reduction_rules": (
+        "the back face's static spell-cost reductions (CR 712.8e), parsed "
+        "as the front face's `cost_reduction_rules` are; the grammar's "
+        "face-1 view is not compared yet"),
     # ActivatedAbility carrier fields
     "ActivatedAbility.index": "carrier key: the activation ordinal",
     "ActivatedAbility.cost": ("activation cost (CR 602.1a): host.cost from "

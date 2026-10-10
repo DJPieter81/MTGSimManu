@@ -789,13 +789,13 @@ def _derive_static_rule_effects(game: "GameState") -> list:
     from .effect_model import (Effect, Modification, OriginKind, Selector,
                                WHILE_SOURCE)
     from .effect_model import ModKind, cost_delta_effect, draw_limit_effect
+    from .oracle_resolver import reduction_rules_of
     out = []
     for controller, player in enumerate(game.players):
         for perm in player.battlefield:
-            rule = getattr(perm.template, 'cost_reduction_rule', None)
-            if rule:
-                # CR 601.2f: a reducer static applies to its controller's
-                # spells while the permanent is on the battlefield.
+            for rule in reduction_rules_of(perm):
+                # CR 601.2f: a reducer static applies to the spells it names
+                # while the permanent shows the face that prints it.
                 out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
                                              source_id=perm.instance_id,
                                              origin=OriginKind.STATIC))

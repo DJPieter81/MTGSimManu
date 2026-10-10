@@ -300,8 +300,12 @@ def permit_play(player: int, objects, action: str, duration: Duration,
 def cost_delta_effect(player: int, rule: dict, duration: Duration,
                       source_id: int = 0, origin: "OriginKind" = OriginKind.RESOLVED) -> Effect:
     """"<spells> you cast cost {N} less" — the parse_cost_reduction rule shape
-    (target / amount / color) applied to `player`'s spells (CR 601.2f)."""
-    return Effect(Selector(SelectorKind.PLAYER, player=player),
+    (amount / qualities / who) applied to `player`'s spells, or to every
+    player's when the text names no caster ("Spells cost {1} less to
+    cast", CR 601.2f)."""
+    selector = (Selector(SelectorKind.ALL_PLAYERS) if rule.get('who') == 'all'
+                else Selector(SelectorKind.PLAYER, player=player))
+    return Effect(selector,
                   Modification(ModKind.COST_DELTA,
                                data=tuple(sorted(rule.items()))),
                   duration, origin, source_id=source_id, controller=player)

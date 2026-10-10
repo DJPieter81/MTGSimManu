@@ -142,7 +142,7 @@ TABLE_ROWS = {
     "mana_units": ("A", "E6"),
     "sacrifice_mana_units": ("A", "E6"),
     "conditional_mana": ("A", "E6"),
-    "cost_reduction_rule": ("A", "E6"),
+    "cost_reduction_rules": ("A", "E6"),
     "self_cost_reduction_amount": ("A", "E6"),
     "self_cost_reduction_unit": ("A", "E6"),
     "domain_reduction": ("A", "E6"),
@@ -1007,11 +1007,11 @@ KNOWN_DECK_PARTIAL_DISAGREEMENTS = {
     "conditional_mana": {"Urza's Mine": "7524a645a815",
                          "Urza's Power Plant": "7524a645a815",
                          "Urza's Tower": "5fe0554e9a20"},
-    # legacy types the reduction, the view gives None today
-    "cost_reduction_rule": {
-        "Artist's Talent": "fd6e03546e22",
-        "Ral, Monsoon Mage // Ral, Leyline Prodigy": "8c55025aadd3",
-        "Ruby Medallion": "5d759227e775"},
+    # legacy types the reduction, the grammar view gives none today
+    # (Artist's Talent's reduction is its level-2 ability: none at level 1)
+    "cost_reduction_rules": {
+        "Ral, Monsoon Mage // Ral, Leyline Prodigy": "c224767e44ab",
+        "Ruby Medallion": "c224767e44ab"},
     # the view types the dig (rest to the bottom), legacy gives None
     "library_dig_data": {"Narset, Parter of Veils": "033ff35d528c",
                          "Stock Up": "033ff35d528c"},

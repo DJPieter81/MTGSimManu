@@ -43,8 +43,9 @@ def test_the_wrapped_shapes_are_typed_with_the_duration_removed():
     assert team['keywords'] == ['lifelink']
     assert parse_until_next_turn(
         "Until your next turn, instant and sorcery spells you cast cost {1} less to cast.") == {
-        'kind': 'cost_reduction', 'rule': {'target': 'instant_sorcery', 'amount': 1,
-                                           'color': None}}
+        'kind': 'cost_reduction',
+        'rule': {'amount': 1, 'qualities': (('instant',), ('sorcery',)),
+                 'who': 'you'}}
     assert parse_until_next_turn(
         "Until your next turn, you may cast sorcery spells as though they had flash.") == {
         'kind': 'flash_permission', 'types': ['sorcery']}

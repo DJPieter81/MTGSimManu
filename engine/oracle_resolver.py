@@ -1909,30 +1909,56 @@ def self_cost_reduction(game, player_idx: int, card_template) -> int:
     return min(amount * count, max(0, template.mana_cost.generic))
 
 
+_COLOR_QUALITY = {'white': 'W', 'blue': 'U', 'black': 'B', 'red': 'R',
+                  'green': 'G'}
+_PERMANENT_TYPES = ('artifact', 'creature', 'enchantment', 'land',
+                    'planeswalker', 'battle')
+
+
+def _spell_has_quality(word: str, template) -> bool:
+    """One quality word of a reducer's subject, read against the spell's
+    printed characteristics (CR 105.2 colour, 205 type line)."""
+    types = {t.value for t in template.card_types}
+    if word in _COLOR_QUALITY:
+        return any(c.value == _COLOR_QUALITY[word] for c in template.colors)
+    if word == 'colorless':
+        return not template.colors
+    if word == 'multicolored':
+        return len(template.colors) > 1
+    if word == 'monocolored':
+        return len(template.colors) == 1
+    if word == 'permanent':
+        return any(t in types for t in _PERMANENT_TYPES)
+    if word == 'historic':       # CR 700.6: artifacts, legendaries, Sagas
+        return ('artifact' in types
+                or any(s.value == 'legendary' for s in template.supertypes)
+                or 'saga' in {s.lower() for s in template.subtypes})
+    if word.startswith('non') and len(word) > 3:
+        return not _spell_has_quality(word[3:], template)
+    if word in types:
+        return True
+    if any(s.value == word for s in template.supertypes):
+        return True
+    return word in {s.lower() for s in template.subtypes}
+
+
+def reduction_rules_of(card) -> tuple:
+    """The static spell-cost reductions a permanent has now: those of the
+    face it shows (a transformed permanent has only its back face's
+    abilities, CR 712.8e). The one read for the derivation and the AI."""
+    t = card.template
+    if getattr(card, 'is_transformed', False) and t.back_face_oracle:
+        return t.back_face_cost_reduction_rules or ()
+    return t.cost_reduction_rules or ()
+
+
 def _cost_rule_applies(rule: dict, template) -> bool:
-    """Does one parsed cost-reduction rule (parse_cost_reduction shape)
-    apply to this spell? The single matcher for every reduction source."""
-    from engine.cards import Color
-    target = rule['target']
-    if target == 'all':
-        matches = True
-    elif target == 'instant_sorcery':
-        matches = template.is_instant or template.is_sorcery
-    elif target == 'creature':
-        matches = template.is_creature
-    elif target == 'noncreature':
-        matches = not template.is_creature
-    else:
-        matches = False
-    if matches and rule.get('color'):
-        # "Red spells" are spells whose colour is red (CR 105.2); a devoid
-        # spell is colorless whatever mana symbols it prints.
-        color_map = {'R': Color.RED, 'U': Color.BLUE, 'B': Color.BLACK,
-                     'W': Color.WHITE, 'G': Color.GREEN}
-        required = color_map.get(rule['color'])
-        if required and required not in template.colors:
-            matches = False
-    return matches
+    """Does one parsed cost-reduction rule (`parse_cost_reduction` shape)
+    reduce this spell? A spell is reduced when it has every quality of one
+    of the rule's alternatives (CR 601.2f). The single matcher for every
+    reduction source."""
+    return any(all(_spell_has_quality(w, template) for w in alternative)
+               for alternative in rule['qualities'])
 
 
 def count_cost_reducers(game, player_idx: int, card_template) -> int:

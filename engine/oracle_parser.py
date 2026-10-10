@@ -339,50 +339,94 @@ def parse_splice_cost(oracle: str) -> "Optional[ManaCost]":
     return cost if cost.cmc > 0 else None
 
 
-def parse_static_cost_reduction(oracle: str):
-    """A permanent's static "<spells> cost {N} less" rule, typed once at
-    load (CardTemplate.cost_reduction_rule) — the parse_cost_reduction
-    shape, or None."""
-    low = (oracle or '').lower()
-    if 'cost' not in low or 'less' not in low:
+# ── Static spell-cost reductions (CR 601.2f) ──────────────────────────
+#
+# "<qualities> spells you cast cost {N} less to cast": a static ability
+# that reduces the total cost of each spell with those qualities. The
+# subject is typed as alternatives of quality words -- "instant and sorcery"
+# and "Kithkin spells and Soldier" name either, "black creature" needs
+# both -- that `oracle_resolver._cost_rule_applies` reads against the spell:
+# a colour, "colorless" / "multicolored" / "monocolored", a card type or
+# "non<type>", a supertype, "historic", "permanent", or a subtype. Without
+# "you cast" the reduction covers every player's spells ("Spells cost {1}
+# less to cast"). A sentence of any other shape -- a trailing condition, an
+# ordinal ("the first ... each turn"), a chosen quality, an activation or
+# keyword cost, reminder text -- is no spell reduction, never widened to
+# every spell.
+_SPELL_REDUCTION_RE = re.compile(
+    r"(?P<subject>[a-z', ]*?)\s*\bspells (?P<you>you cast )?cost "
+    r"\{(?P<n>\d+)\} less to cast")
+# Words that open a condition or a scope rather than name a quality ("as
+# long as this creature is tapped, ...", "during your turn, ..."): such a
+# sentence is refused, never read as a subtype.
+_NOT_A_QUALITY = frozenset({
+    "as", "long", "during", "your", "turn", "turns", "other", "than",
+    "yours", "this", "that", "is", "if", "with", "the", "each", "first",
+    "second", "next", "chosen", "of", "from", "you", "control"})
+# A Class's level header ("{2}{R}: Level 2"): the abilities printed after
+# it are that level's (CR 716.2a), which a Class has only once it has
+# gained the level.
+_CLASS_LEVEL_HEADER_RE = re.compile(r"^(?:\{[^}]+\})+: level \d+$")
+
+
+def _spell_reduction_qualities(subject: str) -> Optional[tuple]:
+    """The alternatives of quality words a reducer's subject names, or
+    None when a word is not a quality word."""
+    subject = subject.strip().replace(" spells and ", " and ")
+    if not subject:
+        return ((),)                      # "spells you cast": every spell
+    alternatives = []
+    for part in re.split(r",\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+", subject):
+        words = tuple(part.split())
+        if not words or not all(w.isalpha() and w not in _NOT_A_QUALITY
+                                for w in words):
+            return None
+        alternatives.append(words)
+    return tuple(alternatives)
+
+
+def parse_cost_reduction(sentence: str) -> Optional[Dict]:
+    """One reducer sentence -- "<qualities> spells [you cast] cost {N} less
+    to cast" in full -- as ``{'amount': N, 'qualities': ((word, ...), ...),
+    'who': 'you' | 'all'}``; None for any other sentence (see
+    ``tests/test_parse_cost_reduction_strict.py`` and
+    ``tests/test_cost_reduction_reads_its_text.py``)."""
+    text = (sentence or '').lower().strip().rstrip('.').strip()
+    m = _SPELL_REDUCTION_RE.fullmatch(text)
+    if m is None:
         return None
-    return parse_cost_reduction(low)
-
-
-def parse_cost_reduction(oracle: str) -> Optional[Dict]:
-    """Parse cost reduction rules from oracle text.
-
-    Returns {'target': str, 'amount': int, 'color': str|None} or None.
-
-    A cost-reduction effect requires an explicit ``cost {N} less``
-    pattern (e.g. "Spells you cast cost {1} less to cast"). The mere
-    co-occurrence of ``'cost'`` and ``'less'`` is not sufficient — the
-    substring ``'less'`` lives inside ``'colorless'`` and ``'cost'``
-    appears in any ``mana cost {N}`` phrase, generating false
-    positives on non-reducers like Urza's Saga, Trinisphere, and
-    every cascade card. See ``tests/test_parse_cost_reduction_strict.py``.
-    """
-    oracle = oracle.lower()
-    m = re.search(r'cost\s*\{(\d+)\}\s*less', oracle)
-    if not m:
+    qualities = _spell_reduction_qualities(m.group('subject'))
+    if qualities is None:
         return None
-    amount = int(m.group(1))
+    return {'amount': int(m.group('n')), 'qualities': qualities,
+            'who': 'you' if m.group('you') else 'all'}
 
-    target = 'all'
-    if 'instant and sorcery' in oracle or 'instants and sorceries' in oracle:
-        target = 'instant_sorcery'
-    elif 'creature spell' in oracle:
-        target = 'creature'
-    elif 'noncreature' in oracle:
-        target = 'noncreature'
 
-    color = None
-    for c_name, c_code in [('red','R'),('blue','U'),('black','B'),('white','W'),('green','G')]:
-        if c_name in oracle:
-            color = c_code
+def parse_static_cost_reductions(oracle: str) -> tuple:
+    """A face's static spell-cost reductions (CardTemplate.cost_reduction_
+    rules), typed once at load: one rule per reducer sentence, from the
+    text before any Class level header (a Class enters at level 1, CR
+    716.2a) with reminder text stripped. Empty when the face prints none."""
+    low = strip_reminder_text(oracle or '').lower()
+    if 'less to cast' not in low:
+        return ()
+    rules = []
+    for line in low.split('\n'):
+        line = line.strip()
+        if _CLASS_LEVEL_HEADER_RE.match(line):
             break
+        for sentence in re.split(r"(?<=\.)\s+", line):
+            rule = parse_cost_reduction(sentence)
+            if rule is not None:
+                rules.append(rule)
+    return tuple(rules)
 
-    return {'target': target, 'amount': amount, 'color': color}
+
+def describe_cost_reduction(rule: Dict) -> str:
+    """A log phrase for one reducer rule: "instant or sorcery spells cost
+    1 less"."""
+    named = " or ".join(" ".join(alt) for alt in rule['qualities'] if alt)
+    return f"{named + ' ' if named else ''}spells cost {rule['amount']} less"
 
 
 # ── Self-scaling own-cost reduction ────────────────────────────────

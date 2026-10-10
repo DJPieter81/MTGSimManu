@@ -34,8 +34,8 @@ def _put(game, card_db, name, controller, zone):
 
 
 def test_the_reducer_rule_is_typed_at_load(card_db):
-    rule = card_db.get_card("Ruby Medallion").cost_reduction_rule
-    assert rule == {'target': 'all', 'amount': 1, 'color': 'R'}
+    rules = card_db.get_card("Ruby Medallion").cost_reduction_rules
+    assert rules == ({'amount': 1, 'qualities': (('red',),), 'who': 'you'},)
 
 
 def test_a_static_reduction_is_an_effect_of_its_source(card_db):
@@ -64,7 +64,8 @@ def test_a_resolved_reduction_lasts_until_its_controllers_next_turn(card_db):
     game = GameState(rng=random.Random(0))
     bolt = card_db.get_card("Lightning Bolt")
     game.continuous_effects.register_effect(cost_delta_effect(
-        0, {'target': 'instant_sorcery', 'amount': 1, 'color': None},
+        0, {'amount': 1, 'qualities': (('instant',), ('sorcery',)),
+            'who': 'you'},
         until_your_next_turn(0)))
     game.cleanup_step(); game.active_player = 1; game.untap_step(1)
     assert rules_query.cost_delta(game, 0, bolt) == 1
@@ -75,7 +76,8 @@ def test_a_resolved_reduction_lasts_until_its_controllers_next_turn(card_db):
 def test_a_reduction_applies_only_to_its_spell_class(card_db):
     game = GameState(rng=random.Random(0))
     game.continuous_effects.register_effect(cost_delta_effect(
-        0, {'target': 'instant_sorcery', 'amount': 1, 'color': None},
+        0, {'amount': 1, 'qualities': (('instant',), ('sorcery',)),
+            'who': 'you'},
         until_your_next_turn(0)))
     assert rules_query.cost_delta(game, 0, card_db.get_card("Lightning Bolt")) == 1
     assert rules_query.cost_delta(game, 0, card_db.get_card("Grizzly Bears")) == 0

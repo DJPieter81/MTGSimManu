@@ -165,19 +165,44 @@ def cost_delta(game: "GameState", player_idx: int, template) -> int:
             rule = dict(e.modification.data)
             if _cost_rule_applies(rule, template):
                 total += rule['amount']
-                # Audit (CR 105.2), restated from the printed colours: a
-                # reduction for spells of one colour reduces only a spell
-                # of that colour.
-                if rule.get('color') and rules_audit.enabled():
-                    rules_audit.check(
-                        "105.2/colour_restricted_reduction",
-                        any(c.value == rule['color']
-                            for c in template.colors),
-                        f"a reduction for {rule['color']} spells applied to "
-                        f"{template.name}, whose colours are "
-                        f"{sorted(c.value for c in template.colors)}",
-                        game=game)
+                if rules_audit.enabled():
+                    _audit_reduction_names_the_spell(game, rule, template)
     return total
+
+
+_AUDIT_COLOR_WORDS = {'W': 'white', 'U': 'blue', 'B': 'black', 'R': 'red',
+                      'G': 'green'}
+
+
+def _audit_reduction_names_the_spell(game, rule: dict, template) -> None:
+    """Audit (CR 601.2f, 105.2, 205): a reduction applied to a spell names
+    it -- the spell's printed colours, types, supertypes and subtypes hold
+    every quality word of one of the rule's alternatives. Restated from the
+    raw printed fields as one set of words, not through the matcher."""
+    from engine import rules_audit
+    types = {t.value for t in template.card_types}
+    words = ({_AUDIT_COLOR_WORDS[c.value] for c in template.colors
+              if c.value in _AUDIT_COLOR_WORDS}
+             | types | {s.value for s in template.supertypes}
+             | {s.lower() for s in template.subtypes})
+    if not template.colors:
+        words.add('colorless')
+    elif len(template.colors) == 1:
+        words.add('monocolored')
+    else:
+        words.add('multicolored')
+    if types & {'artifact', 'creature', 'enchantment', 'land',
+                'planeswalker', 'battle'}:
+        words.add('permanent')
+    if 'artifact' in words or 'legendary' in words or 'saga' in words:
+        words.add('historic')
+    named = any(all((w in words) if not (w.startswith('non') and len(w) > 3)
+                    else (w[3:] not in words) for w in alt)
+                for alt in rule['qualities'])
+    rules_audit.check(
+        "601.2f/reduction_names_the_spell", named,
+        f"a reduction for {rule['qualities']} applied to {template.name}",
+        game=game)
 
 
 # ── Drawing ──────────────────────────────────────────────────────────

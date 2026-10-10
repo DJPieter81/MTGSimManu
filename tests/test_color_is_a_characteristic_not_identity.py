@@ -177,15 +177,22 @@ def test_the_storm_chains_colour_restricted_discount_reads_the_spells_colour(
 
 # ── Auditor (CR 105.2) ──────────────────────────────────────────────
 
+_COLOR_LETTER = {'white': 'W', 'blue': 'U', 'black': 'B', 'red': 'R',
+                 'green': 'G'}
+
+
 def _identity_matcher(real):
-    """The defect, restored: a colour-restricted reduction matched on the
+    """The defect, restored: a colour word of a reduction matched on the
     spell's colour identity."""
     def matches(rule, template):
-        if rule.get('color'):
-            return (any(c.value == rule['color']
-                        for c in template.color_identity)
-                    and real(dict(rule, color=None), template))
-        return real(rule, template)
+        identity = {c.value for c in template.color_identity}
+        for alt in rule['qualities']:
+            colours = [w for w in alt if w in _COLOR_LETTER]
+            rest = tuple(w for w in alt if w not in _COLOR_LETTER)
+            if (all(_COLOR_LETTER[w] in identity for w in colours)
+                    and real(dict(rule, qualities=(rest,)), template)):
+                return True
+        return False
     return matches
 
 
@@ -200,7 +207,7 @@ def test_the_audit_records_a_colour_restricted_reduction_on_another_colour(
                         _identity_matcher(oracle_resolver._cost_rule_applies))
     rules_query.cost_delta(g, 0, card_db.get_card("Kozilek's Return"))
     assert [f["rule"] for f in rules_audit.drain()] == [
-        "105.2/colour_restricted_reduction"]
+        "601.2f/reduction_names_the_spell"]
 
 
 def test_the_audit_is_silent_when_the_reduction_reads_the_colour(

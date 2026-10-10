@@ -1367,6 +1367,13 @@ class CardDatabase:
                             KEYWORD_MAP[k] for k in back.get('keywords', []) or []
                             if k in KEYWORD_MAP
                         }
+                        # The back face's own static spell-cost reductions
+                        # (a transformed permanent has only its back face's
+                        # abilities, CR 712.8e).
+                        from .oracle_parser import (
+                            parse_static_cost_reductions as _pscr)
+                        template.back_face_cost_reduction_rules = _pscr(
+                            template.back_face_oracle)
                         # The back face's own printed loyalty lines — a
                         # transformed DFC activates these, not the front's.
                         # Typed LAST (A12): their clause templates slice the
@@ -2261,8 +2268,9 @@ class CardDatabase:
         template.attack_observer = parse_attack_observer(oracle)
         from .oracle_parser import parse_bounce_target
         template.bounce_target = parse_bounce_target(oracle)
-        from .oracle_parser import parse_static_cost_reduction
-        template.cost_reduction_rule = parse_static_cost_reduction(oracle)
+        from .oracle_parser import parse_static_cost_reductions
+        template.cost_reduction_rules = parse_static_cost_reductions(oracle)
+        template.back_face_cost_reduction_rules = ()
         # Targeted forced discard, classified by who chooses the card
         # (caster-chosen Thoughtseize shape vs victim-chosen / random).
         from .oracle_parser import parse_hand_attack

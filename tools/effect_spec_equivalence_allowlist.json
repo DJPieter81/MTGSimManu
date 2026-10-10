@@ -50,14 +50,6 @@
    "source": "design doc section 10, further seed rows, ritual mana"
   },
   {
-   "id": "keyword_scoped_cost_reduction",
-   "class": "LEGACY_COST_REDUCTION_SCOPE",
-   "fields": ["cost_reduction_rule"],
-   "pattern": "\\b(?:equip|dash|unlock|plot|plotting)\\b[^.]*\\bcosts?\\b[^.]*\\bless\\b",
-   "reason": "\"Equip / Dash / Unlock costs you pay cost {N} less\" and \"Plotting cards from your hand costs {2} less\" are stored as {'target': 'all', ...}, a reduction of every spell; they are scoped to that keyword's cost or special action (CR 601.2f, 118.7). The grammar refuses them (payload.cost_delta_subject).",
-   "source": "design doc section 10, further seed rows, keyword-scoped cost reductions"
-  },
-  {
    "id": "pump_keyword_set_order",
    "class": "LEGACY_HASH_ORDER",
    "fields": ["pump_spell_keyword"],
@@ -187,6 +179,12 @@
    "carrier": "ActivatedAbility.tutor_data (partial: compared on 'dest')",
    "reason": "The relative-clause filter (\"card with the same name as that ...\" read as subtypes) is in the part of tutor_data the partial view does not compare; the destinations it compares all agree.",
    "source": "design doc section 10, further seed rows, activation tutor filter"
+  },
+  {
+   "id": "keyword_scoped_cost_reduction",
+   "carrier": "cost_reduction_rules (partial: compared on the amounts)",
+   "reason": "Fixed in the legacy parse (unit CR, 2026-10-10): parse_static_cost_reductions types only a '<qualities> spells [you cast] cost {N} less to cast' sentence, so an equip, dash, unlock, plot or activation cost reduction is no spell reduction on either side, and the comparison no longer meets the shape.",
+   "source": "design doc section 10, further seed rows, keyword-scoped cost reductions"
   }
  ]
 }

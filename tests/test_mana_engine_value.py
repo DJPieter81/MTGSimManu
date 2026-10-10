@@ -79,16 +79,16 @@ def test_an_extra_land_drop_adds_only_the_expected_lands_beyond_the_normal_drop(
 def test_a_cost_reducer_saves_its_amount_on_each_expected_matching_spell():
     game = GameState(rng=random.Random(0))
     _player(game, hand=4, lands=10, spells=10)          # 2 matching spells expected
-    rule = {"target": "instant_sorcery", "amount": 1, "color": None}
-    _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rule=rule), 0, "battlefield")
+    rules = ({"amount": 1, "qualities": (("instant",), ("sorcery",)), "who": "you"},)
+    _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rules=rules), 0, "battlefield")
     assert engine_mana_next_turn(game, 0) == pytest.approx(2)
 
 
 def test_a_reduction_never_exceeds_a_spells_generic_cost():
     game = GameState(rng=random.Random(0))
     _player(game, hand=4, lands=10, spells=10, spell_generic=0)
-    rule = {"target": "instant_sorcery", "amount": 1, "color": None}
-    _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rule=rule), 0, "battlefield")
+    rules = ({"amount": 1, "qualities": (("instant",), ("sorcery",)), "who": "you"},)
+    _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rules=rules), 0, "battlefield")
     assert engine_mana_next_turn(game, 0) == 0
 
 
@@ -98,8 +98,8 @@ def test_the_snapshot_and_position_value_price_engine_mana_like_mana_now():
     game = GameState(rng=random.Random(0))
     _player(game, hand=4, lands=10, spells=10)
     base = snapshot_from_game(game, 0)
-    rule = {"target": "instant_sorcery", "amount": 1, "color": None}
-    _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rule=rule), 0, "battlefield")
+    rules = ({"amount": 1, "qualities": (("instant",), ("sorcery",)), "who": "you"},)
+    _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rules=rules), 0, "battlefield")
     snap = snapshot_from_game(game, 0)
     assert snap.my_engine_mana == pytest.approx(2)
     gained = position_value(snap) - position_value(base)
@@ -110,8 +110,8 @@ def test_a_mana_engine_has_threat_and_a_vanilla_enchantment_has_none():
     from engine.card_effects import _threat_score
     game = GameState(rng=random.Random(0))
     _player(game, hand=4, lands=10, spells=10)
-    rule = {"target": "instant_sorcery", "amount": 1, "color": None}
-    engine = _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rule=rule),
+    rules = ({"amount": 1, "qualities": (("instant",), ("sorcery",)), "who": "you"},)
+    engine = _card(game, _tmpl("Reducer", [CardType.ARTIFACT], cost_reduction_rules=rules),
                    0, "battlefield")
     vanilla = _card(game, _tmpl("Vanilla", [CardType.ENCHANTMENT]), 0, "battlefield")
     p = game.players[0]
@@ -127,9 +127,9 @@ def test_casting_a_mana_engine_projects_its_next_turn_mana():
     from ai.ev_evaluator import _project_spell, snapshot_from_game
     game = GameState(rng=random.Random(0))
     _player(game, hand=5, lands=10, spells=10)
-    rule = {"target": "instant_sorcery", "amount": 1, "color": None}
+    rules = ({"amount": 1, "qualities": (("instant",), ("sorcery",)), "who": "you"},)
     reducer = _hand_card(game, _tmpl("Reducer", [CardType.ARTIFACT], generic=2,
-                                     cost_reduction_rule=rule))
+                                     cost_reduction_rules=rules))
     snap = snapshot_from_game(game, 0)
     projected = _project_spell(reducer, snap, game=game, player_idx=0)
     # After the cast the hand holds 5 spells' worth of draws (6 - 1 cast);

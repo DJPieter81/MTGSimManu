@@ -1,10 +1,10 @@
 {
-  "combined": "ed54ead855d67703ba18370b047a61b5070f09fe32d1de42400803f98642191d",
+  "combined": "a196868b227f5d6e9d3348db265a8901b6b6dbcb786f2f4dae1222d5e542a8c9",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
-      "lines": 594,
-      "sha256": "193418e69cce1f50f969a9a32e429cc84463ba90a2db2969ce10a2a043ef32b5",
+      "lines": 573,
+      "sha256": "448b0fc92cdb575d783e714306e3fc8af25dba05ec09c1f5cbfb9631ff865542",
       "turns": 8,
       "winner": "4c Omnath"
     },
@@ -93,27 +93,27 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 754,
-      "sha256": "eba1c4eedc6e5aad3b4ba2787fd012b949c0c8612a079b98380bb6d759c85f07",
+      "lines": 756,
+      "sha256": "037ff42cfcb2f51e162c1f22cdb82d24b93561b8c95ff962a528934cc7d46753",
       "turns": 10,
       "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
-      "lines": 1548,
-      "sha256": "fe238684603f3668071f14d15a375741915aa8042dae372bd07be4867c3bfc4e",
-      "turns": 19,
+      "lines": 1602,
+      "sha256": "7ce28b071cab2eaf64f4ac84602b9fbb3f08321c04fc75309cba547ba09e3fec",
+      "turns": 21,
       "winner": "Azorius Control"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g2": {
-      "lines": 516,
-      "sha256": "2baf0e18199abeec5ae155aa0f2b8ece2319b456a24fd604ea7d95dd908a4fff",
+      "lines": 504,
+      "sha256": "86104a420de8c7e7b568c0f90d663c2b27d02aa9c2a5ae0c3a32f54d0c4e1df8",
       "turns": 6,
       "winner": "Ruby Storm"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g3": {
-      "lines": 1309,
-      "sha256": "a76c960524e79fa163dab2c7c43d9a73dfa733169abf1aa95687abd3cb0e1c82",
-      "turns": 18,
+      "lines": 822,
+      "sha256": "5f06c8641a83bfd12a1aaa0a0254a16a29365a4738f27f182c5e9131f7905dbb",
+      "turns": 13,
       "winner": "Azorius Control"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {

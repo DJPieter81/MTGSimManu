@@ -1217,10 +1217,13 @@ class CardTemplate:
     # "Return [up to N] target <types> to its owner's hand": the target
     # requirement (target_solver.TargetRequirement) of the bounce clause.
     bounce_target: Optional[object] = None
-    # A permanent's static "<spells> cost {N} less" rule
-    # (oracle_parser.parse_cost_reduction), derived as a COST_DELTA effect
-    # while the permanent is on the battlefield.
-    cost_reduction_rule: Optional[dict] = None
+    # A permanent's static "<spells> cost {N} less" rules, one per reducer
+    # sentence of its front face (oracle_parser.parse_static_cost_
+    # reductions), and of its back face; derived as COST_DELTA effects
+    # while the permanent shows that face on the battlefield
+    # (oracle_resolver.reduction_rules_of).
+    cost_reduction_rules: Optional[tuple] = None
+    back_face_cost_reduction_rules: Optional[tuple] = None
     draw_limit: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
@@ -1525,9 +1528,12 @@ class CardTemplate:
             if self.next_turn_effect is None:
                 from .oracle_parser import parse_until_next_turn as _punt
                 self.next_turn_effect = _punt(self.oracle_text)
-            if self.cost_reduction_rule is None:
-                from .oracle_parser import parse_static_cost_reduction as _pscr2
-                self.cost_reduction_rule = _pscr2(self.oracle_text)
+            if self.cost_reduction_rules is None:
+                from .oracle_parser import (
+                    parse_static_cost_reductions as _pscr2)
+                self.cost_reduction_rules = _pscr2(self.oracle_text)
+                self.back_face_cost_reduction_rules = _pscr2(
+                    self.back_face_oracle)
             if self.draw_limit is None:
                 from .oracle_parser import parse_draw_limit as _pdl
                 self.draw_limit = _pdl(self.oracle_text)

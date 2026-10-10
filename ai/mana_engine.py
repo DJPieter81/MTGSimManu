@@ -9,8 +9,9 @@ hand's contents are not):
 * an extra land drop (CR 305.2 allows one land per turn; the typed
   `extra_land_drops` field adds more) yields one more land, and so one
   more mana, for each extra drop a land in hand is expected to fill;
-* a static cost reducer (`cost_reduction_rule`) saves its amount, capped
-  at each spell's generic cost, on every matching spell expected in hand
+* a static cost reducer (`oracle_resolver.reduction_rules_of`: the rules
+  of the face it shows) saves its amount, capped at each spell's generic
+  cost, on every matching spell expected in hand
   (`engine.oracle_resolver._cost_rule_applies` is the single matcher).
 
 `ai.clock.position_value` turns the result into value at the same
@@ -46,11 +47,12 @@ def engine_mana_next_turn(game: "GameState", player_idx: int,
     extra_drops = sum(getattr(t, 'extra_land_drops', 0) or 0 for t in permanents)
     mana = min(float(extra_drops), max(0.0, lands_expected - NORMAL_LAND_DROPS))
 
-    from engine.oracle_resolver import _cost_rule_applies
-    for perm in permanents:
-        rule = getattr(perm, 'cost_reduction_rule', None)
-        if not rule:
-            continue
+    from engine.oracle_resolver import _cost_rule_applies, reduction_rules_of
+    # The reductions each permanent has now (the face it shows), and those
+    # a permanent not yet on the battlefield would enter with.
+    rules = [r for p in player.battlefield for r in reduction_rules_of(p)]
+    rules += [r for t in extra for r in (t.cost_reduction_rules or ())]
+    for rule in rules:
         saved = sum(min(rule['amount'], t.mana_cost.generic)
                     for t in templates
                     if not t.is_land and _cost_rule_applies(rule, t))

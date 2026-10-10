@@ -230,7 +230,8 @@ def _a_until_next_turn(ctx):
         game.continuous_effects.register_effect(cost_delta_effect(
             controller, dict(eff['rule']), until_your_next_turn(controller),
             source_id=card.instance_id))
-        desc = f"{eff['rule']['target']} spells cost {eff['rule']['amount']} less"
+        from engine.oracle_parser import describe_cost_reduction
+        desc = describe_cost_reduction(eff['rule'])
     elif kind == 'flash_permission':
         from engine.effect_model import permit_cast_as_flash, until_your_next_turn
         game.continuous_effects.register_effect(permit_cast_as_flash(
