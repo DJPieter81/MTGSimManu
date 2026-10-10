@@ -15,7 +15,7 @@
     "Barbed Servitor",
     "TRIGGERED:0:2"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss."
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -23,7 +23,15 @@
     "Beast, Erudite Aerialist",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Bilbo, Retired Burglar",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Treasure token through the token owner (CR 111.10), as the legacy substring path did on 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -31,7 +39,7 @@
     "Eager Trufflesnout",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'."
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -39,7 +47,7 @@
     "Frostbite Pyromental",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed two cards; legacy's substring 'draw a card' never matched 'draw two cards', and it drew none."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed two cards; legacy's substring 'draw a card' never matched 'draw two cards', and it drew none. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -47,7 +55,7 @@
     "Gateway Sneak",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -55,7 +63,15 @@
     "Grotag Night-Runner",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission."
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Hoard Robber",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Treasure token through the token owner (CR 111.10), as the legacy substring path did on 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -63,7 +79,7 @@
     "Illvoi Infiltrator",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -71,7 +87,7 @@
     "Jeskai Shrinekeeper",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller gains the printed 1 life and draws; legacy drew on the substring 'draw a card' and skipped the life gain."
+   "reason": "Combat-damage trigger from text (R2): the controller gains the printed 1 life and draws; legacy drew on the substring 'draw a card' and skipped the life gain. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -79,7 +95,7 @@
     "Jhessian Thief",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -87,7 +103,7 @@
     "Mischievous Catgeist // Catlike Curiosity",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -95,7 +111,7 @@
     "Nimble Brigand",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -103,7 +119,7 @@
     "Oakhame Adversary",
     "TRIGGERED:0:2"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -111,7 +127,7 @@
     "Oroku Saki, Shredder Rising",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss."
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -119,7 +135,7 @@
     "Prophetic Flamespeaker",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission."
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -127,7 +143,7 @@
     "Psychic Frog",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -135,7 +151,7 @@
     "Ragavan, Nimble Pilferer",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the Treasure, the exile of the damaged player's top card into their exile (CR 400.3) and the cast permission are the same; the zone funnel logs the exile, and legacy's own two log lines are gone."
+   "reason": "Combat-damage trigger from text (R2): the Treasure, the exile of the damaged player's top card into their exile (CR 400.3) and the cast permission are the same; the zone funnel logs the exile, and legacy's own two log lines are gone. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -143,7 +159,7 @@
     "Scream Puff",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'."
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -151,7 +167,7 @@
     "Scroll Thief",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -159,7 +175,7 @@
     "Sea-Dasher Octopus",
     "TRIGGERED:0:2"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -167,7 +183,7 @@
     "Silent Submersible",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -175,7 +191,7 @@
     "Snooping Page",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss."
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -183,7 +199,7 @@
     "Soulknife Spy",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -191,7 +207,7 @@
     "Stealer of Secrets",
     "TRIGGERED:0:0"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -199,7 +215,7 @@
     "Stromkirk Occultist",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission."
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -207,7 +223,7 @@
     "Sturmgeist",
     "TRIGGERED:0:2"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -215,7 +231,7 @@
     "Sure-Footed Infiltrator",
     "TRIGGERED:0:1"
    ],
-   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
   },
   {
    "pair": [
@@ -2372,16 +2388,6 @@
    "activated_effects:DAMAGE_ANY_TARGET",
    "Weather Maker",
    "ACTIVATED:0:3"
-  ],
-  [
-   "combat_damage:dispatch",
-   "Bilbo, Retired Burglar",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "combat_damage:dispatch",
-   "Hoard Robber",
-   "TRIGGERED:0:0"
   ],
   [
    "direct_damage",

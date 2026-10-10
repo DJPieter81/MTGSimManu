@@ -206,3 +206,36 @@ def test_combat_damage_to_a_planeswalker_triggers_a_player_or_planeswalker_head(
     walker.loyalty = 5
     _attack(game, frog, planeswalker=walker)
     assert top in game.players[0].hand
+
+
+# ── The legacy substring path retired (R2.4) ──────────────────────────
+
+@pytest.fixture
+def audit(monkeypatch):
+    from engine import rules_audit
+    monkeypatch.setenv("MTG_RULES_AUDIT", "1")
+    rules_audit.reset()
+    yield rules_audit
+    rules_audit.reset()
+
+
+def test_a_combat_damage_trigger_no_carrier_resolves_does_nothing_and_is_recorded(
+        card_db, audit):
+    """Dimir Cutpurse: "that player discards a card and you draw a card" --
+    a discard no executor owns. The legacy substring path drew a card on
+    "draw a card" and skipped the discard; the card now resolves nothing
+    until a carrier can take it whole, and the rules audit's census
+    (`603.2/combat_damage_trigger_unresolved`, once per card) ranks it. A
+    trigger the carrier resolves is not recorded."""
+    game = _game()
+    cutpurse = _put(game, card_db, "Dimir Cutpurse", "battlefield")
+    mine = _put(game, card_db, "Island", "library")
+    _put(game, card_db, "Island", "hand", idx=1)
+    _attack(game, cutpurse)
+    assert mine in game.players[0].library
+    ragavan = _put(game, card_db, "Ragavan, Nimble Pilferer", "battlefield")
+    _put(game, card_db, "Lightning Bolt", "library", idx=1)
+    _attack(game, ragavan)
+    keys = {f["key"] for f in audit.drain()
+            if f["rule"] == "603.2/combat_damage_trigger_unresolved"}
+    assert keys == {"Dimir Cutpurse"}

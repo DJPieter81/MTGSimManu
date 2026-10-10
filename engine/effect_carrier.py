@@ -310,12 +310,16 @@ def dispatch_combat_damage_triggers(game: Any, dealer: Any, damaged: int, *,
     names that damage resolves through the dispatcher -- "that player" is
     the damaged player -- its targets picked as it is put on the stack
     (`trigger_targets`). None when the carrier does not take the dealer's
-    card (no such host, or one it cannot take: the card keeps its legacy
-    path whole); else whether any host performed anything."""
+    card (no such host, or one it cannot take: a card is taken whole, and
+    the rules audit records one it cannot, `603.2/
+    combat_damage_trigger_unresolved`); else whether any host performed
+    anything."""
     if not er.dispatch_enabled():
         return None
-    plan = combat_damage_plan(_face_hosts(dealer))
+    hosts = _face_hosts(dealer)
+    plan = combat_damage_plan(hosts)
     if plan is None:
+        _audit_unresolved_combat_damage_trigger(game, dealer, hosts)
         return None
     performed = False
     controller = dealer.controller
@@ -333,6 +337,24 @@ def dispatch_combat_damage_triggers(game: Any, dealer: Any, damaged: int, *,
         if game.game_over:
             break
     return performed
+
+
+def _audit_unresolved_combat_damage_trigger(game: Any, src: Any,
+                                            hosts: Iterable[Any]) -> None:
+    """Rules audit, a census once per card: `src` dealt combat damage and
+    has a combat-damage-triggered head, but no carrier resolves the card's
+    combat-damage triggers -- the trigger silently does nothing (CR
+    603.2)."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .effect_spec import EventHint, HostKind
+    for h in hosts:
+        if h.kind is HostKind.TRIGGERED and h.trigger is not None and \
+                EventHint.COMBAT_DAMAGE_TO_PLAYER in h.trigger.event_hints:
+            rules_audit.census("603.2/combat_damage_trigger_unresolved",
+                               src.name, detail=h.trigger.raw, game=game)
+            return
 
 
 def _member(v: Any, players: Sequence[int], permanents: Sequence[Any]) -> bool:

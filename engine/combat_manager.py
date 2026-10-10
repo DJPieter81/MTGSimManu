@@ -685,61 +685,14 @@ class CombatManager:
     def combat_damage_triggers(game: "GameState", dealer: "CardInstance",
                                controller: int, damaged: int) -> None:
         """The dealer's "deals combat damage to a player" triggers (CR
-        510.2, 603.2): the combat-damage carrier resolves them from the
-        card's typed text (`effect_carrier.dispatch_combat_damage_triggers`);
-        a card it does not take keeps the legacy substring path
-        (`_legacy_combat_damage_triggers`)."""
+        510.2, 603.2), resolved from the card's typed text by the
+        combat-damage carrier (`effect_carrier.
+        dispatch_combat_damage_triggers`). A card the carrier does not take
+        resolves none of them; the rules audit records it
+        (`603.2/combat_damage_trigger_unresolved`). `controller` is the
+        dealer's (the carrier reads it from the dealer)."""
         from .effect_carrier import dispatch_combat_damage_triggers
-        if dispatch_combat_damage_triggers(game, dealer, damaged) is None:
-            CombatManager._legacy_combat_damage_triggers(
-                game, dealer, controller, damaged)
-
-    @staticmethod
-    def _legacy_combat_damage_triggers(game: "GameState",
-                                       dealer: "CardInstance",
-                                       controller: int, damaged: int) -> None:
-        """The legacy path: an oracle-substring block over the dealer's own
-        text (any "treasure", "exile the top card", "draw a card")."""
-        a_oracle = (dealer.template.oracle_text or '').lower()
-        if 'combat damage to a player' in a_oracle:
-            if 'treasure' in a_oracle:
-                game.create_token(controller, "treasure",
-                                  count=1)
-            if 'exile the top card' in a_oracle:
-                opp = game.players[damaged]
-                if opp.library:
-                    exiled = opp.library[0]
-                    game.zone_mgr.move_card(game, exiled, "library",
-                                            "exile", cause=dealer.name)
-                    game.log.append(
-                        f"T{game.display_turn} P{controller+1}: "
-                        f"{dealer.name} exiles {exiled.name} "
-                        f"from top of P{damaged+1}'s library"
-                    )
-                    # "Until end of turn, you may cast that card"
-                    # (CR 601.2a): a permission over the card in its
-                    # owner's exile (CR 400.3), never the hand -- a
-                    # land in it is not castable, and its controller
-                    # does not change until it is cast.
-                    may_cast = 'until end of turn, you may cast' in a_oracle or 'you may cast that card' in a_oracle
-                    if exiled.zone == "exile" and may_cast:
-                        from .effect_model import THIS_TURN, permit_play
-                        game.continuous_effects.register_effect(
-                            permit_play(controller,
-                                        [exiled.instance_id], "cast",
-                                        THIS_TURN,
-                                        source_id=dealer.instance_id))
-                        game.log.append(
-                            f"T{game.display_turn} P{controller+1}: "
-                            f"{dealer.name} — may cast {exiled.name} this turn"
-                        )
-            if 'draw a card' in a_oracle:
-                game.draw_cards(controller, 1)
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{dealer.name} deals combat damage — draw a card"
-                )
-
+        dispatch_combat_damage_triggers(game, dealer, damaged)
 
     def _apply_battle_cry(self, game: "GameState",
                            attackers: List["CardInstance"]):
