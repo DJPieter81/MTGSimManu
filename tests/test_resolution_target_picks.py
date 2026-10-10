@@ -28,6 +28,7 @@ def _perm(game, controller, *, types, name, cmc=2, power=None, toughness=None,
         name=name, card_types=types, mana_cost=ManaCost(generic=cmc),
         supertypes=[], subtypes=[], power=power, toughness=toughness, loyalty=None,
         keywords=set(keywords), abilities=[], color_identity=set(colors),
+        colors=set(colors),
         produces_mana=[], enters_tapped=False, oracle_text=oracle, tags=set(),
         ward_cost=ward, ward_life_cost=ward_life)
     c = CardInstance(template=tmpl, owner=controller, controller=controller,

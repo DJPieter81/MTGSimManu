@@ -332,7 +332,8 @@ def _compute_r_res(hand, mana, medallions):
         from engine.cards import Color
         reduction = 0
         if (c.template.is_instant or c.template.is_sorcery):
-            if hasattr(c.template, 'color_identity') and Color.RED in c.template.color_identity:
+            # The spell's colour (CR 105.2), not its colour identity.
+            if Color.RED in c.template.colors:
                 reduction = medallions
         effective_cost = max(0, cmc - reduction)
         total_cost += effective_cost

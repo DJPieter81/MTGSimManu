@@ -68,11 +68,10 @@ def tutor_target_matches(template: "CardTemplate", spec: dict,
         if not all(word in have for word in spec['subtypes']):
             return False
     if spec.get('colors'):
-        # Printed colour is the CR 105 characteristic ("green creature
-        # card"); colour identity is the fallback for templates loaded
-        # without printed colours (matches the GSZ resolver's behaviour).
-        have_colors = template.colors or template.color_identity
-        if not any(Color(letter) in have_colors
+        # "A green creature card" reads the card's colour (CR 105.2): a
+        # template with no colours is colourless (devoid, CR 702.114a),
+        # whatever mana symbols its text prints.
+        if not any(Color(letter) in template.colors
                    for letter in spec['colors']):
             return False
     cmc = template.cmc or 0

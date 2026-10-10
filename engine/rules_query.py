@@ -157,6 +157,7 @@ def cost_delta(game: "GameState", player_idx: int, template) -> int:
     through the one matcher."""
     from engine.effect_model import ModKind
     from engine.oracle_resolver import _cost_rule_applies
+    from engine import rules_audit
     total = 0
     for e in game.continuous_effects.rule_effects(game):
         if (e.modification.kind is ModKind.COST_DELTA
@@ -164,6 +165,18 @@ def cost_delta(game: "GameState", player_idx: int, template) -> int:
             rule = dict(e.modification.data)
             if _cost_rule_applies(rule, template):
                 total += rule['amount']
+                # Audit (CR 105.2), restated from the printed colours: a
+                # reduction for spells of one colour reduces only a spell
+                # of that colour.
+                if rule.get('color') and rules_audit.enabled():
+                    rules_audit.check(
+                        "105.2/colour_restricted_reduction",
+                        any(c.value == rule['color']
+                            for c in template.colors),
+                        f"a reduction for {rule['color']} spells applied to "
+                        f"{template.name}, whose colours are "
+                        f"{sorted(c.value for c in template.colors)}",
+                        game=game)
     return total
 
 

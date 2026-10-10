@@ -137,54 +137,23 @@ def _format_mana_cost(card: "CardInstance") -> str:
     return str(tmpl.cmc or 0)
 
 
-def _has_pitch_alt_cost(card: "CardInstance") -> bool:
-    """A card has a pitch alt-cost iff the oracle classifier tags it
-    `Tag.PITCH_ALT_COST` (Force of Negation, Force of Will, Subtlety,
-    Solitude / Fury / Endurance / Grief evoke, etc.).
-
-    Tag-driven dispatch; no oracle-text matching at runtime.  When
-    `tags_for(name)` returns an empty frozenset (card not in the
-    smoke cache yet), we return False — false negatives degrade EV
-    estimation but never produce illegal plays.
-    """
-    from ai.oracle_classifier import Tag, has_tag
-
-    return has_tag(card.name, Tag.PITCH_ALT_COST)
-
-
 def _has_pitch_fuel(game: "GameState", player_idx: int,
                     pitch_card: "CardInstance") -> bool:
-    """Does the player have at least one other card in hand that
-    could be exiled to pay the pitch alt-cost of `pitch_card`?
+    """Can `pitch_card` be cast now by exiling another card from the
+    hand instead of paying mana? Asks the engine's owners of the two
+    printed shapes (CR 118.9, 702.74a): "exile a <colour> card from your
+    hand rather than pay this spell's mana cost" (under its printed
+    condition, "if it's not your turn") and an evoke cost that exiles a
+    <colour> card. Both read the exiled card's colour (CR 105.2), so a
+    land -- colorless whatever mana it makes -- is never fuel. False for
+    a card that prints neither shape."""
+    from engine.cast_manager import CastManager
 
-    Structural rule for current Modern: every pitch-alt-cost card
-    is monocolor and requires exiling a card of its own color.  The
-    pitch color is therefore the card's primary color from
-    `template.color_identity`, not parsed from oracle text.
-
-    If `pitch_card` has no color identity (uncommon corner case)
-    OR multiple colors (no current Modern pitch card is multicolor),
-    any other non-self card in hand qualifies — same conservative
-    fallback as before, but reached via the structural predicate
-    rather than an oracle-string fallback.
-    """
-    hand = game.players[player_idx].hand
-    if len(hand) < 2:
-        # Only the pitch card itself in hand — no fuel.
-        return False
-
-    colors = pitch_card.template.color_identity
-    if len(colors) != 1:
-        # Colorless or multicolor pitch card — accept any other card.
-        return any(other is not pitch_card for other in hand)
-
-    needed = next(iter(colors))
-    for other in hand:
-        if other is pitch_card:
-            continue
-        if needed in other.template.color_identity:
-            return True
-    return False
+    return bool(
+        CastManager.alternative_exile_candidates(game, player_idx,
+                                                 pitch_card)
+        or CastManager.evoke_exile_candidates(game.players[player_idx],
+                                              pitch_card))
 
 
 # Channel target categories: oracle word -> predicate against a
@@ -378,12 +347,11 @@ def _yield_hand_candidates(
 
         # ── Pitch-cast (alternative cost) ──
         # A card with a pitch alt-cost can be cast for "0 mana" by
-        # exiling a same-color card from hand.  Class size: Force
-        # of Negation, Force of Will, Subtlety, Solitude evoke,
-        # Endurance evoke, every other pitch card.
-        if _has_pitch_alt_cost(card) and _has_pitch_fuel(
-            game, controller, card
-        ):
+        # exiling a card of the printed colour from hand.  Class: the
+        # Forces and Snapback ("rather than pay this spell's mana
+        # cost") and the evoke costs that exile a card (Solitude,
+        # Endurance, ...).
+        if _has_pitch_fuel(game, controller, card):
             # Targets depend on the spell's mode — counterspell-class
             # pitch (FoN, FoW) targets the stack item; creature-class
             # pitch evoke (Solitude) targets a creature.  Surface

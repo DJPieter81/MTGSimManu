@@ -68,6 +68,7 @@ class MockTemplate:
     tags: Set[str] = field(default_factory=set)
     keywords: Set[str] = field(default_factory=set)
     color_identity: Set = field(default_factory=set)
+    colors: Set = field(default_factory=set)
     has_flash: bool = False
     ritual_mana: Optional[tuple] = None
     domain_reduction: int = 0

@@ -89,7 +89,7 @@ def classify_card(card, available_mana: int, medallion_count: int,
 
     # Medallion reduction for red instants/sorceries
     reduction = 0
-    if (t.is_instant or t.is_sorcery) and Color.RED in t.color_identity:
+    if (t.is_instant or t.is_sorcery) and Color.RED in t.colors:
         reduction = medallion_count
     effective_cost = max(0, cmc - reduction)
 
@@ -174,7 +174,7 @@ def _simulate_sequence(
         # Recalculate cost with current medallion count
         t = card.template
         reduction = 0
-        if (t.is_instant or t.is_sorcery) and Color.RED in t.color_identity:
+        if (t.is_instant or t.is_sorcery) and Color.RED in t.colors:
             reduction = medallions
         cost = max(0, (t.cmc or 0) - reduction)
 
@@ -192,7 +192,7 @@ def _simulate_sequence(
         if role.is_arcane and spliceable:
             for splice_card, splice_role in spliceable:
                 s_reduction = 0
-                if Color.RED in splice_card.template.color_identity:
+                if Color.RED in splice_card.template.colors:
                     s_reduction = medallions
                 splice_eff_cost = max(0, splice_role.splice_cost - s_reduction)
                 if splice_eff_cost <= mana:

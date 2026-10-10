@@ -2491,7 +2491,7 @@ class CardDatabase:
                 if kwargs["card_type"] not in card.card_types:
                     match = False
             if "color" in kwargs:
-                if kwargs["color"] not in card.color_identity:
+                if kwargs["color"] not in card.colors:
                     match = False
             if "max_cmc" in kwargs:
                 if card.cmc > kwargs["max_cmc"]:

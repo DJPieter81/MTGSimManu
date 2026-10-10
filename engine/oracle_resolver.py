@@ -1925,10 +1925,12 @@ def _cost_rule_applies(rule: dict, template) -> bool:
     else:
         matches = False
     if matches and rule.get('color'):
+        # "Red spells" are spells whose colour is red (CR 105.2); a devoid
+        # spell is colorless whatever mana symbols it prints.
         color_map = {'R': Color.RED, 'U': Color.BLUE, 'B': Color.BLACK,
                      'W': Color.WHITE, 'G': Color.GREEN}
         required = color_map.get(rule['color'])
-        if required and required not in template.color_identity:
+        if required and required not in template.colors:
             matches = False
     return matches
 

@@ -1885,7 +1885,7 @@ def sanctifier_en_vec_etb(game, card, controller, targets=None, item=None):
     exiled = 0
     for p in game.players:
         to_exile = [c for c in p.graveyard
-                    if any(col.value in ('B', 'R') for col in c.template.color_identity)]
+                    if any(col.value in ('B', 'R') for col in c.colors)]
         for c in to_exile:
             p.graveyard.remove(c)
             c.zone = "exile"
@@ -1925,16 +1925,16 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
             if stack_item.source.instance_id != tid:
                 continue
             from engine.game_state import StackItemType
-            tmpl = stack_item.source.template
             is_triggered = stack_item.item_type == StackItemType.TRIGGERED_ABILITY
             # "Counter target triggered ability OR colorless spell": a
             # triggered ability is counterable regardless of its source's
-            # color (the ability is not a spell and has no color identity of
-            # its own); a SPELL must be colorless.
-            if not is_triggered and tmpl.color_identity:
+            # colour (the ability is not a spell); a SPELL must have no
+            # colour (CR 105.2) -- devoid, or an artifact whose abilities
+            # print coloured mana, is colorless.
+            if not is_triggered and stack_item.source.colors:
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
-                    f"Consign to Memory fizzles (spell has color identity)")
+                    f"Consign to Memory fizzles (spell is colored)")
                 continue
             countered = game.stack.items.pop(i)
             if is_triggered:
@@ -2142,7 +2142,7 @@ def summoners_pact_resolve(game, card, controller, targets=None, item=None):
     candidates = [
         c for c in player.library
         if c.template.is_creature
-        and Color.GREEN in c.template.color_identity
+        and Color.GREEN in c.colors
     ]
     if candidates:
         best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
@@ -2518,9 +2518,10 @@ def celestial_purge_resolve(game, card, controller, targets=None, item=None):
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
 
+    # A permanent's colour (CR 105.2), layer 5 included: a land or an
+    # artifact whose abilities print {B} or {R} is colorless.
     red_black = [c for c in opp.battlefield
-                 if not c.template.is_land
-                 and any(col.value in ('R', 'B') for col in c.template.color_identity)]
+                 if any(col.value in ('R', 'B') for col in c.colors)]
     from .target_solver import pick_resolution_target
     target = pick_resolution_target(game, controller, card, red_black,
                                     preferred=targets,
