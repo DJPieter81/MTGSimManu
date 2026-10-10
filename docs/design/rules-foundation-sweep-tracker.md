@@ -7085,3 +7085,54 @@ Storm then has one card in hand and does nothing on turns 4–5.
 **Units this names:**
 - **Engine:** "a cost reduction reduces exactly the spells its text names, on the face and level that print it" (CR 601.2f, 712.8e, 716). 148 parsed rules; the 3 registered reducers are all Ruby Storm's. Expected effect: Storm down.
 - **AI:** "a ritual gate counts only the digs the AI will make; a mana-neutral cantrip is a dig, not a ritual". Expected effect: Storm up.
+
+## Unit CR: a cost reduction reduces exactly the spells its text names, on the face and level that print it (2026-10-10)
+
+**Rule (CR 601.2f, 712.8e, 716.2a):** "<qualities> spells [you cast] cost {N} less to cast" reduces the total cost of each spell with those qualities. A static ability functions only while its permanent has it: a transformed double-faced permanent has only its back face's abilities, and a Class has a level's abilities only once it has gained that level. A reduction that names no caster ("Instant and sorcery spells cost {2} less") covers every player's spells.
+
+**Defect:** the typed field (`cost_reduction_rule`) read the whole oracle text by substring:
+- "noncreature" read as "creature", because it contains "creature spell". Artist's Talent therefore reduced Ral.
+- Every subject it did not know reduced every spell: artifact, enchantment, Equipment, subtype, legendary, historic, colorless and multicolored subjects (about 55 rules).
+- Any "cost {N} less" anywhere was a spell reduction (25 rules): activation and keyword costs, ordinal and conditional sentences, reminder text.
+- The first colour word anywhere in the card coloured the rule. Training Grounds' "activated abilities … cost {2} less" became a 2-mana discount on every red spell, because "reduce" contains "red".
+- A second reducer sentence was dropped (Grand Arbiter Augustin IV).
+- The front face's reduction stayed after a transform: Ral, Leyline Prodigy kept Monsoon Mage's reduction. Back-face reducers were never parsed.
+- A Class's level-2 reduction applied from level 1 (Artist's Talent, Ruby Storm ×2).
+
+**Class:** 148 pool templates carried a reducer rule. Now there are 80 front faces (81 rules) and 3 back faces (Curious Homunculus, Duskwatch Recruiter, Rowan/Will). The 3 registered reducers are all Ruby Storm's: Ruby Medallion, Ral and Artist's Talent.
+
+**Steps (`98af2d0`):**
+- **Parse.** `oracle_parser.parse_static_cost_reductions` gives one rule per reducer sentence, `{'amount', 'qualities', 'who'}`:
+  - `qualities` are alternatives of quality words: a colour, colorless, mono- or multicolored, a card type or non<type>, a supertype, a subtype, historic, or permanent;
+  - it reads only the text before any Class level header, with reminder text stripped;
+  - a sentence of any other shape is refused, never widened to every spell.
+- **Match.** `oracle_resolver._cost_rule_applies` reads the qualities against the spell's printed characteristics. It is the single matcher for the engine (`rules_query.cost_delta`) and the AI (`ai/mana_engine`).
+- **Face.** `oracle_resolver.reduction_rules_of` gives the rules of the face a permanent shows (`cost_reduction_rules`, `back_face_cost_reduction_rules`).
+- **Who.** A rule with no "you cast" derives an `ALL_PLAYERS` cost-delta effect.
+- **Auditor:** `601.2f/reduction_names_the_spell`, a reduction applied to a spell names it. It is restated from the raw printed fields as a word set and replaces unit COL's `105.2/colour_restricted_reduction`.
+
+**Tests (red first):**
+- `tests/test_cost_reduction_reads_its_text.py` (11): names the spells; subject alternatives and refusals; activation or keyword costs reduce no spell; reminder text; one reduction per sentence; controller-only and every-player; transformed faces; Class levels; the auditor both ways.
+- Six existing pins move to the new shape.
+
+**Equivalence:** the `cost_reduction_rules` row compares amounts (AGREE 22658, UNMODELLED_CLAUSE 80). LEGACY_COST_REDUCTION_SCOPE (13) and 6 UNEXPLAINED rows are gone.
+
+**Digest / anchor / suites:**
+- The digest changes in 5 Ruby Storm games, with no winner flip:
+  - bo1 4c Omnath vs Ruby Storm 57500;
+  - bo1 Ruby Storm vs Dimir Midrange 50500;
+  - bo3 Azorius Control vs Ruby Storm 58500 g1–g3.
+- Anchor 29 passed.
+- Ratchets at baseline; census and harness unchanged.
+- Suites 4547 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `cr-post` `6e6f0d2`, pre = `col-post`):** 40 of 600 cells change, every one in Ruby Storm's row or column:
+- Ruby Storm −3.3 (15.3 → 12.0). Artist's Talent no longer reduces at level 1, and Ral no longer reduces after it transforms, so Storm's chains cost what the rules say.
+- Every other deck moves by at most ±0.7, which is its cells against Ruby Storm.
+
+Audit findings 472 → 444, violations 0; 0 aborts. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- Class level-up activations ("{2}{R}: Level 2") are not modelled, so a Class never gains a level; 27 Classes in the pool, Artist's Talent registered.
+- Conditional reducers ("during your turn", "as long as this creature is tapped", the first spell each turn) and chosen-quality reducers ("spells of the chosen type") are refused, not modelled.
+- The AI storm chain's cost model (`combo_chain.classify_card`, `flashback_chain_viable`) still counts `cost_reducer`-tagged permanents instead of reading `reduction_rules_of` through `_cost_rule_applies`.
