@@ -83,6 +83,9 @@ def permitted_objects(game: "GameState", player_idx: int) -> dict:
     from engine.effect_model import ModKind
     out: dict = {}
     for e in _covering(game, player_idx, ModKind.PERMIT, ("play", "cast")):
+        start = e.modification.get("from_turn")
+        if start is not None and game.turn_number < start:
+            continue                       # not yet (warp: a later turn)
         zone = e.modification.get("zone")
         for oid in e.modification.get("objects") or ():
             out.setdefault(oid, (zone, set()))[1].add(e.modification.action)

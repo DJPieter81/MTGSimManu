@@ -999,16 +999,10 @@ class GameState:
             if (card.has_flashback or card.template.escape_cost is not None) and \
                self.can_cast(player_idx, card):
                 legal.append(card)
-        # Include Warp-exiled cards: a creature cast via Warp is exiled at end
-        # of turn with card._warped=True and may be re-cast from exile on
-        # later turns (CR 702.Warp). can_cast handles the has-artifact + cost
-        # gate; this branch surfaces those cards to the legal-play set.
-        for card in player.exile:
-            if getattr(card, '_warped', False) and self.can_cast(player_idx, card):
-                legal.append(card)
         # Include exiled cards a permission lets the player play ("you may
-        # play those cards", CR 305.1, 601.2a): a land as the land play, a
-        # spell when can_cast allows it (normal timing and cost).
+        # play those cards", CR 305.1, 601.2a; a warped card on a later
+        # turn, CR 702.185a): a land as the land play, a spell when
+        # can_cast allows it (normal timing and cost).
         from . import rules_query
         for card in rules_query.permitted_cards(self, player_idx):
             if card in legal:

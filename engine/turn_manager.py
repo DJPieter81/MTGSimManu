@@ -211,9 +211,12 @@ class TurnManager:
                 game.log.append(
                     f"T{game.display_turn}: {card.name} returned to hand (Dash)")
 
-        # Warp: exile warped permanents at the beginning of the end step.
-        # The creature may be cast again from exile on a later turn (the
-        # _warped flag persists on the CardInstance so can_cast recognises it).
+        # Warp (CR 702.185a): exile warped permanents at the beginning of
+        # the end step; "its owner may cast this card after the current turn
+        # has ended for as long as it remains exiled" -- a permission to
+        # cast it from exile, from the next turn on, through the one
+        # rule-effect store (leaving exile ends it, CR 400.7).
+        from .effect_model import PERMANENT, permit_play
         for player in game.players:
             warped_creatures = [c for c in player.battlefield
                                 if getattr(c, '_warped', False)]
@@ -224,6 +227,11 @@ class TurnManager:
                 )
                 game.log.append(
                     f"T{game.display_turn}: {card.name} exiled (Warp)")
+                if card.zone == "exile":
+                    game.continuous_effects.register_effect(permit_play(
+                        card.owner, [card.instance_id], "cast", PERMANENT,
+                        source_id=card.instance_id,
+                        from_turn=game.turn_number + 1))
 
         # Delayed "exile it at the beginning of the next end step" riders
         # (temporary reanimation / put-onto-battlefield effects).

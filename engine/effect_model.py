@@ -283,14 +283,16 @@ def permit_cast_as_flash(player: int, types, duration: Duration,
 
 
 def permit_play(player: int, objects, action: str, duration: Duration,
-                source_id: int = 0) -> Effect:
+                source_id: int = 0, from_turn: Optional[int] = None) -> Effect:
     """"You may play / cast those cards" (CR 305.1, 601.2a): `player` may
     play (lands and spells) or cast (spells only) the objects -- instance
-    ids, in exile -- for `duration`."""
+    ids, in exile -- for `duration`; from game turn `from_turn` on when set
+    (warp's "after the current turn has ended", CR 702.185a)."""
+    data = (("objects", tuple(sorted(objects))), ("zone", "exile"))
+    if from_turn is not None:
+        data += (("from_turn", from_turn),)
     return Effect(Selector(SelectorKind.PLAYER, player=player),
-                  Modification(ModKind.PERMIT, action=action,
-                               data=(("objects", tuple(sorted(objects))),
-                                     ("zone", "exile"))),
+                  Modification(ModKind.PERMIT, action=action, data=data),
                   duration, OriginKind.RESOLVED, source_id=source_id,
                   controller=player)
 

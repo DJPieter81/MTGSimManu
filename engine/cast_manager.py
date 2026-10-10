@@ -369,27 +369,10 @@ class CastManager:
                         game, player_idx, player.untapped_mana_sources,
                         template.madness_cost))
 
-        # Warp: previously warped permanents may be cast again from exile.
-        if card.zone == "exile" and getattr(card, '_warped', False):
-            has_artifact = any(
-                CardType.ARTIFACT in c.template.card_types
-                for c in player.battlefield
-            )
-            if (template.warp_cost is not None
-                    and has_artifact):
-                total_mana = (player.untapped_mana_capacity()
-                              + player.mana_pool.total()
-                              + player._tron_mana_bonus())
-                if (total_mana >= template.warp_cost.cmc
-                        and CastManager._can_pay_colored_pips(
-                            game, player_idx, player.untapped_lands,
-                            template.warp_cost)):
-                    return True
-            return False  # in exile but not a re-castable warp card
-
         # A permission to play or cast this object from exile (CR 601.2a:
-        # "you may play those cards"): the cast then meets every normal
-        # check below -- timing, cost, targets.
+        # "you may play those cards"; a warped card's owner may cast it
+        # from exile on a later turn, CR 702.185a): the cast then meets
+        # every normal check below -- timing, cost, targets.
         exile_permitted = (card.zone == "exile"
                            and card in player.exile
                            and rules_query.play_permitted(game, player_idx,
@@ -678,13 +661,11 @@ class CastManager:
         # not just "total_mana >= 1" (the old check caused infinite loops when
         # the warp cost could be quoted as castable but the normal-cost payment
         # path failed for color reasons inside cast_spell).
+        # CR 702.185a: the warp cost is paid instead of the mana cost, for
+        # a cast from the hand; nothing else gates it.
         oracle = (template.oracle_text or "").lower()
-        if template.warp_cost is not None:
-            has_artifact = any(
-                CardType.ARTIFACT in c.template.card_types
-                for c in player.battlefield
-            )
-            if (has_artifact and total_mana >= template.warp_cost.cmc
+        if template.warp_cost is not None and card.zone == "hand":
+            if (total_mana >= template.warp_cost.cmc
                     and CastManager._can_pay_colored_pips(
                         game, player_idx, player.untapped_lands,
                         template.warp_cost)):
@@ -1518,20 +1499,16 @@ class CastManager:
                          and card.zone == "exile"
                          and getattr(card, '_madness_pending', False))
 
-            # Warp: cast from hand for cheaper alternative cost; creature exiles
-            # at beginning of the next end step.  Use Warp when we have an
-            # artifact on the battlefield AND cannot afford the normal cost
-            # (or prefer the temporary body).  The warp_cost was parsed at
-            # load time, so no oracle-substring re-parsing here.
+            # Warp (CR 702.185a): cast from hand for the warp cost instead
+            # of the mana cost; the permanent is exiled at the beginning of
+            # the next end step. Used when the mana cost is unaffordable.
+            # The warp_cost was parsed at load time, so no oracle-substring
+            # re-parsing here.
             if (template.warp_cost is not None
                     and card.zone == "hand"
                     and not dashed):
-                has_artifact = any(
-                    CardType.ARTIFACT in c.template.card_types
-                    for c in player.battlefield
-                )
                 can_normal = untapped >= template.mana_cost.cmc
-                can_warp = has_artifact and untapped >= template.warp_cost.cmc
+                can_warp = untapped >= template.warp_cost.cmc
                 if not can_warp and not can_normal:
                     return False
                 # Prefer Warp only when normal cost is unaffordable
