@@ -7136,3 +7136,58 @@ Audit findings 472 → 444, violations 0; 0 aborts. No deck moves more than 5 pp
 - Class level-up activations ("{2}{R}: Level 2") are not modelled, so a Class never gains a level; 27 Classes in the pool, Artist's Talent registered.
 - Conditional reducers ("during your turn", "as long as this creature is tapped", the first spell each turn) and chosen-quality reducers ("spells of the chosen type") are refused, not modelled.
 - The AI storm chain's cost model (`combo_chain.classify_card`, `flashback_chain_viable`) still counts `cost_reducer`-tagged permanents instead of reading `reduction_rules_of` through `_cost_rule_applies`.
+
+## Unit RG: a combo hold waits only for a play the AI will make (2026-10-10)
+
+**Decision principle:** a hold is the opportunity cost of a later play. The later play counts only if the AI's own main phase will make it:
+- the same-turn filter does not defer the cast (`ev_evaluator.cast_is_deferred`, the filter `decide_main_phase` applies);
+- for a ritual's dig, the mana the ritual leaves pays for it this turn, since ritual mana empties at the end of the phase (CR 500.4, 106.4).
+
+A dig puts new cards in hand or play (`_is_real_dig`: the typed draw and tutor fields), never a classifier tag. A ritual that draws is its own dig.
+
+**Defect:** each combo hold counted plays the AI never makes.
+- **Storm finisher and tutor holds** counted cards the main phase defers.
+  - Hex Magic and Valakut Awakening have no same-turn signal: "draw that many" is unparsed, and Hex Magic does nothing (next unit).
+  - At storm 14 with 7 mana, Storm held Grapeshot (15 damage) and a castable Wish for a second Grapeshot, then passed.
+- **The mid-chain ritual gate** admitted rituals at a soft penalty because Manamorphose remained as a dig, then hard-held Manamorphose as a ritual with no other dig. The mana emptied unused.
+- **The gate's dig check** read the `cantrip` / `card_advantage` / `draw` tags, so Past in Flames counted as a draw.
+
+**Class:** every storm-keyword finisher (18 pool cards), every tutor with payoff access, and every mid-chain ritual. Registered: Ruby Storm.
+
+**Steps (`6fb47d8`):**
+- `ev_evaluator.cast_is_deferred` is the one deferral predicate. The storm-finisher and tutor fuel counts exclude deferred casts.
+- `combo_calc._digs_the_ai_will_make` gives the gate's digs:
+  - the ritual itself when it digs;
+  - each other dig that is not deferred and whose effective cost (`ai.effective_cmc`) the mana left after this ritual pays.
+- The gate's hard hold, soft path and cascade-risk count all read that one set. The tag-based `_has_draw_in_hand` is deleted.
+
+**Tests (red first):**
+- `tests/test_combo_holds_count_only_plays_the_ai_makes.py` (7; 6 red before the fix) uses real cards and the deck's gameplan roles:
+  - the finisher and tutor holds ignore deferred fuel;
+  - a finisher still waits for fuel the AI casts;
+  - a ritual that draws is its own dig;
+  - the gate counts only spells that draw, and only a dig the ritual's mana pays for;
+  - the storm-14 position closes instead of passing.
+- Three mock-based files state once, at the predicate, that their mock fuel is a cast the AI makes.
+
+**Storm Bo1 scan** (48 games, seeds 50000/50500 against the field):
+- Storm wins 4 → 8.
+- Soft rituals cast while their dig was hard-held: 26 events → 0.
+- Passes with mana floating: 75 → 49, and none now has Grapeshot in hand at storm ≥ 3. The rest are passes on Hex Magic / Valakut Awakening hands, which the next unit addresses.
+
+**Digest / anchor / suites:**
+- 4 Ruby Storm games change, with one flip. In bo3 Azorius Control vs Ruby Storm s58500 g1, Wish now fetches Empty the Warrens at storm 6 instead of passing, and Storm wins on T6. Replayed and intended; the match ends 2-0, so the digest holds 25 games (`01b27479`).
+- Anchor 29 passed.
+- Suites 4554 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `rg-post` `4abd787`, pre = `cr-post`):** 38 of 600 cells change, every one in Ruby Storm's row or column.
+- Ruby Storm +7.3 (12.0 → 19.3). Every other deck moves by at most ±1.4, which is its cells against Ruby Storm.
+- Audit findings 444 → 436, violations 0; 0 aborts.
+- **Replay of the >5 pp move** (`_run_pair` path, Ruby Storm vs Amulet Titan, the cell 5 → 40; 1/20 → 8/20 locally, 7 seeds flip). At s50500 game 2, Storm's third turn chains Pyretic, Reckless Impulse, Pyretic and Wrenn's Resolve to storm 6.
+  - Before, it passed with Grapeshot in hand, held for Valakut Awakening, a card the main phase defers.
+  - Now Grapeshot deals 7 (Amulet 20 → 13), and Storm wins on T7 and takes game 3.
+
+**Leads (not built):**
+- A finisher held for fuel the AI casts can strand itself: the fuel's cost may leave the finisher unaffordable. The hold does not ask whether the finisher stays castable after the fuel.
+- Two finishers in reach (Grapeshot in hand plus Wish for another) are not added up as one lethal line. Each finisher's lethal check sees only its own damage.
+- Past in Flames is tagged `cantrip`, so `combo_continuation` fires for it over an empty graveyard.
