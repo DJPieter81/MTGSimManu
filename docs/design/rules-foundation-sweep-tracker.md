@@ -6876,3 +6876,51 @@ Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Az
 
 **Defect:** `_project_spell` incremented the projected storm count by the held cards a cast spends. Since I.4, a card whose permission ends this turn spends none, so casting an impulse-exiled card counted for no storm (CR 702.40a) in every plan reading the projection. Fixed in `3932277`: the storm count is charged for every cast, and the hand only for a held card. Digest byte-identical.
 
+
+## Unit V: evoke and costs that exile a card from hand, from the rules (2026-10-10)
+
+**Class:**
+- 32 evoke cards: 29 print a mana cost ("Evoke {2}{U}"), 3 a card to exile ("Evoke — Exile a white card from your hand.").
+- 6 cards with the alternative cost "exile a <colour> card from your hand rather than pay this spell's mana cost": the five Forces ("if it's not your turn") and Snapback.
+- Registered: Solitude (8 decks ×4), Endurance, Subtlety, Wistfulness (Living End ×4), Force of Negation, Force of Vigor.
+
+**Defects:**
+- Only the em-dash evoke form was parsed, so no mana evoke could be cast (29 cards, Wistfulness among them), and an evoke paid no mana.
+- Both exile costs took a card sharing the spell's colour identity. "A white card" is a card whose colour is white (CR 105.2): a green Dryad Arbor pays Endurance, and a colourless Hallowed Fountain does not pay Force of Negation.
+- The engine decided for the caster:
+  - no evoke while the mana cost was payable;
+  - no evoke while the opponent had no creature, through a card-name lookup (the elementals' targets are their enter triggers', CR 603.3d);
+  - a pitched card picked by tag thresholds, which vetoed the cast after the controller had chosen to evoke;
+  - for the Forces, "not your turn" applied to every such spell, the cheapest card exiled, and always this way on the opponent's turn, even with the mana cost payable.
+- The runner's instant windows listed every evoke-tagged creature; evoke grants no flash.
+
+**Steps:**
+- **V.1 (`b6ef971`, registry follow-up `e609502`):**
+  - `parse_evoke_cost`, both printed shapes, and `CardTemplate.evoke_exile_color`.
+  - `CastManager.evoke_payable` / `evoke_exile_candidates` are the one check `can_cast` and `cast_spell` read. The evoke is the controller's `should_evoke`; the card is their `choose_exile_from_hand`, and declining casts nothing. The evoke mana is paid, and the card leaves through the funnel.
+  - AI `choose_card_to_exile_from_hand`, lifted from the engine: declared keystones last; otherwise the least worth by the strip value; never the last reachable copy of a live plan role (an exiled card is not relocated).
+  - `_eval_evoke` refuses a creature-removal evoke with no opposing creature. The engine's deleted check had masked this: 4/5c Control evoked Solitude at Ornithopter on the stack.
+  - `ai.effective_cmc.cast_mode_of`: the projection pays the evoke mana and puts the evoked creature in the graveyard, not on the board. The body credit had Living End evoke Wistfulness over casting Shardless Agent.
+  - Zone mutation 59 → 58.
+- **V.2 (`ad2c6a4`):**
+  - `parse_alternate_exile_cost` (colour and condition) replaces the boolean flag.
+  - `CastManager.alternative_exile_candidates` is read by `can_cast`, `cast_spell` and the AI's pitch-counter predicate.
+  - The controller's `should_exile_instead_of_paying` decides whether to pay this way (AI: only when the mana cost cannot be paid); the card is the shared `choose_exile_from_hand` pick.
+  - Oracle runtime parse 172 → 170; zone mutation 58 → 57.
+
+**Digest:**
+- V.1: 3 games change, with no winner change.
+  - Jeskai's Solitude keeps Ephemerate, a declared keystone.
+  - Living End evokes Wistfulness for {G/U}{G/U}.
+  - Jeskai no longer evokes Solitude (pitching Ephemerate) at a 2-drop.
+- V.2: 4 games change and 2 winners flip.
+  - Dimir pays Force of Negation's mana instead of pitching Kaito, and Kaito's own surveil then bins Murktide: Domain Zoo wins.
+  - Azorius pays Force of Negation's mana, keeps Sink into Stupor, and wins a long game against Ruby Storm.
+- Anchor: V.1 changes three games' turns only; V.2 is unchanged.
+
+**Measured (same-seed n=20 Bo3, all 25 rows; auditor 0 violations in every arm):**
+- V.1 arm (`evoke-v1-post`, pre = `ragavan-r1-post`): 4c Omnath −3.6, Boros Ponza −1.5, Living End −1.5; every other deck within ±1.0. 244 cells change, because evoke decisions move in a dozen decks.
+- V.2 arm (`evoke-v2-post`, which also carries the storm projection fix; pre = V.1's): every deck within ±1.6 (Living End +1.6, Instant Reanimator −1.5, Dimir Midrange +1.1). 126 cells change.
+- Across the unit (R1's arm to V.2's): 4c Omnath −4.3, Instant Reanimator −2.3, Azorius Control (WST) +1.5. No deck crosses the 5 pp replay threshold.
+
+**Lead:** 4c Omnath's −4.3 is the unit's largest move. Its four Solitudes and one Endurance now follow the AI's evoke and pitch decisions instead of the engine's. Its worst cells (vs Eldrazi Ramp, Jeskai Blink, Azorius Control (WST v2)) are where to replay first.
