@@ -6671,3 +6671,57 @@ Program: the engine rules that read oracle-classifier tags move onto the card's 
 - **"Instant or sorcery card" leaves `target.union` residue:** Archaeomancer, Mnemonic Wall, Izzet Chronarch and Scholar of the Ages stay off the carrier. It is a grammar unit of its own.
 - **Optional damage, life and surveil specs** are still refused by those executors (`_plain_participants`). The callback is wired; each family adds its own AI valuation (`ai.resolution_choices.perform_optional_effect`).
 - **Targeted ETB damage and removal** keep their legacy resolvers (A36): the carrier binds no targets, and those executors resolve an unbound slot by the owner's rule.
+
+## Engine rules read card text, never classifier tags — unit D: draw-triggered abilities (2026-10-10)
+
+**Rule (CR 113.1, 121.1, 603.2, 603.3d, 701.47a):** "Whenever <player> draws a card" triggers on the draw its text names:
+- who draws, relative to the controller;
+- which card of the turn it is;
+- when printed, not on the first card the drawer draws in their own draw step.
+
+"That player" is the drawer. A triggered ability's targets are chosen as it is put on the stack. A classifier tag neither adds nor removes the trigger.
+
+**Before:** a tag-gated fan-out in `zone_transfer` resolved draw triggers for three cached cards only.
+- Bowmasters and Underworld Dreams: damage to the drawer.
+- Sheoldred: life loss and life gain.
+- It wrote life directly (`life -=`).
+- It gave Underworld Dreams Bowmasters' draw-step exemption, which Underworld Dreams does not print.
+- It sent Bowmasters' "any target" damage to the drawer and never amassed.
+- The rest of the class, 93 pool cards by text, did nothing.
+
+**Steps:**
+- **D.1 `dbf90e3`, grammar:** `EventHint.DRAW` plus a typed `TriggerHead.draw`, a `DrawEvent(drawer, nth, except_first_in_draw_step)` read from one closed table. A head with an unread rider stays a DRAW head with `draw=None`. Equivalence AGREE +16: draw heads that create tokens no longer pass for lifegain heads.
+- **D.2 `1c4d642`, dispatcher:** `TriggerEvent(player)` binds `Ref(EVENT_PLAYER)` as a life spec's actor and a damage spec's recipient. With no event, nothing is bound.
+- **D.3 `da33b60`, the draw carrier:**
+  - `effect_carrier.dispatch_draw_triggers` resolves typed draw hosts in stack order (CR 603.3b), each card whole or not at all.
+  - Its strict shape is `STRICT["draw_trigger"]`, read by the carrier and the closure alike.
+  - Trigger targets are picked as the trigger goes on the stack: `target_solver.legal_slot_choices` gives the legal choices, `callbacks.choose_trigger_targets` picks (by default the opponent's face; the AI uses `choose_damage_recipient`), and a required target is filled.
+  - `GameState.draw_cards` counts `cards_drawn_in_draw_step`.
+- **D.4 `137c8e6`, amass:**
+  - One amass owner, `PermanentEffects.amass`: a 0/0 black Army token through the token owner, then +1/+1 counters through the counter funnel.
+  - A KEYWORD_ACTION executor (family tokens_counters) performs it.
+  - Bowmasters' draw trigger is taken by the carrier: it aims and amasses.
+- **D.5 `21e8f2e`, retire:**
+  - The tag fan-out, its amount regex, the free-first-draw approximation and the two direct life writes are deleted.
+  - Rules-audit census `603.2/draw_trigger_unresolved` records the remaining silent misses.
+- **`b767f03`:** three fixtures that relied on the tag carry the cards' printed text.
+
+**Pins and ratchets:**
+- `STILL_READING_TAGS` 2 → 1 (`clause_resolver.py`, unit I).
+- Single-owner `damage_write` 31 → 29; oracle runtime parse 173 → 172.
+- Gate parity 313 → 332: 19 draw pairs, all intended changes, because the legacy side resolves no draw trigger.
+
+**Digest:** one game changed at D.4, Jeskai Blink vs 4c Omnath s51500. The change is log text only: the Army is created through the token owner, with the same plays, winner and turns. Re-recorded as `c12511b6`.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = etb-e-post (`5ed6cd7`, code `500c321`); post = draw-d-post (`39bef1d`, code `21e8f2e`).
+- 25 of 600 cells changed, every one with 4c Omnath, Orcish Bowmasters' deck. Its draw trigger now aims through the AI, killing X/1s, and grows an Orc Army.
+- 4c Omnath 66.6 → 66.9 (+0.3); every other deck within ±0.4.
+- 0 aborts; audit violations 0.
+- Audit findings 459 → 496. Contributors: the new census rule, whose only registered member is Tamiyo, Inquisitive Student's third-draw transform, with no executor; and the 25 changed Omnath cells, which play different games.
+- No deck moved more than 5 pp.
+
+**Leads (not built):**
+- **Bowmasters' enter damage** still picks in its name-keyed handler (and writes life directly). Retiring it needs the enter-trigger carrier to take targeted damage hosts with trigger-time targets (`trigger_targets`), which would take the class at once.
+- **The AI's per-draw damage projection** (`ai/bhi._per_event_taxes_table`) still reads tags; derive it from the typed draw heads.
+- **The other 70 draw hosts** (counters, tokens, draws, transforms) resolve nothing until their families' executors land. The census ranks them.
+- **"The first card in each of their draw steps"** is counted from the drawer's own draw step; a draw in another player's draw step is not an exemption.
