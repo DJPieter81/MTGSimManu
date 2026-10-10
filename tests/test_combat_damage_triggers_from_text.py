@@ -70,3 +70,88 @@ def test_the_top_card_of_defending_players_library_is_typed():
     f = parse_filter(t, (0, len(t))).value
     assert (f.zone, f.position) == ("library", "top")
     assert f.owner == Ref(RefKind.DEFENDING_PLAYER)
+
+
+# ── The executors (R2.2) ──────────────────────────────────────────────
+
+def _game():
+    import random
+    from engine.game_state import GameState, Phase
+    game = GameState(rng=random.Random(0))
+    game.current_phase = Phase.MAIN1
+    game.active_player = 0
+    game.turn_number = 5
+    return game
+
+
+def _put(game, card_db, name, zone, idx=0):
+    from engine.cards import CardInstance
+    c = CardInstance(template=card_db.get_card(name), owner=idx,
+                     controller=idx, instance_id=game.next_instance_id(),
+                     zone=zone)
+    c._game_state = game
+    if zone == "battlefield":
+        c.enter_battlefield()
+        c.summoning_sick = False
+    getattr(game.players[idx], zone).append(c)
+    return c
+
+
+def test_a_draw_spec_draws_through_the_draw_owner(card_db):
+    """"Draw a card": the controller draws through `draw_cards`."""
+    from engine import effect_resolver as er
+    game = _game()
+    frog = _put(game, card_db, "Psychic Frog", "battlefield")
+    top = _put(game, card_db, "Island", "library")
+    (host,) = _combat_hosts(frog.template)
+    assert er.can_execute(host, "card_flow")
+    assert er.resolve_ability(game, er.handle_of(frog), 0, host, (),
+                              family="card_flow",
+                              event=er.TriggerEvent(player=1),
+                              source_object=frog)
+    assert top in game.players[0].hand
+
+
+def test_the_damaged_players_top_card_is_exiled_with_a_cast_permission(
+        card_db):
+    """Ragavan's body: a Treasure for its controller, the top card of THE
+    DAMAGED PLAYER's library into its owner's exile, castable this turn by
+    the controller (R1's permission over another player's card)."""
+    from engine import effect_resolver as er, rules_query
+    game = _game()
+    ragavan = _put(game, card_db, "Ragavan, Nimble Pilferer", "battlefield")
+    mine = _put(game, card_db, "Island", "library")
+    theirs = _put(game, card_db, "Lightning Bolt", "library", idx=1)
+    (host,) = _combat_hosts(ragavan.template)
+    assert er.can_execute(host, "card_flow")
+    assert er.resolve_ability(game, er.handle_of(ragavan), 0, host, (),
+                              family="card_flow",
+                              event=er.TriggerEvent(player=1),
+                              source_object=ragavan)
+    assert [c.name for c in game.players[0].battlefield
+            if c is not ragavan] == ["Treasure Token"]
+    assert theirs in game.players[1].exile and mine in game.players[0].library
+    assert rules_query.permitted_cards(game, 0) == [theirs]
+
+
+def test_with_no_event_player_nothing_is_exiled(card_db):
+    from engine import effect_resolver as er
+    game = _game()
+    ragavan = _put(game, card_db, "Ragavan, Nimble Pilferer", "battlefield")
+    theirs = _put(game, card_db, "Lightning Bolt", "library", idx=1)
+    (host,) = _combat_hosts(ragavan.template)
+    er.resolve_ability(game, er.handle_of(ragavan), 0, host, (),
+                       family="card_flow", source_object=ragavan)
+    assert theirs in game.players[1].library
+
+
+def test_a_new_executor_switches_no_other_carriers_host(card_db):
+    """A38: DRAW has an executor for the combat-damage carrier; a spell
+    that only draws stays outside the card-flow carriers' shape until a
+    unit switches them and the harness proves it."""
+    from engine import effect_resolver as er
+    from engine.effect_views import STRICT
+    spell = next(h for h in card_db.get_card("Divination").effects.walk(
+        include_sub=False) if h.kind is HostKind.SPELL)
+    assert er.can_execute(spell, "card_flow")
+    assert not STRICT["card_flow"](spell)

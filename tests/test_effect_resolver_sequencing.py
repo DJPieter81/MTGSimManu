@@ -202,13 +202,15 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     """A family lands by registering its verbs' executors (section 14);
     no other verb is executable, and no family has tolerated residue yet.
     One filter is widened: the card-flow EXILE evaluates "the top N cards
-    of your library" itself, by taking the top N (unit I)."""
+    of your library" -- or of the trigger event's player's library, "that
+    player's" (R2) -- itself, by taking the top N (unit I)."""
     from engine.effect_executors import FAMILIES
-    from engine.effect_spec import CardFilter, Verb
+    from engine.effect_spec import CardFilter, Ref, RefKind, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
     assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE}
     assert er.EXECUTOR_FILTER_KEYS == {Verb.EXILE: frozenset(CardFilter(
-        zone="library", owner="you", position="top").as_tuple())}
+        zone="library", owner="you", position="top").as_tuple()) | {
+            ("owner", Ref(RefKind.EVENT_PLAYER))}}
     assert er.LEGACY_RESIDUE_TOLERATED == {}
 
 

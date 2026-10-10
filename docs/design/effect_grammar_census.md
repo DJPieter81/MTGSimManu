@@ -40,7 +40,7 @@ Section 17, exit criterion 3: E2 does not start while fewer than the gate share 
 
 | Clauses | Typed | Typed share | Ready | Ready share | Gate | Met |
 |---|---|---|---|---|---|---|
-| 259 | 222 | 85.7% | 7 | 2.7% | 85.0% | no |
+| 259 | 222 | 85.7% | 8 | 3.1% | 85.0% | no |
 
 ## UNMODELLED by stage
 

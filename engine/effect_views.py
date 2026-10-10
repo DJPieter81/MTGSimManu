@@ -339,11 +339,21 @@ def _permission_over(s, exiled) -> bool:
             and _ref_kind(s.ref) is RefKind.RESULT and s.ref.index in exiled)
 
 
+# The card-flow verbs whose carriers have switched to the dispatcher:
+# surveil (unit E.1) and the regrowth MOVE (E.2), with the impulse pair
+# (unit I). A card-flow verb gains an executor for another carrier first --
+# DRAW for the combat-damage carrier (R2) -- and joins this shape only when
+# a unit switches the card-flow carriers to it and the per-host harness
+# proves them (A38: a new executor never silently switches a host).
+_CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE})
+
+
 def strict_card_flow(h: AbilityEffects) -> bool:
-    """The card-flow verbs, and the impulse pair: an EXILE of the top of
-    the controller's library and a permission over what it exiled, the
-    permission the one spec with a duration."""
-    if not _strict_host(h, _CARD_FLOW_VERBS | _IMPULSE_VERBS,
+    """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
+    impulse pair: an EXILE of the top of the controller's library and a
+    permission over what it exiled, the permission the one spec with a
+    duration."""
+    if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS,
                         durations=True, conditions=True):
         return False
     exiled = {s.seq for s in iter_specs(h.specs) if _library_top_exile(s)}

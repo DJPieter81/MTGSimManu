@@ -107,21 +107,21 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Horizon Canopy",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Mind Stone",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Mishra's Bauble",
@@ -135,38 +135,38 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Silent Clearing",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Soul-Guide Lantern",
     "host": "ACTIVATED:0:2",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Sunbaked Canyon",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Vexing Bauble",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    }
   ],
-  "executable": 0,
+  "executable": 272,
   "family": "card_flow",
   "hosts": {
    "mainboard": 9,
@@ -177,7 +177,7 @@
    "E3": 272,
    "none": 1
   },
-  "strict": 272,
+  "strict": 0,
   "sub_kinds": {
    "DELAYED": 1
   },
@@ -386,7 +386,7 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    }
   ],
   "executable": 0,
@@ -399,7 +399,7 @@
   "steps": {
    "E3": 4
   },
-  "strict": 4,
+  "strict": 0,
   "sub_kinds": {},
   "verb_sets": {
    "MOVE,SEARCH,SHUFFLE": 4
@@ -412,7 +412,7 @@
     "host": "ACTIVATED:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    }
   ],
   "executable": 0,
@@ -426,7 +426,7 @@
    "E3": 31,
    "none": 1
   },
-  "strict": 31,
+  "strict": 0,
   "sub_kinds": {},
   "verb_sets": {
    "MOVE,SEARCH,SHUFFLE": 31,
@@ -574,7 +574,7 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Cleansing Wildfire",
@@ -595,7 +595,7 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Expressive Iteration",
@@ -616,21 +616,21 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Kaito, Bane of Nightmares",
     "host": "LOYALTY:0:3",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "L\u00f3rien Revealed",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Manamorphose",
@@ -644,7 +644,7 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Price of Freedom",
@@ -658,17 +658,17 @@
     "host": "MODE:0:0:mode0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Thought Scour",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    }
   ],
-  "executable": 9,
+  "executable": 151,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -684,7 +684,7 @@
    "E6": 34,
    "none": 278
   },
-  "strict": 267,
+  "strict": 14,
   "sub_kinds": {
    "DELAYED": 6,
    "REFLEXIVE": 2
@@ -812,7 +812,7 @@
     "strict": false
    }
   ],
-  "executable": 4,
+  "executable": 9,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1257,7 +1257,7 @@
    "E3": 7,
    "none": 62
   },
-  "strict": 3,
+  "strict": 0,
   "sub_kinds": {},
   "verb_sets": {
    "CHOOSE,DISCARD,MOVE,REVEAL": 1,
@@ -1293,7 +1293,7 @@
    "E3": 3,
    "none": 4
   },
-  "strict": 3,
+  "strict": 0,
   "sub_kinds": {},
   "verb_sets": {
    "DISCARD,DRAW": 3,
@@ -1632,7 +1632,7 @@
     "strict": false
    }
   ],
-  "executable": 53,
+  "executable": 100,
   "family": "removal",
   "hosts": {
    "mainboard": 25,
@@ -1789,7 +1789,7 @@
     "strict": true
    }
   ],
-  "executable": 1,
+  "executable": 4,
   "family": "removal",
   "hosts": {
    "mainboard": 6,
@@ -1941,7 +1941,7 @@
     "strict": false
    }
   ],
-  "executable": 0,
+  "executable": 5,
   "family": "damage",
   "hosts": {
    "mainboard": 1,
@@ -2281,14 +2281,14 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    },
    {
     "card": "Nature's Rhythm",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": true
+    "strict": false
    }
   ],
   "executable": 0,
@@ -2302,7 +2302,7 @@
    "E3": 3,
    "none": 2
   },
-  "strict": 3,
+  "strict": 0,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,MOVE,SHUFFLE,UNMODELLED": 2,

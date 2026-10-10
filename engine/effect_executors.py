@@ -51,7 +51,7 @@ from .effect_model import (DurationKind, Modification, ModKind, Selector,
                            SelectorKind)
 from .effect_spec import (CardFilter, Chooser, Condition, ConditionKind,
                           Destination, EffectSpec, KeywordAction, Ref,
-                          RefKind, RefPart, Verb)
+                          RefKind, RefPart, TokenSpec, Verb)
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
@@ -62,8 +62,9 @@ FAMILY_TOKENS_COUNTERS = "tokens_counters"
 FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                       Verb.GAIN_LIFE}),
             FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
-                                         Verb.CONTINUOUS}),
-            FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION})}
+                                         Verb.CONTINUOUS, Verb.DRAW}),
+            FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
+                                               Verb.CREATE_TOKEN})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -396,21 +397,35 @@ execute_move_to_hand.picks_unbound_slots = True
 # ── EXILE the top N cards of your library; PERMIT to play them
 #    (family card_flow, unit I: impulse draw) ────────────────────────────
 
-# The one exiled object group this executor binds: the controller's own
-# library, from the top (the filter leaf's library-position row). The
-# executor evaluates these filter entries itself, by taking the top N.
+# The exiled object groups this executor binds: the top of one player's
+# library (the filter leaf's library-position row) -- the controller's own,
+# or the trigger event's player's ("the top card of that player's library",
+# R2). The executor evaluates these filter entries itself, by taking the
+# top N of that library.
 _LIBRARY_TOP = CardFilter(zone="library", owner="you", position="top")
+_EVENT_PLAYER = Ref(RefKind.EVENT_PLAYER)
+_LIBRARY_OWNERS = ("you", _EVENT_PLAYER)
 
 
 def _is_library_top(f: Any) -> bool:
-    return isinstance(f, CardFilter) and f == dataclasses.replace(
-        _LIBRARY_TOP, raw=f.raw)
+    return isinstance(f, CardFilter) and f.owner in _LIBRARY_OWNERS \
+        and f == dataclasses.replace(_LIBRARY_TOP, owner=f.owner, raw=f.raw)
+
+
+def _library_owner(ctx: Resolution, f: CardFilter):
+    """Whose library the position reads: the controller's ("your"), or
+    the player the trigger event names ("that player's"; None with no
+    event player, and nothing is exiled)."""
+    if f.owner == "you":
+        return ctx.controller
+    return event_player(ctx)
 
 
 def _exile_top_supported(s: EffectSpec) -> bool:
-    """"Exile the top <N> cards of your library": the controller's top N
-    library cards move to exile through the zone funnel, face up (CR 406);
-    no draw (CR 121.1c). Any other exile is refused."""
+    """"Exile the top <N> cards of your library" (or "of that player's
+    library"): that library's top N cards move to exile through the zone
+    funnel, face up (CR 406), into their owner's exile (CR 400.3); no draw
+    (CR 121.1c). Any other exile is refused."""
     if s.verb is not Verb.EXILE or not _is_library_top(s.filter):
         return False
     if s.flags or s.optional or s.alternatives or s.group is not None \
@@ -427,8 +442,10 @@ def _exile_top_supported(s: EffectSpec) -> bool:
 def execute_exile(ctx: Resolution, s: EffectSpec,
                   actors: Tuple[int, ...]) -> Outcome:
     n = _amount(ctx, s)
-    player = ctx.game.players[ctx.controller]
-    cards = list(player.library[:max(0, n)])
+    owner = _library_owner(ctx, s.filter)
+    if owner is None:
+        return Outcome(False, {})
+    cards = list(ctx.game.players[owner].library[:max(0, n)])
     cause = getattr(_source_object(ctx), "name", "")
     moved = []
     for card in cards:
@@ -501,6 +518,82 @@ def execute_permit(ctx: Resolution, s: EffectSpec,
 execute_permit.supports = _permit_supported
 
 
+# ── DRAW (family card_flow, R2) ───────────────────────────────────────
+
+def _draw_supported(s: EffectSpec) -> bool:
+    """"Draw <N> cards" by the controller: through the one draw owner,
+    `GameState.draw_cards` (CR 121.1), which counts the draw and fans out
+    its triggers. Any other drawer ("target player", "that player", "each
+    player"), an optional draw, or any other shape is refused."""
+    if s.verb is not Verb.DRAW:
+        return False
+    if s.flags or s.optional or s.alternatives or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.payload is not None or s.duration is not None \
+            or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.target is not None or s.target_slot is not None \
+            or not _acts_as_controller(s.actor):
+        return False
+    return conditions.amount_supported(s.amount)
+
+
+def execute_draw(ctx: Resolution, s: EffectSpec,
+                 actors: Tuple[int, ...]) -> Outcome:
+    n = _amount(ctx, s)
+    if n <= 0:
+        return Outcome(False, {})
+    drawn = ctx.game.draw_cards(ctx.controller, n)
+    return Outcome(bool(drawn),
+                   {ctx.controller: tuple(handle_of(c) for c in drawn)})
+
+
+execute_draw.supports = _draw_supported
+
+
+# ── CREATE_TOKEN: a predefined token (family tokens_counters, R2) ─────
+
+# The predefined tokens (CR 111.10) the token owner defines: Treasure,
+# Food and Clue (`player_state.TOKEN_DEFS`). Any other is refused.
+_PREDEFINED_TOKENS = frozenset({"treasure", "food", "clue"})
+
+
+def _create_token_supported(s: EffectSpec) -> bool:
+    """"Create <N> <predefined> tokens" for the controller: through the
+    one token owner, `GameState.create_token`. A token the owner does not
+    define, a token with printed characteristics, or a copy is refused."""
+    p = s.payload
+    if s.verb is not Verb.CREATE_TOKEN or not isinstance(p, TokenSpec) \
+            or p.predefined not in _PREDEFINED_TOKENS:
+        return False
+    if p != TokenSpec(predefined=p.predefined):
+        return False
+    if s.flags or s.optional or s.alternatives or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.duration is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.target is not None or s.target_slot is not None \
+            or not _acts_as_controller(s.actor):
+        return False
+    return conditions.amount_supported(s.amount)
+
+
+def execute_create_token(ctx: Resolution, s: EffectSpec,
+                         actors: Tuple[int, ...]) -> Outcome:
+    n = _amount(ctx, s)
+    if n <= 0:
+        return Outcome(False, {})
+    tokens = ctx.game.create_token(ctx.controller, s.payload.predefined,
+                                   count=n)
+    return Outcome(bool(tokens),
+                   {ctx.controller: tuple(handle_of(t) for t in tokens)})
+
+
+execute_create_token.supports = _create_token_supported
+
+
 # ── KEYWORD_ACTION: amass (family tokens_counters, unit D) ────────────
 
 def _amass_supported(s: EffectSpec) -> bool:
@@ -555,5 +648,8 @@ EXECUTORS[Verb.MOVE] = execute_move_to_hand
 EXECUTORS[Verb.KEYWORD_ACTION] = execute_keyword_action
 EXECUTORS[Verb.EXILE] = execute_exile
 EXECUTORS[Verb.CONTINUOUS] = execute_permit
-EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple())
+EXECUTORS[Verb.DRAW] = execute_draw
+EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
+EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
+    ("owner", _EVENT_PLAYER)}
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
