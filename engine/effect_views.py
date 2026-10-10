@@ -335,7 +335,8 @@ def strict_stack_mana(h: AbilityEffects) -> bool:
 # The draw carrier (unit D, `effect_carrier.dispatch_draw_triggers`): the
 # verbs it resolves and the slot zones it picks a trigger's targets in.
 FAMILY_DRAW_TRIGGER = "draw_trigger"
-_DRAW_TRIGGER_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE})
+_DRAW_TRIGGER_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
+                                 Verb.KEYWORD_ACTION})
 _TRIGGER_TARGET_ZONES = frozenset({"any", "battlefield"})
 
 

@@ -661,6 +661,9 @@ class GameState:
     def create_token(self, *args, **kwargs):
         return PermanentEffects.create_token(self, *args, **kwargs)
 
+    def amass(self, *args, **kwargs):
+        return PermanentEffects.amass(self, *args, **kwargs)
+
     def activate_planeswalker(self, *args, **kwargs):
         return PlaneswalkerManager.activate_planeswalker(self, *args, **kwargs)
 

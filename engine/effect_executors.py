@@ -31,6 +31,9 @@ chosen for is the controller's pick out of the legal cards the legality
 owner enumerates (`target_solver.enumerate_legal_targets`), asked through
 `callbacks.choose_cards` (A35): the executor validates the answer and never
 scores.
+
+Family `tokens_counters` (unit D): KEYWORD_ACTION "amass <subtype> N" through
+the one amass owner, `GameState.amass` (CR 701.47a).
 """
 from __future__ import annotations
 
@@ -42,16 +45,18 @@ from .effect_resolver import (CONDITION_EVALUATORS, EXECUTORS, Handle,
                               is_event_player)
 from .effect_model import Selector, SelectorKind
 from .effect_spec import (Chooser, Condition, ConditionKind, Destination,
-                          EffectSpec, Ref, RefKind, Verb)
+                          EffectSpec, KeywordAction, Ref, RefKind, Verb)
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
+FAMILY_TOKENS_COUNTERS = "tokens_counters"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
 FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                       Verb.GAIN_LIFE}),
-            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE})}
+            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE}),
+            FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -381,6 +386,41 @@ execute_move_to_hand.supports = _move_to_hand_supported
 execute_move_to_hand.picks_unbound_slots = True
 
 
+# ── KEYWORD_ACTION: amass (family tokens_counters, unit D) ────────────
+
+def _amass_supported(s: EffectSpec) -> bool:
+    """"Amass <subtype> N" (CR 701.47a), performed by its controller
+    through the one owner, `GameState.amass`. Any other keyword action is
+    refused."""
+    p = s.payload
+    if s.verb is not Verb.KEYWORD_ACTION or not isinstance(p, KeywordAction) \
+            or p.name != "amass" or not p.subtype or p.expansion:
+        return False
+    if s.flags or s.optional or s.alternatives or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.duration is not None or s.amount is not None \
+            or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.actor is not None or s.target is not None \
+            or s.target_slot is not None:
+        return False
+    return conditions.amount_supported(p.amount)
+
+
+def execute_keyword_action(ctx: Resolution, s: EffectSpec,
+                           actors: Tuple[int, ...]) -> Outcome:
+    n = conditions.amount_value(ctx.game, ctx.controller, s.payload.amount,
+                                ctx.x_value)
+    if n <= 0:
+        return Outcome(False, {})
+    army = ctx.game.amass(ctx.controller, n, s.payload.subtype)
+    return Outcome(True, {ctx.controller: (handle_of(army),)})
+
+
+execute_keyword_action.supports = _amass_supported
+
+
 # ── Conditions ────────────────────────────────────────────────────────
 
 def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
@@ -397,4 +437,5 @@ EXECUTORS[Verb.LOSE_LIFE] = execute_lose_life
 EXECUTORS[Verb.GAIN_LIFE] = execute_gain_life
 EXECUTORS[Verb.SURVEIL] = execute_surveil
 EXECUTORS[Verb.MOVE] = execute_move_to_hand
+EXECUTORS[Verb.KEYWORD_ACTION] = execute_keyword_action
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state

@@ -303,7 +303,9 @@ class PermanentEffects:
     def create_token(game: "GameState", controller: int, token_type: str,
                      count: int = 1, power: int = None, toughness: int = None,
                      extra_keywords: Set[Keyword] = None,
-                     source_oracle: str = None) -> List[CardInstance]:
+                     source_oracle: str = None,
+                     subtypes: List[str] = None,
+                     colors: Set[Color] = None) -> List[CardInstance]:
         """Create token creatures on the battlefield.
 
         Generic-first design (post-Phase-1C-followup): when
@@ -369,6 +371,8 @@ class PermanentEffects:
             t_toughness = toughness
         if extra_keywords:
             kw_set |= extra_keywords
+        if colors:
+            t_colors = set(colors)
 
         # Oracle text on the generated template — when source_oracle
         # carries a "with 'gets +N/+N for each artifact ...'" clause,
@@ -402,6 +406,7 @@ class PermanentEffects:
                 colors=set(t_colors),
                 tags={"token", "creature"},
                 oracle_text=token_oracle,
+                subtypes=list(subtypes or ()),
             )
             template.has_artifact_count_scaling = _art_scale
             # A token created "with '<ability>'" carries that ability. When it
@@ -438,6 +443,30 @@ class PermanentEffects:
             game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Create {count}x {t_name} token(s)")
         return tokens
+
+    @staticmethod
+    def amass(game: "GameState", controller: int, n: int,
+              subtype: str) -> CardInstance:
+        """CR 701.47a, "Amass [subtype] N": if `controller` controls no
+        Army creature, create a 0/0 black [subtype] Army creature token
+        (through `create_token`, the token owner: it enters like any
+        permanent); then put N +1/+1 counters on an Army creature they
+        control (through `add_plus_counters`, the counter funnel). The one
+        owner of amass. Its "becomes a [subtype] in addition" clause for an
+        Army of another subtype is not modelled. Returns the Army."""
+        kind = subtype.title()
+        army = next((c for c in game.players[controller].battlefield
+                     if c.effective_is_creature
+                     and "Army" in (c.effective_subtypes or ())), None)
+        if army is None:
+            army = PermanentEffects.create_token(
+                game, controller, f"{kind} Army", power=0, toughness=0,
+                subtypes=[kind, "Army"], colors={Color.BLACK})[0]
+        army.add_plus_counters(n, game)
+        game.log.append(f"T{game.display_turn} P{controller+1}: amass "
+                        f"{kind}s {n} -- {army.name} is "
+                        f"{army.power}/{army.toughness}")
+        return army
 
     # ─── PLANESWALKER ABILITIES ──────────────────────────────────
 

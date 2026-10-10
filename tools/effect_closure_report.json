@@ -812,7 +812,7 @@
     "strict": false
    }
   ],
-  "executable": 0,
+  "executable": 4,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -948,23 +948,34 @@
   }
  },
  "draw:dispatch": {
-  "deck_hosts": [],
-  "executable": 17,
+  "deck_hosts": [
+   {
+    "card": "Orcish Bowmasters",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   }
+  ],
+  "executable": 19,
   "family": "draw_trigger",
   "hosts": {
-   "mainboard": 0,
-   "pool": 17,
+   "mainboard": 1,
+   "pool": 18,
    "sideboard": 0
   },
   "steps": {
-   "E1": 17
+   "E1": 17,
+   "E4": 2
   },
-  "strict": 17,
+  "strict": 19,
   "sub_kinds": {},
   "verb_sets": {
    "DAMAGE": 7,
+   "DAMAGE,KEYWORD_ACTION": 1,
    "GAIN_LIFE": 2,
    "GAIN_LIFE,LOSE_LIFE": 5,
+   "KEYWORD_ACTION": 1,
    "LOSE_LIFE": 3
   }
  },

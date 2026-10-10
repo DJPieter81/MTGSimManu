@@ -596,6 +596,14 @@
   {
    "pair": [
     "draw:dispatch",
+    "Mindless Conscription",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
     "Niv-Mizzet, Parun",
     "TRIGGERED:0:2"
    ],
@@ -616,6 +624,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit D.3 (draw carrier): the legacy DRAW fan-out resolved nothing for this card -- its tag handlers fired only for the cards in the classifier cache -- and the dispatcher resolves the draw trigger as printed (CR 603.2): on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player' and a target picked as the trigger is put on the stack (CR 603.3d, callbacks.choose_trigger_targets). Verified per board: the legacy side changes nothing but the draw itself."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Orcish Bowmasters",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D.4 (draw carrier): the legacy tag handler dealt 1 damage to the drawing player directly and never amassed; the dispatcher resolves the printed ability: 1 damage to the target its controller picks as the trigger is put on the stack (CR 603.3d; by default the opponent's face, the drawer here), through the damage owner, then amass Orcs 1 through the one owner (CR 701.47a: a 0/0 Orc Army token, then a +1/+1 counter on the Army)."
   },
   {
    "pair": [

@@ -164,3 +164,47 @@ def test_a_targeted_draw_trigger_aims_where_its_controller_chooses(card_db):
     _draw(game, card_db, 0)
     assert _lives(game) == [20, 19]
     assert bears.damage_marked == 1 or bears.zone == "graveyard"
+
+
+def test_bowmasters_draw_trigger_deals_its_damage_and_amasses(card_db):
+    """Orcish Bowmasters: "... whenever an opponent draws a card except
+    the first one they draw in each of their draw steps, ~ deals 1 damage
+    to any target. Then amass Orcs 1." By default the damage goes to the
+    opponent's face."""
+    game = _game()
+    _put(game, card_db, 0, "Orcish Bowmasters")
+    _draw(game, card_db, 1)
+    assert _lives(game) == [20, 19]
+    armies = [c for c in game.players[0].battlefield
+              if "Army" in (c.template.subtypes or [])]
+    assert len(armies) == 1 and armies[0].plus_counters == 1
+
+
+def test_bowmasters_skips_the_first_card_of_the_drawers_own_draw_step(card_db):
+    game = _game(active=1, phase=Phase.DRAW)
+    _put(game, card_db, 0, "Orcish Bowmasters")
+    _draw(game, card_db, 1)
+    assert _lives(game) == [20, 20]
+    _draw(game, card_db, 1)
+    assert _lives(game) == [20, 19]
+
+
+def test_the_ai_aims_a_draw_triggers_damage_with_its_damage_aim(card_db):
+    """The AI picks the target as its damage aim does
+    (`ai.damage_targets.choose_damage_recipient`): the opposing permanent
+    the damage destroys that is worth most, else the face."""
+    from ai.damage_targets import choose_damage_recipient
+    from engine.game_runner import AICallbacks
+    game = _game()
+    game.callbacks = AICallbacks()
+    bow = _put(game, card_db, 0, "Orcish Bowmasters")
+    rager = _put(game, card_db, 1, "Dragon's Rage Channeler")
+    host = next(h for h in bow.template.effects.front()
+                if h.trigger is not None and h.trigger.draw is not None)
+    aim = choose_damage_recipient(game, 0, bow, 1, host.targets[0],
+                                  mana_committed=0)
+    _draw(game, card_db, 1)
+    if aim.permanent is rager:
+        assert rager.zone == "graveyard" and _lives(game) == [20, 20]
+    else:
+        assert rager.zone == "battlefield" and _lives(game) == [20, 19]
