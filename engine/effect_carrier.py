@@ -178,6 +178,171 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
     return performed
 
 
+# ── The draw carrier (CR 121.1, 603.2, 603.3d) ─────────────────────────
+
+# The strict shape the draw carrier takes (`effect_views.
+# strict_draw_trigger`, A38: a later family's executors never silently
+# switch a draw host), and the family label its resolutions carry.
+DRAW_FAMILY = "draw_trigger"
+
+
+def draw_matches(game: Any, draw: Any, controller: int, drawer: int) -> bool:
+    """Does `drawer` drawing a card now trigger a head typed `draw`
+    (`effect_spec.DrawEvent`) on a permanent `controller` controls? Who
+    draws, relative to the controller; the Nth card of the drawer's turn;
+    and the printed exemption for the first card the drawer draws in their
+    own draw step (counted by `GameState.draw_cards`)."""
+    if draw.drawer == "you" and drawer != controller:
+        return False
+    if draw.drawer == "opponent" and drawer == controller:
+        return False
+    player = game.players[drawer]
+    if draw.nth is not None and player.cards_drawn_this_turn != draw.nth:
+        return False
+    if draw.except_first_in_draw_step and \
+            player.cards_drawn_in_draw_step == FIRST_DRAW_STEP_CARD and \
+            drawer == game.active_player and _in_draw_step(game):
+        return False
+    return True
+
+
+# CR 504.1: the first card a player draws in their draw step.
+FIRST_DRAW_STEP_CARD = 1
+
+
+def _in_draw_step(game: Any) -> bool:
+    from .game_state import Phase
+    return game.current_phase == Phase.DRAW
+
+
+def _draw_family(h: Any) -> Optional[str]:
+    """`DRAW_FAMILY` when the draw-triggered host `h` is in its strict
+    shape and executable; None otherwise."""
+    from .effect_views import STRICT
+    if h.trigger is None or not STRICT[DRAW_FAMILY](h) \
+            or not er.can_execute(h, DRAW_FAMILY):
+        return None
+    return DRAW_FAMILY
+
+
+def draw_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The draw carrier's plan for one face: ``[(host, family)]`` for every
+    host whose trigger head is a DRAW event when each is takeable
+    (`_draw_family`); None when the face has no such host or any one is
+    not (a card is taken whole or not at all, so no trigger of it resolves
+    twice or not at all). One owner, read by the carrier and the closure."""
+    from .effect_spec import EventHint, HostKind
+    hosts = [h for h in face_hosts
+             if h.kind is HostKind.TRIGGERED and h.trigger is not None
+             and EventHint.DRAW in h.trigger.event_hints]
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = _draw_family(h)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def _member(v: Any, players: Sequence[int], permanents: Sequence[Any]) -> bool:
+    if isinstance(v, int) and not isinstance(v, bool):
+        return v in players
+    return any(v is c for c in permanents)
+
+
+def trigger_targets(game: Any, source: Any, controller: int,
+                    host: Any) -> Optional[er.Chosen]:
+    """CR 603.3d: the targets a triggered ability takes as it is put on the
+    stack, per slot: the controller's pick (`callbacks.
+    choose_trigger_targets`) out of the legal choices
+    (`target_solver.legal_slot_choices`). Only legal, distinct choices
+    count, at most the slot's count; a required target the pick leaves
+    short is filled by the engine's default (`callbacks.
+    default_trigger_targets`). None when a required target has no legal
+    choice: the ability is removed from the stack."""
+    from .callbacks import default_trigger_targets
+    from .target_solver import legal_slot_choices
+    specs = list(iter_specs(host.specs))
+    chosen = []
+    for k, req in enumerate(host.targets):
+        spec = next((s for s in specs if s.target_slot == k), None)
+        players, permanents = legal_slot_choices(game, controller, req,
+                                                 source=source)
+        n = max(0, int(req.count_max or 0))
+        need = min(int(req.count_min or 0), n,
+                   len(players) + len(permanents))
+        if req.count_min and not (players or permanents):
+            return None
+        picked: list = []
+        asked = game.callbacks.choose_trigger_targets(
+            game, controller, source, spec, req, list(players),
+            list(permanents)) if n else []
+        for v in asked or ():
+            if len(picked) < n and _member(v, players, permanents) \
+                    and all(v is not x for x in picked):
+                picked.append(v)
+        if len(picked) < need:
+            rest_p = [p for p in players
+                      if not any(isinstance(x, int) and x == p for x in picked)]
+            rest_c = [c for c in permanents if all(c is not x for x in picked)]
+            picked += default_trigger_targets(
+                controller, req, rest_p, rest_c)[:need - len(picked)]
+        chosen.append(tuple(v if isinstance(v, int) else er.handle_of(v)
+                            for v in picked))
+    return tuple(chosen)
+
+
+def _face_hosts(card: Any) -> tuple:
+    faces = card.template.effects.faces
+    if not faces:
+        return ()
+    face = 1 if getattr(card, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face]
+
+
+def dispatch_draw_triggers(game: Any, drawer: int) -> tuple:
+    """The draw carrier (CR 603.2): each permanent's draw-triggered
+    abilities whose typed head names this draw (`draw_matches`), resolved
+    through the dispatcher with the drawer as the trigger event's player
+    ("that player") and targets picked as they are put on the stack
+    (`trigger_targets`). In stack order: the non-active player's triggers
+    are put on the stack last and resolve first (CR 603.3b). Returns (the
+    ids of the sources the carrier took for this draw -- their legacy
+    handlers do not run -- and whether any host performed anything)."""
+    if not er.dispatch_enabled():
+        return frozenset(), False
+    taken, performed = set(), False
+    ap = game.active_player
+    order = [p for p in range(len(game.players)) if p != ap] + [ap]
+    event = er.TriggerEvent(player=drawer)
+    for idx in order:
+        for src in list(game.players[idx].battlefield):
+            template = getattr(src, "template", None)
+            if template is None or getattr(template, "is_loyalty_clause",
+                                           False):
+                continue
+            plan = draw_plan(_face_hosts(src))
+            if plan is None:
+                continue
+            taken.add(src.instance_id)
+            controller = src.controller
+            for h, family in plan:
+                if not draw_matches(game, h.trigger.draw, controller, drawer):
+                    continue
+                chosen = trigger_targets(game, src, controller, h)
+                if chosen is None:
+                    continue
+                performed |= bool(er.resolve_ability(
+                    game, er.handle_of(src), controller, h, chosen,
+                    family=family, event=event, source_object=src))
+                if game.game_over:
+                    return frozenset(taken), performed
+    return frozenset(taken), performed
+
+
 def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
     """Can a carrier place its legacy target list on `host`'s slots
     without reading text? Yes for a host with no slot (its list is empty)

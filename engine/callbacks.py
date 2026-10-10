@@ -153,6 +153,24 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_trigger_targets(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        spec: Any, req: Any, players: List[int],
+        permanents: List[CardInstance],
+    ) -> List[Any]:
+        """Which targets does a triggered ability take for one slot as it
+        is put on the stack (CR 603.3d)?
+
+        Uniform per KIND: any trigger a carrier puts on the stack with a
+        target routes here. The engine has already narrowed the legal
+        choices (`target_solver.legal_slot_choices`): `players` (indices)
+        and `permanents`. `spec` is the typed EffectSpec the slot belongs
+        to, `req` its requirement. Return up to `req.count_max` of them;
+        the engine keeps only legal, distinct members and fills a required
+        target the answer leaves short (`default_trigger_targets`).
+        """
+        ...
+
     # ── Resolution-time choices (design doc 2026-09-29, A35) ──────────
     # One channel per KIND of choice a resolving ability asks of its
     # controller. `ctx` is the resolution context, `spec` the typed
@@ -330,6 +348,11 @@ class DefaultCallbacks:
             return None
         return max(eligible, key=default_tutor_rank)
 
+    def choose_trigger_targets(self, game, player_idx, source, spec, req,
+                               players, permanents):
+        """Default: `default_trigger_targets`, printed data only."""
+        return default_trigger_targets(player_idx, req, players, permanents)
+
     # Resolution-time choices (A35).
     def choose_optional_effect(self, ctx, spec) -> bool:
         """Default: perform. The controller takes what the text offers --
@@ -346,6 +369,22 @@ class DefaultCallbacks:
 
     def choose_division(self, ctx, spec, slots, total):
         raise NotImplementedError
+
+
+def default_trigger_targets(player_idx: int, req: Any, players: Sequence[int],
+                            permanents: Sequence[Any]) -> List[Any]:
+    """The engine's default trigger target pick for one slot: the
+    opponent's face when the slot admits that player (the legacy owners'
+    rule for a player-admitting slot, A36), then the opponents'
+    permanents, then the controller's own, each in battlefield order, up
+    to the slot's count (at least one). No scoring: a deterministic
+    reading, never a strategic one."""
+    n = max(1, int(getattr(req, "count_max", 1) or 1))
+    opp = [p for p in players if p != player_idx]
+    order = opp + [c for c in permanents if c.controller != player_idx] + \
+        [c for c in permanents if c.controller == player_idx] + \
+        [p for p in players if p == player_idx]
+    return order[:n]
 
 
 def default_card_pick(pool: Sequence[Any], n: int) -> List[Any]:

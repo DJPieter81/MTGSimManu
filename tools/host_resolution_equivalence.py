@@ -37,7 +37,10 @@ enter trigger (a front-face TRIGGERED host whose head is SELF_ENTERS)
 through the card's ETB registry handler when it has one, else
 `oracle_resolver.resolve_etb_from_oracle`, the enter resolver -- the
 engine's order on entry -- with the source on the battlefield and no
-targets (the engine resolves enter triggers on entry). Every other host
+targets (the engine resolves enter triggers on entry); a typed draw
+trigger (a front-face TRIGGERED host whose head is a DRAW event with a
+typed `TriggerHead.draw`) through a draw by the player its head names, the
+draw owner running the whole DRAW fan-out. Every other host
 kind has no single legacy apply (other
 triggered and static abilities resolve through their own carriers) and is
 reported as skipped, by kind.
@@ -321,13 +324,28 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
             ok.append(HostCase(template.name, label, "LOYALTY",
                                (h.face, h.loyalty_slot)))
         elif h.kind is HostKind.TRIGGERED and h.face == 0 and \
-                h.trigger is not None and \
-                EventHint.SELF_ENTERS in h.trigger.event_hints:
-            # an enter trigger: its legacy apply is the enter resolver
-            ok.append(HostCase(template.name, label, "ETB", h.index))
+                h.trigger is not None and (
+                    EventHint.SELF_ENTERS in h.trigger.event_hints or (
+                        EventHint.DRAW in h.trigger.event_hints
+                        and h.trigger.draw is not None)):
+            # an enter trigger: its legacy apply is the enter resolver; a
+            # typed draw trigger: a draw (a head naming both -- "When ~
+            # enters and whenever an opponent draws" -- has both cases)
+            if EventHint.SELF_ENTERS in h.trigger.event_hints:
+                ok.append(HostCase(template.name, label, "ETB", h.index))
+            if EventHint.DRAW in h.trigger.event_hints and \
+                    h.trigger.draw is not None:
+                ok.append(HostCase(template.name, label, "DRAW", h.index))
         else:
             skipped.append(HostCase(template.name, label, h.kind.name))
     return ok, skipped
+
+
+def _draw_head(template, case: HostCase):
+    """The trigger head of a DRAW case's host."""
+    from engine.effect_spec import HostKind
+    return next(h.trigger for h in template.effects.front()
+                if h.kind is HostKind.TRIGGERED and h.index == case.key)
 
 
 def _activated(template, case: HostCase):
@@ -429,6 +447,15 @@ def legacy_apply(game, template, case: HostCase) -> Any:
                                            targets=None, item=None)
         from engine.oracle_resolver import resolve_etb_from_oracle
         return resolve_etb_from_oracle(game, card, CONTROLLER)
+    if case.kind == "DRAW":
+        # the draw the head names, by the player it names (an opponent
+        # for "an opponent" / "a player"), after the cards an Nth-card
+        # head counts; the draw owner runs the whole fan-out
+        draw = _draw_head(template, case).draw
+        drawer = CONTROLLER if draw.drawer == "you" else 1 - CONTROLLER
+        game.players[drawer].cards_drawn_this_turn = \
+            (draw.nth - 1) if draw.nth else 0
+        return len(game.draw_cards(drawer, 1))
     from engine.planeswalker_manager import PlaneswalkerManager
     face, slot = case.key
     attr = "loyalty_abilities" if face == 0 else \
@@ -550,6 +577,11 @@ def self_check(db, templates: Iterable[Any], *, seeds=SEEDS,
 SWITCHED_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
 
 
+# The host case a carrier's pairs resolve through, where one host has two
+# (a head naming both an enter and a draw event).
+_HANDLER_CASE_KIND = {"etb:dispatch": "ETB", "draw:dispatch": "DRAW"}
+
+
 def legacy_only_apply(game, template, case: HostCase) -> Any:
     """`legacy_apply` with every switched carrier on its legacy apply
     (`effect_resolver.legacy_only`): the legacy side of a switched host."""
@@ -593,7 +625,9 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
             key = [p.handler, p.card, p.host]
             t = by_name[p.card]
             ok, _ = host_cases(t, effects[p.card])
-            case = next((c for c in ok if c.host == p.host), None)
+            want = _HANDLER_CASE_KIND.get(p.handler)
+            case = next((c for c in ok if c.host == p.host
+                         and (want is None or c.kind == want)), None)
             if case is None:
                 no_case.append(key)
                 continue

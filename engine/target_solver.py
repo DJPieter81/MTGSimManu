@@ -1076,6 +1076,39 @@ def enumerate_legal_targets(game: "GameState", controller: int,
     return out
 
 
+def legal_slot_choices(game: "GameState", controller: int,
+                       req: TargetRequirement,
+                       source: Optional["CardInstance"] = None,
+                       ) -> Tuple[List[int], List["CardInstance"]]:
+    """(players, permanents) a target slot may name now (CR 115.4, 601.2c,
+    603.3d): the players the slot admits within its controller scope
+    (`slot_admits_player`) and the battlefield permanents it admits by
+    their current types (`slot_admits_permanent`) that `source` may target
+    (`can_be_targeted`: hexproof, protection). One owner for the choices a
+    triggered ability's target is picked from as it is put on the stack;
+    a slot in another zone keeps `enumerate_legal_targets`."""
+    players = [p for p in range(len(game.players))
+               if slot_admits_player(req, p, controller)]
+    if req.zone not in ("any", "battlefield"):
+        return players, enumerate_legal_targets(game, controller, req,
+                                                source=source)
+    permanents = []
+    for p in game.players:
+        for card in p.battlefield:
+            if not slot_admits_permanent(req, card, controller):
+                continue
+            if not can_be_targeted(card, source, controller):
+                continue
+            if not _matches_supertype(card, req.supertype) \
+                    or not _matches_subtype(card, req.subtype):
+                continue
+            if req.max_mana_value is not None and \
+                    (card.template.cmc or 0) > req.max_mana_value:
+                continue
+            permanents.append(card)
+    return players, permanents
+
+
 def has_legal_target_for_spell(game: "GameState", controller: int,
                                requirements: List[TargetRequirement],
                                exclude: Optional["CardInstance"] = None,

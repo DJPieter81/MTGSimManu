@@ -332,6 +332,24 @@ def strict_stack_mana(h: AbilityEffects) -> bool:
     return _strict_host(h, _STACK_MANA_VERBS, conditions=True)
 
 
+# The draw carrier (unit D, `effect_carrier.dispatch_draw_triggers`): the
+# verbs it resolves and the slot zones it picks a trigger's targets in.
+FAMILY_DRAW_TRIGGER = "draw_trigger"
+_DRAW_TRIGGER_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE})
+_TRIGGER_TARGET_ZONES = frozenset({"any", "battlefield"})
+
+
+def strict_draw_trigger(h: AbilityEffects) -> bool:
+    """A draw-triggered host the draw carrier takes (A38): the trigger
+    family's strict shape with a typed draw head (`TriggerHead.draw`),
+    every spec one of `_DRAW_TRIGGER_VERBS` with no residue or
+    sub-ability, and every target slot one the carrier picks as the
+    trigger is put on the stack (any target, or a battlefield object)."""
+    return (strict_trigger(h) and h.trigger.draw is not None
+            and all(r.zone in _TRIGGER_TARGET_ZONES for r in h.targets)
+            and _strict_host(h, _DRAW_TRIGGER_VERBS, conditions=True))
+
+
 def strict_trigger(h: AbilityEffects) -> bool:
     """A typed TRIGGERED host with no intervening-if (stage T)."""
     return (h is not None and h.kind is HostKind.TRIGGERED
@@ -349,6 +367,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_PUMP_RESTRICT: strict_pump_restrict,
     FAMILY_STACK_MANA: strict_stack_mana,
     FAMILY_TRIGGER: strict_trigger,
+    FAMILY_DRAW_TRIGGER: strict_draw_trigger,
 })
 
 

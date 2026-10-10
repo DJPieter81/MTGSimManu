@@ -273,6 +273,12 @@ class AICallbacks(GameCallbacks):
         from ai.activation_ev import choose_tutor_delivery
         return choose_tutor_delivery(game, player_idx, eligible, source=source)
 
+    def choose_trigger_targets(self, game, player_idx, source, spec, req,
+                               players, permanents):
+        from ai.resolution_choices import pick_trigger_targets
+        return pick_trigger_targets(game, player_idx, source, spec, req,
+                                    players, permanents)
+
     # Resolution-time choices (A35): the dispatcher's "you may" and its
     # executors' card picks, answered by the AI (ai/resolution_choices).
     def choose_optional_effect(self, ctx, spec) -> bool:

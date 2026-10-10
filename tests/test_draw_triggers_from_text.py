@@ -60,3 +60,107 @@ def test_a_draw_step_beginning_is_a_step_trigger_not_a_draw(card_db):
     hints = {e for h in t.effects.walk(include_sub=False)
              if h.trigger is not None for e in h.trigger.event_hints}
     assert EventHint.BEGINNING_OF in hints and EventHint.DRAW not in hints
+
+
+# ── Resolution: the draw carrier (CR 603.2, 603.3d) ─────────────────────
+
+import random
+
+from engine.cards import CardInstance
+from engine.game_state import GameState, Phase
+
+
+def _game(active=0, phase=Phase.MAIN1):
+    game = GameState(rng=random.Random(0))
+    game.current_phase = phase
+    game.active_player = active
+    for p in game.players:
+        p.life = 20
+    return game
+
+
+def _put(game, card_db, idx, name, zone="battlefield"):
+    c = CardInstance(template=card_db.get_card(name), owner=idx, controller=idx,
+                     instance_id=game.next_instance_id(), zone=zone)
+    c._game_state = game
+    if zone == "battlefield":
+        c.enter_battlefield()
+    getattr(game.players[idx], zone).append(c)
+    return c
+
+
+def _draw(game, card_db, idx, n=1):
+    for _ in range(n):
+        _put(game, card_db, idx, "Island", zone="library")
+    return game.draw_cards(idx, n)
+
+
+def _lives(game):
+    return [p.life for p in game.players]
+
+
+def test_an_opponent_draw_trigger_resolves_on_each_opponent_draw_only(card_db):
+    """Fate Unraveler (untagged): "whenever an opponent draws a card, ~
+    deals 1 damage to that player"."""
+    game = _game()
+    _put(game, card_db, 0, "Fate Unraveler")
+    _draw(game, card_db, 1, 2)
+    assert _lives(game) == [20, 18]
+    _draw(game, card_db, 0)
+    assert _lives(game) == [20, 18]
+
+
+@pytest.mark.parametrize("name,after", [("Psychosis Crawler", [20, 19]),
+                                        ("Horizon Chimera", [21, 20])])
+def test_a_your_draw_trigger_resolves_on_its_controllers_draws_only(card_db, name, after):
+    game = _game()
+    _put(game, card_db, 0, name)
+    _draw(game, card_db, 1)
+    assert _lives(game) == [20, 20]
+    _draw(game, card_db, 0)
+    assert _lives(game) == after
+
+
+def test_the_nth_card_of_the_turn_triggers_on_that_draw_only(card_db):
+    """Kang: "whenever you draw your second card each turn, each opponent
+    loses 1 life and you gain 1 life"."""
+    game = _game()
+    _put(game, card_db, 0, "Kang, Temporal Tyrant")
+    _draw(game, card_db, 0)
+    assert _lives(game) == [20, 20]
+    _draw(game, card_db, 0)
+    assert _lives(game) == [21, 19]
+    _draw(game, card_db, 0)
+    assert _lives(game) == [21, 19]
+
+
+def test_a_draw_trigger_without_the_exemption_fires_on_the_draw_step_draw(card_db):
+    """Underworld Dreams prints no "except the first one ..." clause, so
+    the opponent's draw-step draw triggers it."""
+    game = _game(active=1, phase=Phase.DRAW)
+    _put(game, card_db, 0, "Underworld Dreams")
+    _draw(game, card_db, 1)
+    assert _lives(game) == [20, 19]
+
+
+def test_a_targeted_draw_trigger_aims_where_its_controller_chooses(card_db):
+    """Niv-Mizzet, Parun: "whenever you draw a card, ~ deals 1 damage to
+    any target" -- the target is chosen as the trigger is put on the stack
+    (CR 603.3d): by default the opponent's face, else the controller's pick
+    out of the legal choices."""
+    from engine.callbacks import DefaultCallbacks
+    game = _game()
+    _put(game, card_db, 0, "Niv-Mizzet, Parun")
+    bears = _put(game, card_db, 1, "Grizzly Bears")
+    _draw(game, card_db, 0)
+    assert _lives(game) == [20, 19] and bears.damage_marked == 0
+
+    class _AtTheBears(DefaultCallbacks):
+        def choose_trigger_targets(self, game, player_idx, source, spec, req,
+                                   players, permanents):
+            assert bears in permanents and 1 in players
+            return [bears]
+    game.callbacks = _AtTheBears()
+    _draw(game, card_db, 0)
+    assert _lives(game) == [20, 19]
+    assert bears.damage_marked == 1 or bears.zone == "graveyard"

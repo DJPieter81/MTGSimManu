@@ -33,6 +33,34 @@ def perform_optional_effect(game: Any, ctx: Any, spec: Any) -> bool:
     return True
 
 
+def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
+                         req: Any, players: Sequence[int],
+                         permanents: Sequence[Any]) -> List[Any]:
+    """The targets a triggered ability takes for one slot as it is put on
+    the stack (CR 603.3d), out of the legal choices the engine narrowed.
+    A damage spec's recipient is the AI's damage aim
+    (`ai.damage_targets.choose_damage_recipient`: the one owner of where N
+    damage goes -- lethal to the face, else the opposing permanent it
+    destroys that is worth most, else the face); any other spec, or an aim
+    the slot does not admit, keeps the engine's default pick."""
+    from engine.callbacks import default_trigger_targets
+    from engine.effect_spec import Verb
+    if getattr(spec, "verb", None) is Verb.DAMAGE:
+        from ai.damage_targets import choose_damage_recipient
+        from engine.effect_conditions import amount_value
+        amount = amount_value(game, player_idx, spec.amount, 0)
+        aim = choose_damage_recipient(game, player_idx, source, amount, req,
+                                      mana_committed=0)
+        if aim is not None:
+            if aim.permanent is None:
+                face = [p for p in players if p != player_idx]
+                if face:
+                    return face[:1]
+            elif any(aim.permanent is c for c in permanents):
+                return [aim.permanent]
+    return default_trigger_targets(player_idx, req, players, permanents)
+
+
 def _deliver(game: Any, player_idx: int, cards: Sequence[Any],
              k: int) -> List[Any]:
     """Up to `k` of `cards`, one at a time by the AI's hand-delivery choice

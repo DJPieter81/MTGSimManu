@@ -742,6 +742,10 @@ ETB_CARRIER_APPLY = {
 # the hosts `effect_carrier.etb_plan` takes, through the enter resolver.
 ETB_DISPATCH_HANDLER = "etb:dispatch"
 ETB_DISPATCH_APPLY = "engine.oracle_resolver:resolve_etb_from_oracle"
+# The draw carrier (`effect_carrier.dispatch_draw_triggers`): its pairs are
+# the hosts `effect_carrier.draw_plan` takes, through the DRAW fan-out.
+DRAW_DISPATCH_HANDLER = "draw:dispatch"
+DRAW_DISPATCH_APPLY = "engine.zone_transfer:_fire_on_draw_triggers"
 SELF_CAST_HANDLER = "oracle_resolver.resolve_self_cast_trigger"
 SELF_CAST_APPLY = "engine.oracle_resolver:resolve_self_cast_trigger"
 # The dispatcher entry point a switched apply reaches (section 10,
@@ -976,7 +980,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                     for f, p in ETB_CARRIER_APPLY.items()}
     self_cast_switched = _is_switched(_resolve_path(SELF_CAST_APPLY))
     etb_dispatch_switched = _is_switched(_resolve_path(ETB_DISPATCH_APPLY))
-    from engine.effect_carrier import etb_plan
+    draw_dispatch_switched = _is_switched(_resolve_path(DRAW_DISPATCH_APPLY))
+    from engine.effect_carrier import draw_plan, etb_plan
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1062,6 +1067,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                              _host_label(h), part,
                              etb_dispatch_switched
                              and _enter_reaches_resolver(t)))
+        for h, family in draw_plan(ce.front()) or ():
+            out.append(_pair(DRAW_DISPATCH_HANDLER, family, t, h,
+                             _host_label(h), part, draw_dispatch_switched))
         # the spell's own cast triggers
         if "when you cast this spell" in _printed_text(t):
             for h in ce.front():

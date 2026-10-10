@@ -312,11 +312,12 @@ class GameState:
 
         Per-card trigger fan-out is owned by
         `engine.zone_transfer._fire_on_draw_triggers` (registered for
-        `TransferKind.DRAW`). The fan-out reads classifier tags
-        (`ON_DRAW_DAMAGE`, `ON_OPP_DRAW_LIFE_LOSS`,
-        `ON_OWN_DRAW_LIFE_GAIN`) — no inline regex matching on
-        oracle text lives here. The legacy regex chain was the
-        R1+M1-engine bug surface from the 2026-05-16 audit.
+        `TransferKind.DRAW`): the draw carrier resolves each permanent's
+        draw-triggered abilities from their typed heads
+        (`effect_carrier.dispatch_draw_triggers`). No inline regex
+        matching on oracle text lives here. This owner counts the draw:
+        `cards_drawn_this_turn`, and `cards_drawn_in_draw_step` for a draw
+        in the drawer's own draw step.
         """
         from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
@@ -341,6 +342,9 @@ class GameState:
                 return drawn
             card = player.library.pop(0)
             player.cards_drawn_this_turn += 1
+            if self.current_phase == Phase.DRAW and \
+                    player_idx == self.active_player:
+                player.cards_drawn_in_draw_step += 1    # CR 504.1: their draw step
             drawn.append(card)
             # The pop above already detached the card from library;
             # transfer's `_remove_from_zone` is tolerant of that. The

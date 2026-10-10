@@ -52,6 +52,11 @@ class PlayerState:
     life_lost_this_turn: int = 0   # CR 702.131 spectacle condition tracker
     damage_dealt_this_turn: int = 0
     cards_drawn_this_turn: int = 0
+    # Cards this player has drawn in their own draw step this turn: the
+    # first is the one "except the first one they draw in each of
+    # their draw steps" excepts (CR 504.1, 603.2). Counted by the draw
+    # owner, GameState.draw_cards.
+    cards_drawn_in_draw_step: int = 0
     # Cards this player has discarded or cycled this turn (cycling IS a
     # discard, CR 702.29a).  Incremented once at the zone funnel
     # (ZoneManager.move_card, hand -> graveyard) so every discard route
@@ -465,6 +470,7 @@ class PlayerState:
         self.life_lost_this_turn = 0
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
+        self.cards_drawn_in_draw_step = 0
         self.cards_discarded_or_cycled_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0
         self.flashback_granted_this_turn = False
@@ -500,6 +506,7 @@ class PlayerState:
         self.life_lost_this_turn = 0
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
+        self.cards_drawn_in_draw_step = 0
         self.spells_cast_this_turn = 0
         self.nonartifact_spells_cast_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0

@@ -302,6 +302,14 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
     the predicate.
     """
     from ai.oracle_classifier import tags_for
+    from .effect_carrier import dispatch_draw_triggers
+
+    # The draw carrier first: every permanent whose draw-triggered
+    # abilities it takes from their typed heads resolves there, and its
+    # tag handlers below do not run (a card is taken whole or not at all).
+    taken, fired = dispatch_draw_triggers(game, controller)
+    if game.game_over:
+        return
 
     player = game.players[controller]
     opp = game.players[1 - controller]
@@ -311,9 +319,10 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
     # "whenever you draw" effects, opp permanents fire "whenever an
     # opponent draws" effects. The handler triple decides side, verb,
     # and application.
-    fired = False
     for source_player, role in ((player, "own"), (opp, "opp")):
         for src_card in source_player.battlefield:
+            if src_card.instance_id in taken:
+                continue
             src_tags = tags_for(src_card.name)
             for tag, handler in _ON_DRAW_HANDLERS.items():
                 if tag not in src_tags:

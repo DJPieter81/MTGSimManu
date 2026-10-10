@@ -134,12 +134,14 @@ def test_a_side_whose_resolution_is_not_a_function_of_the_board_and_seed_diverge
 def test_every_host_of_a_card_is_either_resolvable_through_a_legacy_apply_or_reported_skipped(card_db):
     from engine.effect_grammar import parse_template
     h = _h()
-    seen = {"SPELL": 0, "MODE": 0, "ACTIVATED": 0, "LOYALTY": 0, "ETB": 0}
+    seen = {"SPELL": 0, "MODE": 0, "ACTIVATED": 0, "LOYALTY": 0, "ETB": 0,
+            "DRAW": 0}
     for t in h.deck_templates(card_db):
         ce = parse_template(t)
         ok, skipped = h.host_cases(t, ce)
-        assert len(ok) + len(skipped) == sum(1 for _ in ce.walk(
-            include_sub=False))
+        # a head naming both an enter and a draw event has a case for each
+        assert len({c.host for c in ok}) + len(skipped) == sum(
+            1 for _ in ce.walk(include_sub=False))
         for c in ok:
             seen[c.kind] += 1
     assert all(n > 0 for n in seen.values()), seen
@@ -206,7 +208,8 @@ NOOP_FIXTURE = REPO / "tests" / "fixtures" / "host_harness_noop_hosts.json"
 
 
 # The E0 self-check over every registered-deck MB and SB host with a
-# legacy apply: 237 hosts (enter triggers included since unit E) x 6
+# legacy apply: 239 hosts (enter triggers since unit E, draw triggers
+# since unit D) x 6
 # boards x 2 seeds x 2 sides, plus one placed-only copy per (host, board)
 # for the no-op report. Measured 2026-10-09: ~95 s on a quiet 4-core box
 # (2026-10-02, 175 hosts: ~53 s CPU), plus ~18 s when first in the process

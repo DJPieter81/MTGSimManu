@@ -947,6 +947,27 @@
    "DAMAGE": 102
   }
  },
+ "draw:dispatch": {
+  "deck_hosts": [],
+  "executable": 17,
+  "family": "draw_trigger",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 17,
+   "sideboard": 0
+  },
+  "steps": {
+   "E1": 17
+  },
+  "strict": 17,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DAMAGE": 7,
+   "GAIN_LIFE": 2,
+   "GAIN_LIFE,LOSE_LIFE": 5,
+   "LOSE_LIFE": 3
+  }
+ },
  "energy_damage": {
   "deck_hosts": [
    {
