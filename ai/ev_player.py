@@ -1311,11 +1311,15 @@ class EVPlayer:
             ev += max(hand_denial_value(t, game, self.player_idx, snap),
                       self._self_fill_value(card, snap, me))
 
-        # ── Evoke overlay: projection doesn't model 2-card cost ──
-        if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
-            # Evoking costs an extra card — subtract its future clock value
-            from ai.clock import card_clock_impact
-            ev -= card_clock_impact(snap) * EVOKE_CARD_LOSS_MULTIPLIER  # losing a card is significant
+        # ── Evoke overlay: the projection drops the evoked body; an
+        # exile evoke cost also spends a second card (CR 702.74a) ──
+        from ai.effective_cmc import CAST_MODE_EVOKE, cast_mode_of
+        if cast_mode_of(card, snap, game=game,
+                        player_idx=self.player_idx) == CAST_MODE_EVOKE:
+            if t.evoke_exile_color is not None:
+                # Subtract the exiled card's future clock value
+                from ai.clock import card_clock_impact
+                ev -= card_clock_impact(snap) * EVOKE_CARD_LOSS_MULTIPLIER  # losing a card is significant
             # But if we're dying, evoking removal is still worth it
             if snap.am_dead_next:
                 ev += EVOKE_DESPERATE_BONUS

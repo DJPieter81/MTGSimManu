@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 import re
 import os
-from typing import Dict, List, Optional, Set, Any
+from typing import Dict, List, Optional, Set, Tuple, Any
 from dataclasses import dataclass
 from .mana import ManaCost, Color
 from .cards import (
@@ -1195,6 +1195,37 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
     return cost
 
 
+# The printed evoke line (CR 702.74a): "Evoke {2}{U}" -- a mana cost -- or
+# "Evoke—Exile a white card from your hand." -- a card of that colour to
+# exile. Anything else is no cost this engine can pay.
+_EVOKE_LINE_RE = re.compile(r"^Evoke(?:—|-|\s)\s*(?P<cost>.+?)\s*(?:\(|$)",
+                            re.MULTILINE)
+_EVOKE_MANA_RE = re.compile(r"(?:\{[^}]+\})+")
+_EVOKE_EXILE_RE = re.compile(
+    r"exile an? (?P<color>white|blue|black|red|green) card from your hand\.?",
+    re.IGNORECASE)
+_COLOR_WORDS = {"white": Color.WHITE, "blue": Color.BLUE,
+                "black": Color.BLACK, "red": Color.RED, "green": Color.GREEN}
+
+
+def parse_evoke_cost(oracle_text: str) -> Optional[Tuple[ManaCost,
+                                                         Optional[Color]]]:
+    """The printed evoke cost as (mana, colour of the card to exile): a
+    mana evoke cost exiles nothing (colour None); an exile evoke cost
+    costs no mana (an empty ManaCost). None when the card prints no evoke
+    line this table reads."""
+    m = _EVOKE_LINE_RE.search(oracle_text or "")
+    if m is None:
+        return None
+    cost = m.group("cost").strip()
+    if _EVOKE_MANA_RE.fullmatch(cost):
+        return parse_mana_cost_mtgjson(cost), None
+    exile = _EVOKE_EXILE_RE.fullmatch(cost)
+    if exile is not None:
+        return ManaCost(), _COLOR_WORDS[exile.group("color").lower()]
+    return None
+
+
 # Patch ManaCost to support add_color
 def _add_color(self, color: str):
     if color == "W": self.white += 1
@@ -1642,14 +1673,12 @@ class CardDatabase:
         # Build abilities from effects
         abilities = self._build_abilities(effects, oracle_text, name, data)
 
-        # Parse evoke cost
-        evoke_cost = None
+        # Evoke cost (CR 702.74a): the printed cost, mana or a card to exile.
+        evoke_cost, evoke_exile_color = None, None
         if Keyword.EVOKE in keywords:
-            evoke_match = re.search(r'[Ee]voke[—\-]\s*(.+?)(?:\s*\(|$)', oracle_text)
-            if evoke_match:
-                evoke_str = evoke_match.group(1).strip()
-                # Try to parse evoke cost
-                evoke_cost = parse_mana_cost_mtgjson(evoke_str)
+            parsed = parse_evoke_cost(oracle_text)
+            if parsed is not None:
+                evoke_cost, evoke_exile_color = parsed
 
         template = CardTemplate(
             name=name,
@@ -1676,6 +1705,7 @@ class CardDatabase:
             oracle_text=oracle_text,
             tags=tags,
             evoke_cost=evoke_cost,
+            evoke_exile_color=evoke_exile_color,
             conditional_mana=conditional_mana,
         )
 

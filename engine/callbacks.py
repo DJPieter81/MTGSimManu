@@ -51,6 +51,15 @@ class GameCallbacks(Protocol):
         """Should this creature be evoked instead of hardcast?"""
         ...
 
+    def choose_exile_from_hand(
+        self, game: GameState, player_idx: int, spell: CardInstance,
+        candidates: List[CardInstance]
+    ) -> Optional[CardInstance]:
+        """Which card does a cost that exiles a card from the caster's
+        hand take (an evoke cost, CR 702.74a)? One of `candidates`, or
+        None to decline paying the cost (the cast does not happen)."""
+        ...
+
     def should_kick(
         self, game: GameState, player_idx: int, card: CardInstance
     ) -> int:
@@ -226,6 +235,13 @@ class DefaultCallbacks:
         self, game: GameState, player_idx: int, card: CardInstance
     ) -> bool:
         return False
+
+    def choose_exile_from_hand(
+        self, game: GameState, player_idx: int, spell: CardInstance,
+        candidates: List[CardInstance]
+    ) -> Optional[CardInstance]:
+        """Default: the first card the cost may take, in hand order."""
+        return candidates[0] if candidates else None
 
     def should_kick(
         self, game: GameState, player_idx: int, card: CardInstance

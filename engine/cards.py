@@ -616,8 +616,11 @@ class CardTemplate:
     oracle_text: str = ""
     # Tags for AI strategy
     tags: Set[str] = field(default_factory=set)  # e.g., {"removal", "threat", "ramp"}
-    # Evoke cost
+    # Evoke cost (CR 702.74a), as printed: its mana (empty for "Evoke --
+    # Exile a white card from your hand.") and the colour of the card it
+    # exiles from hand (None for a mana evoke cost).
     evoke_cost: Optional[ManaCost] = None
+    evoke_exile_color: Optional[Color] = None
     # Dash cost (alternative cast: gains haste, returns to hand at end of turn)
     dash_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
     # Warp cost (alternative cast from hand for less mana; creature exiles at end of turn)

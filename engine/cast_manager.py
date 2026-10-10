@@ -585,56 +585,18 @@ class CastManager:
             sum(phyrexian_pips.values()),
             CastManager._phyrexian_pips_life_can_pay(player.life))
 
-        # Evoke as alternative cost (Solitude, Endurance, Grief, etc.)
-        # Evoke is independent of the hardcast path: it is a *choice*
-        # the caster makes, not a fallback for when mana is short. The
-        # evoke branch is available whenever the evoke cost is payable
-        # (mana portion of evoke_cost + exile fodder + valid target).
-        # `can_cast` returns True if EITHER mode is payable; the AI
-        # layer decides which mode to use at resolution time.
-        #
-        # Bug E3 (pre-fix gate `total_mana < effective_cmc`): with
-        # five untapped Mountains and a white card in hand, Solitude
-        # reported uncastable — total_mana met the CMC, so the evoke
-        # branch was skipped, and the colour check then failed because
-        # no white source was on the battlefield. Jeskai Blink relied
-        # on Solitude as a free evoke removal response in opponent
-        # windows; the gate masked it.
-        can_evoke = False
-        if template.evoke_cost is not None:
-            # Evoke cost may itself include a mana component (most
-            # evoke creatures do not, but the engine permits it).
-            # Verify the caster has enough total mana to cover the
-            # evoke cost; the colour check for the evoke cost itself
-            # is handled at resolution. No magic number: falls back
-            # to zero for the common pitch-evoke pattern.
-            evoke_mana_needed = template.evoke_cost.cmc
-            if total_mana >= evoke_mana_needed:
-                exile_candidates = [
-                    c for c in player.hand
-                    if c != card
-                    and not c.template.is_land
-                    and c.template.color_identity & template.color_identity
-                ]
-                if exile_candidates:
-                    can_evoke = True
-                    # Target validation: don't allow evoke if the card
-                    # needs a target and no valid target exists
-                    from decks.card_knowledge_loader import requires_target as _req_target
-                    needs_target = (
-                        _req_target(template.name)
-                        or getattr(template, 'requires_creature_target', False)
-                    )
-                    if needs_target:
-                        opp_idx = 1 - player_idx
-                        if not game.players[opp_idx].creatures:
-                            can_evoke = False  # No targets for evoke
-                    if can_evoke:
-                        can_evoke = game.callbacks.should_evoke(
-                            game, player_idx, card)
-
-        if can_evoke:
-            return True  # Can cast via evoke
+        # Evoke (CR 702.74a): "You may cast this spell by paying [cost]
+        # rather than paying its mana cost" -- a choice the caster may make
+        # whenever the printed evoke cost can be paid, not a fallback for
+        # short mana (Bug E3: five Mountains and a white card in hand once
+        # left Solitude uncastable). The creature's targets, if any, are
+        # its enter trigger's, chosen as the trigger is put on the stack
+        # (CR 603.3d), not the spell's; whether to evoke is the
+        # controller's call (`should_evoke`).
+        if (template.evoke_cost is not None
+                and CastManager.evoke_payable(game, player_idx, card)
+                and game.callbacks.should_evoke(game, player_idx, card)):
+            return True  # castable for its evoke cost
 
         # Spectacle alternative cost (CR 702.131): may cast for spectacle cost
         # if an opponent lost life this turn — quantity then colour check.
@@ -1050,6 +1012,53 @@ class CastManager:
             if perm.other_counters.get("charge", 0) == cmc:
                 return perm
         return None
+
+    @staticmethod
+    def evoke_exile_candidates(player, card) -> list:
+        """The cards an evoke cost that exiles "a <colour> card from your
+        hand" may take (CR 702.74a): every other card in the hand whose
+        colour is that colour (CR 105.2), a land of the colour included.
+        Empty for a mana evoke cost, which exiles nothing."""
+        color = card.template.evoke_exile_color
+        if color is None:
+            return []
+        return [c for c in player.hand
+                if c is not card and color in c.colors]
+
+    @staticmethod
+    def _choose_exile_from_hand(game: "GameState", player_idx: int, spell,
+                                candidates: list):
+        """The card a cost exiles from the caster's hand (CR 601.2h): the
+        controller's pick among `candidates` (`choose_exile_from_hand`;
+        the first candidate when the callbacks offer no such choice).
+        None when there is none, the controller declines, or the pick is
+        not one the cost may take."""
+        if not candidates:
+            return None
+        ask = getattr(game.callbacks, "choose_exile_from_hand", None)
+        pick = (ask(game, player_idx, spell, list(candidates))
+                if ask is not None else candidates[0])
+        return pick if any(pick is c for c in candidates) else None
+
+    @staticmethod
+    def evoke_payable(game: "GameState", player_idx: int, card) -> bool:
+        """The printed evoke cost can be paid now (CR 601.2f-h): its mana,
+        quantity then colour, and for an exile cost a card of its colour
+        to exile. Timing, and the choice to evoke, are the cast's."""
+        t = card.template
+        cost = t.evoke_cost
+        if cost is None:
+            return False
+        player = game.players[player_idx]
+        if (t.evoke_exile_color is not None
+                and not CastManager.evoke_exile_candidates(player, card)):
+            return False
+        if cost.cmc == 0:
+            return True
+        total = (player.untapped_mana_capacity() + player.mana_pool.total()
+                 + player._tron_mana_bonus())
+        return (total >= cost.cmc and CastManager._can_pay_colored_pips(
+            game, player_idx, player.untapped_mana_sources, cost))
 
     @staticmethod
     def _can_pay_colored_pips(game: "GameState", player_idx: int,
@@ -1575,26 +1584,16 @@ class CastManager:
                 else:
                     return False
 
-            # Check if we should evoke instead of paying mana
-            # Unified board evaluation: evoke when the body isn't worth waiting for
+            # Evoke (CR 702.74a): the controller's choice whenever the
+            # printed evoke cost can be paid, whatever the mana cost and
+            # whatever the enter trigger could target (see `can_cast`).
             should_evoke = (
                 not dashed and not escaped and not spectacled
                 and not madnessed
                 and template.evoke_cost is not None
-                and untapped < template.mana_cost.cmc
+                and CastManager.evoke_payable(game, player_idx, card)
                 and game.callbacks.should_evoke(game, player_idx, card)
             )
-            # Target validation: don't evoke if the card needs a target and none exists
-            if should_evoke:
-                from decks.card_knowledge_loader import requires_target as _requires_target
-                needs_target = (
-                    _requires_target(template.name)
-                    or getattr(template, 'requires_creature_target', False)
-                )
-                if needs_target:
-                    opp_idx = 1 - player_idx
-                    if not game.players[opp_idx].creatures:
-                        should_evoke = False  # No targets, skip evoke
 
             # Kicker (CR 702.33): an optional ADDITIONAL cost on a normal
             # cast — never on an alternative-cost cast (dash/escape/evoke/
@@ -1616,79 +1615,30 @@ class CastManager:
                     kick_count = max(0, kick_count)
             card._kick_count = kick_count
             if should_evoke:
-                # Evoke: exile a card from hand that shares a color
-                exile_candidates = [
-                    c for c in player.hand
-                    if c != card 
-                    and not c.template.is_land  # Lands are colorless, can't be exiled for evoke
-                    and c.template.color_identity & template.color_identity
-                ]
-                if exile_candidates:
-                    # Generic evoke exile scoring — no hardcoded card names.
-                    # Uses tag-based heuristics (combo pieces > threats > filler).
-                    # Reanimate decks: big creatures are irreplaceable combo targets
-                    deck_has_reanimate = any(
-                        'reanimate' in (h.template.tags or set())
-                        for h in player.hand
-                    ) or any(
-                        'reanimate' in (h.template.tags or set())
-                        for h in player.graveyard
-                    )
-                    def exile_priority(c):
-                        """Lower score = more willing to exile this card."""
-                        score = c.template.cmc or 0  # prefer exiling cheap cards
-                        tags = c.template.tags or set()
-                        # Planeswalkers are sticky card-advantage engines —
-                        # never pitch them to evoke. Observed: 4c Omnath was
-                        # pitching Wrenn and Six to Endurance.
-                        if CardType.PLANESWALKER in c.template.card_types:
-                            score += 50
-                        # Tag-based protection
-                        if any(t in tags for t in ('combo', 'finisher')):
-                            score += 50  # never exile combo pieces
-                        if Keyword.STORM in c.template.keywords:
-                            score += 50
-                        if Keyword.CASCADE in c.template.keywords:
-                            score += 40  # cascade spells are critical
-                        # Reanimate targets: big creatures in a reanimate deck
-                        if (deck_has_reanimate and c.template.is_creature
-                                and (c.template.power or 0) >= 5):
-                            score += 50  # irreplaceable reanimate target
-                        if any(t in tags for t in ('threat', 'removal', 'board_wipe')):
-                            score += 10
-                        if any(t in tags for t in ('ritual', 'cost_reducer', 'ramp')):
-                            score += 15  # enablers are important
-                        if any(t in tags for t in ('cantrip', 'cycling')):
-                            score += 5  # replaceable card draw
-                        # Duplicate protection: if we have 2+ copies, one is expendable
-                        dupes = sum(1 for h in player.hand
-                                    if h.name == c.name and h != c)
-                        if dupes > 0:
-                            score -= 20  # redundant copy is safe to exile
-                        return score
-
-                    exile_candidates.sort(key=exile_priority)
-                    best_exile = exile_candidates[0]
-                    # Don't exile if the best candidate is a critical piece
-                    if exile_priority(best_exile) >= 40:
-                        return False  # all candidates are too important
-                    # Lethal check: allow exiling important pieces under pressure
-                    if exile_priority(best_exile) >= 20:
-                        opp_idx = 1 - player_idx
-                        opp_power = sum(
-                            (c.power or c.template.power or 0)
-                            for c in game.players[opp_idx].creatures
-                        )
-                        if opp_power < player.life:
-                            return False  # not under pressure, keep synergy piece
-                    player.hand.remove(best_exile)
-                    best_exile.zone = "exile"
-                    player.exile.append(best_exile)
-                    evoked = True
-                    game.log.append(f"T{game.display_turn} P{player_idx+1}: "
-                                   f"Evoke {card.name} (exile {best_exile.name})")
-                else:
+                # Pay the printed evoke cost (CR 601.2f-h): its mana, and
+                # for an exile cost the card the controller picks among
+                # those the cost may take; declining that pick casts
+                # nothing.
+                exiled = None
+                if template.evoke_exile_color is not None:
+                    exiled = CastManager._choose_exile_from_hand(
+                        game, player_idx, card,
+                        CastManager.evoke_exile_candidates(player, card))
+                    if exiled is None:
+                        return False
+                if (template.evoke_cost.cmc > 0
+                        and not game.tap_lands_for_mana(
+                            player_idx, template.evoke_cost,
+                            card_name=template.name)):
                     return False
+                if exiled is not None:
+                    game.zone_mgr.move_card(game, exiled, "hand", "exile",
+                                            cause=f"evoke {template.name}")
+                evoked = True
+                paid = (f"exile {exiled.name}" if exiled is not None
+                        else f"pays {template.evoke_cost}")
+                game.log.append(f"T{game.display_turn} P{player_idx+1}: "
+                                f"Evoke {card.name} ({paid})")
 
             # Delve: exile cards from graveyard to reduce generic mana cost
             delve_exiled = 0

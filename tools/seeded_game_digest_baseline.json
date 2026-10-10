@@ -1,5 +1,5 @@
 {
-  "combined": "80905e6b07efe216a10d8f4b3a0663bab8a539bbbb4481a9f6c17a483a2e8e6f",
+  "combined": "10c737445e7fa9722f8822ec163372e6c8b3eaabf4ede78d6503542f60d45149",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -75,20 +75,20 @@
       "winner": "Instant Reanimator"
     },
     "bo1|Jeskai Blink|4c Omnath|51500": {
-      "lines": 571,
-      "sha256": "0844dc1e51e6d3cbb8d785f3e2b3e03a701c539710e03485f71e556bcb646089",
-      "turns": 8,
+      "lines": 640,
+      "sha256": "e4664a3cfb9d1f8bb9df0b0cac339863990eb690c7cf10655c4332c47262a920",
+      "turns": 9,
       "winner": "4c Omnath"
     },
     "bo1|Living End|Jeskai Blink|54000": {
-      "lines": 764,
-      "sha256": "9dbc1ce6d2953221440aef60b0839aaa3ae7926bc2caa60729f58a0c6d5ae136",
-      "turns": 12,
+      "lines": 840,
+      "sha256": "8d2bcf8b2d0c19ca3cc754e970b47577ba31267fb4318845d53e8cbe31270edd",
+      "turns": 13,
       "winner": "Jeskai Blink"
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
-      "lines": 838,
-      "sha256": "e533f9a85f9359b0fdc54d620402491bf7be3585b0cbf74b1ecd0c0088959f25",
+      "lines": 839,
+      "sha256": "1aa1b63975ed069a0df8b3be413defb51201a5984de8be3f498f4ab42c8dda58",
       "turns": 11,
       "winner": "4/5c Control"
     },

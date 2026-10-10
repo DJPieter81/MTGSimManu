@@ -238,6 +238,10 @@ class AICallbacks(GameCallbacks):
             game, player_idx, Action(ActionType.EVOKE, {'card': card})
         ) > 0
 
+    def choose_exile_from_hand(self, game, player_idx, spell, candidates):
+        from ai.discard_advisor import choose_card_to_exile_from_hand
+        return choose_card_to_exile_from_hand(game, player_idx, candidates)
+
     def should_kick(self, game, player_idx, card):
         # CR 702.33: how many times to kick. v1 policy in ai/board_eval
         # (_eval_kick) returns the kick count (0 unless the kicked payoff
@@ -1386,12 +1390,9 @@ class GameRunner:
                         flash_creatures.append(card)
                 elif card.template.is_creature and card.template.has_flash:
                     flash_creatures.append(card)
-            # Evoke creatures (Solitude, Endurance, Subtlety) can be cast at instant speed
-            elif card.template.is_creature and "evoke" in card.template.tags:
-                if "removal" in card.template.tags:
-                    instant_removal.append(card)
-                else:
-                    flash_creatures.append(card)
+            # Evoke grants no flash (CR 702.74a): an evoke creature that
+            # prints Flash is listed above, one that does not is no
+            # instant-speed play.
 
         # Assess threat level of the ACTIVE player's board (the one we want to remove)
         if active_player.creatures:

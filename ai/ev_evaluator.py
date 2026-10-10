@@ -2069,6 +2069,14 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     spends_held = not as_ability and not (
         game is not None and _expires_this_turn(game, player_idx, card))
     spell_count = len([card]) if spends_held else 0
+    # How the cast is paid (`ai.effective_cmc.cast_mode_of`): an evoke when
+    # only the evoke cost can be paid now -- its creature is sacrificed as
+    # it enters (CR 702.74a), so its body never joins the board.
+    from ai.effective_cmc import (CAST_MODE_EVOKE, CAST_MODE_NORMAL,
+                                  cast_mode_of)
+    cast_mode = (CAST_MODE_NORMAL if as_ability else cast_mode_of(
+        card, snap, game=game, player_idx=player_idx))
+    evoked = cast_mode == CAST_MODE_EVOKE
     projected = EVSnapshot(
         my_life=snap.my_life,
         opp_life=snap.opp_life,
@@ -2091,6 +2099,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # priced at 3WW.
         my_mana=max(0, snap.my_mana - (0 if as_ability else effective_cmc(
             card, snap, game=game, player_idx=player_idx,
+            cast_mode=cast_mode,
         ))),
         opp_mana=snap.opp_mana,
         my_total_lands=snap.my_total_lands,
@@ -2168,16 +2177,20 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             if hasattr(card, 'toughness') and card.toughness is not None:
                 tough = card.toughness
 
-        projected.my_power += max(0, p)
-        projected.my_toughness += max(0, tough)
-        projected.my_creature_count += 1
+        if evoked:
+            # Sacrificed as it enters: the body goes to the graveyard.
+            projected.my_gy_creatures += 1
+        else:
+            projected.my_power += max(0, p)
+            projected.my_toughness += max(0, tough)
+            projected.my_creature_count += 1
 
-        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
-               for kw in getattr(t, 'keywords', set())}
-        if kws & {'flying', 'menace', 'trample'}:
-            projected.my_evasion_power += max(0, p)
-        if 'lifelink' in kws:
-            projected.my_lifelink_power += max(0, p)
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in getattr(t, 'keywords', set())}
+            if kws & {'flying', 'menace', 'trample'}:
+                projected.my_evasion_power += max(0, p)
+            if 'lifelink' in kws:
+                projected.my_lifelink_power += max(0, p)
 
         # Recurring trigger valuation: `_project_token_bonus` walks the
         # oracle clause-by-clause and returns immediate (ETB) and
