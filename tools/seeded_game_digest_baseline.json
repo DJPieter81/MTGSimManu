@@ -1,10 +1,10 @@
 {
-  "combined": "c12511b671108fb43d23505bd7205e8cf0092ee961df895129de8a51021eec3d",
+  "combined": "dec4b8e5aa60fbf65a8f59f7a8db267de1968767ba997b341f25d9d57f14073a",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
-      "lines": 742,
-      "sha256": "f0b0c76b13dd38e7109dff5111159d7b609da73f243e026bf6e6d23fe5fab126",
+      "lines": 759,
+      "sha256": "0b54e71cbcd9514965ae581308c492ab6c7db285affa5cfaa8ce0c88e46954cc",
       "turns": 11,
       "winner": "4c Omnath"
     },
@@ -93,27 +93,21 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 753,
-      "sha256": "a361daf429a61cbdc74d70db8eac1c5a320312bbf23f1bdf4ba9e2d1fb8f84e7",
+      "lines": 754,
+      "sha256": "eba1c4eedc6e5aad3b4ba2787fd012b949c0c8612a079b98380bb6d759c85f07",
       "turns": 10,
       "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
-      "lines": 1469,
-      "sha256": "84721d4f5e9fc25648d570e893be66006985ae110360727aaabd0f2d04a8795e",
-      "turns": 19,
+      "lines": 1373,
+      "sha256": "695b553c936297ad60bbb166fa7d58fb08d62fdbcbd385fc108a81d7c75f72ee",
+      "turns": 18,
       "winner": "Azorius Control"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g2": {
-      "lines": 919,
-      "sha256": "14481c2e2e0dc70c50fab7c83f0c64ef7fb1e5ed5e90bf99f5048cdcd23e461f",
-      "turns": 12,
-      "winner": "Ruby Storm"
-    },
-    "bo3|Azorius Control|Ruby Storm|58500|g3": {
-      "lines": 1941,
-      "sha256": "25558766ef5d8fddab1107117ea72db8ee7e12ace3510d755866a19941011966",
-      "turns": 28,
+      "lines": 1119,
+      "sha256": "981eaccc67cb3b54e9530457273937ec8f700a5cc44a5fc8b1868a46d6f95de3",
+      "turns": 14,
       "winner": "Azorius Control"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {
@@ -159,5 +153,5 @@
       "winner": "Living End"
     }
   },
-  "n_games": 26
+  "n_games": 25
 }

@@ -22,8 +22,9 @@ These tests pin the rule, not the cards:
     gain life, opp draws lose life)
 
 The rule-phrased test names describe the mechanic, never the card. The
-test fixtures use real card names so the classifier-tag lookup
-succeeds, but the assertion targets the mechanic boundary.
+fixtures carry printed text: the engine reads the impulse effect from it
+(the effect dispatcher's card-flow family: the cards go to exile with a
+permission to play them, unit I), never from a classifier tag.
 """
 from __future__ import annotations
 
@@ -46,10 +47,8 @@ def _make_classified_card(game: GameState, name: str, controller: int,
                           oracle_text: str, zone: str,
                           card_types: list,
                           on_battlefield: bool = False) -> CardInstance:
-    """Build a real-named CardInstance so the classifier-tag lookup
-    succeeds. `oracle_text` matches what the trigger fan-out parses
-    for the numerical amount; the dispatch is by tag, the amount is
-    parsed targetedly."""
+    """Build a real-named CardInstance with the printed `oracle_text`
+    the engine reads its effects from."""
     tmpl = CardTemplate(
         name=name,
         card_types=card_types,
@@ -200,11 +199,13 @@ def test_impulse_reveal_with_two_bowmasters_deals_zero_self_damage():
     )
 
 
-def test_play_cap_x_impulse_reveals_cap_and_fires_zero_draw_triggers():
+def test_a_capped_impulse_is_never_a_draw():
     """Rule: the play-cap X sub-shape ('exile the top X … you may
-    play up to TWO of those cards') is impulse-reveal for the CAP —
-    never a draw. The old per-card handler drew 2 through
-    `draw_cards` and re-fired Bowmasters for exactly this shape."""
+    play up to TWO of those cards') is never a draw: it fires no draw
+    trigger and puts no card into hand. The old per-card handler drew 2
+    through `draw_cards` and re-fired Bowmasters for exactly this shape.
+    Its capped permission is not modelled yet, so the spell is refused
+    whole (it exiles nothing) rather than approximated."""
     game = _fresh_game()
     revealer, opp = 0, 1
     _put_bowmasters(game, controller=opp)
@@ -234,30 +235,29 @@ def test_play_cap_x_impulse_reveals_cap_and_fires_zero_draw_triggers():
 
     assert game.players[revealer].life == life_before, (
         "play-cap impulse must NOT fire on-draw damage triggers")
-    # cap of two revealed as playable (dst approximation: hand)
-    assert len(game.players[revealer].hand) == hand_before + 2
+    assert len(game.players[revealer].hand) == hand_before
+    assert game.players[revealer].cards_drawn_this_turn == 5
 
 
-def _deck_pool_tagged_impulse_spells():
-    """Every registered-deck instant/sorcery carrying the
-    IMPULSE_DRAW verdict — the durable per-card regression surface.
-    The coverage gate (tools/check_classifier_coverage.py) guarantees
-    this list can never silently shrink relative to the deck pool."""
-    import json
-    from pathlib import Path
+def _deck_pool_impulse_spells():
+    """Every registered-deck instant/sorcery whose parsed spell exiles
+    the top of its controller's library -- the durable per-card
+    regression surface, read from the cards' text."""
     from tools.check_classifier_coverage import collect_deck_pool_oracles
-    cache = json.loads(
-        (Path(__file__).resolve().parent.parent / "decks" / "gameplans" /
-         "_oracle_classifier.json").read_text())["cards"]
+    from engine.effect_spec import Verb, iter_specs
     from tests._card_db_cache import shared_card_database
     db = shared_card_database()
     out = []
     for name in collect_deck_pool_oracles():
-        entry = cache.get(name)
-        if not entry or "IMPULSE_DRAW" not in entry.get("tags", []):
-            continue
         tmpl = db.get_card(name)
-        if tmpl and (tmpl.is_instant or tmpl.is_sorcery):
+        if not tmpl or not (tmpl.is_instant or tmpl.is_sorcery):
+            continue
+        host = tmpl.effects.spell(0)
+        if host is not None and any(
+                s.verb is Verb.EXILE and s.filter is not None
+                and getattr(s.filter, "position", None) == "top"
+                and s.filter.zone == "library"
+                for s in iter_specs(host.specs)):
             out.append((name, tmpl.oracle_text))
     return out
 
@@ -265,7 +265,7 @@ def _deck_pool_tagged_impulse_spells():
 import pytest
 
 
-@pytest.mark.parametrize("name,oracle", _deck_pool_tagged_impulse_spells())
+@pytest.mark.parametrize("name,oracle", _deck_pool_impulse_spells())
 def test_every_registered_impulse_spell_fires_zero_draw_triggers(
         name, oracle):
     """Data-driven: each REAL impulse spell in the registered deck

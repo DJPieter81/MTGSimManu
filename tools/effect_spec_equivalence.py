@@ -711,7 +711,7 @@ HANDLER_FAMILY = {
     "direct_damage": "damage", "board_sweep": "removal",
     "targeted_removal": "removal", "library_dig": "card_flow",
     "hand_attack": "card_flow", "bounce": "removal",
-    "reanimate_target": "removal", "impulse_reveal": "card_flow",
+    "reanimate_target": "removal",
     "card_flow": "card_flow", "create_token": "tokens_counters",
 }
 # The clause handler that is the dispatcher's own carrier for a spell no
@@ -993,6 +993,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
             ctx = CR._static_context(card, 0, override, removal)
             reached = override is not None or (
                 whole_reached and places_legacy_targets(h, ce.front()))
+            # An unswitched handler that accepts the spell resolves it the
+            # legacy way and marks it handled, so the dispatched handler
+            # after it declines (`_a_dispatched`): that spell never reaches
+            # the dispatcher through it.
+            legacy_claimed = False
             for hd in handlers:
                 if hd.name in oracle_handlers and not ctx.oracle:
                     continue
@@ -1009,8 +1014,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                     except Exception:
                         ok = False
                 if ok:
+                    on_path = switched[hd.name] and reached and not (
+                        hd.name == DISPATCHED_HANDLER and legacy_claimed)
                     out.append(_pair(hd.name, family, t, h, label, part,
-                                     switched[hd.name] and reached))
+                                     on_path))
+                    legacy_claimed |= not switched[hd.name]
         # loyalty lines: kind branches, and CLAUSE through the registry
         for face, attr in ((0, "loyalty_abilities"),
                            (1, "back_face_loyalty_abilities")):

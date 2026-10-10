@@ -657,46 +657,6 @@ def _a_reanimate(ctx):
     return None
 
 
-def _impulse_count(ctx):
-    oracle = ctx.oracle
-    m_exile = re.search(r'exile the top (\w+) cards? of your library', oracle)
-    m_cap = re.search(r'you may play up to (\w+)', oracle)
-    n = _num(m_exile.group(1)) if m_exile else 0
-    if n == 0 and m_cap:
-        n = _num(m_cap.group(1))
-    if ctx.template.x_cost_data and not m_cap:
-        n = 0
-    return n
-
-
-def _g_impulse(ctx):
-    from ai.oracle_classifier import Tag, tags_for
-    return Tag.IMPULSE_DRAW in tags_for(ctx.card.name)
-
-
-def _a_impulse(ctx):
-    # Impulse-reveal (CR 121.1c — not a draw): library → hand without the
-    # on-draw fan-out. Ends resolution (skips the real-draw branch).
-    from engine.zone_transfer import TransferKind, transfer
-    game, card, controller = ctx.game, ctx.card, ctx.controller
-    n = _impulse_count(ctx)
-    if n > 0:
-        revealed: list = []
-        player = game.players[controller]
-        for _ in range(min(n, len(player.library))):
-            top = player.library[0]
-            transfer(game, top, src_zone="library", dst_zone="hand",
-                     kind=TransferKind.IMPULSE_REVEAL, controller=controller)
-            revealed.append(top)
-        if revealed:
-            names = ", ".join(c.name for c in revealed)
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} → impulse-reveal {n} ({names})")
-        return True
-    return None
-
-
 
 # ─────────────────────────────────────────────────────────────────────
 # Scaled counts: "… for each <X>" (CR 608.2 — counted as the effect
@@ -943,7 +903,6 @@ HANDLERS: List[ClauseHandler] = [
     ClauseHandler("hand_attack", _g_hand_attack, _a_hand_attack),
     ClauseHandler("bounce", _g_bounce, _a_bounce),
     ClauseHandler("reanimate_target", _g_reanimate, _a_reanimate),
-    ClauseHandler("impulse_reveal", _g_impulse, _a_impulse),
     ClauseHandler("card_flow", _g_card_flow, _a_card_flow),
     ClauseHandler("create_token", _g_token, _a_token),
     ClauseHandler("dispatched", _g_dispatched, _a_dispatched),

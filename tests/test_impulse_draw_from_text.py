@@ -326,3 +326,70 @@ def test_the_exile_executor_binds_only_the_top_of_your_own_library(card_db,
     from engine import effect_resolver as er
     host = card_db.get_card(name).effects.spell(0)
     assert not er.can_execute(host, "card_flow")
+
+
+# ── The carriers: an impulse spell and an impulse enter trigger resolve
+#    from their text through the dispatcher's card-flow family; a
+#    classifier tag neither adds nor removes the effect. ──
+
+def _cast(game, card_db, name, controller=0, x_value=0):
+    """Resolve the spell through the engine's spell resolution path."""
+    from engine.oracle_resolver import resolve_spell_from_oracle
+    card = _put(game, card_db, controller, name, "hand")
+    game.players[controller].hand.remove(card)
+    card.zone = "stack"
+    resolve_spell_from_oracle(game, card, controller, x_value=x_value)
+    return card
+
+
+@pytest.mark.parametrize("name,n", [("Reckless Impulse", 2),
+                                    ("Wrenn's Resolve", 2),
+                                    ("Act on Impulse", 3)])
+def test_an_impulse_spell_exiles_and_permits_as_printed(card_db, name, n):
+    """Tagged or not, the spell exiles the top N cards with a permission
+    to play them -- never to hand, never a draw."""
+    game = _game()
+    top = _library(game, card_db, ["Lightning Bolt", "Mountain", "Island",
+                                   "Forest"])
+    _cast(game, card_db, name)
+    p = game.players[0]
+    assert p.exile == top[:n] and p.hand == []
+    assert _permitted(game) == {c.instance_id for c in top[:n]}
+    assert p.cards_drawn_this_turn == 0
+
+
+def test_an_x_impulse_spell_exiles_x(card_db):
+    game = _game()
+    top = _library(game, card_db, ["Lightning Bolt", "Mountain", "Island",
+                                   "Forest"])
+    _cast(game, card_db, "Commune with Lava", x_value=3)
+    assert game.players[0].exile == top[:3]
+    assert _permitted(game) == {c.instance_id for c in top[:3]}
+
+
+def test_a_classifier_tag_alone_never_makes_a_spell_impulse(card_db,
+                                                             monkeypatch):
+    """A spell tagged as impulse draw whose text draws a card draws it:
+    the tag adds no exile and no permission."""
+    import ai.oracle_classifier as oc
+    monkeypatch.setattr(oc, "tags_for",
+                        lambda name: frozenset({oc.Tag.IMPULSE_DRAW}))
+    game = _game()
+    top = _library(game, card_db, ["Lightning Bolt", "Mountain"])
+    _cast(game, card_db, "Opt")
+    p = game.players[0]
+    assert p.exile == [] and _permitted(game) == set()
+    assert len(p.hand) == 1 and p.hand[0] in top
+
+
+@pytest.mark.parametrize("name", ["Kulrath Zealot", "Gundabad Opportunist"])
+def test_an_enter_trigger_impulse_exiles_and_permits_as_printed(card_db,
+                                                                name):
+    from engine.oracle_resolver import resolve_etb_from_oracle
+    game = _game()
+    (top, below) = _library(game, card_db, ["Lightning Bolt", "Mountain"])
+    creature = _put(game, card_db, 0, name, "battlefield")
+    resolve_etb_from_oracle(game, creature, 0)
+    assert game.players[0].exile == [top]
+    assert _permitted(game) == {top.instance_id}
+    assert game.players[0].library == [below]

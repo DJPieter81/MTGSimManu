@@ -1544,7 +1544,15 @@ class GameRunner:
                 )
 
             if action == "play_land":
+                played_from = card.zone
                 game.play_land(ai.player_idx, card)
+                if card.zone == played_from:
+                    # The land play was refused (no land play left, or the
+                    # permission to play it from exile is gone): exclude it
+                    # and re-plan, as a refused cast is.
+                    _excluded.add(card.instance_id)
+                    actions += 1
+                    continue
             elif action == "cycle":
                 game.activate_cycling(ai.player_idx, card)
             elif action == "suspend":

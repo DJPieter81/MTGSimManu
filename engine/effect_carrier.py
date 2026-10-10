@@ -52,10 +52,10 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
 
 
 # The families whose spell hosts the family-generic clause handler
-# ("dispatched") takes. A family joins when its spell carriers switch; card
-# flow is switched for enter triggers only (`ETB_FAMILIES`), so a card-flow
-# spell keeps its legacy clause handler.
-SPELL_FAMILIES = ("damage",)
+# ("dispatched") takes. A family joins when its spell carriers switch: card
+# flow joined with impulse draw (unit I), whose only carrier is this one --
+# the tag-gated impulse handler it replaces moved the cards to hand.
+SPELL_FAMILIES = ("damage", "card_flow")
 
 
 def spell_family(template: Any, effects: Any = None) -> Optional[str]:

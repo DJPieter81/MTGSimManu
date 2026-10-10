@@ -924,27 +924,47 @@
     "strict": true
    },
    {
+    "card": "Reckless Impulse",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
     "card": "Unholy Heat",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E1",
     "strict": true
+   },
+   {
+    "card": "Wrenn's Resolve",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
    }
   ],
-  "executable": 102,
-  "family": "damage",
+  "executable": 137,
+  "family": "card_flow",
   "hosts": {
-   "mainboard": 5,
-   "pool": 97,
+   "mainboard": 7,
+   "pool": 130,
    "sideboard": 0
   },
   "steps": {
-   "E1": 102
+   "E1": 102,
+   "E2": 26,
+   "E3": 3,
+   "E5": 6
   },
-  "strict": 102,
+  "strict": 137,
   "sub_kinds": {},
   "verb_sets": {
-   "DAMAGE": 102
+   "CONTINUOUS,EXILE": 6,
+   "DAMAGE": 102,
+   "MOVE": 26,
+   "SURVEIL": 3
   }
  },
  "draw:dispatch": {
@@ -1085,20 +1105,23 @@
     "strict": true
    }
   ],
-  "executable": 79,
+  "executable": 90,
   "family": "card_flow",
   "hosts": {
    "mainboard": 11,
-   "pool": 68,
+   "pool": 79,
    "sideboard": 0
   },
   "steps": {
-   "E2": 32,
-   "E3": 47
+   "E2": 33,
+   "E3": 47,
+   "E5": 10
   },
-  "strict": 79,
+  "strict": 90,
   "sub_kinds": {},
   "verb_sets": {
+   "CONTINUOUS,EXILE": 10,
+   "EXILE": 1,
    "MOVE": 32,
    "SURVEIL": 47
   }
@@ -1277,44 +1300,6 @@
    "DRAW,END_TURN,UNMODELLED": 1,
    "DRAW,EXILE,UNMODELLED": 2,
    "DRAW,UNMODELLED": 1
-  }
- },
- "impulse_reveal": {
-  "deck_hosts": [
-   {
-    "card": "Reckless Impulse",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": false
-   },
-   {
-    "card": "Wrenn's Resolve",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": false
-   }
-  ],
-  "executable": 3,
-  "family": "card_flow",
-  "hosts": {
-   "mainboard": 2,
-   "pool": 3,
-   "sideboard": 0
-  },
-  "steps": {
-   "E5": 3,
-   "none": 2
-  },
-  "strict": 0,
-  "sub_kinds": {
-   "DELAYED": 1
-  },
-  "verb_sets": {
-   "CONTINUOUS,CREATE_TRIGGER,EXILE,UNMODELLED": 1,
-   "CONTINUOUS,EXILE": 3,
-   "EXILE,UNMODELLED": 1
   }
  },
  "land_destruction": {

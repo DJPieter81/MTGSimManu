@@ -316,8 +316,45 @@ def strict_removal(h: AbilityEffects) -> bool:
             and _plain(h.specs[0]))
 
 
+# Impulse draw (unit I, CR 406, 601.2a): "exile the top N cards of your
+# library" and "<duration>, you may play / cast those cards" -- the one
+# EXILE and the one CONTINUOUS card flow takes, each by its typed shape, so
+# another family's exile or continuous effect never reads as card flow.
+_IMPULSE_VERBS = frozenset({Verb.EXILE, Verb.CONTINUOUS})
+
+
+def _library_top_exile(s) -> bool:
+    f = s.filter
+    return (s.verb is Verb.EXILE and f is not None
+            and (getattr(f, "zone", None), getattr(f, "owner", None),
+                 getattr(f, "position", None)) == ("library", "you", "top"))
+
+
+def _permission_over(s, exiled) -> bool:
+    """A PERMIT to play or cast the cards one of `exiled` (spec seqs) put
+    into exile."""
+    m = s.payload
+    return (s.verb is Verb.CONTINUOUS and isinstance(m, Modification)
+            and m.kind is ModKind.PERMIT and m.action in ("play", "cast")
+            and _ref_kind(s.ref) is RefKind.RESULT and s.ref.index in exiled)
+
+
 def strict_card_flow(h: AbilityEffects) -> bool:
-    return _strict_host(h, _CARD_FLOW_VERBS, conditions=True)
+    """The card-flow verbs, and the impulse pair: an EXILE of the top of
+    the controller's library and a permission over what it exiled, the
+    permission the one spec with a duration."""
+    if not _strict_host(h, _CARD_FLOW_VERBS | _IMPULSE_VERBS,
+                        durations=True, conditions=True):
+        return False
+    exiled = {s.seq for s in iter_specs(h.specs) if _library_top_exile(s)}
+    for s in iter_specs(h.specs):
+        if s.verb is Verb.EXILE and s.seq not in exiled:
+            return False
+        if s.verb is Verb.CONTINUOUS and not _permission_over(s, exiled):
+            return False
+        if s.duration is not None and s.verb is not Verb.CONTINUOUS:
+            return False
+    return True
 
 
 def strict_tokens_counters(h: AbilityEffects) -> bool:
@@ -2727,7 +2764,6 @@ RUNTIME_CARRIERS: Mapping[str, Tuple[str, str]] = MappingProxyType({
     "clause_resolver._bounce_shape": (FAMILY_REMOVAL, "E2"),
     "oracle_resolver._resolve_mass_mode_clause": (FAMILY_REMOVAL, "E2"),
     "clause_resolver._card_flow_effects": (FAMILY_CARD_FLOW, "E3"),
-    "clause_resolver._impulse_count": (FAMILY_CARD_FLOW, "E3"),
     "clause_resolver._a_hand_attack": (FAMILY_CARD_FLOW, "E3"),
     "clause_resolver._a_energy_damage": (FAMILY_DAMAGE, "E1"),
     "oracle_parser.parse_token_spec": (FAMILY_TOKENS_COUNTERS, "E4"),

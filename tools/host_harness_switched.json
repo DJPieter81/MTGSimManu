@@ -12,6 +12,14 @@
   {
    "pair": [
     "dispatched",
+    "Act on Impulse",
+    "SPELL:0:0"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Alchemist's Greeting",
     "SPELL:0:0"
    ],
@@ -24,6 +32,22 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Auroral Procession",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bala Ged Recovery // Bala Ged Sanctuary",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -92,6 +116,14 @@
   {
    "pair": [
     "dispatched",
+    "Dead Revels",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Demon Bolt",
     "SPELL:0:0"
    ],
@@ -104,6 +136,30 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Disentomb",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dryad's Revival",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dutiful Return",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -164,10 +220,26 @@
   {
    "pair": [
     "dispatched",
+    "Fight On!",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Final Flare",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Find // Finality",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -192,6 +264,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Grim Harvest",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -244,6 +324,14 @@
   {
    "pair": [
     "dispatched",
+    "Life from the Loam",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Light 'Em Up",
     "SPELL:0:1"
    ],
@@ -252,10 +340,26 @@
   {
    "pair": [
     "dispatched",
+    "Light Up the Stage",
+    "SPELL:0:1"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Lightning Axe",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Macabre Reconstruction",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -284,6 +388,22 @@
   {
    "pair": [
     "dispatched",
+    "March of the Returned",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Midnight Recovery",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Mine Collapse",
     "SPELL:0:1"
    ],
@@ -304,6 +424,22 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Morbid Plunder",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Nature's Spiral",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -356,10 +492,50 @@
   {
    "pair": [
     "dispatched",
+    "Raise Dead",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Reality Hemorrhage",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reckless Impulse",
+    "SPELL:0:0"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Recollect",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Regenesis",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Regrowth",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -384,6 +560,30 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ritual of Restoration",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rob the Archives",
+    "SPELL:0:1"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sanguine Indulgence",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -432,6 +632,22 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Soul Salvage",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Soulless Revival",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -532,6 +748,30 @@
   {
    "pair": [
     "dispatched",
+    "Unmake the Graves",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wander in Death",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wildwood Rebirth",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Witchstalker Frenzy",
     "SPELL:0:1"
    ],
@@ -552,6 +792,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wrenn's Resolve",
+    "SPELL:0:0"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
   },
   {
    "pair": [
@@ -716,6 +964,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Abbot of Keral Keep",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Alania's Pathmaker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Along the Crooked Way",
     "TRIGGERED:0:0"
    ],
@@ -796,6 +1060,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Crimson Operative",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Daring Archaeologist",
     "TRIGGERED:0:0"
    ],
@@ -836,6 +1108,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Equilibrium Adept",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Eternal Witness",
     "TRIGGERED:0:0"
    ],
@@ -848,6 +1128,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Experimental Synthesizer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
   },
   {
    "pair": [
@@ -924,6 +1212,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Gundabad Opportunist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Hedge Maze",
     "TRIGGERED:0:1"
    ],
@@ -948,10 +1244,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Hugs, Grisly Guardian",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Imperious Inkmage",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Interdimensional Web Watch",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Irascible Wolverine",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kulrath Zealot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
   },
   {
    "pair": [
@@ -1120,6 +1448,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Search the City",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
   },
   {
    "pair": [
@@ -2012,6 +2348,11 @@
   [
    "dispatched",
    "Channeled Dragonfire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Commune with Lava",
    "SPELL:0:0"
   ],
   [

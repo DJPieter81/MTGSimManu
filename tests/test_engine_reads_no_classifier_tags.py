@@ -8,9 +8,11 @@ may guide AI scoring, but an engine rule that reads it lets one wrong label
 become a game rule (the rejected Jev tag-cache A/B: a false on-draw
 life-gain tag gave its controller life on every draw).
 
-The engine modules that still read a tag are pinned here. The set may only
-shrink: each unit that moves a rule onto the card's parsed text removes its
-module, and an addition fails.
+The engine modules that still read a tag were pinned here, and the set
+could only shrink: each unit that moved a rule onto the card's parsed text
+removed its module (static cast timing, enter-trigger surveil and regrowth,
+on-draw triggers, impulse draw). It is empty now, and any engine module
+that reads a tag fails.
 """
 from __future__ import annotations
 
@@ -19,10 +21,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 
-# The tag-gated engine rules still on their way to the card's text.
-STILL_READING_TAGS = {
-    "engine/clause_resolver.py",      # impulse draw (unit I)
-}
+# The tag-gated engine rules still on their way to the card's text: none.
+STILL_READING_TAGS: set = set()
 
 
 def _reads_classifier(path: Path) -> bool:

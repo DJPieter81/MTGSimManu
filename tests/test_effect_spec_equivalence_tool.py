@@ -165,7 +165,6 @@ TABLE_CARRIERS = {
     "clause_resolver._bounce_shape": "E2",
     "oracle_resolver._resolve_mass_mode_clause": "E2",
     "clause_resolver._card_flow_effects": "E3",
-    "clause_resolver._impulse_count": "E3",
     "clause_resolver._a_hand_attack": "E3",
     "oracle_parser.parse_token_spec": "E4",
     "clause_resolver._token_clause": "E4",
