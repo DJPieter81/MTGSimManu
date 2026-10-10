@@ -511,8 +511,20 @@ def test_a_targeted_player_acts_through_its_chosen_slot(er, run):
 
 def test_an_actor_the_dispatcher_cannot_bind_is_not_executable(er, run):
     run.register(Verb.DRAW, _Recorder())
-    s = _spec(Verb.DRAW, 0, actor=Ref(RefKind.EVENT_PLAYER))
+    s = _spec(Verb.DRAW, 0, actor=Ref(RefKind.DEFENDING_PLAYER))
     assert er.can_execute(_host(s)) is False
+
+
+def test_the_event_player_acts_only_when_the_trigger_event_names_one(er, run):
+    """CR 603.2: "that player" is the player the trigger event names
+    (`TriggerEvent`, passed by the carrier); with no event no one acts."""
+    rec = run.register(Verb.DRAW, _Recorder())
+    host = _host(_spec(Verb.DRAW, 0, actor=Ref(RefKind.EVENT_PLAYER)))
+    assert er.can_execute(host)
+    er.resolve_ability(_game(), _src(), 0, host, (),
+                       event=er.TriggerEvent(player=1))
+    er.resolve_ability(_game(), _src(), 0, host, ())
+    assert rec.calls == [(0, (1,)), (0, ())]
 
 
 def test_a_false_condition_skips_the_spec_and_takes_its_otherwise_branch(er, run):

@@ -76,6 +76,24 @@ def handle_of(card: Any) -> Handle:
     return Handle(card.instance_id, card.zone, card.battlefield_entry_seq)
 
 
+@dataclass(frozen=True, slots=True)
+class TriggerEvent:
+    """What the event that triggered an ability names, as its carrier
+    passes it (CR 603.2): the player -- the drawer of a draw -- that
+    `Ref(EVENT_PLAYER)` ("that player", "they") binds."""
+    player: Optional[int] = None
+
+
+def event_player(ctx: "Resolution") -> Optional[int]:
+    """The player the resolution's trigger event names, if it names one
+    in the game; None otherwise (nothing is bound to a guessed player)."""
+    p = getattr(ctx.event, "player", None)
+    if isinstance(p, int) and not isinstance(p, bool) \
+            and 0 <= p < len(ctx.game.players):
+        return p
+    return None
+
+
 # An object whose identity cannot be established (the legacy id names no
 # card in the game). It never binds, so the owner sees the slot as illegal.
 _UNKNOWN_ZONE = ""
@@ -331,16 +349,23 @@ def _member_condition(cond: Condition) -> bool:
     return any(r.kind is RefKind.MEMBER for r in _refs(cond))
 
 
+def is_event_player(ref: Any) -> bool:
+    """Is `ref` the plain player its trigger event names ("that player")?"""
+    return (isinstance(ref, Ref) and ref.kind is RefKind.EVENT_PLAYER
+            and ref.index is None and ref.of is None and ref.n is None)
+
+
 def _actor_bindable(actor: Any) -> bool:
     """The acting-player shapes the dispatcher binds: the controller (no
-    actor), a player set relative to the controller, or a chosen player
-    target slot."""
+    actor), a player set relative to the controller, a chosen player
+    target slot, or the player the trigger event names."""
     if actor is None:
         return True
     if isinstance(actor, Selector):
         return actor.kind in _PLAYER_SETS and actor.filter is None
     if isinstance(actor, Ref):
-        return actor.kind is RefKind.TARGET and isinstance(actor.index, int)
+        return (actor.kind is RefKind.TARGET and isinstance(actor.index, int)
+                ) or is_event_player(actor)
     return False
 
 
@@ -485,6 +510,9 @@ def _actors_apnap(ctx: Resolution, s: EffectSpec) -> Tuple[int, ...]:
     if isinstance(actor, Selector):
         bound = dataclasses.replace(actor, player=ctx.controller)
         return tuple(p for p in order if bound.covers_player(p))
+    if is_event_player(actor):                  # CR 603.2: "that player"
+        p = event_player(ctx)
+        return (p,) if p is not None else ()
     slot = ctx.chosen[actor.index] if actor.index < len(ctx.chosen) else ()
     players = {v for v in slot if isinstance(v, int) and not isinstance(v, bool)}
     return tuple(p for p in order if p in players)

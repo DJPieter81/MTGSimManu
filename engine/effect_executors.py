@@ -38,7 +38,8 @@ from typing import Any, Tuple
 
 from . import effect_conditions as conditions
 from .effect_resolver import (CONDITION_EVALUATORS, EXECUTORS, Handle,
-                              Outcome, Resolution, handle_of)
+                              Outcome, Resolution, event_player, handle_of,
+                              is_event_player)
 from .effect_model import Selector, SelectorKind
 from .effect_spec import (Chooser, Condition, ConditionKind, Destination,
                           EffectSpec, Ref, RefKind, Verb)
@@ -91,12 +92,17 @@ def _damage_supported(s: EffectSpec) -> bool:
     120.1) to the one creature, planeswalker or player chosen for the slot,
     re-checked on resolution (CR 608.2b). A source sacrificed to pay the
     cost deals it as it last existed (CR 608.2h): the carrier's source
-    object is that object."""
+    object is that object. "~ deals <amount> damage to that player": to
+    the player the trigger event names (CR 603.2)."""
     if s.verb is not Verb.DAMAGE or not _plain_participants(s) or s.flags:
         return False
     src = s.other
     if not (isinstance(src, Ref) and src.kind is RefKind.SELF):
         return False
+    if is_event_player(s.ref):
+        return (s.target is None and s.target_slot is None
+                and s.subject is None and s.actor is None
+                and conditions.amount_supported(s.amount))
     req = s.target
     if s.target_slot is None or s.subject is not None or s.ref is not None \
             or s.actor is not None or req is None or req.count_max != 1:
@@ -163,6 +169,12 @@ def execute_damage(ctx: Resolution, s: EffectSpec,
     _audit_damage_upgrade(ctx, source, amount)
     if amount <= 0:                 # CR 120.8: no damage is dealt
         return Outcome(False, {})
+    if is_event_player(s.ref):      # "to that player" (CR 603.2)
+        player = event_player(ctx)
+        if player is None:
+            return Outcome(False, {})
+        deal_damage_to(ctx.game, source, ctx.controller, amount, player)
+        return Outcome(True, {ctx.controller: (player,)})
     slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
     if not slot:
         # A36: a slot no target was chosen for reaches the owner unbound
