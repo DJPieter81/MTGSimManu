@@ -1602,6 +1602,23 @@ class CastManager:
             game=game)
 
     @staticmethod
+    def _audit_life_paid_is_lost(game: "GameState", player_idx: int,
+                                 before, paid: int) -> None:
+        """CR 119.4, restated from the player's fields: life paid as a cost
+        leaves the life total and counts as life lost this turn.
+        Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        p = game.players[player_idx]
+        life, lost = before
+        rules_audit.check(
+            "119.4/life_paid_is_lost",
+            life - p.life == paid and p.life_lost_this_turn - lost == paid,
+            f"P{player_idx+1} paid {paid} life but lost "
+            f"{p.life_lost_this_turn - lost} this turn", game=game)
+
+    @staticmethod
     def free_cast_allowed(game: "GameState", player_idx: int,
                           template) -> bool:
         """May this player cast this spell now by a route that skips the
@@ -2165,14 +2182,19 @@ class CastManager:
                         life_cost = 2 * sum(waived.values()) if waived else 0
                         residual = CastManager._cost_without_pips(
                             _base_cost, waived)
-                        if life_cost:
-                            player.life -= life_cost
+                        # The mana first, then the life: a refused mana
+                        # payment leaves nothing to give back. Paying life
+                        # is losing it (CR 119.4), through the life owner.
                         if not game.tap_lands_for_mana(
                                 player_idx, residual,
                                 card_name=template.name):
-                            player.life += life_cost  # refund
                             return False
                         if life_cost:
+                            from . import damage as _damage
+                            before = (player.life, player.life_lost_this_turn)
+                            _damage.lose_life(game, player_idx, life_cost)
+                            CastManager._audit_life_paid_is_lost(
+                                game, player_idx, before, life_cost)
                             game.log.append(
                                 f"T{game.display_turn} P{player_idx+1}: "
                                 f"Pay {life_cost} life (Phyrexian mana) for "
