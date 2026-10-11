@@ -45,7 +45,7 @@
    "E5": 33,
    "none": 6
   },
-  "strict": 31,
+  "strict": 33,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 33,
@@ -610,7 +610,7 @@
    "E6": 3,
    "none": 41
   },
-  "strict": 55,
+  "strict": 57,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,
@@ -721,7 +721,7 @@
    "E6": 34,
    "none": 278
   },
-  "strict": 89,
+  "strict": 90,
   "sub_kinds": {
    "DELAYED": 6,
    "REFLEXIVE": 2
@@ -1421,7 +1421,7 @@
   "steps": {
    "E2": 34
   },
-  "strict": 23,
+  "strict": 25,
   "sub_kinds": {},
   "verb_sets": {
    "DESTROY": 30,
@@ -2209,7 +2209,7 @@
    "E4": 1,
    "E5": 1
   },
-  "strict": 221,
+  "strict": 222,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,DESTROY": 1,

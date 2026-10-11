@@ -54,7 +54,8 @@ class TargetRequirement:
                         {"permanent"}, {"permanent_nonland"}, {"card"},
                         {"spell"}, {"player"}, {"any"} (Lightning Bolt
                         — creature OR planeswalker OR player).
-        supertype:      "legendary" / "nonlegendary" / "basic" / "snow"
+        supertype:      "legendary" / "nonlegendary" / "basic" /
+                        "nonbasic" / "snow"
                         / None.
         subtype:        lowercase SUBTYPE the target must have ("forest",
                         "gate", "goblin", "equipment") or None. Distinct
@@ -150,6 +151,9 @@ _GRAVEYARD_PATTERN = re.compile(
     # name — any reanimation-shaped effect with this clause parses it.
     r"(?:\s+with\s+(?:total\s+)?mana\s+value\s+(?P<mv>\d+)\s+or\s+less)?"
     r"\s+(?:from|in)\s+(?P<scope>your|a)\s+graveyard"
+    # "other than a basic land card" (Surgical Extraction): the target is
+    # any card there but a basic land.
+    r"(?P<nonbasic>\s+other\s+than\s+a\s+basic\s+land\s+card)?"
 )
 
 # Loose graveyard fallback — same source-zone phrase but without the
@@ -187,19 +191,33 @@ def _compound_matches(oracle_l: str):
         yield m, types, scope
 
 
-# "target [non]land permanent" / "target permanent" — supertype-aware.
+# "target [non]land permanent" / "target permanent" — supertype-aware,
+# with the controller it names ("an opponent controls", CR 115.1).
 _PERMANENT_PATTERN = re.compile(
     r"target\s+(nonland\s+)?permanent\b"
+    r"(?:\s+(?P<scope>you\s+control|an\s+opponent\s+controls))?"
 )
 
 # Single-type battlefield targets (excluding "creature" — that one needs
 # special handling for "target creature you control" / "an opponent
 # controls").
+# The qualifiers a single-type target prints around its type word are
+# part of what it admits (CR 115.1, 601.2c): a supertype negation
+# ("nonbasic land") and the controller it names ("you control", "an
+# opponent controls"). A negation word that is not a supertype stays
+# unread (a lead, not approximated).
+_CONTROLLER_SUFFIX = (r"(?:\s+(?P<scope>you\s+control|an\s+opponent\s+"
+                      r"controls))?")
+_NEGATED_SUPERTYPES = {"nonbasic": "nonbasic",
+                       "nonlegendary": "nonlegendary"}
 _SINGLE_TYPE_BATTLEFIELD = [
-    ("artifact",     re.compile(r"\btarget\s+artifact\b")),
-    ("enchantment",  re.compile(r"\btarget\s+enchantment\b")),
-    ("planeswalker", re.compile(r"\btarget\s+planeswalker\b")),
-    ("land",         re.compile(r"\btarget\s+(?:non\w+\s+)?land\b")),
+    ("artifact",     re.compile(r"\btarget\s+artifact\b" + _CONTROLLER_SUFFIX)),
+    ("enchantment",  re.compile(r"\btarget\s+enchantment\b"
+                                + _CONTROLLER_SUFFIX)),
+    ("planeswalker", re.compile(r"\btarget\s+planeswalker\b"
+                                + _CONTROLLER_SUFFIX)),
+    ("land",         re.compile(r"\btarget\s+(?:(?P<neg>non\w+)\s+)?land\b"
+                                + _CONTROLLER_SUFFIX)),
 ]
 
 # Creature with explicit owner scope. Order: scoped first, then bare.
@@ -433,6 +451,8 @@ def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
         # fallback has neither, so groupdict() safely returns {} and
         # both fall through to their existing inference below.
         gd = gy_match.groupdict()
+        if gd.get("nonbasic"):
+            super_word = "nonbasic"
         mv_word = gd.get("mv")
         max_mv = int(mv_word) if mv_word else None
         # Source-zone scope: the strict pattern's named 'scope' group,
@@ -519,10 +539,12 @@ def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
     perm_match = _PERMANENT_PATTERN.search(oracle_l)
     if perm_match is not None:
         kind = "permanent_nonland" if perm_match.group(1) else "permanent"
+        perm_scope = perm_match.group("scope") or ""
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({kind}),
-            owner_scope="any",
+            owner_scope=("you" if perm_scope.startswith("you")
+                         else "opponent" if perm_scope else "any"),
             is_optional=_is_optional_at(oracle_l, perm_match.start()),
             mode_group=_detect_mode_group(oracle_l, perm_match.start(),
                                           modal_start),
@@ -576,10 +598,14 @@ def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
         # too). Compound entries always come first in `out`.
         if _already_covered_by_compound(out, token):
             continue
+        gd = m.groupdict()
+        scope_phrase = gd.get("scope") or ""
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({token}),
-            owner_scope="any",
+            supertype=_NEGATED_SUPERTYPES.get(gd.get("neg") or ""),
+            owner_scope=("you" if scope_phrase.startswith("you")
+                         else "opponent" if scope_phrase else "any"),
             is_optional=_is_optional_at(oracle_l, m.start()),
             mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
             raw_phrase=m.group(0),
@@ -844,6 +870,8 @@ def _matches_supertype(card: "CardInstance",
         return Supertype.LEGENDARY not in supertypes
     if supertype == "basic":
         return Supertype.BASIC in supertypes
+    if supertype == "nonbasic":
+        return Supertype.BASIC not in supertypes
     if supertype == "snow":
         return Supertype.SNOW in supertypes
     return True

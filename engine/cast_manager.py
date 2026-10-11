@@ -293,13 +293,26 @@ def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
                           f"{perm.name}'s printed restriction", game=game)
 
 
-def _raw_fits(obj, req) -> bool:
+def _raw_fits(obj, req, caster=None) -> bool:
     """A requirement's raw fields admit this object: it lies in the
-    requirement's zone, has one of its type words, and is within its
-    printed mana-value bound. The auditors' restatement, independent of
-    the legality owner's predicate."""
+    requirement's zone, has one of its type words, is within its printed
+    mana-value bound, and meets the qualifiers its printed phrase reads --
+    no basic land for "nonbasic" / "other than a basic land", the named
+    controller for "you control" / "an opponent controls" (CR 115.1). The
+    auditors' restatement, independent of the legality owner's
+    predicate."""
     zone = "battlefield" if req.zone == "any" else req.zone
     if obj.zone != zone:
+        return False
+    from .cards import Supertype
+    phrase = req.raw_phrase or ""
+    if ("nonbasic" in phrase or "other than a basic land" in phrase) and \
+            Supertype.BASIC in (obj.template.supertypes or ()):
+        return False
+    if caster is not None and obj.zone == "battlefield" and (
+            (phrase.endswith(" you control") and obj.controller != caster)
+            or (phrase.endswith(" an opponent controls")
+                and obj.controller == caster)):
         return False
     # A permanent's types are those of the face it shows (CR 712.8); a
     # card in any other zone has its printed front face's.
@@ -335,7 +348,7 @@ def _audit_targets_admitted(game: "GameState", card, targets) -> None:
         if obj is None or obj.zone == "stack":
             continue
         check("601.2c/cast_target_admitted",
-              any(_raw_fits(obj, r) for r in reqs),
+              any(_raw_fits(obj, r, card.controller) for r in reqs),
               f"{card.name} cast at {obj.name} ({obj.zone}), which no "
               f"requirement of it admits", game=game)
 
