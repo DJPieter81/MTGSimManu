@@ -99,6 +99,27 @@ def combat_clock(power: int, opp_life: int,
     return max(1.0, math.ceil(opp_life / effective_power))
 
 
+def unblocked_combat_damage(creature) -> int:
+    """The combat damage an attacking creature deals the player it attacks
+    when nothing blocks it: its power, in each combat damage step it deals
+    damage in -- both steps for double strike (CR 702.4b, 510.4). Read
+    from the creature's current keywords (granted ones included); a
+    simulated creature's keywords are their names. Never negative. The one
+    owner of this number for every survival, race and lethal read."""
+    power = max(0, int(getattr(creature, 'power', 0) or 0))
+    keywords = getattr(creature, 'keywords', None) or ()
+    from engine.cards import Keyword
+    double = (Keyword.DOUBLE_STRIKE in keywords
+              or Keyword.DOUBLE_STRIKE.value in keywords)
+    return power * (2 if double else 1)
+
+
+def unblocked_reach(creatures) -> int:
+    """The combat damage these attacking creatures deal the player they
+    attack when none is blocked (`unblocked_combat_damage`, summed)."""
+    return sum(unblocked_combat_damage(c) for c in creatures)
+
+
 def life_as_resource(life: int, incoming_power: int) -> float:
     """Value of life total expressed as turns of survival.
 

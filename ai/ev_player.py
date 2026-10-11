@@ -3202,7 +3202,9 @@ class EVPlayer:
         # projector uses (`attack_reach`, through_blocks=False), so the
         # declarer and the projector cannot drift.
         from ai.assembly_state import attack_reach
-        total_power = attack_reach([(c.power or 0, False) for c in valid])
+        from ai.clock import unblocked_combat_damage, unblocked_reach
+        total_power = attack_reach([(unblocked_combat_damage(c), False)
+                                    for c in valid])
         # Lethal if unblocked is a property of the TURN: the pump instants
         # castable after blocks add their power to an attacker (CR 509.4
         # window) — the same packing `_burn_reach_this_turn` applies to
@@ -3226,8 +3228,9 @@ class EVPlayer:
             worth = {c.instance_id: noncombat_opportunity_cost(c, me, _snap_lethal)
                      for c in kept}
             for c in sorted(kept, key=lambda c: -worth[c.instance_id]):
-                if worth[c.instance_id] > (c.power or 0) and (
-                        sum((k.power or 0) for k in kept) - (c.power or 0)
+                adds = unblocked_combat_damage(c)
+                if worth[c.instance_id] > adds and (
+                        unblocked_reach(kept) - adds
                         + pump_reach >= opp.life):
                     kept.remove(c)
             return kept
@@ -3401,12 +3404,12 @@ class EVPlayer:
                 # untapped 4/4 (Domain Zoo vs Creatures Toolbox s50000 G2
                 # T4; docs/diagnostics/2026-09-12_zoo_lane_loop_break.md).
                 from ai.clock import noncombat_opportunity_cost
-                plan_power = sum((c.power or 0) for c in planner_picks)
+                plan_power = unblocked_reach(planner_picks)
                 if plan_power + pump_reach < opp.life:
                     planner_picks = [
                         c for c in planner_picks
-                        if (c.power or 0) >= noncombat_opportunity_cost(
-                            c, me, _snap_lethal)]
+                        if unblocked_combat_damage(c)
+                        >= noncombat_opportunity_cost(c, me, _snap_lethal)]
                 return planner_picks
         except Exception:
             pass
@@ -3484,13 +3487,13 @@ class EVPlayer:
 
     def _two_turn_lethal(self, game, me, opp, attackers) -> bool:
         # incoming this turn + opp's uninvolved creatures that can swing next turn
-        incoming = sum(a.power or 0 for a in attackers)
+        from ai.clock import unblocked_reach
+        incoming = unblocked_reach(attackers)
         attacking_ids = {a.instance_id for a in attackers}
-        opp_next = sum(
-            (c.power or 0) for c in opp.creatures
+        opp_next = unblocked_reach(
+            c for c in opp.creatures
             if c.instance_id not in attacking_ids
-            and not getattr(c, 'summoning_sick', False)
-        )
+            and not getattr(c, 'summoning_sick', False))
         return incoming + opp_next >= me.life
 
     def _attacker_equipment_bonus(self, game, opp, attacker) -> int:
@@ -3593,17 +3596,18 @@ class EVPlayer:
         Conservative: we use raw power and ignore burn/pump in hand. If
         the clocks are equal or we are faster, racing is preferred.
         """
-        incoming = sum(a.power or 0 for a in attackers)
+        from ai.clock import unblocked_reach
+        incoming = unblocked_reach(attackers)
         if incoming >= me.life:
             return False  # cannot race through lethal
-        my_on_board_power = sum((c.power or 0) for c in me.creatures)
+        my_on_board_power = unblocked_reach(me.creatures)
         if my_on_board_power <= 0:
             return False
         attacking_ids = {a.instance_id for a in attackers}
-        opp_on_board_power_after = sum(
-            (c.power or 0) for c in opp.creatures
+        opp_on_board_power_after = unblocked_reach(
+            c for c in opp.creatures
             if c.instance_id not in attacking_ids
-        ) + sum((a.power or 0) for a in attackers)
+        ) + incoming
         if opp_on_board_power_after <= 0:
             return True  # opp has no follow-up threat — freely race
         my_clock = opp.life / max(my_on_board_power, 1)
@@ -4004,13 +4008,15 @@ class EVPlayer:
 
         me = game.players[self.player_idx]
         opp = game.players[1 - self.player_idx]
-        total_incoming = sum(a.power or 0 for a in attackers)
+        # What the attackers deal unblocked, double strike counted twice
+        # (CR 702.4b) -- the one owner every survival read below shares.
+        from ai.clock import unblocked_reach
+        total_incoming = unblocked_reach(attackers)
 
         # Winning-state: if our untapped power >= opponent life next turn, don't block.
         # Spending blockers is wasteful when we have lethal on board already.
-        my_untapped_power = sum(
-            (c.power or 0) for c in me.creatures if not c.tapped
-        )
+        my_untapped_power = unblocked_reach(
+            c for c in me.creatures if not c.tapped)
         if my_untapped_power >= opp.life and total_incoming < me.life:
             return {}
 

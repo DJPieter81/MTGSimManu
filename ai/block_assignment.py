@@ -89,11 +89,15 @@ def coverage_pass(
     used: Set[int] = set()
     id_to_blocker = {b.instance_id: b for b in blockers}
 
+    from ai.clock import unblocked_combat_damage
+
     def _incoming() -> float:
         total = 0.0
         for a in sorted_attackers:
             if a.instance_id not in blocks:
-                total += (a.power or 0)
+                # Unblocked: its power in each damage step it deals
+                # damage in (double strike twice, CR 702.4b).
+                total += unblocked_combat_damage(a)
             elif overflow_fn is not None:
                 chosen = [
                     id_to_blocker[bid] for bid in blocks[a.instance_id]
