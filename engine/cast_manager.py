@@ -312,7 +312,11 @@ def _audit_targets_admitted(game: "GameState", card, targets) -> None:
         zone = "battlefield" if req.zone == "any" else req.zone
         if obj.zone != zone:
             return False
-        printed = {ct.value for ct in obj.template.card_types}
+        # A permanent's types are those of the face it shows (CR 712.8);
+        # a card in any other zone has its printed front face's.
+        printed = {ct.value for ct in (obj.effective_card_types
+                                       if obj.zone == "battlefield"
+                                       else obj.template.card_types)}
         words = set(req.types)
         typed = ("card" in words or "permanent" in words
                  or ("permanent_nonland" in words and "land" not in printed)

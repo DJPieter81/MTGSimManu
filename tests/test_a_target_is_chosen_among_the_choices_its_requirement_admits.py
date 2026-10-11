@@ -181,3 +181,22 @@ def test_the_audit_is_silent_when_the_target_is_admitted(card_db, audit):
         card_db, "Archon of Cruelty", "Abhorrent Oculus")
     assert game.cast_spell(0, spell, [oculus.instance_id])
     assert not _admission_findings(audit)
+
+
+def test_the_audit_reads_a_transformed_permanents_current_face(card_db, audit):
+    """A spell cast at a transformed permanent that is now a creature is
+    admitted (CR 712.8): the audit reads the face it shows, not its printed
+    front face."""
+    from engine.game_state import Phase
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    game.current_phase = Phase.MAIN1
+    for _ in range(2):
+        _add(game, card_db, "Swamp", 0, "battlefield")
+    fable = _add(game, card_db,
+                 "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki", 1,
+                 "battlefield")
+    fable.is_transformed = True
+    spell = _add(game, card_db, "Dismember", 0, "hand")
+    assert game.cast_spell(0, spell, [fable.instance_id])
+    assert not _admission_findings(audit)
