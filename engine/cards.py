@@ -1224,6 +1224,12 @@ class CardTemplate:
     # (oracle_resolver.reduction_rules_of).
     cost_reduction_rules: Optional[tuple] = None
     back_face_cost_reduction_rules: Optional[tuple] = None
+    # A permanent's static "if <objects> would be put into <whose>
+    # graveyard / would die, exile it instead" rules over other objects,
+    # one per sentence (oracle_parser.parse_graveyard_exile_replacements);
+    # applied by ZoneManager.graveyard_exile_source while the permanent
+    # is on the battlefield (CR 614.1a, 614.6).
+    graveyard_exile_replacements: Optional[tuple] = None
     draw_limit: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
@@ -1534,6 +1540,10 @@ class CardTemplate:
                 self.cost_reduction_rules = _pscr2(self.oracle_text)
                 self.back_face_cost_reduction_rules = _pscr2(
                     self.back_face_oracle)
+            if self.graveyard_exile_replacements is None:
+                from .oracle_parser import (
+                    parse_graveyard_exile_replacements as _pger)
+                self.graveyard_exile_replacements = _pger(self.oracle_text)
             if self.draw_limit is None:
                 from .oracle_parser import parse_draw_limit as _pdl
                 self.draw_limit = _pdl(self.oracle_text)

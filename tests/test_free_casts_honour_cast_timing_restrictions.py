@@ -95,6 +95,23 @@ def test_a_suspended_card_that_cannot_be_cast_stays_exiled(card_db):
     assert game.players[1].life == life
 
 
+def test_a_suspended_card_whose_last_counter_cast_fails_stays_exiled(
+        card_db, monkeypatch):
+    """The cast can still fail after the card leaves exile (no legal target
+    when it is cast); it was not cast, so it remains exiled (CR 702.62a)
+    and never reaches a graveyard."""
+    game = _game(active=0)
+    _put(game, card_db, "Mountain", 0, "battlefield")
+    bolt = _put(game, card_db, "Rift Bolt", 0, "hand")
+    game.current_phase = Phase.MAIN1
+    assert game.suspend_card(0, bolt)
+    game.current_phase = Phase.UPKEEP
+    monkeypatch.setattr(game, "cast_spell", lambda *a, **k: False)
+    game.tick_suspend_upkeep(0)
+    assert bolt in game.players[0].exile and bolt.zone == "exile"
+    assert bolt not in game.players[0].graveyard
+
+
 def test_a_madness_cast_against_a_sorcery_timing_restriction_goes_to_the_graveyard(card_db):
     game = _game(active=1, phase=Phase.MAIN1)  # discarded on the opponent's turn
     _restricted_by_opponent(game, card_db)

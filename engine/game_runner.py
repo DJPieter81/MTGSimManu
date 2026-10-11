@@ -2002,12 +2002,9 @@ class GameRunner:
 
         for saga in sagas_to_sacrifice:
             if saga in player.battlefield:
-                player.battlefield.remove(saga)
-                if saga in player.lands:
-                    player.lands.remove(saga)
-                saga.zone = "graveyard"
                 saga.granted_abilities.clear()  # grants end with the permanent
-                player.graveyard.append(saga)
+                game.zone_mgr.move_card(game, saga, "battlefield",
+                                        "graveyard")
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Sacrifice {saga.name} (final chapter)")
 
@@ -2209,9 +2206,8 @@ class GameRunner:
                             land.tapped = True
                             tapped += 1
                         # Sacrifice Map
-                        player.battlefield.remove(perm)
-                        perm.zone = "graveyard"
-                        player.graveyard.append(perm)
+                        game.zone_mgr.move_card(game, perm, "battlefield",
+                                                "graveyard")
                         # Find the land in library
                         target = None
                         for c in player.library:
@@ -2244,9 +2240,8 @@ class GameRunner:
                         'Equipment' in getattr(c.template, 'subtypes', [])
                         for c in targets_at_cmc)):
                     # Pop it
-                    player.battlefield.remove(perm)
-                    perm.zone = "graveyard"
-                    player.graveyard.append(perm)
+                    game.zone_mgr.move_card(game, perm, "battlefield",
+                                            "graveyard")
                     from engine.cards import Keyword
                     for c in list(targets_at_cmc):
                         if Keyword.INDESTRUCTIBLE not in c.keywords:
@@ -2400,7 +2395,7 @@ class GameRunner:
                     # Revert
                     player.hand.remove(target_card)
                     target_card.zone = 'graveyard'
-                    player.graveyard.append(target_card)
+                    player.graveyard.append(target_card)  # graveyard-revert: undoes the provisional move above; the card never left
                     continue
                 perm.tapped = True
                 game.log.append(

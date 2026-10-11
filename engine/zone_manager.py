@@ -76,7 +76,17 @@ class ZoneManager:
             source_owner, from_zone = located
             source_list = self._get_zone_list(game, source_owner, from_zone)
 
+        # ── Graveyard-to-exile replacement (CR 614.1a, 614.6) ───────
+        # Decided before the card leaves its zone: a replacement that
+        # modifies how a permanent leaves the battlefield applies from
+        # the game state before the event (CR 614.12, 603.10), so a
+        # destroyed Rest in Peace exiles itself.
         actual_to = to_zone
+        replaced_by = None
+        if to_zone == "graveyard":
+            replaced_by = self.graveyard_exile_source(game, card, from_zone)
+            if replaced_by is not None:
+                actual_to = "exile"
 
         # ── Remove from source zone ────────────────────────────────
         if card in source_list:
@@ -112,24 +122,7 @@ class ZoneManager:
         dest_list = self._get_zone_list(game, owner, actual_to)
         dest_list.append(card)
 
-        # ── Replacement-effect resolution path (CR 614) ─────────────
-        # "If a card would be put into a graveyard, exile it instead"
-        # (Rest in Peace / Leyline of the Void / Anafenza family) is a
-        # continuous REPLACEMENT the engine does not model — the card
-        # reaches the graveyard here regardless. When such a static is on
-        # the battlefield as a card enters a graveyard, the replacement
-        # that should have fired silently did nothing; record the
-        # unmodeled static (typed-field gate, no oracle re-parse) so a new
-        # card in this family turns the guardrail red. Behaviour is
-        # unchanged — this only observes the miss.
-        if actual_to == "graveyard":
-            for _p in game.players:
-                for _perm in _p.battlefield:
-                    if getattr(_perm.template,
-                               "exiles_cards_bound_for_graveyard", False):
-                        from .effect_diagnostics import record_unhandled_effect
-                        record_unhandled_effect(_perm.template.name,
-                                                "replacement")
+        self._after_graveyard_bound_move(game, card, actual_to, replaced_by)
 
         # ── Handle entering battlefield ─────────────────────────────
         if actual_to == "battlefield":
@@ -224,10 +217,16 @@ class ZoneManager:
             return True
 
         actual_to = to_zone
+        replaced_by = None
+        if to_zone == "graveyard":
+            replaced_by = self.graveyard_exile_source(game, card, "stack")
+            if replaced_by is not None:
+                actual_to = "exile"
 
         card.zone = actual_to
         dest_list = self._get_zone_list(game, owner, actual_to)
         dest_list.append(card)
+        self._after_graveyard_bound_move(game, card, actual_to, replaced_by)
 
         if cause:
             game.log.append(
@@ -235,6 +234,126 @@ class ZoneManager:
                 f"stack -> {actual_to} ({cause})"
             )
         return True
+
+    # ── Graveyard-to-exile replacement (CR 614.1a, 614.6, 700.4) ────
+
+    def graveyard_exile_source(
+        self, game: "GameState", card: "CardInstance", from_zone: str,
+    ) -> Optional["CardInstance"]:
+        """The battlefield permanent whose static graveyard-to-exile
+        replacement covers `card` as it would be put into its owner's
+        graveyard from `from_zone`, or None. The one matcher: both funnel
+        exits and the death owner ask it.
+
+        A rule (`CardTemplate.graveyard_exile_replacements`) covers an
+        object by event scope (from anywhere; from the battlefield; a
+        creature dying), by whose graveyard receives it (CR 404.2: its
+        owner's), by colour, card type, token-ness and, for a death, by
+        who controls the creature. A transformed permanent has only its
+        back face's abilities (CR 712.8e)."""
+        for player in game.players:
+            for perm in player.battlefield:
+                t = perm.template
+                rules = getattr(t, "graveyard_exile_replacements", None)
+                if not rules or perm.zone != "battlefield":
+                    continue
+                if getattr(perm, "is_transformed", False) and t.back_face_oracle:
+                    continue
+                for rule in rules:
+                    if self._rule_covers(rule, card, from_zone,
+                                         perm.controller):
+                        return perm
+        return None
+
+    @staticmethod
+    def _rule_covers(rule: dict, card: "CardInstance", from_zone: str,
+                     ctrl: int) -> bool:
+        on_battlefield = from_zone == "battlefield"
+        types = (card.effective_card_types if on_battlefield
+                 else card.template.card_types)
+        type_names = {ct.value for ct in types}
+        scope = rule["scope"]
+        if scope == "dies" and not (on_battlefield
+                                    and "creature" in type_names):
+            return False
+        if scope == "battlefield" and not on_battlefield:
+            return False
+        is_token = getattr(card, "is_token", False)
+        if is_token and not rule["tokens"]:
+            return False
+        if rule["nontoken"] and is_token:
+            return False
+        whose = rule["whose"]
+        if whose == "opponents" and card.owner == ctrl:
+            return False
+        if whose == "you" and card.owner != ctrl:
+            return False
+        by = rule["controlled_by"]
+        if by == "opponents" and card.controller == ctrl:
+            return False
+        if by == "you" and card.controller != ctrl:
+            return False
+        if rule["colors"] is not None and not (
+                {c.value for c in card.colors} & rule["colors"]):
+            return False
+        if rule["types"] is not None and not (type_names & rule["types"]):
+            return False
+        return True
+
+    def _after_graveyard_bound_move(self, game: "GameState",
+                                    card: "CardInstance", actual_to: str,
+                                    replaced_by) -> None:
+        """Log a replaced move; record a graveyard-to-exile static the
+        engine refused to type (an unusual variant: "with a void counter
+        on it", "and you gain 2 life") that saw a card arrive; and audit
+        the arrival (CR 614.6)."""
+        if replaced_by is not None:
+            game.log.append(
+                f"T{game.display_turn}: {card.name} is exiled instead of "
+                f"going to a graveyard ({replaced_by.name}, CR 614.6)")
+            return
+        if actual_to != "graveyard":
+            return
+        for _p in game.players:
+            for _perm in _p.battlefield:
+                if (getattr(_perm.template,
+                            "exiles_cards_bound_for_graveyard", False)
+                        and not getattr(_perm.template,
+                                        "graveyard_exile_replacements", None)):
+                    from .effect_diagnostics import record_unhandled_effect
+                    record_unhandled_effect(_perm.template.name, "replacement")
+        self._audit_graveyard_arrival(game, card)
+
+    @staticmethod
+    def _audit_graveyard_arrival(game: "GameState",
+                                 card: "CardInstance") -> None:
+        """Rules audit (CR 614.6): no card reaches a graveyard while a
+        static "if a card [or token] would be put into a / an opponent's
+        graveyard from anywhere, exile it instead" covers it. Restated
+        from the raw typed rules with no colour, type or controller
+        filter, not through the matcher. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        token = getattr(card, "is_token", False)
+
+        def _covers(rule, ctrl) -> bool:
+            if (rule["scope"] != "anywhere" or rule["colors"]
+                    or rule["types"] or rule["controlled_by"]
+                    or rule["nontoken"] or (token and not rule["tokens"])):
+                return False
+            return {"any": True, "opponents": card.owner != ctrl,
+                    "you": card.owner == ctrl}[rule["whose"]]
+
+        source = next((perm for p in game.players for perm in p.battlefield
+                       if any(_covers(r, perm.controller) for r in
+                              getattr(perm.template,
+                                      "graveyard_exile_replacements", None)
+                              or ())), None)
+        _audit_check("614.6/graveyard_exile_replacement", source is None,
+                     f"{card.name} reached a graveyard while "
+                     f"{getattr(source, 'name', '')} exiles it instead",
+                     game=game)
 
     def _blink_zone_transition(
         self,

@@ -2940,6 +2940,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "draw_limit": _STATIC, "prevents_graveyard_etb": _REPLACEMENT,
     "prevents_graveyard_casting": _STATIC,
     "exiles_cards_bound_for_graveyard": _REPLACEMENT,
+    "graveyard_exile_replacements": _REPLACEMENT,
     "counter_placement_replacement": _REPLACEMENT,
     "has_charge_counter_wipe": _AI, "has_artifact_synergy": _AI,
     "has_scaling_effect": _AI, "has_each_opponent_effect": _AI,

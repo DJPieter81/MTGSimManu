@@ -4619,6 +4619,89 @@ def parse_reanimates_from_graveyard(oracle: str) -> bool:
     return lo.find('battlefield', gy_idx) >= 0
 
 
+# ── Graveyard-to-exile replacement (CR 614.1a, 614.6) ─────────────────
+#
+# "If <objects> would be put into <whose> graveyard [from anywhere], exile
+# it instead" and "If a creature <an opponent controls> would die, exile it
+# instead": a permanent's static replacement over OTHER objects. Each
+# sentence is one rule: {'scope', 'whose', 'colors', 'types', 'tokens',
+# 'nontoken', 'controlled_by'}, read by `ZoneManager.graveyard_exile_source`.
+# A variant with more than the exile ("instead exile it with a void counter
+# on it", "and you gain 2 life"), a condition ("dealt damage by ~ this
+# turn"), a spell "cast this way" or the card itself is refused.
+_GY_EXILE_RE = re.compile(
+    r"^if (?P<subj>[a-z ,'-]+?) would (?:(?P<die>die)|be put into "
+    r"(?P<whose>a|an opponent's|your) graveyard(?: from anywhere)?), "
+    r"exile it instead$")
+_COLOR_LIST = r"(?:white|blue|black|red|green)(?: or (?:white|blue|black|red|green))*"
+_CARD_TYPE_LIST = (r"(?:instant|sorcery|creature|artifact|enchantment|land"
+                   r"|planeswalker)(?: or (?:instant|sorcery|creature|artifact"
+                   r"|enchantment|land|planeswalker))*")
+
+
+def _gy_exile_subject(subj: str, dies: bool) -> Optional[Dict]:
+    """The objects a graveyard-to-exile rule covers, or None."""
+    rule = {'colors': None, 'types': None, 'tokens': False,
+            'nontoken': False, 'controlled_by': None}
+    if dies:
+        m = re.fullmatch(r"an? (?P<nt>nontoken )?creature"
+                         r"(?: (?P<ctrl>an opponent controls|you control))?",
+                         subj)
+        if m is None:
+            return None
+        rule.update(types=frozenset({'creature'}), tokens=not m.group('nt'),
+                    nontoken=bool(m.group('nt')),
+                    controlled_by={'an opponent controls': 'opponents',
+                                   'you control': 'you'}.get(m.group('ctrl')))
+        return rule
+    if subj == "a card or token":
+        rule['tokens'] = True
+        return rule
+    if subj == "a card":
+        return rule
+    if subj == "a permanent":
+        rule['tokens'] = True
+        return rule
+    m = re.fullmatch(r"an? (?P<cols>%s) permanent, spell, or card not on the "
+                     r"battlefield" % _COLOR_LIST, subj)
+    if m:
+        rule.update(colors=frozenset(_TUTOR_COLOR_WORDS[w] for w in
+                                     m.group('cols').split(' or ')),
+                    tokens=True)
+        return rule
+    m = re.fullmatch(r"an? (?P<types>%s) card" % _CARD_TYPE_LIST, subj)
+    if m:
+        rule['types'] = frozenset(m.group('types').split(' or '))
+        return rule
+    return None
+
+
+def parse_graveyard_exile_replacements(oracle: str) -> tuple:
+    """A permanent's static graveyard-to-exile replacements, one rule per
+    sentence (see `_GY_EXILE_RE`), from its text with reminder text
+    stripped. Empty when it prints none the engine can run."""
+    low = strip_reminder_text(oracle or '').lower()
+    if 'exile it instead' not in low:
+        return ()
+    rules = []
+    for line in low.split('\n'):
+        for sentence in re.split(r"(?<=\.)\s+", line.strip()):
+            m = _GY_EXILE_RE.fullmatch(sentence.rstrip('.').strip())
+            if m is None:
+                continue
+            dies = bool(m.group('die'))
+            rule = _gy_exile_subject(m.group('subj').strip(), dies)
+            if rule is None:
+                continue
+            scope = 'dies' if dies else (
+                'battlefield' if m.group('subj').strip() == 'a permanent'
+                else 'anywhere')
+            whose = {'a': 'any', "an opponent's": 'opponents',
+                     'your': 'you'}.get(m.group('whose'), 'any')
+            rules.append(dict(rule, scope=scope, whose=whose))
+    return tuple(rules)
+
+
 def parse_exiles_cards_bound_for_graveyard(oracle: str) -> bool:
     """Return True for the CONTINUOUS replacement "if a card would be put
     into a graveyard, exile it instead" (Leyline of the Void, Rest in

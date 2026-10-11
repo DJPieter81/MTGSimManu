@@ -1360,12 +1360,10 @@ class CastManager:
             card._free_cast_opportunity = True
             ok = game.cast_spell(player_idx, card, free_cast=True)
             if not ok:
-                # Graceful fallback: if the free cast can't proceed (no
-                # legal targets, etc.), leave the card in graveyard.
-                if card in player.hand:
-                    player.hand.remove(card)
-                card.zone = "graveyard"
-                player.graveyard.append(card)
+                # The cast did not happen (no legal target, etc.): the
+                # card was not cast, so it remains exiled (CR 702.62a).
+                card._free_cast_opportunity = False
+                game.zone_mgr.move_card(game, card, "hand", "exile")
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Suspend {card.template.name} fizzles (no cast)")
@@ -1439,10 +1437,8 @@ class CastManager:
             )
             if is_mass_reanimate:
                 game._resolve_living_end(controller)
-                found_card.zone = "graveyard"
-                if found_card in player.exile:
-                    player.exile.remove(found_card)
-                player.graveyard.append(found_card)
+                game.zone_mgr.move_card(game, found_card, "exile",
+                                        "graveyard")
             else:
                 # Cast the found card for free
                 if found_card in player.exile:
@@ -1834,10 +1830,8 @@ class CastManager:
                         or needed in (l.template.name or '').lower()
                     ), None)
                     if sac is not None:
-                        if sac in player.battlefield:
-                            player.battlefield.remove(sac)
-                        sac.zone = 'graveyard'
-                        player.graveyard.append(sac)
+                        game.zone_mgr.move_card(game, sac, "battlefield",
+                                                "graveyard")
                         game.log.append(
                             f"T{game.display_turn} P{player_idx+1}: "
                             f"Flashback {template.name} — sacrifice {sac.name}")

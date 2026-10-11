@@ -3134,9 +3134,8 @@ class EVPlayer:
                 for i in range(pumps):
                     card_to_discard = discardable[i]
                     if card_to_discard in me.hand:
-                        me.hand.remove(card_to_discard)
-                        card_to_discard.zone = "graveyard"
-                        me.graveyard.append(card_to_discard)
+                        game.zone_mgr.move_card(game, card_to_discard, "hand",
+                                                "graveyard", cause="discard")
                         # Permanent +1/+1 counters, not temp mods
                         if hasattr(creature, 'plus_counters'):
                             creature.add_plus_counters(1, game)

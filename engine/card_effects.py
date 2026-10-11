@@ -473,9 +473,7 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
     if nonlegendary_creatures:
         best = max(nonlegendary_creatures,
                    key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
-        lib.remove(best)
-        best.zone = "graveyard"
-        game.players[controller].graveyard.append(best)
+        game.zone_mgr.move_card(game, best, "library", "graveyard")
         game.rng.shuffle(lib)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Unmarked Grave puts {best.name} in graveyard")
@@ -1214,9 +1212,7 @@ def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
     candidates.sort(key=_gifts_priority)
     found = candidates[:2]
     for card_found in found:
-        lib.remove(card_found)
-        card_found.zone = "graveyard"
-        game.players[controller].graveyard.append(card_found)
+        game.zone_mgr.move_card(game, card_found, "library", "graveyard")
     game.rng.shuffle(lib)
     if found:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -1677,9 +1673,7 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
     if sac_targets:
         # Sacrifice the least valuable
         target = min(sac_targets, key=lambda c: (c.template.cmc, c.power or 0))
-        opp.battlefield.remove(target)
-        target.zone = "graveyard"
-        game.players[target.owner].graveyard.append(target)
+        game.zone_mgr.move_card(game, target, "battlefield", "graveyard")
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Archon of Cruelty: P{opponent+1} sacrifices {target.name}")
 
@@ -1944,9 +1938,13 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
                     f"T{game.display_turn} P{controller+1}: Consign to Memory "
                     f"counters {countered.source.name}'s triggered ability")
             else:
+                # The stack exit's owner: a countered flashback spell is
+                # exiled (CR 702.34a), a copy ceases to exist (CR 707.10a),
+                # a graveyard-to-exile static applies (CR 614.6).
+                from .spell_resolution import ResolutionManager
                 countered_card = countered.source
-                countered_card.zone = "graveyard"
-                game.players[countered_card.owner].graveyard.append(countered_card)
+                ResolutionManager._move_countered_stack_item(
+                    game, countered, countered_card)
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
                     f"Consign to Memory counters {countered_card.name}")
@@ -2393,10 +2391,8 @@ def emry_etb(game, card, controller, targets=None, item=None):
     """Emry ETB: mill 4 cards into graveyard."""
     player = game.players[controller]
     milled = []
-    for _ in range(min(4, len(player.library))):
-        c = player.library.pop(0)
-        c.zone = "graveyard"
-        player.graveyard.append(c)
+    for c in player.library[:4]:
+        game.zone_mgr.move_card(game, c, "library", "graveyard")
         milled.append(c.name)
     if milled:
         game.log.append(
@@ -3096,9 +3092,7 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     # Sacrifice all lands
     sac_count = len(my_lands)
     for land in list(my_lands):
-        player.battlefield.remove(land)
-        land.zone = "graveyard"
-        player.graveyard.append(land)
+        game.zone_mgr.move_card(game, land, "battlefield", "graveyard")
 
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Scapeshift sacrifices {sac_count} lands")

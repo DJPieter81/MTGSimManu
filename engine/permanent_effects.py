@@ -477,9 +477,18 @@ class PermanentEffects:
         owner = creature.owner
         controller = creature.controller
 
+        # CR 614.6 / 700.4: a static "would die / would be put into a
+        # graveyard, exile it instead" (asked of the zone funnel's one
+        # matcher) replaces the death: the creature is exiled and did not
+        # die, so undying, persist and modular -- dies triggers -- and
+        # every death count, trigger and observer below stay silent.
+        exiled_instead = game.zone_mgr.graveyard_exile_source(
+            game, creature, "battlefield") is not None
+
         # Replacement effects: counters must be readable BEFORE any cleanup.
         # Undying (CR 702.94): return to battlefield with +1/+1 counter if no +1/+1 counter.
-        if Keyword.UNDYING in creature.keywords and creature.plus_counters == 0:
+        if (not exiled_instead and Keyword.UNDYING in creature.keywords
+                and creature.plus_counters == 0):
             if creature in game.players[controller].battlefield:
                 game.players[controller].battlefield.remove(creature)
             creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
@@ -496,7 +505,8 @@ class PermanentEffects:
             return
 
         # Persist (CR 702.78): return to battlefield with -1/-1 counter if no -1/-1 counter.
-        if Keyword.PERSIST in creature.keywords and creature.minus_counters == 0:
+        if (not exiled_instead and Keyword.PERSIST in creature.keywords
+                and creature.minus_counters == 0):
             if creature in game.players[controller].battlefield:
                 game.players[controller].battlefield.remove(creature)
             creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
@@ -546,6 +556,8 @@ class PermanentEffects:
         # Route zone mutation through the funnel: single owner of battlefield→graveyard
         # list mutation, zone attribute, and leaving-battlefield cleanup.
         game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")
+        if exiled_instead:
+            return                       # it did not die (CR 700.4)
         game.players[controller].creatures_died_this_turn += 1
 
         # Modular death trigger: transfer captured counters to best artifact creature.

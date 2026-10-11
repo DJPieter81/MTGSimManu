@@ -2271,6 +2271,9 @@ class CardDatabase:
         from .oracle_parser import parse_static_cost_reductions
         template.cost_reduction_rules = parse_static_cost_reductions(oracle)
         template.back_face_cost_reduction_rules = ()
+        from .oracle_parser import parse_graveyard_exile_replacements
+        template.graveyard_exile_replacements = \
+            parse_graveyard_exile_replacements(oracle)
         # Targeted forced discard, classified by who chooses the card
         # (caster-chosen Thoughtseize shape vs victim-chosen / random).
         from .oracle_parser import parse_hand_attack
