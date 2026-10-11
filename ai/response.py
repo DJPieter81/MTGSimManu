@@ -448,6 +448,14 @@ class ResponseDecider:
                     if inst.instance_id == v_spell.instance_id:
                         targets = self._choose_response_targets(
                             game, inst, stack_item, pick_removal_target_fn)
+                        # Aimed at nothing, a modal spell performs only its
+                        # modes that need no target (CR 700.2a): the
+                        # planner's pick stands only when those are worth
+                        # something; else the legacy paths decide.
+                        from ai.modal import worth_casting_without_targets
+                        if not targets and not worth_casting_without_targets(
+                                game, inst, self.player_idx):
+                            break
                         if self.strategic_logger:
                             self.strategic_logger.log_response(
                                 self.player_idx, inst.name,
