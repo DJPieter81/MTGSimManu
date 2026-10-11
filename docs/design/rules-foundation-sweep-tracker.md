@@ -7277,3 +7277,43 @@ The dispatcher-tables pin gains the hand zone. The legacy self-check's no-op set
 - Ruby Storm +2.0 (26.1 → 28.1). Individual Storm cells swing by up to ±30 in both directions, because a Hex Magic cast changes every later draw of the game.
 - Every other deck moves by at most ±0.9.
 - Audit findings 421 → 418, violations 0; 0 aborts. No deck moves more than 5 pp.
+
+## Unit SZ: a resolving spell goes where its own text puts it (2026-10-10)
+
+**Rule (CR 608.2n):** as the final part of an instant or sorcery spell's resolution, the spell is put into its owner's graveyard, unless its own instructions put it elsewhere. Examples: "Shuffle Green Sun's Zenith into its owner's library", "Exile Alrund's Epiphany", "put ~ on the bottom of its owner's library". A countered or fizzled spell performs none of its instructions, so it goes to the graveyard.
+
+**Defect:** the grammar already types each instruction as a MOVE or EXILE of the spell itself, but the stack exit never read it.
+- Green Sun's Zenith (Amulet Titan ×3, Creatures Toolbox) went to the graveyard. It could not be found again, and Domain Zoo's Territorial Kavu exiled it.
+- The X-creature tutor's self-shuffle rider fired only for a card already in the graveyard, which a resolving spell never is. Its own comment named the stack exit as the missing hook.
+
+**Class:** 80 pool instants and sorceries move themselves as they resolve:
+- 58 exile themselves;
+- 10 shuffle themselves into the library;
+- 4 go to a library position;
+- 8 return to hand on a condition (refused here).
+
+Registered: Green Sun's Zenith.
+
+**Steps (`9157eb5`):**
+- `ResolutionManager._own_destination` reads an unconditional move of the spell itself (zone, position, nth).
+- The one owner, `_move_resolved_spell_off_stack`, applies it to a resolved spell only (`resolved=True`). Flashback's exile (CR 702.34a), rebound, and a copy ceasing to exist (CR 707.10a) still come first.
+- The library position is applied after the funnel move: shuffled in, top, bottom, or Nth from the top.
+- The tutor's dead rider is deleted.
+- **Auditor:** `608.2n/resolved_spell_destination`, a resolved spell ends where its text puts it, restated from its raw typed specs.
+
+**Tests (red first):** `tests/test_a_resolving_spell_goes_where_its_text_puts_it.py` (6; 4 red): shuffled into the library (tutor and damage shapes), a countered spell goes to the graveyard, flashback still exiles, and the auditor both ways.
+
+**Digest / anchor / suites:**
+- Digest: 1 game changes with the same winner and turns (Creatures Toolbox vs Grixis Reanimator 56000: Green Sun's Zenith returns to the library).
+- Anchor: one turn-only drift refreshed (Amulet Titan vs Living End s50000, same winner, T5 → T7).
+- Harness unchanged.
+- Suites 4585 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `sz-post` `b3d7ad9`, pre = `dr-post`):** 74 of 600 cells change, every one in a row or column of a Green Sun's Zenith deck (Amulet Titan ×3, Creatures Toolbox ×4).
+- Amulet Titan +1.5 (26.8 → 28.2). Creatures Toolbox is net 0 (31.0 → 31.0, with cells swinging both ways).
+- Every other deck moves by at most ±1.1, which is its cells against those two decks.
+- Audit findings 418 → 419, violations 0; 0 aborts. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- Conditional self-moves (the Pulses' "if an opponent has more life than you, return ~ to its owner's hand") and Approach of the Second Sun's "otherwise … seventh from the top" stay with their handlers.
+- Buyback and Omen ("then shuffle this card into its owner's library", reminder text) are not typed as self-moves.
