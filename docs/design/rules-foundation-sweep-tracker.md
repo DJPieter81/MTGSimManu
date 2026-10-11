@@ -7461,3 +7461,52 @@ Anchor 29 passed. Suites 4615 + 2713 passed; CI green.
 - **Quoted abilities.** A quoted token ability inside a card's text is matched as the card's own by the legacy attack resolver. It is harmless on a Saga front face, but a creature printing such a token would misfire.
 - **Front-face reads on permanents.** 49 engine and 55 AI sites read `template.is_creature`. The ones that concern a permanent should read the face shown (`effective_is_creature`); a sweep is its own unit.
 - **Living End** exiles the battlefield's creatures instead of sacrificing them (see unit GH).
+
+## Unit DS: a creature put into a graveyard from the battlefield dies, whatever moves it (2026-10-11)
+
+**Rule (CR 700.4):** "dies" means "is put into a graveyard from the battlefield".
+- Each of these is a death:
+  - destruction and lethal damage;
+  - a sacrifice paid as a cost;
+  - a sacrifice an effect demands: evoke, escape-less Phlage, an edict, annihilator, a mobilize token at end of turn.
+- A death triggers the creature's own dies abilities (undying, persist, modular, "when ~ dies") and every "whenever a creature dies" observer, and it counts as a creature that died this turn.
+- A permanent that is not a creature does not die.
+
+**Defect:** the death owner (`PermanentEffects._creature_dies`) ran the death effects only for the paths that called it, and sacrifices went through the zone funnel directly.
+- A creature sacrificed for Goblin Bombardment, an evoked elemental's sacrifice and an annihilator sacrifice triggered nothing and counted for nothing.
+- An undying creature sacrificed as a cost stayed in the graveyard.
+
+**Class:** every path that moves a creature from the battlefield to a graveyard:
+- activation costs (sacrifice another or self);
+- evoke and escape sacrifices;
+- the runner's sacrifice abilities;
+- annihilator and Archon's sacrifices;
+- end-of-turn token sacrifices.
+
+Hundreds of pool cards sacrifice creatures.
+
+**Steps (`7db44d1`):**
+- `ZoneManager.move_card` hands any battlefield → graveyard move of a creature (on the face it shows, or an animated land) to the death owner.
+- The death owner performs the move through the funnel as the death (`dying=True`), so nothing is processed twice.
+- The dead SBA-manager loop no longer counts deaths by hand.
+- **Auditor:** `700.4/dies`, a creature reaching a graveyard from the battlefield was moved by the death owner, restated from the raw face fields.
+
+**Tests (red first):** `tests/test_a_creature_put_into_a_graveyard_from_the_battlefield_dies.py` (6; 3 red):
+- the funnel move is a death (the count, and a drain observer);
+- a creature sacrificed for an activation cost dies (undying returns it);
+- a land does not die;
+- a death is processed once;
+- the auditor both ways.
+
+**Digest / anchor / suites:**
+- Digest: 8 games change by log lines only ("<creature> dies" for sacrificed mobilize tokens, Voice of Victory, Guide of Souls); winners and turns unchanged.
+- Anchor 29 passed. Census, equivalence and harness unchanged.
+- Suites 4622 + 2713 passed.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `ds-post` `4d900d3`, pre = `tf-post`):** 16 of 600 cells change.
+- Boros Energy −0.6 (66.5 → 65.8).
+- Broodscale Bloodchief +0.4: its death observers see sacrifices.
+- Every other deck moves by at most ±0.2.
+- Findings 361, violations 0. No deck moves more than 5 pp.
+
+**Leads (not built):** Living End exiles the battlefield's creatures instead of sacrificing them. Its shape is one pool card and mass sacrifice is nine (below the class rule), so it is recorded as a known gap.
