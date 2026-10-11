@@ -7510,3 +7510,42 @@ Hundreds of pool cards sacrifice creatures.
 - Findings 361, violations 0. No deck moves more than 5 pp.
 
 **Leads (not built):** Living End exiles the battlefield's creatures instead of sacrificing them. Its shape is one pool card and mass sacrifice is nine (below the class rule), so it is recorded as a known gap.
+
+## Unit AT: a type an effect adds is the object's characteristic while the effect lasts (2026-10-11)
+
+**Rule (CR 205.1b, 613.1d, 611.2c, 514.2):** "Until end of turn, target creature you control becomes an Avatar in addition to its other types and gains flying, first strike, lifelink, and hexproof".
+- The chosen object has the added subtype and keywords until the cleanup step, when every until-end-of-turn effect ends at once.
+- The effect applies to that object only. One that leaves and returns is a new object with neither.
+
+**Defect:** Enter the Avatar State (Hollow One ×2) resolved to nothing (`unhandled/spell` in 22 of 25 rows of the gh-post arm). Nothing in the engine could add a type to an object.
+
+**Class:** 27 pool cards add a type to an object.
+- On the new path: Enter the Avatar State and Jump Scare (spells), and the unclassified activations of Liquimetal Coating, Liquimetal Torque, Myr Landshaper, Neurok Transmuter and Stegron.
+- Registered: Avatar State ×2 (MB), Liquimetal Coating ×2 (SB).
+
+**Steps (`908b6a0`):**
+- **Layer 4.** `CardInstance.cem_types_added` / `cem_subtypes_added` are cleared each recalculation and when the object leaves the battlefield, and are read through `effective_card_types` / `effective_subtypes`. `create_type_adding_effect` binds the chosen object.
+- **Executor.** The CONTINUOUS executor runs a type, keyword or P/T change on the object a target slot names, this turn.
+- **Family.** A new family, `type_change`, joins the spell switch and the unclassified-activation switch.
+  - The executor declares it as the only family its characteristic shapes run in (`allowed_families`, read by the dispatcher's executability check).
+  - The pump family's haste grants and legacy pump spells therefore stay on their legacy appliers until that switch is proven host by host.
+  - A first attempt that let the shape run in the pump family moved 118 activations and a dozen legacy pump spells onto the new path. It was narrowed before commit.
+- **CR 514.2.** The cleanup step's end-of-turn expiry now recalculates the layer system. The manager dropped the effects but left their values on the objects until the next recalculation.
+- A "target permanent" slot admits every permanent.
+- **Auditor:** `400.7/new_object_added_types`.
+
+**Tests (red first):** `tests/test_a_type_an_effect_adds_lasts_while_the_effect_does.py` (7). The executor purity pin admits the new declaration; the harness no-op fixture is regenerated (244 hosts).
+
+**Digest / anchor / suites:**
+- Harness: 480 pairs (179 proven, 301 intended).
+- Digest byte-identical; anchor 29 passed.
+- Suites 4629 + 2713 passed.
+
+**Measured (same-seed n=20 Bo3, `at-post` `6b914ba`, pre = `ds-post`):** 1 of 600 cells changes (Azorius Control vs Dimir Midrange −5); every deck within ±0.1.
+- The Avatar State finding is gone. Findings 361 → 339; violations 0.
+- The per-event ranking now holds one row: Surgical Extraction (SB ×8).
+
+**Leads (not built):**
+- **The pump family switch.** It needs a reconciliation of the two keyword-grant mechanisms (legacy `temp_keywords` against the layer system's `cem_keywords`) before the harness can prove it.
+- **Keyword counters** (CR 122.1b) are not modelled.
+- **Guide of Souls.** "Whenever you attack" has no carrier, and "target attacking creature" no target requirement.
