@@ -8202,3 +8202,37 @@ Hundreds of pool cards sacrifice creatures.
 - **Thought Scour's player is the opponent by default.** The player owner does not value a mill, and Grixis Reanimator's gameplan declares no graveyard-fill goal for the plan predicate (`serves_plan_from_graveyard`) to read.
 - **The legality owner reads requirements from reminder text** (awaken, reinforce): 360 pool cards' requirements change when it is masked, 55 of them instants or sorceries. Hunting Triad cannot be cast without a creature on the battlefield. No registered spell is affected.
 - **A spell taken by an earlier legacy handler and by the card-flow family** keeps the legacy handler's partial reading.
+
+## Unit HM: harmonize, a card cast from its graveyard for its harmonize cost (2026-10-11)
+
+**Rule (CR 702.180a-b, 601.2f):**
+- "Harmonize [cost]" lets its owner cast the card from their graveyard by paying [cost] rather than its mana cost.
+- As it is cast, its caster may tap an untapped creature they control; the total cost is reduced by generic mana equal to that creature's power.
+- A spell whose harmonize cost was paid is exiled instead of going anywhere else as it leaves the stack.
+
+**Defect:** harmonize was unmodelled; the coverage census listed it with no status. A harmonize card in a graveyard could not be cast. Creatures Toolbox plays four Nature's Rhythm, and their second use never happened.
+
+**Class:** 11 pool cards print harmonize.
+
+**Steps (`f16feb1`; arm request `e6a65da`):**
+- **Typed at load.** `CardTemplate.harmonize_cost` (`oracle_parser.parse_harmonize_cost`). An {X} rides on `x_cost_data`.
+- **Legality.** `can_cast`'s graveyard branch admits a harmonize card, and the quantity and colour gates read its cost (`graveyard_route_cost`). Legal plays include such a card in the graveyard.
+- **The cast.** `cast_spell` asks the caster which creature to tap (`callbacks.choose_harmonize_tapper`; default and AI: the greatest power). It pays the harmonize cost reduced by that power and taps the creature. A reduction beyond the cost's generic part lowers the X paid.
+- **Leaving the stack.** Exiled (`spell_resolution._move_resolved_spell_off_stack`).
+- **Auditor.** `702.180a/exiled`, restated from the raw facts: cast from a graveyard, a harmonize cost, no escape or flashback.
+- **Census.** `harmonize` maps to `harmonize_cost`; `docs/design/rules_coverage.md` is regenerated.
+
+**Tests (red first):** `tests/test_a_harmonize_card_is_cast_from_its_graveyard_for_its_harmonize_cost.py` (8, the audit pair included).
+
+**Digest / anchor / suites:**
+- Digest: one game changes.
+- Anchor: one turn-only drift refreshed (Broodscale Bloodchief vs Creatures Toolbox s52500, 7 → 8).
+- Suites at `f16feb1` (pinned worktree): chunk A 4749 passed, chunk B 2712 passed. CI green.
+
+**Measured (same-seed n=20 Bo3, `hm-post` `e6a65da`, pre = `dw-post`):** 39 of 600 cells change, all in Creatures Toolbox's row and column.
+- Creatures Toolbox +4.0 (28.5 → 32.5); every other deck moves by at most 0.7. 0 aborts, 0 violations; audit findings 357 → 330.
+- Single cells swing by up to 25 in both directions. The largest, Creatures Toolbox vs Boros Energy (20 → 45), was replayed cell-exact from pinned worktrees (pre `9a6cdda`, post `f16feb1`): 7 matches flip, 6 of them toward Toolbox.
+- In s52000 game 1, Toolbox harmonizes Nature's Rhythm on turn 8. It pays GGGG and taps Tyvar for 3, so X = 8 costs five generic, and it finds Craterhoof Behemoth. It wins two turns sooner. That is the cost CR 702.180b gives.
+
+**Leads (not built):**
+- **The creature tapped for harmonize** is the engine default (the greatest power). It is not weighed against attacking with that creature.
