@@ -358,3 +358,13 @@ def hand_first_turn_value(cards: "Iterable[CardInstance]") -> int:
     """Sum of ``first_turn_value`` across a hand slice — used by
     the mulligan land-slack predicate."""
     return sum(first_turn_value(c) for c in cards)
+
+
+def is_land_option(card) -> bool:
+    """Can this card be played as a land: a land, or a modal double-faced
+    card with a land face (CR 712, 305.1)? The keep and the land drop both
+    count it."""
+    t = card.template
+    if getattr(t, "playable_land_face", None) is not None:
+        return True
+    return bool(getattr(t, "is_land", False))

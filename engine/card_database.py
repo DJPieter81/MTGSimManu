@@ -1349,6 +1349,14 @@ class CardDatabase:
                     # _effective_printed_power in engine/cards.py.
                     if isinstance(card_entries, list) and len(card_entries) >= 2:
                         back = card_entries[1]
+                        # A modal double-faced card's land back face is a
+                        # whole card face a player may play (CR 712): build
+                        # it as its own template from its own data.
+                        if (back.get('layout') == 'modal_dfc'
+                                and 'Land' in (back.get('types') or [])
+                                and 'Land' not in (entry.get('types') or [])):
+                            template.back_face_template = self._build_template(
+                                back.get('faceName') or card_name, back)
                         template.back_face_oracle = back.get('text', '')
                         template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
                         template.back_face_types = [

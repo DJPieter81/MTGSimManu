@@ -51,6 +51,11 @@ class LandManager:
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
             return
+        # Only a land is played as a land (CR 305.1): the card itself, or a
+        # modal double-faced card's land back face (CR 712).
+        face = card.template.playable_land_face
+        if face is None:
+            return
         # A land is played from hand, or from exile under a permission to
         # play it ("you may play those cards", CR 305.1); either way it is
         # the turn's land play (CR 305.2).
@@ -71,6 +76,12 @@ class LandManager:
             game.continuous_effects.forget_object(card.instance_id)
         player.lands_played_this_turn += 1
         card.controller = player_idx
+        if face is not card.template:
+            # The back face is played: the permanent is that face, and only
+            # that face (CR 712); the zone funnel restores the card's own
+            # template when it leaves the battlefield (CR 712.8a).
+            card._front_template = card.template
+            card.template = face
 
         # ── Fetchland: play then immediately crack ──
         # Fetchlands sacrifice themselves on resolution; no ETB

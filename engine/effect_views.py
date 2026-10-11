@@ -2987,7 +2987,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "back_face_oracle": _BACK, "back_face_loyalty": _BACK,
     "back_face_types": _BACK, "back_face_subtypes": _BACK,
     "back_face_power": _BACK, "back_face_toughness": _BACK,
-    "back_face_keywords": _BACK,
+    "back_face_keywords": _BACK, "back_face_template": _BACK,
     "back_face_cost_reduction_rules": (
         "the back face's static spell-cost reductions (CR 712.8e), parsed "
         "as the front face's `cost_reduction_rules` are; the grammar's "

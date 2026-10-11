@@ -233,8 +233,10 @@ class MulliganDecider:
         from engine.cards import CardType
         from ai.strategy_profile import ArchetypeStrategy
 
-        lands = [c for c in hand if c.template.is_land]
-        spells = [c for c in hand if not c.template.is_land]
+        # A modal double-faced card's land face is a land option (CR 712).
+        from ai.predicates import is_land_option
+        lands = [c for c in hand if is_land_option(c)]
+        spells = [c for c in hand if not is_land_option(c)]
         # Legend rule (CR 704.5j): duplicate copies of the same legendary
         # permanent are dead on resolution — only one survives.  For
         # mulligan evaluation, treat each excess copy as not present.
@@ -967,7 +969,10 @@ class MulliganDecider:
         if self.goal_engine and self.goal_engine.gameplan:
             min_lands = (self.goal_engine.gameplan.mulligan_min_lands
                          or DEFAULT_MULLIGAN_MIN_LANDS)
-        lands_in_hand = [c for c in hand if c.template.is_land]
+        # A modal double-faced card's land face is a land option (CR 712),
+        # counted here as the keep counts it.
+        from ai.predicates import is_land_option
+        lands_in_hand = [c for c in hand if is_land_option(c)]
         kept_count = len(hand) - count
         # Protect at least min(min_lands, total_lands_available) lands in
         # the kept hand. We can't guarantee a floor if the hand doesn't
@@ -977,7 +982,7 @@ class MulliganDecider:
         bottom = [c for c, _ in scored[:count]]
         # Count lands we'd be bottoming; if too many, swap lowest-scored
         # non-land in the kept hand for the lowest-scored land in bottom.
-        bottomed_lands = [c for c in bottom if c.template.is_land]
+        bottomed_lands = [c for c in bottom if is_land_option(c)]
         kept_lands = len(lands_in_hand) - len(bottomed_lands)
         if kept_lands < land_floor and bottomed_lands:
             # Find non-lands in the kept hand, bottom the lowest-scored
@@ -989,7 +994,7 @@ class MulliganDecider:
             # protection and swap a declared piece into the bottom.
             kept_nonland_scored = [
                 (c, s) for c, s in scored[count:]
-                if not c.template.is_land
+                if not is_land_option(c)
             ]  # scored is sorted ascending, so this is too
             needed = land_floor - kept_lands
             # Swap bottom lands for kept non-lands (lowest-scored first)

@@ -994,6 +994,10 @@ class GameState:
                     legal.append(card)
             elif self.can_cast(player_idx, card):
                 legal.append(card)
+            elif (card.template.playable_land_face is not None
+                  and self.land_play_available(player_idx)):
+                # A modal double-faced card's land face (CR 712, 305.1).
+                legal.append(card)
         # Include flashback and escape cards from graveyard
         for card in player.graveyard:
             if (card.has_flashback or card.template.escape_cost is not None) and \

@@ -452,7 +452,8 @@ class ZoneManager:
         if not _audit_on():
             return
         _audit_check("712.8a/front_face_off_battlefield",
-                     not getattr(card, "is_transformed", False),
+                     not getattr(card, "is_transformed", False)
+                     and getattr(card, "_front_template", None) is None,
                      f"{card.name} arrived in {card.zone} showing its back "
                      f"face", game=game)
 
@@ -598,6 +599,13 @@ class ZoneManager:
         # Types an effect added named the object that left (CR 400.7).
         card.cem_types_added = set()
         card.cem_subtypes_added = set()
+
+        # A modal double-faced card played as its back face is its front
+        # face again off the battlefield (CR 712.8a).
+        front = getattr(card, "_front_template", None)
+        if front is not None:
+            card.template = front
+            card._front_template = None
 
         # Clear game state reference
         card._game_state = None

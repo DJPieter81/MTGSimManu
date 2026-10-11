@@ -1224,6 +1224,11 @@ class CardTemplate:
     # (oracle_resolver.reduction_rules_of).
     cost_reduction_rules: Optional[tuple] = None
     back_face_cost_reduction_rules: Optional[tuple] = None
+    # A modal double-faced card's land back face, as a full template built
+    # from that face's own data at load (CardDatabase): the face a player
+    # may play as the turn's land (CR 712, 305.1). None for every other
+    # card. Read through `playable_land_face`.
+    back_face_template: Optional["CardTemplate"] = None
     # A permanent's static "if <objects> would be put into <whose>
     # graveyard / would die, exile it instead" rules over other objects,
     # one per sentence (oracle_parser.parse_graveyard_exile_replacements);
@@ -1592,6 +1597,18 @@ class CardTemplate:
         return CardType.CREATURE in self.card_types
 
     @property
+    def playable_land_face(self) -> Optional["CardTemplate"]:
+        """The face of this card a player may play as a land (CR 305.1):
+        the card itself when it is a land, a modal double-faced card's land
+        back face (CR 712), or None."""
+        if CardType.LAND in self.card_types:
+            return self
+        back = self.back_face_template
+        if back is not None and CardType.LAND in back.card_types:
+            return back
+        return None
+
+    @property
     def mana_count(self) -> int:
         """Units of mana one tap of this land produces (≥1 for any
         mana-producing land; E1 multi-mana schema)."""
@@ -1856,6 +1873,10 @@ class CardInstance:
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
     _evoked: bool = False
+    # The card's own template while a modal double-faced card's back face
+    # is the permanent on the battlefield (`template` is then that face);
+    # restored when the object leaves (CR 712.8a). Owned by the zone funnel.
+    _front_template: Optional["CardTemplate"] = None
     _dashed: bool = False  # Cast via Dash: has haste, returns to hand at end of turn
     _escaped: bool = False  # Cast via Escape from graveyard
     # Suspend tracking (LE-E2): when a suspend card is paid-and-exiled,

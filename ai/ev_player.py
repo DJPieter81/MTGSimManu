@@ -213,6 +213,19 @@ class Play:
 # EVPlayer — the complete AI player
 # ─────────────────────────────────────────────────────────────
 
+def _as_its_land_face(card):
+    """The card as the land it is played as: itself, or -- for a modal
+    double-faced card -- a view of it carrying its land face's template
+    (CR 712), so a land's value reads that face."""
+    face = card.template.playable_land_face
+    if face is None or face is card.template:
+        return card
+    import copy
+    view = copy.copy(card)
+    view.template = face
+    return view
+
+
 class EVPlayer:
     """EV-based AI player. All decisions are EV comparisons.
 
@@ -368,8 +381,10 @@ class EVPlayer:
         below 5" intent for keepable hands while honoring the land
         invariant the trigger declares.
         """
-        lands = [c for c in hand if c.template.is_land]
-        spells = [c for c in hand if not c.template.is_land]
+        # A modal double-faced card's land face is a land option (CR 712).
+        from ai.predicates import is_land_option
+        lands = [c for c in hand if is_land_option(c)]
+        spells = [c for c in hand if not is_land_option(c)]
 
         # 0-land hard floor takes precedence over hand-size leniency.
         # Delegated to MulliganDecider so the rule lives in one place
@@ -520,6 +535,12 @@ class EVPlayer:
                 return None
 
         lands = [c for c in legal if c.template.is_land]
+        if not lands:
+            # A modal double-faced card's land face (CR 712) gives the same
+            # land drop a true land does, and the card also keeps its spell
+            # face: it is a land candidate only when no true land is.
+            lands = [c for c in legal if not c.template.is_land
+                     and c.template.playable_land_face is not None]
 
         # Identify suspend cards (sorcery-speed special action, distinct
         # from casting). Suspend-only cards (CMC 0, suspend keyword) are
@@ -534,7 +555,10 @@ class EVPlayer:
 
         spells = [c for c in legal
                   if not c.template.is_land
-                  and c not in suspend_only]
+                  and c not in suspend_only
+                  # legal only for its land face: not a cast candidate
+                  and (c.template.playable_land_face is None
+                       or game.can_cast(self.player_idx, c))]
 
         # Identify cycling cards (special action, not casting)
         cycling_cards = [c for c in me.hand if game.can_cycle(self.player_idx, c)]
@@ -607,7 +631,8 @@ class EVPlayer:
                 or me.life > l.template.fetchland.life_cost
             ]
             for land in safe_lands:
-                ev = self._score_land(land, me, spells, game)
+                ev = self._score_land(_as_its_land_face(land), me, spells,
+                                      game)
                 candidates.append(Play("play_land", land, [], ev,
                                        f"Land: {land.name} (EV={ev:.1f})"))
 
