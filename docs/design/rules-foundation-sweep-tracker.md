@@ -7616,3 +7616,65 @@ Hundreds of pool cards sacrifice creatures.
   - The same gate covers 65 pool modal spells, including Lorehold Charm and Warping Wail.
   - "Choose one or both" is resolved as both. The modal resolver's gate counts its range as two of two, and "one or more" parses as "one".
 - **Tiered modes.** Fire Magic resolves its best tier without paying that tier's additional cost.
+
+## Unit MS: a modal spell is cast with the modes its controller chooses (2026-10-11)
+
+**Rule (CR 601.2b, 601.2c, 700.2, 700.2a):** a modal spell's controller chooses its modes as it is cast, as many as its header allows ("choose one", "one or both", "one or more").
+- A mode that needs a target can be chosen only when a target is chosen for it.
+- The spell requires only the targets of the modes chosen.
+- On resolution it performs exactly the chosen modes, in printed order.
+
+**Defect:**
+- Avengers Disassembled (Boros Ponza MB ×3, SB ×1) was never cast, even facing three 2/2s on an empty board. Its text is "Choose one or both — 3 damage to each creature; destroy target land ...". The AI asked every modal spell with a targeted mode for a target, and dropped it when it had none.
+- The engine chose modes on resolution.
+- It resolved "one or both" as both: the resolver's gate counted the range as two of two, so both synthesized abilities ran through the legacy description loop.
+- It parsed "one or more" as "one".
+- Its castability check demanded a target even when a mode needs none.
+
+**Class:**
+- 394 pool instants and sorceries are modal; 111 mix targeted and untargeted modes.
+- 47 print a range that the old gate resolved as every mode.
+- 354 are in scope: a choice to make, and no counter mode.
+
+**Steps (`af4f67a`):**
+- `engine/modal_spell.py` owns the rules:
+  - `in_scope`.
+  - `choose_range`, read from the typed spell host's header (`AbilityEffects.choose`). A spell that charges for each extra mode (escalate) is held to one.
+  - `legal_modes` (CR 700.2a): each object a mode targets is among the chosen targets. A mode with an unpaid tier or spree cost cannot be chosen.
+  - `choose_modes`, `resolve_mode`, `required_targets` (CR 601.2c) and `counter_mode_targets`.
+- `CastManager.cast_spell` records the choice on the stack item (`StackItem.modes_chosen`; a storm copy shares it, CR 707.10).
+- Both castability checks drop a modal spell's mode-group requirements when a mode needs no target.
+- The resolver performs exactly the recorded modes. Each goes through one call, `resolve_spell_from_oracle(mode=...)`, which the equivalence tools now share. The legacy `CardTemplate.modal_choose_count` is deleted.
+- **AI:**
+  - `ai.modal.select_modal_modes` chooses, among the legal modes, every one worth more than nothing, up to the most allowed; then the best of the rest, down to the fewest.
+  - A modal spell with a mode that needs no target requires no target. Cast without one, it is cast only when those modes are worth something.
+  - A modal counter counters only what its counter mode's typed target admits (`ResponseDecider._counter_can_target`). "Counter target sorcery spell" admitted any spell.
+- **Auditor:** `700.2a/modes_chosen`, restated from the typed host's raw fields. The number of modes performed is within the header's range, and a performed mode that targets an object had a target in that zone.
+
+**Tests (red first, 11 of 16):** `tests/test_a_modal_spell_performs_the_modes_chosen_as_it_is_cast.py`. They cover:
+- the typed range, and the pool alignment of typed and legacy modes;
+- CR 700.2a legality: an object target, a player target, an unpaid tier;
+- castability, and the cast-time choice;
+- each chosen mode performed and no other, and the printed range held;
+- the AI's cast and hold, and mode values;
+- the modal counter;
+- the auditor both ways.
+
+**Digest / anchor / suites:**
+- Digest: 1 game changes (Jeskai Blink vs Eldrazi Tron s59500 g3). Warping Wail is castable now for its token mode, so it is cast in response to Quantum Riddler instead of at the next step. Same winner and turns.
+- Anchor: 29 passed. Census, equivalence and harness unchanged.
+- Suites: 4657 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, `ms-post` `b103d15`, pre = `md-post`):** 52 of 600 cells change.
+- Boros Ponza +4.6 (18.9 → 23.4): Avengers Disassembled is now cast for its sweep. Its cells against Boros Energy (+20 in both perspectives) and Hollow One (+20) carry it.
+- Every other deck moves by at most ±1.1.
+- Violations 0 (findings 347 → 339); 0 aborts. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- **Chosen modes that resolve to nothing.** Most mode shapes the clause owner lacks resolve to nothing, silently. In real casts:
+  - Thraben Charm (Boros Energy MB ×2), Sheoldred's Edict (Dimir Midrange MB ×1) and Abrade's damage mode do nothing.
+  - Kozilek's Command's second mode does nothing (Eldrazi Tron, Eldrazi Ramp, Broodscale Bloodchief MB ×4 each). The tokens, scry-and-draw and graveyard-exile modes do nothing.
+  - The modal path also runs before the name-keyed registry, so Thraben Charm's handler is dead.
+  - The dispatcher can run 1 pool mode today. Its damage executor refuses any requirement in a mode group, so Abrade's "3 damage to target creature" and Kolaghan's Command's "2 damage to any target" are refused. Thraben Charm's damage needs a multiplied count ("twice the number of creatures you control").
+- **The land-destruction mode** needs the removal family's dispatcher executors (DESTROY, and its controller's SEARCH). Ratchet (f) forbids widening the legacy gate to it.
+- **Tiers and spree:** the engine pays no mode cost, so only free tiers are chosen (Fire Magic deals 1).
