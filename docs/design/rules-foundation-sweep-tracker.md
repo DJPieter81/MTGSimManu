@@ -7742,3 +7742,57 @@ Hundreds of pool cards sacrifice creatures.
   - Return to the battlefield and a team pump: Lorehold Charm.
   - Retargeting: Untimely Malfunction.
 - **The AI aims count-damage modes by threat, not by what the count kills** (Thraben Charm).
+
+## Unit ED: an edict makes each named player sacrifice permanents of their choice (2026-10-11)
+
+**Rule (CR 701.21a, 101.4, 700.4):** an edict, "<players> sacrifice(s) <N> <permanents> [of their choice]", makes each player it names sacrifice that many matching permanents they control.
+- Each permanent is chosen by the player who sacrifices it. A player with fewer sacrifices every one.
+- The choices are made in APNAP order, and the permanents leave together.
+- A sacrificed creature dies.
+
+**Defect:** no owner performed an edict. In real casts Sheoldred's Edict (Dimir Midrange MB, Eldrazi Ramp SB ×2) and Lorehold Charm's first mode resolved to nothing: `unhandled/mode`, in 25 rows of the mr-post arm. So did the pool's plain edict spells and modes.
+
+**Class:**
+- 9 pool spells and 16 modes move onto the dispatcher. Each was a legacy no-op on the pre-unit engine, checked host by host from the pinned worktree.
+- 33 triggered abilities share the shape; their carriers are a later step.
+- About 155 pool cards make a player sacrifice.
+
+**Steps (`cbe721d`; test carrier fix `a8ff489`):**
+- `effect_executors.execute_sacrifice`: a player set (opponents, all players) or a chosen player sacrifices a printed number of permanents of some card types, token or nontoken.
+  - Each player's choice goes through `callbacks.choose_sacrifice`, the seam a sacrifice cost's choice uses.
+  - The move goes through the zone funnel, so a creature dies.
+  - It runs only in the new `edict` family (`allowed_families`), which joins the spell families. `strict_edict` is its shape.
+- `effect_carrier`: a slot named by its acting player's target ("target player sacrifices ...") is placed from that spec's span.
+- **AI:** an edict mode is worth what the named players give up, their least valuable matches. So the token mode is chosen against a token alone, and the planeswalker mode against a planeswalker alone.
+- Pick Your Poison's and Kolaghan's Command's name-keyed handlers are deleted. The modal path resolves before the registry, so they never ran.
+  - Registry 81 → 79; single-owner `damage_write` 28 → 27.
+  - A test pins that no modal spell the modal owner resolves keeps one.
+  - Two resolution-pick tests that called Kolaghan's Command's handler now carry Wear // Tear's (CI failure on `33cd11f`, fixed in `a8ff489`). One of them had been passing vacuously.
+- **Auditor:** `701.21a/edict`, restated from the battlefield's raw printed types: each named player controls N fewer matching permanents, or none.
+
+**Tests (red first, 7 of 10):** `tests/test_an_edict_makes_each_named_player_sacrifice_of_their_choice.py`.
+
+**Digest / anchor / suites:**
+- Gate parity: 575 new-path pairs (179 proven, 396 intended; +25 recorded). Ratchet (f) unchanged at 3629.
+- Harness no-op floor 176 → 180.
+- Digest: 1 game changes (Dimir Midrange vs Domain Zoo s57000). Sheoldred's Edict makes Domain Zoo sacrifice a Territorial Kavu; same winner and turns.
+- Anchor: 29 passed.
+- Suites: 4679 + 2712 passed, from the worktree pinned at `a8ff489`.
+
+**Measured (same-seed n=20 Bo3, `ed-post` `33cd11f`, pre = `mr-post`):** 23 of 600 cells change.
+- Dimir Midrange +1.2 (47.9 → 49.2): Sheoldred's Edict now takes a creature.
+- Every other deck moves by at most ±0.4.
+- Violations 0; 0 aborts. No deck moves more than 5 pp.
+- Findings 464 → 427: Sheoldred's Edict's `unhandled/mode` rows go from 25 to 0.
+- The modes still unperformed:
+
+| Card | Rows |
+|---|---|
+| Kozilek's Command | 25 |
+| Lorehold Charm | 23 |
+| Thraben Charm (cast at nothing; unit MH next) | 16 |
+| Untimely Malfunction | 9 |
+
+**Leads (not built):**
+- **Edict triggers:** 33 triggered edicts (enter and attack) need their carriers.
+- **Edicts with a keyword or stat filter**, for example "a creature with flying" (Pick Your Poison's third mode).
