@@ -328,12 +328,15 @@ def _raw_fits(obj, req, caster=None) -> bool:
     return typed and (bound is None or (obj.template.cmc or 0) <= bound)
 
 
-def _audit_targets_admitted(game: "GameState", card, targets) -> None:
+def _audit_targets_admitted(game: "GameState", card, targets,
+                            caster: int) -> None:
     """Rules audit (CR 601.2c), restated from the requirements' raw fields
     -- zone, type words and printed mana-value bound -- not from the
     legality owner's predicate: every object an instant or sorcery is cast
     at lies in the zone of one of its requirements, has one of that
-    requirement's types, and is within its printed bound. Observes only."""
+    requirement's types, is within its printed bound and meets its printed
+    qualifiers -- "you control" naming the caster, who controls a spell
+    cast under another player's permission (CR 108.4). Observes only."""
     from .rules_audit import check
     from .target_solver import parse
     t = card.template
@@ -348,7 +351,7 @@ def _audit_targets_admitted(game: "GameState", card, targets) -> None:
         if obj is None or obj.zone == "stack":
             continue
         check("601.2c/cast_target_admitted",
-              any(_raw_fits(obj, r, card.controller) for r in reqs),
+              any(_raw_fits(obj, r, caster) for r in reqs),
               f"{card.name} cast at {obj.name} ({obj.zone}), which no "
               f"requirement of it admits", game=game)
 
@@ -2515,7 +2518,7 @@ class CastManager:
                                      f"{card.name} cast at {_tgt.name} in a "
                                      f"graveyard; its target is a permanent",
                                      game=game)
-            _audit_targets_admitted(game, card, targets)
+            _audit_targets_admitted(game, card, targets, player_idx)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,

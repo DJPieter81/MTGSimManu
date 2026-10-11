@@ -140,3 +140,19 @@ def test_the_audit_is_silent_for_a_nonbasic_card(card_db, audit):
     surgical = _add(game, card_db, "Surgical Extraction", 0, "hand")
     assert game.cast_spell(0, surgical, [bolt.instance_id])
     assert not _findings(audit)
+
+
+def test_the_audit_reads_the_caster_not_the_cards_owner(card_db, audit):
+    """A card cast under another player's permission (an impulse, Ragavan's
+    exile) is controlled by its caster: "target creature you control" is
+    the caster's creature, whoever owns the card."""
+    game = _game()
+    _add(game, card_db, "Plains", 0)
+    mine = _add(game, card_db, "Grizzly Bears", 0)
+    theirs = CardInstance(template=card_db.get_card("Ephemerate"), owner=1,
+                          controller=1, instance_id=game.next_instance_id(),
+                          zone="hand")
+    theirs._game_state = game
+    game.players[0].hand.append(theirs)
+    assert game.cast_spell(0, theirs, [mine.instance_id])
+    assert not _findings(audit)
