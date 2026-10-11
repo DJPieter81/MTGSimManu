@@ -8,7 +8,7 @@
    "target.exclude_source": 4,
    "target.keyword:flying": 1,
    "target.scope:not_you": 2,
-   "target.scope:opponent": 7,
+   "target.scope:opponent": 1,
    "target.stat:mana_value": 2,
    "target.stat:power": 1,
    "target.stat:toughness": 1,
@@ -18,7 +18,7 @@
    "target.union:planeswalker": 1,
    "target.union:sorcery": 3,
    "target.union:triggered": 1,
-   "target.unparsed": 9
+   "target.unparsed": 4
   },
   "deck_typed_share": 0.7615,
   "deck_unmodelled_by_stage": {
@@ -55,7 +55,7 @@
    "target.keyword:without_flying": 14,
    "target.keyword:without_vigilance": 1,
    "target.scope:not_you": 92,
-   "target.scope:opponent": 73,
+   "target.scope:opponent": 15,
    "target.stat:greatest_power": 2,
    "target.stat:least_mana_value": 1,
    "target.stat:mana_value": 76,
@@ -88,12 +88,12 @@
    "target.union:spacecraft": 2,
    "target.union:triggered": 6,
    "target.union:vehicle": 28,
-   "target.unparsed": 390
+   "target.unparsed": 293
   },
   "residue_by_polarity": {
    "NARROWING": 292,
-   "UNPARSED": 390,
-   "WIDENING": 865
+   "UNPARSED": 293,
+   "WIDENING": 807
   },
   "typed_share": 0.7326,
   "typed_share_by_host_kind": {
@@ -1193,7 +1193,7 @@
     1
    ]
   ],
-  "residue": 1547,
+  "residue": 1392,
   "specs": 44317,
   "sub_abilities": [
    [
