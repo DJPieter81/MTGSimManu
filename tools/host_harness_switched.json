@@ -11,6 +11,2190 @@
  "intended": [
   {
    "pair": [
+    "activated_effects:DRAW_N",
+    "Abzan Banner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Aether Spellbomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Aether Syphon",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Aggressive Mining",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ahriman",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Airship Engine Room",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Akki Scrapchomper",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Alchemist's Apprentice",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Arcane Encyclopedia",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Arcane Spyglass",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Arcanis the Omnipotent",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Arch of Orazca",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Archivist",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Arguel's Blood Fast // Temple of Aclazotz",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Avishkar Raceway",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Axiom Engraver",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ayara, First of Locthwain",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Azami, Lady of Scrolls",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Azorius Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Azorius Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Azure Mage",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Bandit's Haul",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Baron Bertram Graywater",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Basilica Skullbomb",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Baxter Building",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Baylen, the Haymaker",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Bespoke Battlewagon",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Blighted Cataract",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Blitzball",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Boiling Rock Prison",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Bonders' Enclave",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Bonecache Overseer",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Boros Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Boros Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Botanical Plaza",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Candlestick",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Carnage Altar",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Chandra's Regulator",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Charging Strifeknight",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Chittering Skitterling",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Cobbled Lancer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Combat Courier",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Courier's Briefcase",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Courier's Capsule",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Cryptic Caves",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Destructive Digger",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dimir Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dimir Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dismissive Pyromancer",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dockside Chef",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dragon's Hoard",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dreamstone Hedron",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Dross Skullbomb",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Eidolon of Philosophy",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Endbringer",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Era of Innovation",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Erebos, God of the Dead",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Esoteric Duplicator",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Etherium Astrolabe",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Falkenrath Pit Fighter",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Famished Foragers",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Fiery Islet",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Firemind's Research",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Flamecache Gecko",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Foggy Bottom Swamp",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Font of Fortunes",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Fountain of Renewal",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Fountainport",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Fountainport Bell",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Furnace Skullbomb",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Futurist Forge",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Gas Guzzler",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Gilt-Blade Prowler",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Glint-Horn Buccaneer",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Glitch Ghost Surveyor",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Goblin Picker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Goblin Surveyor",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Golgari Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Golgari Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Grabby Giant // That's Mine",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Grave-Shell Scarab",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Greed",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Grim Backwoods",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Gruul Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Gruul Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Hallway Heckler // Vicious Verse",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Halo Fountain",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Hardened Tactician",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Hedron Archive",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Horizon Canopy",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ice Cream Kitty",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Illuminated Folio",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Illvoi Galeblade",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Immortal Coil",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Implement of Examination",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Insolent Neonate",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Investigator's Journal",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Investigator's Journal",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ior Ruin Expedition",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Iron Spider, Stark Upgrade",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Izzet Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Izzet Generatorium",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Izzet Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Jayemdae Tome",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Jeskai Banner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Katara, Bending Prodigy",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Key to the Side-Door",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Kingpin's Enforcers",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Knife",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Kumena, Tyrant of Orazca",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Kyoshi Village",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Lead Pipe",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "League Guildmage",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Leonin Surveyor",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Letter of Acceptance",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Lifespark Spellbomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Loch Mare",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Loot, the Pathfinder",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Lord Dregg, Insect Invader",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Loxodon Surveyor",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Lunar Convocation",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mad Prophet",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Magus of the Library",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mardu Banner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Marwyn, the Clearcutter",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Masked Meower",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Maze Skullbomb",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mazemind Tome",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Meditation Pools",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Memorial to Genius",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Merchant of the Vale // Haggle",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mercurial Chemister",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Merfolk Windrobber",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Minas Tirith",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mind Stone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mindless Automaton",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mishra, Excavation Prodigy",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Misty Palms Oasis",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mnemonic Sphere",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mnemonic Sphere",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Moonlit Lamenter",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Murmuring Volume",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mutant Surveyor",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Mystic Archaeologist",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Necrogen Spellbomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Nemata, Primeval Warden",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Niambi, Esteemed Speaker",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Nihilistic Glee",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Niv-Mizzet, the Firemind",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the harness's legacy side runs with every switched carrier off, so the source's own draw trigger (the draw carrier, unit D) cannot fire there; in play both paths draw through the draw owner and fire it"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Norn's Wellspring",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "North Pole Gates",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Novijen Sages",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Nurturing Peatland",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Omashu City",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Oread of Mountain's Blaze",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Orzhov Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Orzhov Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Oscorp Research Team",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Parcel Myr",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Pendulum of Patterns",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Peregrin Took",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Phyrexian Vault",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Plargg, Dean of Chaos // Augusta, Dean of Order",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Portcullis Vine",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Professor Zei, Anthropologist",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Prophet of Distortion",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Psychotrope Thallid",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Puca's Eye",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Pyrite Spellbomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Racers' Ring",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ragamuffyn",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Rakdos Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Rakdos Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Raving Visionary",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ray Fillet, Man Ray",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Red Herring",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Reinforced Ronin",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Relic Vial",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Resonating Lute",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Reverberating Summons",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ripchain Razorkin",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Roil Cartographer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Rope",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Rummaging Goblin",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Ruthless Knave",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sage of Fables",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sage of Lat-Nam",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sai, Master Thopterist",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sarcomite Myr",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Savvy Hunter",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Scarecrone",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Scene of the Crime",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Scepter of Insight",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Scorn-Blade Berserker",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sea Gate Wreckage",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Seasoned Cryomancer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Seismic Monstrosaur",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Selesnya Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Selesnya Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Selhoff Entomber",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Serpent's Pass",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Serum Tank",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sewer-veillance Cam",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Shapers of Nature",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Shielded Aether Thief",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Shimmer Dragon",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Shore Keeper",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Silent Clearing",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Silversmote Ghoul",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Simic Cluestone",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Simic Locket",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sinister Monolith",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Skullport Merchant",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sky Hussar",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Skybridge Towers",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Skystrike Officer",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Slagdrill Scrapper",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Snapping Voidcraw",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Solitary Cell",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Soramaro, First to Dream",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Soul Diviner",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Soul of Windgrace",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Soul-Guide Lantern",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Soulreaper of Mogis",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Spare Supplies",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Spectral Sailor",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Spell Satchel",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sprouting Goblin",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Staff of Compleation",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Staff of Domination",
+    "ACTIVATED:0:4"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Stocking the Pantry",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sultai Banner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sun-Blessed Peak",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sunbaked Canyon",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sunbeam Spellbomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Sunset Pyramid",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Supply Drop",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Surge Engine",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Surgical Skullbomb",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Tablet of Compleation",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Tapestry of the Ages",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Tarrian's Journal // The Tomb of Aclazotz",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Temur Banner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Thallid Soothsayer",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Autonomous Furnace",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Dross Pits",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Fair Basilica",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Gold Saucer",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Hunter Maze",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Last Ride",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "The Surgical Bay",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Third Path Savant",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Thraxodemon",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Thunderhead Gunner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Tome of Legends",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Toxrill, the Corrosive",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Trade Routes",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Trading Post",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Tramway Station",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Treasure Trove",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Trigon of Thought",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Triskaidekaphile",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Unbridled Growth",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Vexing Bauble",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Wall of Mulch",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Waterfront District",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Waterlogged Grove",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Witching Well",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Wrench",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Yavimaya Elder",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "Zameck Guildmage",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:DRAW_N",
+    "\u00d3in the Brave",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Asmodeus the Archfiend",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
     "activated_effects:UNCLASSIFIED",
     "Autumnal Gloom // Ancient of the Equinox",
     "ACTIVATED:0:0"
@@ -84,6 +2268,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Cryptex",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Dark-Dweller Oracle",
     "ACTIVATED:0:0"
    ],
@@ -100,10 +2292,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Deepwood Denizen",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Devourer of Memory",
     "ACTIVATED:0:1"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Diary of Dreams",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -128,6 +2336,14 @@
     "ACTIVATED:0:0"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Dross Skullbomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -172,6 +2388,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Found Footage",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Geistflame Reservoir",
     "ACTIVATED:0:2"
    ],
@@ -212,10 +2436,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Griselbrand",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "House Guildmage",
     "ACTIVATED:0:1"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Jodah's Codex",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -340,6 +2580,22 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Qiqirn Merchant",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Roadside Reliquary",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Rona, Disciple of Gix",
     "ACTIVATED:0:2"
    ],
@@ -452,6 +2708,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Sphinx of the Chimes",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Suburban Sanctuary",
     "ACTIVATED:0:2"
    ],
@@ -472,6 +2736,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Tamiyo's Logbook",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -504,6 +2776,22 @@
     "ACTIVATED:0:1"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Towashi Guide-Bot",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Tower of Fortunes",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -556,10 +2844,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Vessel of Paramnesia",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Wand of Vertebrae",
     "ACTIVATED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Waterbending Scroll",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -592,6 +2896,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Zimone, Quandrix Prodigy",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -1972,6 +4284,14 @@
   {
    "pair": [
     "dispatched",
+    "Cerebral Download",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause dropped 'Surveil X'; the surveil is performed before the draw (CR 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Charge of the Mites",
     "MODE:0:0:mode0"
    ],
@@ -2620,14 +4940,6 @@
   {
    "pair": [
     "dispatched",
-    "Hunting Triad",
-    "SPELL:0:0"
-   ],
-   "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
-  },
-  {
-   "pair": [
-    "dispatched",
     "Improvised Club",
     "SPELL:0:1"
    ],
@@ -3156,6 +5468,14 @@
   {
    "pair": [
     "dispatched",
+    "Pilfered Plans",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause dropped 'target player mills N'; the mill is performed with the draw (CR 701.17a, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Prismari Command",
     "MODE:0:0:mode0"
    ],
@@ -3316,6 +5636,14 @@
   {
    "pair": [
     "dispatched",
+    "Recover",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause dropped the return; the regrowth is performed before the draw (CR 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Recruit the Worthy",
     "SPELL:0:1"
    ],
@@ -3384,6 +5712,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Resourceful Return",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause drew whatever its condition; the return is performed, and the draw only while its condition holds (CR 608.2c)"
   },
   {
    "pair": [
@@ -3940,6 +6276,22 @@
   {
    "pair": [
     "dispatched",
+    "Thassa's Bounty",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause dropped 'target player mills N'; the mill is performed with the draw (CR 701.17a, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thought Scour",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause dropped 'target player mills N'; the mill is performed with the draw (CR 701.17a, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Thraben Charm",
     "MODE:0:0:mode0"
    ],
@@ -4104,6 +6456,14 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Weight of Memory",
+    "SPELL:0:0"
+   ],
+   "reason": "unit DW: the legacy draw clause dropped 'target player mills N'; the mill is performed with the draw (CR 701.17a, 608.2c)"
   },
   {
    "pair": [
@@ -4340,6 +6700,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Abundant Growth",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Aftermath Analyst",
     "TRIGGERED:0:0"
    ],
@@ -4352,6 +6720,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Alchemist's Vial",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4372,10 +6748,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Angelic Gift",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Armored Skaab",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Astral Wingspan",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4404,10 +6796,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Bilbo Baggins, Burglar // Take a Glance",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Billowing Shriekmass",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Blood Sun",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Bomat Bazaar Barge",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Bonds of Mortality",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4436,10 +6860,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Cartouche of Knowledge",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Carven Caryatid",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Cephalid Inkmage",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Chosen by Heliod",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cloudkin Seer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Combat Thresher",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4460,6 +6924,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Confounding Conundrum",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Crackling Drake",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Crimson Operative",
     "TRIGGERED:0:1"
    ],
@@ -4472,6 +6952,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cryogen Relic",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -4508,6 +6996,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Didact Echo",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Dimir Informant",
     "TRIGGERED:0:0"
    ],
@@ -4532,10 +7028,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Dragon Mantle",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Dreadhound",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dress Down",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Eerie Gravestone",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4548,10 +7068,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Eidolon of Blossoms",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Elegant Parlor",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elsewhere Flask",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4564,10 +7100,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Elvish Visionary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Emry, Lurker of the Loch",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Energy Refractor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4584,6 +7136,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Eternity Snare",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4620,10 +7180,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Fate Foretold",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Fear of Death",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Feather of Flight",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Flight of Fancy",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4644,6 +7228,30 @@
   {
    "pair": [
     "etb:dispatch",
+    "Futurist Forge",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gallant Citizen",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Generous Stray",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Gisa and Geralf",
     "TRIGGERED:0:0"
    ],
@@ -4656,6 +7264,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Golden Egg",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4700,6 +7316,46 @@
   {
    "pair": [
     "etb:dispatch",
+    "Grisly Transformation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ground Seal",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gryff Vanguard",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Guidelight Matrix",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Guild Globe",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Gundabad Opportunist",
     "TRIGGERED:0:0"
    ],
@@ -4708,10 +7364,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Haru-Onna",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Hedge Maze",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Helpful Hunter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4740,10 +7412,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Hulldrifter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ice-Fang Coatl",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ichor Wellspring",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Imperious Inkmage",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Instant Ramen",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4756,10 +7460,58 @@
   {
    "pair": [
     "etb:dispatch",
+    "Inverted Iceberg // Iceberg Titan",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the legacy self-mill branch dropped the draw printed after the mill; both are performed in printed order (CR 608.2c)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Irascible Wolverine",
     "TRIGGERED:0:0"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Joraga Visionary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kaleidostone",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Karametra's Favor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kavu Climber",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kenrith's Transformation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4800,6 +7552,30 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lithoform Blight",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Llanowar Visionary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lofty Dreams",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4852,10 +7628,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Masked Admirers",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Master of Death",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Merchant of Secrets",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Messenger Falcons",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4876,10 +7676,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Mightstone's Animation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Mindwrack Demon",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mistmeadow Council",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mulldrifter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Muse Drake",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4900,6 +7732,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "New Perspectives",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Nezumi Freewheeler // Hideous Fleshwheeler",
     "TRIGGERED:0:1"
    ],
@@ -4916,6 +7756,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Nimble Innovator",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Nimraiser Paladin",
     "TRIGGERED:0:1"
    ],
@@ -4924,10 +7772,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Nylea's Presence",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Omen of the Dead",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Omnath, Locus of Creation",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Omni-Cheese Pizza",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Orysa, Tide Choreographer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Owlbear",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
   },
   {
    "pair": [
@@ -4948,6 +7836,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Pentarch Ward",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Pillardrop Rescuer",
     "TRIGGERED:0:1"
    ],
@@ -4964,10 +7860,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Pond Prophet",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Potion of Healing",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Proctor of Potential",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Proft's Eidetic Memory",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Prophetic Prism",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Quantum Riddler",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -4980,10 +7916,90 @@
   {
    "pair": [
     "etb:dispatch",
+    "Rhox Oracle",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ribskiff",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "River Kelpie",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Rubblebelt Maverick",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rune of Flight",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rune of Might",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rune of Mortality",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rune of Speed",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rune of Sustenance",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sage of Ancient Lore // Werewolf of Ancient Hunger",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Salt Road Packbeast",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5004,6 +8020,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sarulf's Packmate",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Scarblade Scout",
     "TRIGGERED:0:1"
    ],
@@ -5012,10 +8036,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Scourgemark",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Screeching Skaab",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Search Party Captain",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5044,10 +8084,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Setessan Training",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Shadowy Backstreet",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Shaman of Spring",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sheltering Boughs",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Shielding Plax",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5084,6 +8156,30 @@
   {
    "pair": [
     "etb:dispatch",
+    "Silvergill Adept",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Skyscanner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sleeper Dart",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Snooping Newsie",
     "TRIGGERED:0:0"
    ],
@@ -5092,10 +8188,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Spare Supplies",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spark Rupture",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sphinx Mindbreaker",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spirited Companion",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spreading Seas",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5132,6 +8260,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Stratus Walk",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sultai Skullkeeper",
     "TRIGGERED:0:0"
    ],
@@ -5144,6 +8280,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Syr Elenora, the Discerning",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5164,10 +8308,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "The Everflowing Well // The Myriad Pools",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the legacy self-mill branch dropped the draw printed after the mill; both are performed in printed order (CR 608.2c)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thieves' Guild Enforcer",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thought Monitor",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5192,6 +8352,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tome Raider",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Treacherous Blessing",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5252,6 +8428,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Urban Utopia",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Valkyrie Aerial Unit",
     "TRIGGERED:0:2"
    ],
@@ -5292,6 +8476,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Wall of Blossoms",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wall of Omens",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Wary Thespian",
     "TRIGGERED:0:0"
    ],
@@ -5316,10 +8516,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Weapons Vendor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wedding Invitation",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Whisper Agent",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wistful Selkie",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Woodland Acolyte // Mend the Wilds",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
   },
   {
    "pair": [
@@ -5841,6 +9073,11 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Bruce Banner // The Incredible Hulk",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Cathartic Adept",
    "ACTIVATED:0:0"
   ],
@@ -6196,8 +9433,43 @@
   ],
   [
    "dispatched",
+   "Altar's Reap",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Arcane Epiphany",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Assault // Battery",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Azorius Charm",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "dispatched",
+   "Bankrupt in Blood",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Blood Divination",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Boon of the Wish-Giver",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Brokers Charm",
+   "MODE:0:2:mode2"
   ],
   [
    "dispatched",
@@ -6206,7 +9478,17 @@
   ],
   [
    "dispatched",
+   "Cathartic Reunion",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Channeled Dragonfire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Chemister's Insight",
    "SPELL:0:0"
   ],
   [
@@ -6216,8 +9498,88 @@
   ],
   [
    "dispatched",
+   "Concentrate",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Consider",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Contingency Plan",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Corrupted Conviction",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Costly Plunder",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Council's Deliberation",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Counsel of the Soratami",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Curate",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Demand Answers",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Direct Current",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Discovery // Dispersal",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Distorted Curiosity",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Divination",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Donatello's Technique",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Dreams of Laguna",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Eagle Vision",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Electric Revelation",
+   "SPELL:0:1"
   ],
   [
    "dispatched",
@@ -6228,6 +9590,26 @@
    "dispatched",
    "Entreat the Angels",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Esper Charm",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "dispatched",
+   "Everdream",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Evermind",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Eviscerator's Insight",
+   "SPELL:0:1"
   ],
   [
    "dispatched",
@@ -6291,6 +9673,11 @@
   ],
   [
    "dispatched",
+   "Glimpse of Freedom",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Grapeshot",
    "SPELL:0:0"
   ],
@@ -6301,8 +9688,38 @@
   ],
   [
    "dispatched",
+   "Harmonize",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Hieroglyphic Illumination",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Hornet Sting",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Into the Story",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Jace's Ingenuity",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Last Thoughts",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Laughing Mad",
+   "SPELL:0:1"
   ],
   [
    "dispatched",
@@ -6326,7 +9743,37 @@
   ],
   [
    "dispatched",
+   "L\u00f3rien Revealed",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Magmatic Insight",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "March of the Multitudes",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Meeting of Minds",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Mental Journey",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Merciless Resolve",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Of One Mind",
    "SPELL:0:1"
   ],
   [
@@ -6336,8 +9783,48 @@
   ],
   [
    "dispatched",
+   "Otherworldly Gaze",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Pearl of Wisdom",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Precision Bolt",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Prismari Charm",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "dispatched",
+   "Quick Study",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Radical Idea",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Reach Through Mists",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Read the Tides",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "dispatched",
+   "Reverse Engineer",
+   "SPELL:0:1"
   ],
   [
    "dispatched",
@@ -6356,6 +9843,21 @@
   ],
   [
    "dispatched",
+   "Rowdy Research",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Scarscale Ritual",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Scour the Laboratory",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Searing Spear",
    "SPELL:0:0"
   ],
@@ -6371,8 +9873,23 @@
   ],
   [
    "dispatched",
+   "Seize the Secrets",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Shared Discovery",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Shock",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Splatter Technique",
+   "MODE:0:0:mode0"
   ],
   [
    "dispatched",
@@ -6391,8 +9908,28 @@
   ],
   [
    "dispatched",
+   "Taigam's Scheming",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Tarfire",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Think Twice",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Thoughtcast",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Thrill of Possibility",
+   "SPELL:0:1"
   ],
   [
    "dispatched",
@@ -6406,7 +9943,32 @@
   ],
   [
    "dispatched",
+   "Tidings",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Tome Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Tormenting Voice",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Train of Thought",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Travel the Overworld",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Unending Whisper",
    "SPELL:0:0"
   ],
   [
@@ -6416,8 +9978,38 @@
   ],
   [
    "dispatched",
+   "Village Rites",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Vivisection",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Volcanic Hammer",
    "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Weave Fate",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Whispers of the Muse",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Wild Guess",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Winged Words",
+   "SPELL:0:1"
   ]
  ],
  "seeds": [

@@ -736,6 +736,11 @@ def execute_draw(ctx: Resolution, s: EffectSpec,
     if n <= 0:
         return Outcome(False, {})
     drawn = ctx.game.draw_cards(ctx.controller, n)
+    if drawn:
+        ctx.game.log.append(
+            f"T{ctx.game.display_turn} P{ctx.controller + 1}: "
+            f"{getattr(_source_object(ctx), 'name', '?')} → draw "
+            f"{len(drawn)} ({', '.join(c.name for c in drawn)})")
     return Outcome(bool(drawn),
                    {ctx.controller: tuple(handle_of(c) for c in drawn)})
 

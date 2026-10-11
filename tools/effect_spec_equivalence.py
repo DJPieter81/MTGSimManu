@@ -1016,7 +1016,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                             instance_id=0, zone="stack")
         whole_reached = _spell_reaches_clause_handlers(t)
         for override, mode, h, label in _clause_contexts(t, ce):
-            ctx = CR._static_context(card, 0, override, None, mode=mode)
+            ctx = CR._static_context(card, 0, override, None, mode=mode,
+                                     effects=ce)
             reached = override is not None or (
                 whole_reached and places_legacy_targets(h, ce.front()))
             # An unswitched handler that accepts the spell resolves it the

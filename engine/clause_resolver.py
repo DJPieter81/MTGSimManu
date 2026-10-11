@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import Any, TYPE_CHECKING, Callable, List, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
     from engine.cards import CardInstance, CardTemplate
@@ -53,6 +53,10 @@ class ClauseContext:
     oracle: str = ""
     abilities: List[str] = field(default_factory=list)
     handled: bool = False
+    # The template's parsed effects when the caller already holds them
+    # (the gate-parity closure hands its own parse); None reads the
+    # template's.
+    effects: Any = None
 
     @property
     def template(self) -> "CardTemplate":
@@ -757,6 +761,23 @@ def _card_flow_effects(ctx):
 
 
 def _g_card_flow(ctx):
+    # A spell -- or a chosen mode -- whose typed host the card-flow family
+    # takes whole (its draws, mills, surveils and regrowths, as printed) is
+    # the dispatched carrier's (unit DW): this legacy handler declines it,
+    # and reads its scry, loot and draw text only for a host it keeps.
+    # Under `effect_resolver.legacy_only()` (the per-host harness's legacy
+    # side) the dispatcher declines, so this handler keeps every host.
+    from engine import effect_carrier
+    from engine.effect_executors import FAMILY_CARD_FLOW
+    if not effect_carrier.dispatching():
+        pass
+    elif ctx.mode_index is not None:
+        if effect_carrier.mode_family(ctx.template, ctx.mode_index,
+                                      ctx.effects) == FAMILY_CARD_FLOW:
+            return False
+    elif ctx.oracle_override is None and effect_carrier.spell_family(
+            ctx.template, ctx.effects) == FAMILY_CARD_FLOW:
+        return False
     return bool(_card_flow_effects(ctx))
 
 
@@ -964,7 +985,8 @@ HANDLERS: List[ClauseHandler] = [
 
 
 def _static_context(card, controller, oracle_override, removal_data, game=None,
-                    targets=None, x_value=0, mode=None) -> ClauseContext:
+                    targets=None, x_value=0, mode=None,
+                    effects=None) -> ClauseContext:
     # A typed mode (`CardTemplate.modes[i]`) is its clause with its shapes.
     mode_index = None
     if mode is not None:
@@ -975,7 +997,7 @@ def _static_context(card, controller, oracle_override, removal_data, game=None,
     ctx = ClauseContext(card=card, controller=controller, game=game,
                         targets=targets, x_value=x_value,
                         oracle_override=oracle_override, removal_data=removal_data,
-                        mode_index=mode_index)
+                        mode_index=mode_index, effects=effects)
     ctx.oracle = (oracle_override if oracle_override is not None
                   else (card.template.oracle_text or '')).lower()
     ctx.abilities = _or().split_abilities(ctx.oracle) if ctx.oracle else []

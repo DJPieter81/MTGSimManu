@@ -1736,7 +1736,9 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
     assert {p.handler for p in pairs if p.new_path} == {
         "direct_damage", "activated_effects:DAMAGE_ANY_TARGET", "dispatched",
         "etb:dispatch", "draw:dispatch", "combat_damage:dispatch",
-        "activated_effects:UNCLASSIFIED"}
+        "activated_effects:UNCLASSIFIED",
+        # unit DW: a plain draw activation ("{T}: Draw a card")
+        "activated_effects:DRAW_N"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

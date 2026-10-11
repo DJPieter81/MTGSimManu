@@ -162,9 +162,12 @@ def test_the_hand_exile_spell_reaches_the_card_flow_family(card_db):
 
 
 @pytest.mark.parametrize("name", ["Divination", "Consider"])
-def test_a_plain_draw_spell_stays_on_its_legacy_carrier(card_db, name):
+def test_a_plain_draw_spell_reaches_the_card_flow_family(card_db, name):
+    """Unit DW switched plain draws into the card-flow family (each host
+    proven or recorded by the per-host harness, A38): a plain draw spell,
+    and one that surveils first, is the dispatched carrier's."""
     from engine.effect_carrier import spell_family
-    assert spell_family(card_db.get_card(name)) is None
+    assert spell_family(card_db.get_card(name)) == "card_flow"
 
 
 # ── Auditor (CR 406) ───────────────────────────────────────────────────

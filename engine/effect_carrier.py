@@ -21,10 +21,19 @@ host that can take this path to a harness-identical run
 """
 from __future__ import annotations
 
+import functools
+
 from typing import Any, Iterable, Optional, Sequence
 
 from . import effect_resolver as er
 from .effect_spec import iter_specs
+
+
+def dispatching() -> bool:
+    """Is the dispatcher taking the hosts its carriers switched? False under
+    `effect_resolver.legacy_only()`, the per-host harness's legacy side: a
+    legacy handler that yields a switched host to a carrier keeps it then."""
+    return er.dispatch_enabled()
 
 
 def dispatch(game: Any, source: Any, controller: int, host: Any,
@@ -77,7 +86,8 @@ def spell_family(template: Any, effects: Any = None) -> Optional[str]:
         return None
     effects = template.effects if effects is None else effects
     host = effects.spell(0)
-    if host is None or not places_legacy_targets(host, effects.front()):
+    if host is None or not places_legacy_targets(host, effects.front()) \
+            or not _announced_fit(template, host):
         return None
     from .effect_views import STRICT
     for family in SPELL_FAMILIES:
@@ -85,6 +95,21 @@ def spell_family(template: Any, effects: Any = None) -> Optional[str]:
         if strict is not None and strict(host) and er.can_execute(host, family):
             return family
     return None
+
+
+def _announced_fit(template: Any, host: Any) -> bool:
+    """The targets a cast announces (CR 601.2c: one per requirement of the
+    legality owner that binds whatever is chosen) fit the host's slots. A
+    requirement the effect grammar types no slot for -- one read from a
+    keyword's reminder text, an awaken's "target land you control" -- is
+    announced all the same, and no carrier can place it on the host."""
+    return _required_count(template.oracle_text or "") <= len(host.targets)
+
+
+@functools.lru_cache(maxsize=None)
+def _required_count(oracle_text: str) -> int:
+    from .target_solver import binds_whatever_is_chosen, parse
+    return sum(1 for r in parse(oracle_text) if binds_whatever_is_chosen(r))
 
 
 def _as_chosen(spec: Any) -> Any:

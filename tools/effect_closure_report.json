@@ -107,21 +107,21 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Horizon Canopy",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Mind Stone",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Mishra's Bauble",
@@ -135,35 +135,35 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Silent Clearing",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Soul-Guide Lantern",
     "host": "ACTIVATED:0:2",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Sunbaked Canyon",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Vexing Bauble",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    }
   ],
   "executable": 272,
@@ -177,7 +177,7 @@
    "E3": 272,
    "none": 1
   },
-  "strict": 0,
+  "strict": 272,
   "sub_kinds": {
    "DELAYED": 1
   },
@@ -450,6 +450,13 @@
     "strict": true
    },
    {
+    "card": "Griselbrand",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Liquimetal Coating",
     "host": "ACTIVATED:0:0",
     "part": "sideboard",
@@ -457,23 +464,27 @@
     "strict": true
    }
   ],
-  "executable": 113,
+  "executable": 131,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 2,
-   "pool": 110,
+   "mainboard": 3,
+   "pool": 127,
    "sideboard": 1
   },
   "steps": {
    "E2": 26,
-   "E3": 70,
+   "E3": 88,
    "E5": 17
   },
-  "strict": 113,
+  "strict": 131,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
    "CONTINUOUS,EXILE": 12,
+   "DRAW": 14,
+   "DRAW,MILL": 1,
+   "DRAW,MOVE": 1,
+   "DRAW,SURVEIL": 2,
    "EXILE": 4,
    "MILL": 40,
    "MOVE": 22,
@@ -638,13 +649,6 @@
     "strict": false
    },
    {
-    "card": "Consider",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": false
-   },
-   {
     "card": "Expressive Iteration",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -670,14 +674,7 @@
     "host": "LOYALTY:0:3",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
-   },
-   {
-    "card": "L\u00f3rien Revealed",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Manamorphose",
@@ -706,32 +703,25 @@
     "part": "mainboard",
     "step": "E3",
     "strict": false
-   },
-   {
-    "card": "Thought Scour",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": false
    }
   ],
-  "executable": 166,
+  "executable": 88,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 14,
-   "pool": 892,
+   "mainboard": 11,
+   "pool": 817,
    "sideboard": 0
   },
   "steps": {
    "E1": 1,
    "E2": 2,
-   "E3": 422,
+   "E3": 344,
    "E4": 53,
    "E5": 116,
    "E6": 34,
    "none": 278
   },
-  "strict": 14,
+  "strict": 89,
   "sub_kinds": {
    "DELAYED": 6,
    "REFLEXIVE": 2
@@ -740,9 +730,9 @@
    "CONTINUOUS,DRAW": 54,
    "CONTINUOUS,SCRY": 22,
    "DISCARD,DRAW": 48,
-   "DRAW": 103,
+   "DRAW": 40,
    "DRAW,LOSE_LIFE": 18,
-   "DRAW,MOVE": 40,
+   "DRAW,MOVE": 38,
    "DRAW,SCRY": 17,
    "DRAW,UNMODELLED": 78,
    "MOVE,UNMODELLED": 27,
@@ -990,6 +980,13 @@
     "strict": true
    },
    {
+    "card": "Consider",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Empty the Warrens",
     "host": "SPELL:0:0",
     "part": "sideboard",
@@ -1053,6 +1050,13 @@
     "strict": true
    },
    {
+    "card": "L\u00f3rien Revealed",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Reckless Impulse",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1081,6 +1085,13 @@
     "strict": true
    },
    {
+    "card": "Thought Scour",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Thraben Charm",
     "host": "MODE:0:0:mode0",
     "part": "mainboard",
@@ -1102,32 +1113,33 @@
     "strict": true
    }
   ],
-  "executable": 370,
+  "executable": 444,
   "family": "damage",
   "hosts": {
-   "mainboard": 15,
-   "pool": 353,
+   "mainboard": 18,
+   "pool": 424,
    "sideboard": 2
   },
   "steps": {
    "E1": 145,
    "E2": 76,
-   "E3": 18,
-   "E4": 120,
+   "E3": 93,
+   "E4": 119,
    "E5": 11
   },
-  "strict": 370,
+  "strict": 444,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,
-   "CONTINUOUS,DRAW,EXILE": 1,
    "CONTINUOUS,EXILE": 7,
-   "CREATE_TOKEN": 120,
+   "CREATE_TOKEN": 119,
    "DAMAGE": 145,
+   "DRAW": 63,
+   "DRAW,MILL": 4,
+   "DRAW,SURVEIL": 6,
    "MILL": 15,
    "MOVE": 51,
-   "SACRIFICE": 25,
-   "SURVEIL": 3
+   "SACRIFICE": 25
   }
  },
  "draw:dispatch": {
@@ -1256,6 +1268,20 @@
     "strict": true
    },
    {
+    "card": "Omnath, Locus of Creation",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Quantum Riddler",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Raucous Theater",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -1265,6 +1291,13 @@
    {
     "card": "Shadowy Backstreet",
     "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Thought Monitor",
+    "host": "TRIGGERED:0:2",
     "part": "mainboard",
     "step": "E3",
     "strict": true
@@ -1291,22 +1324,24 @@
     "strict": true
    }
   ],
-  "executable": 127,
+  "executable": 236,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 13,
-   "pool": 114,
+   "mainboard": 16,
+   "pool": 220,
    "sideboard": 0
   },
   "steps": {
    "E2": 33,
-   "E3": 84,
+   "E3": 193,
    "E5": 10
   },
-  "strict": 127,
+  "strict": 236,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 10,
+   "DRAW": 107,
+   "DRAW,MILL": 2,
    "EXILE": 1,
    "MILL": 37,
    "MOVE": 32,

@@ -354,6 +354,13 @@ def _draw_of_exiled(s, exiled) -> bool:
             and s.amount.ref.index in exiled)
 
 
+def _plain_draw(s) -> bool:
+    """A draw of a count the draw owner reads -- not "that many" of an
+    earlier result, which only an exile's draw may be (`_draw_of_exiled`)."""
+    from .effect_executors import result_count
+    return s.verb is Verb.DRAW and not result_count(s.amount)
+
+
 def _permission_over(s, exiled) -> bool:
     """A PERMIT to play or cast the cards one of `exiled` (spec seqs) put
     into exile."""
@@ -377,8 +384,10 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
     impulse shape: an EXILE of the top of the controller's library or of
     the controller's whole hand, a permission over what it exiled (the one
-    spec with a duration), and a draw of "that many" of it. A draw of any
-    other count stays with its legacy carrier (A38)."""
+    spec with a duration), and a draw of "that many" of it. A plain draw
+    (unit DW: a count the draw owner reads, never "that many" of anything
+    but such an exile) is switched too; whether its drawer and count are
+    the DRAW executor's is `can_execute`'s question (A38)."""
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS,
                         durations=True, conditions=True):
         return False
@@ -389,7 +398,8 @@ def strict_card_flow(h: AbilityEffects) -> bool:
             return False
         if s.verb is Verb.CONTINUOUS and not _permission_over(s, exiled):
             return False
-        if s.verb is Verb.DRAW and not _draw_of_exiled(s, exiled):
+        if s.verb is Verb.DRAW and not (_draw_of_exiled(s, exiled)
+                                        or _plain_draw(s)):
             return False
         if s.duration is not None and s.verb is not Verb.CONTINUOUS:
             return False
