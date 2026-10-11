@@ -7923,3 +7923,68 @@ Hundreds of pool cards sacrifice creatures.
 - Token creation in triggers (cast, counter and enter triggers) keeps its legacy carriers.
 - **The AI casts burn at a target worth nothing.** With no creature of its own, the Jeskai AI values face damage near zero, so a 0/1 Spawn token worth 0.00 wins the tie and Galvanic Discharge is spent on it (digest game s59500, turns 4 and 8).
 - **A draw, life-gain or discard mode's player is the default pick, the opponent.** The slot pick values only token and sacrifice instructions by the player they name.
+
+## Unit MT: a target is chosen among the choices its requirement admits; a chosen mode reads only its own targets (2026-10-11)
+
+**Rule (CR 601.2c, 115.1, 700.2a):**
+- A target is chosen among the legal choices for its requirement: its zone, owner, types and printed bounds ("creature card with mana value 3 or less").
+- A spell with no legal choice for a required target cannot be cast.
+- A modal spell's chosen mode reads the targets chosen for it; one that targets nothing has none.
+
+**Defect:**
+- Castability (`target_solver.has_legal_target`) read no printed mana-value bound, while the legal-target enumeration did: two predicates for one rule. With only a mana value 8 creature card in its caster's graveyard, a "mana value 3 or less" reanimation spell was castable.
+- The AI's reanimation pick took the biggest creature card regardless, and the spell resolved to nothing. Grixis Reanimator cast Unearth at Archon of Cruelty, twice in one game.
+- The cast accepted any target the AI chose. A census of 96 games found 168 casts aimed at objects their requirement does not admit:
+  - March of Otherworldly Light at a planeswalker (154 of 176 casts);
+  - Cling to Dust ("target card from a graveyard") at permanents on the battlefield;
+  - Unearth at Archon.
+- The slot owner (`slot_admits_permanent`) did not admit "nonland permanent".
+- A chosen mode that targets nothing was handed the spell's whole target list, including a target picked for an unchosen mode, and the carrier refused it. Lorehold Charm's edict mode was seen in 24 cells as `unhandled/mode`.
+
+**Class:**
+- Every targeted instant and sorcery reads the cast check.
+- 40 pool cards bound a returned card by mana value (Unearth: Grixis Reanimator MB ×4).
+- 111 pool modal spells mix targeted and untargeted modes.
+
+**Steps (`92b5d97`; audit-test carrier `25b09d7`; auditor reads the current face `a453def`):**
+- **Legality owner.** `target_solver._admits_card` is the one predicate read by castability, the enumeration and the cast: types, supertype, subtype, targetability, the printed bound and the X the caster can pay.
+  - `target_admitted` asks it, for a cast-time target, across the spell's requirements.
+  - `slot_admits_permanent` admits a nonland permanent.
+- **Cast.** `CastManager.targets_admitted` (CR 601.2c): a cast at a target no requirement admits is refused whole, before anything is paid. The runner excludes the card and re-plans.
+  - A spell the legality owner types no requirement for keeps its targets (a lead).
+- **AI.** The removal and exile picks consider only permanents the cast check admits, and the reanimation pick only creature cards its typed graveyard requirement admits. So a target the AI prices is one the engine accepts.
+- **Modal.** A chosen mode the dispatcher performs that targets nothing reads no targets (`modal_spell.mode_targets`).
+- **Auditor:** `601.2c/cast_target_admitted`, restated from the requirements' raw zone, type words and printed bound: every object an instant or sorcery is cast at fits one of its requirements.
+
+**Tests (red first, 8 of 9):** `tests/test_a_target_is_chosen_among_the_choices_its_requirement_admits.py`.
+
+**Digest / anchor / suites:**
+- The digest caught a false refusal before the commit. The first predicate read a permanent's printed front face, so Dismember was refused at a transformed Fable (Reflection of Kiki-Jiki, a creature). On the battlefield the predicate now reads current types (CR 613.1d, 712.8), and a test pins it.
+- Digest: one Bo3 changes (Azorius Control vs Ruby Storm s58500). Teferi, Time Raveler's -3 ("artifact, creature, or enchantment") no longer bounces a Ral transformed into a planeswalker; games 2 and 3 follow downstream.
+- Anchor: two winner flips, replayed and accepted as rules-correct; one turn-only drift refreshed (Azorius Blink vs Eldrazi Ramp s52500, 7 → 9).
+  - Grixis Reanimator vs Azorius Blink s53000: Cling to Dust is no longer cast at a permanent on the battlefield; Grixis casts Fatal Push and wins.
+  - The Azorius mirror s50000: March of Otherworldly Light is no longer cast at a target it cannot exile; draw → Azorius Control.
+- Test updates:
+  - At X=0 a mana-value-2 creature is no legal choice for Kozilek's Command's exile mode, so the cast is now refused.
+  - The audit test that forces an illegal cast breaks the new cast check too (the CI failure on `72f9bdf`).
+- Gate parity, the harness record and the equivalence baselines are unchanged.
+- Suites:
+  - Chunk A: 4703 passed at `92b5d97`. One CPU-ceiling test exceeded its budget only while the chunks ran in parallel; quietly 3.89 s of 4.0.
+  - Chunk B: 2712 passed at `25b09d7`. CI green on `25b09d7`.
+
+**Measured (same-seed n=20 Bo3, `mt-post` `72f9bdf`, pre = `tk-post`):** 136 of 600 cells change.
+- Azorius Control (WST) +2.3 and Azorius Control (WST v2) +1.5, each with four March of Otherworldly Light. March now exiles an artifact, creature or enchantment instead of resolving at a planeswalker it cannot exile.
+- Azorius Control, with one March, -1.0.
+- Every other deck moves by at most ±0.8. No deck moves more than 5 pp; 0 aborts.
+- Kozilek's Command's and Lorehold Charm's `unhandled/mode` cells go from 39 and 24 to 0. Kozilek's Command's exile target is now one its X reaches, and Lorehold Charm's edict mode reads no stray target.
+- The arm's 136 violations were all the new auditor's: its first restatement read a permanent's printed front face (Fatal Push at a transformed Fable).
+  - Fixed in `a453def` (observation only; games unchanged).
+  - A one-seed audit of every pair on the fixed head (600 Bo3 matches, seed 50000) records 0 violations of any rule.
+- The modes still unperformed: Untimely Malfunction 8 cells, Surgical Extraction (`unhandled/spell`) 8.
+
+**Leads (not built):**
+- **Lorehold Charm's return mode is typed "target artifact" only.** The grammar drops "or creature card with mana value 2 or less", so its requirement is too narrow and has no bound.
+- **A spell the legality owner types no requirement for keeps whatever targets the AI passes.**
+- **Kozilek's Command's scry-and-draw mode** is UNMODELLED. X is unbound in a mode, and "then draws" does not link back to "target player".
+- **Removal is spent on 0/1 Eldrazi Spawn tokens.** In 48 Eldrazi Tron games, opponents aimed about 16 targeted removal spells at them (Solitude 7, Prismatic Ending 4, Fatal Push 3).
+- **Same-name exile** (Surgical Extraction and 24 more pool cards): the multi-zone search and "that player shuffles" are UNMODELLED in the grammar.
