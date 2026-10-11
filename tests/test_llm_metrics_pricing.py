@@ -116,3 +116,12 @@ def test_budget_gate_blocks_haiku_call_that_stale_pricing_let_through(
             "anthropic:claude-haiku-4-5",
             2_000_000,
         )
+
+
+def test_jev_priced_at_published_rates():
+    """TypeSafe AI's Jev: $0.042 per million input tokens; output is free
+    because the model returns typed answers rather than generated text."""
+    pricing = MODEL_PRICING_USD_PER_MTOKEN["typesafe:jev-latest"]
+    assert pricing["in"] == 0.042
+    assert pricing["out"] == 0.0
+    assert estimate_cost_usd("typesafe:jev-latest", 1_000_000, 50_000) == pytest.approx(0.042)

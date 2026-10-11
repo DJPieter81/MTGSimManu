@@ -6,8 +6,8 @@ take, per the engine/AI split. Selection is derived from board state —
 the mode that removes the most opposing value net of the caster's own
 losses — with no card names.
 
-Consumed by ``engine.spell_resolution._execute_spell_effects`` at modal
-resolution time.
+Asked by ``engine.modal_spell.choose_modes`` as the spell is cast (CR
+601.2b), which holds the answer to the legal modes and printed range.
 """
 from __future__ import annotations
 
@@ -65,9 +65,9 @@ def _mode_value(game, controller: int, mode_text: str) -> float:
         return (sum(_perm_worth(p) for p in opp.battlefield if _hit(p))
                 - sum(_perm_worth(p) for p in me.battlefield if _hit(p)))
 
-    # Any other mode shape: only mass-sweep / mass-destroy modes reach
-    # this selector today (the resolution gate admits no other), so both
-    # branches above always score. Neutral fallback — no tuning knob.
+    # Any other mode shape is valued at nothing (no tuning knob): it is
+    # never chosen over a mode this selector can read, and beyond the
+    # header's fewest modes it is not chosen at all.
     return 0.0
 
 
@@ -99,22 +99,48 @@ def _targeted_removal_mode_value(game, controller: int, removal: dict,
     return max((_worth(p) for p in reachable), default=0.0)
 
 
+def mode_value(game, card, controller: int, index: int, targets=None,
+               x_value: int = 0) -> float:
+    """The net board value of performing one mode (opponent's loss minus
+    the caster's own), read from the mode's typed shape."""
+    mode = (card.template.modes or [])[index]
+    if mode.get('removal'):
+        return _targeted_removal_mode_value(
+            game, controller, mode['removal'], targets, x_value)
+    return _mode_value(game, controller, mode.get('text', ''))
+
+
 def select_modal_modes(game, card, controller: int, targets=None,
-                       x_value: int = 0) -> list:
-    """Return the indices of the mode(s) to resolve — the highest-value
-    ``modal_choose_count`` modes, ties broken toward the earlier mode."""
+                       x_value: int = 0, *, legal=None, choose=None) -> list:
+    """The modes to choose as the spell is cast (CR 601.2b), in printed
+    order: among the `legal` modes (CR 700.2a; the engine's
+    `modal_spell.legal_modes` by default), every one worth more than
+    nothing, up to the most the header allows; then, short of its fewest,
+    the best of the rest. Ties break toward the earlier mode."""
     modes = card.template.modes or []
     if not modes:
         return []
-    k = max(1, min(int(getattr(card.template, 'modal_choose_count', 1) or 1),
-                   len(modes)))
+    from engine import modal_spell
+    lo, hi = choose if choose is not None else modal_spell.choose_range(
+        card.template)
+    if legal is None:
+        legal = modal_spell.legal_modes(game, card, controller, targets or [])
+    values = {i: mode_value(game, card, controller, i, targets, x_value)
+              for i in legal}
+    ranked = sorted(legal, key=lambda i: (values[i], -i), reverse=True)
+    chosen = [i for i in ranked if values[i] > 0][:hi]
+    for i in ranked:
+        if len(chosen) >= lo:
+            break
+        if i not in chosen:
+            chosen.append(i)
+    return sorted(chosen)
 
-    def _value(i: int) -> float:
-        mode = modes[i]
-        if mode.get('removal'):
-            return _targeted_removal_mode_value(
-                game, controller, mode['removal'], targets, x_value)
-        return _mode_value(game, controller, mode.get('text', ''))
 
-    scored = sorted(range(len(modes)), key=lambda i: (_value(i), -i), reverse=True)
-    return sorted(scored[:k])
+def chosen_modes_value(game, card, controller: int, targets=None,
+                       x_value: int = 0) -> float:
+    """The value of the modes the controller would choose with these
+    targets: what casting the modal spell performs."""
+    return sum(mode_value(game, card, controller, i, targets, x_value)
+               for i in select_modal_modes(game, card, controller, targets,
+                                           x_value))

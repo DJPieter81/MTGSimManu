@@ -91,7 +91,12 @@ class ContinuousEffect:
     apply: Optional[Callable] = None
     description: str = ""
     timestamp: int = 0
-    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat"
+    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat", "until_next_turn"
+    # For "until_next_turn" (CR 611.2b): the player whose next turn ends it.
+    controller: Optional[int] = None
+    # A resolved effect on a chosen object (CR 611.2c): (instance_id,
+    # battlefield_entry_seq). The object, not the card — CR 400.7.
+    target_obj: Optional[tuple] = None
 
 
 class ContinuousEffectsManager:
@@ -124,6 +129,57 @@ class ContinuousEffectsManager:
     def __init__(self):
         self._effects: List[ContinuousEffect] = []
         self._timestamp_counter: int = 0
+        # Resolved rule-modifying effects (engine/effect_model.Effect),
+        # stored until their Duration is expired by a clock event.
+        self._rule_effects: list = []
+
+    # ── rule-modifying effects (CR 101.2 / 611) ─────────────────────
+
+    def register_effect(self, effect) -> None:
+        """Store a resolved rule effect (engine/effect_model.Effect)."""
+        import dataclasses
+        self._timestamp_counter += 1
+        self._rule_effects.append(
+            dataclasses.replace(effect, timestamp=self._timestamp_counter))
+
+    def expire_rule_effects(self, event) -> None:
+        """The one expiry path: drop every stored effect whose Duration
+        this clock event ends."""
+        self._rule_effects = [e for e in self._rule_effects
+                              if not e.duration.expired_by(event)]
+
+    def drop_rule_effects(self, predicate) -> None:
+        self._rule_effects = [e for e in self._rule_effects if not predicate(e)]
+
+    def forget_object(self, instance_id: int) -> None:
+        """CR 400.7: an object a stored effect names (a permission to play
+        exiled cards, `effect_model.permit_play`) left the zone the effect
+        named, so the card is a new object the effect no longer names: it
+        leaves every stored effect's objects, and an effect left naming
+        none ends. Called where a card leaves exile -- the cast and the
+        land play from exile, and the zone funnel (`ZoneManager.move_card`).
+        Known gap, shared with `effect_resolver.Handle`: a card returned to
+        exile by a direct zone write (no funnel) after leaving it another
+        unfunnelled way is not seen leaving."""
+        import dataclasses
+        kept = []
+        for e in self._rule_effects:
+            objects = e.modification.get("objects")
+            if objects and instance_id in objects:
+                rest = tuple(o for o in objects if o != instance_id)
+                if not rest:
+                    continue
+                data = tuple((k, rest if k == "objects" else v)
+                             for k, v in e.modification.data)
+                e = dataclasses.replace(e, modification=dataclasses.replace(
+                    e.modification, data=data))
+            kept.append(e)
+        self._rule_effects = kept
+
+    def rule_effects(self, game: "GameState") -> list:
+        """Stored resolved effects plus the static ones permanents have
+        right now (derived fresh, never stored — CR 611.3a)."""
+        return list(self._rule_effects) + _derive_static_rule_effects(game)
 
     def register(self, effect: ContinuousEffect) -> None:
         """Register a new continuous effect."""
@@ -138,6 +194,13 @@ class ContinuousEffectsManager:
     def cleanup_end_of_turn(self) -> None:
         """Remove all end-of-turn effects."""
         self._effects = [e for e in self._effects if e.duration != "end_of_turn"]
+
+    def cleanup_until_next_turn(self, player_idx: int) -> None:
+        """CR 611.2b: effects that last "until your next turn" end as
+        their controller's next turn begins (called from that untap step)."""
+        self._effects = [e for e in self._effects
+                         if not (e.duration == "until_next_turn"
+                                 and e.controller == player_idx)]
 
     def cleanup_end_of_combat(self) -> None:
         """Remove all end-of-combat effects."""
@@ -196,6 +259,9 @@ class ContinuousEffectsManager:
                 card.cem_land_type_set = None
                 # Layer-4 land-type ADD: types on top of the printed ones
                 card.cem_land_types_added = set()
+                # Layer-4 type ADD ("in addition to its other types")
+                card.cem_types_added = set()
+                card.cem_subtypes_added = set()
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects + derived, key=lambda e: (
@@ -205,11 +271,23 @@ class ContinuousEffectsManager:
         ))
 
         # Apply effects in order
+        from .rules_audit import enabled as _audit_on
+        _audit = _audit_on()
         for effect in sorted_effects:
             if effect.affected and effect.apply:
                 for player in game.players:
                     for card in player.battlefield:
                         if effect.affected(game, card):
+                            if _audit and effect.target_obj is not None:
+                                # CR 400.7: an effect on a chosen object does
+                                # not apply to the card's later object.
+                                from .rules_audit import check as _audit_check
+                                _audit_check(
+                                    "400.7/effect_follows_old_object",
+                                    (card.instance_id, card.battlefield_entry_seq)
+                                    == tuple(effect.target_obj),
+                                    f"{effect.description} applied to a new "
+                                    f"object of {card.name}", game=game)
                             effect.apply(game, card)
             elif effect.affected is not None and effect.apply is None:
                 # A continuous/static effect that SELECTS cards but carries no
@@ -392,6 +470,43 @@ def create_forced_land_type_effect(source_id: int, source_name: str,
     )]
 
 
+def create_type_adding_effect(source_id: int, source_name: str,
+                              target_id: int, target_seq: Optional[int],
+                              types=(), subtypes=(),
+                              duration: str = "end_of_turn",
+                              timestamp: int = 0) -> List[ContinuousEffect]:
+    """Layer-4 type ADD on one chosen object: it "becomes a <type> /
+    <subtype> in addition to its other types" while the effect lasts
+    (CR 205.1b, 613.1d). The object, not the card: one that left and
+    returned is a new object the effect does not name (CR 400.7, 611.2c).
+    `types` are CardType members; `subtypes` subtype names."""
+    types = frozenset(types)
+    subtypes = frozenset(subtypes)
+    target_obj = (target_id, target_seq) if target_seq is not None else None
+
+    def is_target(game, card):
+        return (card.instance_id == target_id
+                and (target_seq is None
+                     or card.battlefield_entry_seq == target_seq))
+
+    def apply_types(game, card):
+        card.cem_types_added |= types
+        card.cem_subtypes_added |= subtypes
+
+    names = sorted(t.value for t in types) + sorted(subtypes)
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.TYPE,
+        affected=is_target,
+        apply=apply_types,
+        description=f"{source_name}: becomes {', '.join(names)}",
+        timestamp=timestamp,
+        duration=duration,
+        target_obj=target_obj,
+    )]
+
+
 def create_all_basic_land_types_effect(source_id: int, source_name: str,
                                        controller: int,
                                        timestamp: int) -> List[ContinuousEffect]:
@@ -557,7 +672,9 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                               power_bonus: int = 0,
                               toughness_bonus: int = 0,
                               keyword_grants: Optional[Set[Keyword]] = None,
-                              duration: str = "end_of_turn") -> List[ContinuousEffect]:
+                              duration: str = "end_of_turn",
+                              controller: Optional[int] = None,
+                              target_seq: Optional[int] = None) -> List[ContinuousEffect]:
     """Create a pump spell effect (e.g., Giant Growth: +3/+3 until end of turn).
 
     Args:
@@ -570,9 +687,13 @@ def create_pump_spell_effect(source_id: int, source_name: str,
         duration: "end_of_turn" or "end_of_combat"
     """
     effects = []
+    target_obj = (target_id, target_seq) if target_seq is not None else None
 
     def is_target(game, card):
-        return card.instance_id == target_id
+        # CR 400.7 / 611.2c: the chosen object only — a card that left and
+        # returned is a new object (its battlefield_entry_seq moved on).
+        return (card.instance_id == target_id
+                and (target_seq is None or card.battlefield_entry_seq == target_seq))
 
     if power_bonus != 0:
         def apply_power(game, card):
@@ -587,6 +708,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_power,
             description=f"{source_name}: +{power_bonus}/+0",
             duration=duration,
+            controller=controller,
+            target_obj=target_obj,
         ))
 
     if toughness_bonus != 0:
@@ -602,6 +725,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_toughness,
             description=f"{source_name}: +0/+{toughness_bonus}",
             duration=duration,
+            controller=controller,
+            target_obj=target_obj,
         ))
 
     if keyword_grants:
@@ -617,6 +742,124 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                 apply=apply_keyword,
                 description=f"{source_name}: grants {kw.name}",
                 duration=duration,
+                controller=controller,
+                target_obj=target_obj,
             ))
 
     return effects
+
+
+# The printed static prohibitions the rule-effect read path enforces
+# (`rules_query`): casting (by spell filter), casting outside sorcery timing
+# or outside the caster's own turn (CR 101.2, 307.1), and activating the
+# abilities of named permanent types (CR 602.5).
+_RULE_ACTIONS = frozenset({"cast", "activate", "cast_outside_sorcery_timing",
+                           "cast_outside_own_turn"})
+# The grammar's printed cast objects, in the read path's filter vocabulary.
+_CAST_FILTERS = {"spells": "all", "noncreature spells": "noncreature",
+                 "creature spells": "creature"}
+# id(CardEffects) -> (that CardEffects, its per-face records).
+_PRINTED_RULES: dict = {}
+
+
+def _printed_prohibitions(perm) -> tuple:
+    """The rule prohibitions a permanent's printed static abilities state,
+    on the face it shows, read from its parsed text (CR 113.1, 604.1): one
+    ``(action, data, selector_kind, condition)`` record per prohibited act.
+    A spec the read path cannot run whole -- an action, filter, subject,
+    duration or condition outside its vocabulary, or residue -- yields
+    nothing, never part of its rule. Memoised per parsed-effects object."""
+    effects = perm.template.effects
+    hit = _PRINTED_RULES.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(_face_prohibitions(face)
+                              for face in effects.faces))
+        _PRINTED_RULES[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _face_prohibitions(hosts) -> tuple:
+    from .effect_conditions import rule_condition_supported
+    from .effect_model import DurationKind, Modification, ModKind, SelectorKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC:
+            continue
+        for s in iter_specs(host.specs):
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or mod.kind is not ModKind.PROHIBIT or s.residue:
+                continue
+            actions = tuple(mod.get("actions") or (mod.action,))
+            who = getattr(s.subject, "kind", None)
+            if not set(actions) <= _RULE_ACTIONS \
+                    or who not in (SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS) \
+                    or not rule_condition_supported(s.condition) \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+                continue
+            records = []
+            for action in actions:
+                if action == "cast":
+                    spell_filter = _CAST_FILTERS.get(mod.get("filter"))
+                    if spell_filter is None:
+                        break
+                    data = (("filter", spell_filter),)
+                elif action == "activate":
+                    if not mod.get("sources"):
+                        break
+                    data = (("sources", tuple(mod.get("sources"))),)
+                else:
+                    data = ()
+                records.append((action, data, who, s.condition))
+            else:
+                out.extend(records)
+    return tuple(out)
+
+
+def _derive_static_rule_effects(game: "GameState") -> list:
+    """Rule-modifying effects that permanents have by being on the
+    battlefield (CR 611.3a): cost reducers, draw limits and the printed
+    static prohibitions (`_printed_prohibitions`) apply while their source
+    is there."""
+    from .effect_model import (Effect, Modification, OriginKind, Selector,
+                               WHILE_SOURCE)
+    from .effect_model import ModKind, cost_delta_effect, draw_limit_effect
+    from .oracle_resolver import reduction_rules_of
+    out = []
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            for rule in reduction_rules_of(perm):
+                # CR 601.2f: a reducer static applies to the spells it names
+                # while the permanent shows the face that prints it.
+                out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
+                                             source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            obs = getattr(perm.template, 'attack_observer', None)
+            if obs and obs['duration'] == 'static':
+                # CR 611.3a / 603.2: a permanent's printed attack observer.
+                from .effect_model import observe_attacks
+                out.append(observe_attacks(controller, obs, WHILE_SOURCE,
+                                           source_id=perm.instance_id,
+                                           origin=OriginKind.STATIC))
+            lim = getattr(perm.template, 'draw_limit', None)
+            if lim:
+                # CR 101.2: "<players> can't draw more than N cards each
+                # turn" limits draws while the permanent is there.
+                out.append(draw_limit_effect(controller, lim['who'], lim['max'],
+                                             WHILE_SOURCE, source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            for action, data, who, cond in _printed_prohibitions(perm):
+                # CR 101.2 / 604.1: a printed prohibition binds the players
+                # it names, relative to this permanent's controller.
+                out.append(Effect(
+                    Selector(who, player=controller),
+                    Modification(ModKind.PROHIBIT, action=action, data=data),
+                    WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                    controller=controller, timestamp=perm.instance_id,
+                    condition=cond))
+    return out

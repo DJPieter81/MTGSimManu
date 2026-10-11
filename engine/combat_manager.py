@@ -39,6 +39,9 @@ class CombatAssignment:
     is_blocked: bool = False
     damage_to_player: int = 0
     damage_to_blockers: Dict[int, int] = field(default_factory=dict)
+    # CR 508.1b: the planeswalker this creature attacks; None = the
+    # defending player.
+    defender: Optional["CardInstance"] = None
 
 
 class CombatManager:
@@ -68,27 +71,81 @@ class CombatManager:
 
     def declare_attackers(self, game: "GameState",
                           attackers: List["CardInstance"],
-                          active_player: int):
+                          active_player: int,
+                          attack_targets: Optional[Dict[int, "CardInstance"]] = None):
         """CR 508: Declare attackers step.
 
         Sets attacking state, taps non-vigilance creatures,
         fires attack triggers, and handles battle cry.
+
+        ``attack_targets`` maps an attacker's instance_id to the planeswalker
+        it attacks (CR 508.1b); every other attacker attacks the defending
+        player. The choice is the attacking player's (AI layer).
         """
+        attack_targets = attack_targets or {}
         self._attackers = attackers
         self._active_player = active_player
         self._defending_player = 1 - active_player
         self._assignments = []
 
+        # Audit (observation-only, CR 508.1a): a declared attacker was
+        # untapped, not summoning-sick (unless haste/dash), not a Defender,
+        # and no "can't attack" lock is set. Recomputed from the raw fields
+        # BEFORE the tap loop below, so a legally-declared non-vigilance
+        # attacker is not flagged for the tap this method is about to apply.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            for atk in attackers:
+                legal = (not getattr(atk, 'tapped', False)
+                         and not (getattr(atk, 'summoning_sick', False)
+                                  and Keyword.HASTE not in atk.keywords
+                                  and not getattr(atk, '_dashed', False))
+                         and Keyword.DEFENDER not in atk.keywords
+                         and not game.players[active_player].cannot_attack_this_turn
+                         and not CombatManager._restricted_in_registry(game, atk, "attack"))
+                _audit_check("508.1a/attacker_legal", legal,
+                             f"{atk.name} declared as an attacker", game=game)
+            # CR 508.1b: an attacked planeswalker is one the defending
+            # player controls and that is on the battlefield.
+            for atk_id, pw in attack_targets.items():
+                ok = (pw is not None
+                      and getattr(pw, 'zone', None) == 'battlefield'
+                      and pw.controller == 1 - active_player
+                      and getattr(pw, 'effective_is_planeswalker', False))
+                _audit_check("508.1b/attack_target_legal", ok,
+                             f"attack assigned to {getattr(pw, 'name', pw)}",
+                             game=game)
+
         for attacker in attackers:
             attacker.attacking = True
+            attacker.attacked_planeswalker = attack_targets.get(attacker.instance_id)
             # CR 508.1f: Tap attacking creatures (unless vigilance)
             if Keyword.VIGILANCE not in attacker.keywords:
                 attacker.tap()
 
-            self._assignments.append(CombatAssignment(attacker=attacker))
+            self._assignments.append(CombatAssignment(
+                attacker=attacker,
+                defender=attack_targets.get(attacker.instance_id)))
 
             # Fire attack triggers via game_state
             game.trigger_attack(attacker, active_player)
+
+        # CR 603.2: "whenever a creature attacks you …" observers.
+        fired = self._fire_attack_observers(game, attackers)
+        if _audit_on():
+            # Restated from the effect records: one firing per observer per
+            # creature attacking its player (or, wider scope, their planeswalker).
+            from .effect_model import ModKind
+            expected = 0
+            for e in game.continuous_effects.rule_effects(game):
+                if e.modification.kind is ModKind.OBSERVE and e.modification.action == "attacked":
+                    for a in self._assignments:
+                        at_pw = a.defender is not None
+                        if (e.selector.covers_player(self._defending_player)
+                                and (not at_pw or e.modification.get("scope") == "you_or_pw")):
+                            expected += 1
+            _audit_check("603.2/attack_observer_fired", fired == expected,
+                         f"{fired} attack observer firing(s), {expected} due", game=game)
 
         # Battle cry: Signal Pest and similar
         self._apply_battle_cry(game, attackers)
@@ -123,7 +180,7 @@ class CombatManager:
                 blocker = game.get_card_by_id(bid)
                 if blocker is None:
                     continue
-                if not self._can_block(attacker, blocker):
+                if not blocker.can_block or not self._can_block(attacker, blocker):
                     game.log.append(
                         f"T{game.display_turn}: illegal block dropped — "
                         f"{blocker.name} cannot legally block "
@@ -142,6 +199,101 @@ class CombatManager:
 
             assignment.blocker_ids = legal_blocker_ids
             assignment.is_blocked = len(legal_blocker_ids) > 0
+
+            # Audit (observation-only, CR 509.1b): every RECORDED blocker
+            # legally blocks. Recomputed independently of `_can_block` (the
+            # code being audited), plus the CR 509.1a untapped requirement.
+            from .rules_audit import enabled as _audit_on, check as _audit_check
+            if _audit_on():
+                for bid in legal_blocker_ids:
+                    blocker = game.get_card_by_id(bid)
+                    if blocker is None:
+                        continue
+                    _audit_check(
+                        "509.1a/blocker_legal",
+                        not CombatManager._blocker_illegal_recompute(
+                            attacker, blocker, game),
+                        f"{blocker.name} blocks {attacker.name}", game=game)
+
+    def _fire_attack_observers(self, game, attackers) -> int:
+        """Run every OBSERVE-attacked effect covering the defending player,
+        once per creature attacking that player (or, for the wider scope, a
+        planeswalker they control). Returns the number of firings."""
+        from .effect_model import ModKind
+        from .damage import lose_life
+        from .continuous_effects import create_pump_spell_effect
+        observers = [e for e in game.continuous_effects.rule_effects(game)
+                     if e.modification.kind is ModKind.OBSERVE
+                     and e.modification.action == "attacked"
+                     and e.selector.covers_player(self._defending_player)]
+        fired = 0
+        for e in observers:
+            eff = dict(e.modification.get("effect"))
+            for a in self._assignments:
+                if a.defender is not None and e.modification.get("scope") != "you_or_pw":
+                    continue
+                atk = a.attacker
+                fired += 1
+                if eff['kind'] == 'pt_mod':
+                    for ce in create_pump_spell_effect(
+                            e.source_id, "attack observer", atk.instance_id,
+                            eff['power'], eff['toughness'],
+                            target_seq=atk.battlefield_entry_seq):
+                        game.continuous_effects.register(ce)
+                    game.continuous_effects.recalculate(game)
+                else:
+                    lose_life(game, atk.controller, eff['loss'])
+                    if eff['gain']:
+                        game.gain_life(e.controller, eff['gain'], "attack observer")
+                game.log.append(f"T{game.display_turn}: {atk.name} attacks — "
+                                f"observer ({eff['kind']})")
+        return fired
+
+    @staticmethod
+    def _restricted_in_registry(game, card, action) -> bool:
+        """Audit restatement of an object restriction, read from the effect
+        records directly (not `rules_query`, the code it audits)."""
+        from .effect_model import ModKind, SelectorKind
+        obj = (card.instance_id, card.battlefield_entry_seq)
+        kws = {k.value for k in card.keywords}
+
+        def _covers(sel):
+            if sel.kind is SelectorKind.OBJECT:
+                return sel.obj == obj
+            if sel.kind is SelectorKind.FILTER:
+                f = dict(sel.filter or ())
+                return (not (f.get('controller') == 'opponents'
+                             and card.controller == sel.player)
+                        and f.get('without_keyword') not in kws)
+            return False
+        return any(e.modification.kind is ModKind.PROHIBIT
+                   and e.modification.action == action and _covers(e.selector)
+                   for e in game.continuous_effects._rule_effects)
+
+    @staticmethod
+    def _blocker_illegal_recompute(attacker: "CardInstance",
+                                   blocker: "CardInstance", game=None) -> bool:
+        """Independent restatement of block legality (CR 509.1a/509.1b) for
+        the audit — deliberately NOT `_can_block`, the code it audits: a
+        tapped creature can't block, and evasion/shadow/protection/
+        can't-be-blocked all disqualify it."""
+        if getattr(blocker, 'tapped', False):
+            return True  # CR 509.1a
+        if game is not None and CombatManager._restricted_in_registry(game, blocker, "block"):
+            return True  # CR 509.1a: a resolved "can't block" on this object
+        if getattr(attacker, 'cannot_be_blocked_this_turn', False):
+            return True
+        if (Keyword.FLYING in attacker.keywords
+                and Keyword.FLYING not in blocker.keywords
+                and Keyword.REACH not in blocker.keywords):
+            return True
+        if ((Keyword.SHADOW in attacker.keywords)
+                != (Keyword.SHADOW in blocker.keywords)):
+            return True
+        prot = getattr(attacker.template, 'protection_from_colors', frozenset())
+        if prot and (blocker.colors & prot):
+            return True
+        return False
 
     @staticmethod
     def _can_block(attacker: "CardInstance", blocker: "CardInstance") -> bool:
@@ -173,6 +325,12 @@ class CombatManager:
             return False
         return True
 
+    def _planeswalker_still_attackable(self, pw: "CardInstance") -> bool:
+        """CR 506.4: the attacked planeswalker is still on the battlefield
+        under the defending player's control."""
+        return (getattr(pw, 'zone', None) == 'battlefield'
+                and pw.controller == self._defending_player)
+
     def resolve_combat_damage(self, game: "GameState") -> int:
         """CR 510: Combat damage step.
 
@@ -198,8 +356,8 @@ class CombatManager:
                 _audit_check("509/no_attacks", not locked,
                              f"{atk.name} is attacking while an attack lock is set",
                              game=game)
-        if any(getattr(p, 'combat_damage_prevented_this_turn', False)
-               for p in game.players):
+        from . import rules_query
+        if rules_query.combat_damage_prevented(game):
             for assignment in self._assignments:
                 assignment.attacker.attacked_this_turn = True
             game.log.append(f"T{game.display_turn}: all combat damage prevented (CR 615)")
@@ -311,8 +469,15 @@ class CombatManager:
                 # the rule, not a miss.
                 blocked_and_alone = bool(a.blocker_ids) and not live_blockers \
                     and Keyword.TRAMPLE not in a.attacker.keywords
+                # CR 506.4 / 510.1b: an unblocked creature whose attacked
+                # planeswalker left the battlefield or changed controller
+                # is still attacking but assigns no combat damage.
+                pw = a.defender
+                walker_gone = (not a.blocker_ids and pw is not None
+                               and (pw.zone != "battlefield"
+                                    or pw.controller != self._defending_player))
                 if (a.attacker.power > 0 and _rule_says_deals(a.attacker)
-                        and not blocked_and_alone):
+                        and not blocked_and_alone and not walker_gone):
                     expected.append(a.attacker)
                 for b in live_blockers:
                     if b.power > 0 and _rule_says_deals(b):
@@ -451,7 +616,18 @@ class CombatManager:
                                    is_combat=True)
                         self._dealt_ids.add(blocker.instance_id)
 
-                # CR 702.19c: Trample — excess damage to defending player
+                # CR 702.19c: Trample — excess damage to the attacked
+                # planeswalker or the defending player.
+                _pw = assignment.defender
+                if has_trample and remaining_damage > 0 and _pw is not None:
+                    if self._planeswalker_still_attackable(_pw):
+                        deal_damage(attacker, _pw, remaining_damage, is_combat=True)
+                        self._dealt_ids.add(attacker.instance_id)
+                        game.log.append(
+                            f"T{game.display_turn} P{self._active_player+1}: "
+                            f"  {attacker.name} → {remaining_damage} dmg to "
+                            f"{_pw.name} (trample)")
+                    remaining_damage = 0
                 if has_trample and remaining_damage > 0:
                     deal_damage(attacker,
                                game.players[self._defending_player],
@@ -464,6 +640,23 @@ class CombatManager:
                         f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
                         f" → {remaining_damage} dmg to player (trample)"
                     )
+
+            elif attacker_deals and assignment.defender is not None:
+                # CR 510.1b to the attacked planeswalker; CR 506.4: none if
+                # it has left the battlefield or its controller changed.
+                _pw = assignment.defender
+                if self._planeswalker_still_attackable(_pw):
+                    deal_damage(attacker, _pw, attacker_power, is_combat=True)
+                    self._dealt_ids.add(attacker.instance_id)
+                    game.log.append(
+                        f"T{game.display_turn} P{self._active_player+1}: "
+                        f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                        f" → {attacker_power} dmg to {_pw.name}")
+                    # "deals combat damage to a player or planeswalker"
+                    # (CR 510.2): the carrier reads the typed head.
+                    from .effect_carrier import dispatch_combat_damage_triggers
+                    dispatch_combat_damage_triggers(
+                        game, attacker, _pw.controller, to_planeswalker=True)
 
             elif attacker_deals:
                 # CR 510.1b: Unblocked creature assigns damage to defending player
@@ -480,49 +673,26 @@ class CombatManager:
 
             total_player_damage += player_damage
 
-            # "Deals combat damage to a player" triggers (oracle-based)
+            # "Deals combat damage to a player" triggers (CR 510.2, 603.2)
             if player_damage > 0:
-                a_oracle = (attacker.template.oracle_text or '').lower()
-                if 'combat damage to a player' in a_oracle:
-                    if 'treasure' in a_oracle:
-                        game.create_token(self._active_player, "treasure",
-                                          count=1)
-                    if 'exile the top card' in a_oracle:
-                        opp = game.players[self._defending_player]
-                        if opp.library:
-                            exiled = opp.library.pop(0)
-                            exiled.zone = "exile"
-                            opp.exile.append(exiled)
-                            game.log.append(
-                                f"T{game.display_turn} P{self._active_player+1}: "
-                                f"{attacker.name} exiles {exiled.name} "
-                                f"from top of P{self._defending_player+1}'s library"
-                            )
-                            # "Until end of turn, you may cast that card"
-                            # Holistic fix: put the card in the active player's hand.
-                            # The engine already handles hand cards fully — no special
-                            # zone logic needed. EOT cleanup exiles uncast copies.
-                            if 'until end of turn, you may cast' in a_oracle or 'you may cast that card' in a_oracle:
-                                # Remove from opp exile, give to active player
-                                opp.exile.remove(exiled)
-                                active_player = game.players[self._active_player]
-                                exiled.zone = "hand"
-                                exiled.controller = self._active_player
-                                exiled._free_cast_opportunity = True
-                                exiled._ragavan_return_to_exile = True  # EOT: exile if uncast
-                                active_player.hand.append(exiled)
-                                game.log.append(
-                                    f"T{game.display_turn} P{self._active_player+1}: "
-                                    f"{attacker.name} — may cast {exiled.name} this turn"
-                                )
-                    if 'draw a card' in a_oracle:
-                        game.draw_cards(self._active_player, 1)
-                        game.log.append(
-                            f"T{game.display_turn} P{self._active_player+1}: "
-                            f"{attacker.name} deals combat damage — draw a card"
-                        )
+                CombatManager.combat_damage_triggers(
+                    game, attacker, self._active_player,
+                    self._defending_player)
 
         return total_player_damage
+
+    @staticmethod
+    def combat_damage_triggers(game: "GameState", dealer: "CardInstance",
+                               controller: int, damaged: int) -> None:
+        """The dealer's "deals combat damage to a player" triggers (CR
+        510.2, 603.2), resolved from the card's typed text by the
+        combat-damage carrier (`effect_carrier.
+        dispatch_combat_damage_triggers`). A card the carrier does not take
+        resolves none of them; the rules audit records it
+        (`603.2/combat_damage_trigger_unresolved`). `controller` is the
+        dealer's (the carrier reads it from the dealer)."""
+        from .effect_carrier import dispatch_combat_damage_triggers
+        dispatch_combat_damage_triggers(game, dealer, damaged)
 
     def _apply_battle_cry(self, game: "GameState",
                            attackers: List["CardInstance"]):
@@ -566,9 +736,9 @@ class CombatManager:
         no creature may attack while this player is under a "creatures
         can't attack this turn" lock, or while the defending opponent is
         under a "creatures can't attack you this turn" lock."""
-        opp = game.players[1 - player_idx]
-        if (game.players[player_idx].cannot_attack_this_turn
-                or getattr(opp, 'cannot_be_attacked_this_turn', False)):
+        from . import rules_query
+        if (rules_query.attack_prohibited(game, player_idx)
+                or rules_query.attacking_player_prohibited(game, 1 - player_idx)):
             return []
         return [c for c in game.players[player_idx].creatures if c.can_attack]
 

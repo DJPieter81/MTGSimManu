@@ -244,6 +244,19 @@ class ManaPayment:
                     f"{produced} mana")
 
     @staticmethod
+    def _apply_cost_reduction(cost: ManaCost, reduction: int) -> ManaCost:
+        """Apply a generic cost reduction (CR 601.2f): shrink the GENERIC
+        component only, leaving every coloured, colourless and hybrid pip
+        untouched. Owns the fold so the reduction-audit invariant can
+        recompute the surviving non-generic pips independently."""
+        from .mana import ManaCost as MC
+        return MC(
+            white=cost.white, blue=cost.blue, black=cost.black,
+            red=cost.red, green=cost.green, colorless=cost.colorless,
+            generic=max(0, cost.generic - reduction), hybrid=list(cost.hybrid),
+        )
+
+    @staticmethod
     def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
                                   cost: ManaCost,
                                   card_name: str = None,
@@ -277,8 +290,19 @@ class ManaPayment:
         reduction = 0
         # Domain cost reduction (from oracle-derived template property)
         # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
+        # The zones a spell is cast from: hand, graveyard (flashback,
+        # escape) and exile (a permission to cast it, warp; CR 601.2a) --
+        # including a permitted card in another player's exile, where an
+        # exiled card stays (CR 400.3). A reduction applies wherever the
+        # spell is cast from (CR 601.2f), so the payment reads the same
+        # zones `can_cast` admits.
+        from . import rules_query as _rq
+        cast_zones = (game.players[player_idx].hand,
+                      game.players[player_idx].graveyard,
+                      game.players[player_idx].exile,
+                      _rq.permitted_cards(game, player_idx))
         if card_name:
-            for c in list(game.players[player_idx].hand) + list(game.players[player_idx].graveyard):
+            for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name and c.template.domain_reduction > 0:
                     domain = ManaPayment.count_domain(game, player_idx)
                     reduction += c.template.domain_reduction * domain
@@ -287,20 +311,17 @@ class ManaPayment:
         player = game.players[player_idx]
         has_improvise = False
         if card_name:
-            # Check hand, graveyard, and stack for the card (flashback casts are from GY)
-            all_cards = list(player.hand) + list(player.graveyard)
-            for c in all_cards:
+            # The card in the zone it is cast from (`cast_zones` above).
+            for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name:
                     # Generic cost reduction from permanents
                     from .oracle_resolver import (count_cost_reducers,
                                                   self_cost_reduction)
-                    reduction += count_cost_reducers(game, player_idx, c.template)
+                    from . import rules_query
+                    reduction += rules_query.cost_delta(game, player_idx, c.template)
                     # Self-scaling own-cost reduction (per-turn discard/
                     # cycle count, graveyard card types, ...).
                     reduction += self_cost_reduction(game, player_idx, c.template)
-                    # Temporary cost reduction (Ral PW +1 "until your next turn")
-                    if c.template.is_instant or c.template.is_sorcery:
-                        reduction += player.temp_cost_reduction
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(
@@ -320,13 +341,16 @@ class ManaPayment:
             # Every other pip — coloured, colourless, hybrid — survives
             # untouched (hybrid pips used to be folded into `generic`
             # upstream, which is how two reducers made {1}{R/G} free).
-            from .mana import ManaCost as MC
-            new_generic = max(0, cost.generic - reduction)
-            cost = MC(
-                white=cost.white, blue=cost.blue, black=cost.black,
-                red=cost.red, green=cost.green, colorless=cost.colorless,
-                generic=new_generic, hybrid=list(cost.hybrid),
-            )
+            _ng_before = cost.non_generic_pips
+            cost = ManaPayment._apply_cost_reduction(cost, reduction)
+            # Audit (observation-only, CR 601.2f): the reduction may not have
+            # eaten a coloured/colourless/hybrid pip. Recomputed from the new
+            # cost's own pip fields, independently of the fold above.
+            from .rules_audit import check as _audit_check
+            _audit_check("601.2f/reduction_pips_preserved",
+                         cost.non_generic_pips == _ng_before,
+                         "a cost reduction shrank a non-generic pip",
+                         game=game)
 
         # Improvise payment (Track H handoff): tap untapped non-land
         # artifacts to pay {1} of generic each — but only for the
@@ -683,10 +707,13 @@ class ManaPayment:
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
-            # Pain land: self-damage when tapping for colored mana
+            # Pain land: self-damage when tapping for colored mana -- the
+            # land deals it to its controller through the damage owner,
+            # so it is life lost this turn (CR 120.3a).
             if land.template.tap_damage > 0 and any(
                     c != "C" for c in yielded):
-                player.life -= land.template.tap_damage
+                from .damage import deal_damage
+                deal_damage(land, player, land.template.tap_damage)
 
         ok = player.mana_pool.pay(cost)
 

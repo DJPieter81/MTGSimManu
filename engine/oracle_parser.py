@@ -339,40 +339,94 @@ def parse_splice_cost(oracle: str) -> "Optional[ManaCost]":
     return cost if cost.cmc > 0 else None
 
 
-def parse_cost_reduction(oracle: str) -> Optional[Dict]:
-    """Parse cost reduction rules from oracle text.
+# ── Static spell-cost reductions (CR 601.2f) ──────────────────────────
+#
+# "<qualities> spells you cast cost {N} less to cast": a static ability
+# that reduces the total cost of each spell with those qualities. The
+# subject is typed as alternatives of quality words -- "instant and sorcery"
+# and "Kithkin spells and Soldier" name either, "black creature" needs
+# both -- that `oracle_resolver._cost_rule_applies` reads against the spell:
+# a colour, "colorless" / "multicolored" / "monocolored", a card type or
+# "non<type>", a supertype, "historic", "permanent", or a subtype. Without
+# "you cast" the reduction covers every player's spells ("Spells cost {1}
+# less to cast"). A sentence of any other shape -- a trailing condition, an
+# ordinal ("the first ... each turn"), a chosen quality, an activation or
+# keyword cost, reminder text -- is no spell reduction, never widened to
+# every spell.
+_SPELL_REDUCTION_RE = re.compile(
+    r"(?P<subject>[a-z', ]*?)\s*\bspells (?P<you>you cast )?cost "
+    r"\{(?P<n>\d+)\} less to cast")
+# Words that open a condition or a scope rather than name a quality ("as
+# long as this creature is tapped, ...", "during your turn, ..."): such a
+# sentence is refused, never read as a subtype.
+_NOT_A_QUALITY = frozenset({
+    "as", "long", "during", "your", "turn", "turns", "other", "than",
+    "yours", "this", "that", "is", "if", "with", "the", "each", "first",
+    "second", "next", "chosen", "of", "from", "you", "control"})
+# A Class's level header ("{2}{R}: Level 2"): the abilities printed after
+# it are that level's (CR 716.2a), which a Class has only once it has
+# gained the level.
+_CLASS_LEVEL_HEADER_RE = re.compile(r"^(?:\{[^}]+\})+: level \d+$")
 
-    Returns {'target': str, 'amount': int, 'color': str|None} or None.
 
-    A cost-reduction effect requires an explicit ``cost {N} less``
-    pattern (e.g. "Spells you cast cost {1} less to cast"). The mere
-    co-occurrence of ``'cost'`` and ``'less'`` is not sufficient — the
-    substring ``'less'`` lives inside ``'colorless'`` and ``'cost'``
-    appears in any ``mana cost {N}`` phrase, generating false
-    positives on non-reducers like Urza's Saga, Trinisphere, and
-    every cascade card. See ``tests/test_parse_cost_reduction_strict.py``.
-    """
-    oracle = oracle.lower()
-    m = re.search(r'cost\s*\{(\d+)\}\s*less', oracle)
-    if not m:
+def _spell_reduction_qualities(subject: str) -> Optional[tuple]:
+    """The alternatives of quality words a reducer's subject names, or
+    None when a word is not a quality word."""
+    subject = subject.strip().replace(" spells and ", " and ")
+    if not subject:
+        return ((),)                      # "spells you cast": every spell
+    alternatives = []
+    for part in re.split(r",\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+", subject):
+        words = tuple(part.split())
+        if not words or not all(w.isalpha() and w not in _NOT_A_QUALITY
+                                for w in words):
+            return None
+        alternatives.append(words)
+    return tuple(alternatives)
+
+
+def parse_cost_reduction(sentence: str) -> Optional[Dict]:
+    """One reducer sentence -- "<qualities> spells [you cast] cost {N} less
+    to cast" in full -- as ``{'amount': N, 'qualities': ((word, ...), ...),
+    'who': 'you' | 'all'}``; None for any other sentence (see
+    ``tests/test_parse_cost_reduction_strict.py`` and
+    ``tests/test_cost_reduction_reads_its_text.py``)."""
+    text = (sentence or '').lower().strip().rstrip('.').strip()
+    m = _SPELL_REDUCTION_RE.fullmatch(text)
+    if m is None:
         return None
-    amount = int(m.group(1))
+    qualities = _spell_reduction_qualities(m.group('subject'))
+    if qualities is None:
+        return None
+    return {'amount': int(m.group('n')), 'qualities': qualities,
+            'who': 'you' if m.group('you') else 'all'}
 
-    target = 'all'
-    if 'instant and sorcery' in oracle or 'instants and sorceries' in oracle:
-        target = 'instant_sorcery'
-    elif 'creature spell' in oracle:
-        target = 'creature'
-    elif 'noncreature' in oracle:
-        target = 'noncreature'
 
-    color = None
-    for c_name, c_code in [('red','R'),('blue','U'),('black','B'),('white','W'),('green','G')]:
-        if c_name in oracle:
-            color = c_code
+def parse_static_cost_reductions(oracle: str) -> tuple:
+    """A face's static spell-cost reductions (CardTemplate.cost_reduction_
+    rules), typed once at load: one rule per reducer sentence, from the
+    text before any Class level header (a Class enters at level 1, CR
+    716.2a) with reminder text stripped. Empty when the face prints none."""
+    low = strip_reminder_text(oracle or '').lower()
+    if 'less to cast' not in low:
+        return ()
+    rules = []
+    for line in low.split('\n'):
+        line = line.strip()
+        if _CLASS_LEVEL_HEADER_RE.match(line):
             break
+        for sentence in re.split(r"(?<=\.)\s+", line):
+            rule = parse_cost_reduction(sentence)
+            if rule is not None:
+                rules.append(rule)
+    return tuple(rules)
 
-    return {'target': target, 'amount': amount, 'color': color}
+
+def describe_cost_reduction(rule: Dict) -> str:
+    """A log phrase for one reducer rule: "instant or sorcery spells cost
+    1 less"."""
+    named = " or ".join(" ".join(alt) for alt in rule['qualities'] if alt)
+    return f"{named + ' ' if named else ''}spells cost {rule['amount']} less"
 
 
 # ── Self-scaling own-cost reduction ────────────────────────────────
@@ -846,53 +900,74 @@ def parse_counter_upgrade_condition(oracle: str):
     return None
 
 
-def parse_ward_cost(oracle: str) -> int:
-    """Parse a Ward {N} mana-cost tax from oracle text (CR 702.21a).
+def _is_keyword_list_item(item: str) -> bool:
+    """True when `item` is a keyword ability as printed in a keyword
+    list ("flying", "first strike", "protection from red", "toxic 2"):
+    the shape that lets a later ward in the same list be the card's
+    OWN ward rather than one granted to another object."""
+    from engine.cards import Keyword
+    words = {k.name.lower().replace('_', ' ') for k in Keyword}
+    if item in words:
+        return True
+    if item.startswith(('protection from', 'hexproof from')):
+        return True
+    m = re.fullmatch(r'([a-z]+(?: [a-z]+)?) \d+', item)
+    return bool(m and m.group(1) in words | {'toxic', 'afflict', 'bushido',
+                                              'rampage', 'absorb', 'fading',
+                                              'vanishing', 'bloodthirst'})
 
-    Ward is a triggered ability that lives on the PERMANENT itself:
-    "Whenever this permanent becomes the target of a spell or ability
-    an opponent controls, counter that spell or ability unless its
-    controller pays [cost]." Structurally this is the mirror image of
-    `parse_counter_tax`/1a's counter-tax framework: there, a
-    counterSPELL taxes the TARGETED spell's controller; here, the
-    TARGETED PERMANENT taxes the SOURCE spell/ability's own caster
-    for having chosen it as a target at all.
 
-    Scoped to a clause (`split_clauses` — sentence-level, not
-    `split_abilities`'s paragraph level) that STARTS with "ward",
-    matching how the keyword is always printed as its own standalone
-    ability line ("Ward {2}"). This deliberately excludes ward
-    CONFERRED to another object mid-sentence — "Equipped creature...
-    has ward {1}" (an Equipment granting ward to whatever it's
-    attached to), "...becomes a 7/7 ... creature with ward {3}" (an
-    activated ability that temporarily grants ward to its source) —
-    since those clauses don't start with "ward" they never match
-    here. That's a real, separate mechanism (dynamically granted
-    keyword, same class as 0b's `ContinuousEffectsManager` migration,
-    not a static field on the granting card's own template) —
-    deferred; see the rules-foundation tracker doc's Ward section.
+def parse_ward(oracle: str) -> Tuple[int, int]:
+    """The permanent's own Ward cost as (mana, life) (CR 702.21a).
 
-    Scope: mana-cost shape only ("Ward {N}"). DB-wide census (a card
-    whose oracle has any clause literally starting with "ward"): 76
-    are mana-cost-shaped, 15 are "Ward—Pay N life" (life-shaped), 26
-    are other cost shapes (discard/sacrifice/exile/collect evidence/
-    etc, several with no fixed numeric amount at all — "pay life
-    equal to this creature's power" has no static {N} to tax with).
-    Mana-shape is the dominant, most clearly-scoped bucket (per
-    CLAUDE.md's class-size discipline) and the only one implemented
-    in this first pass. Returns 0 for every excluded shape too (same
-    "0 = no tax to enforce" contract `parse_counter_tax` uses for
-    hard counters) — callers must not read a 0 as proof the card has
-    no ward at all, only that this parser doesn't yet enforce it.
-    """
+    Ward is the permanent's OWN when the keyword opens a clause or follows
+    only other keywords in a keyword list ("Ward {2}", "Flying, ward {2}").
+    Ward granted to another object ("Equipped creature ... has ward {1}",
+    "Creatures you control have ward {1}", an activated "becomes a 7/7
+    ... with ward {3}") is not the card's own and yields (0, 0).
+
+    The cost is what follows the keyword: generic mana "{N}" and/or
+    "Pay N life" ("Ward—{2}, Pay 2 life" owes both). A cost shape the
+    engine cannot pay — discard, sacrifice, collect evidence, colored
+    or variable amounts — is refused outright as (0, 0), never
+    half-applied. Pool census (2026-10-07): 109 mana, 15 life, 3
+    combined, 27 refused shapes; 80 cards only grant ward."""
     for clause in split_clauses(oracle or ''):
-        low = clause.strip().lower()
-        if not low.startswith('ward'):
+        low = re.sub(r'\(.*?(?:\)|$)', '', clause.lower()).strip()
+        m = re.search(r'(?:^|,\s*)ward(?![a-z])', low)
+        if not m:
             continue
-        m = re.search(r'ward\s*[\{—-]*\s*\{(\d+)\}', low)
-        if m:
-            return int(m.group(1))
-    return 0
+        prefix = [p.strip() for p in low[:m.start()].split(',') if p.strip()]
+        if not all(_is_keyword_list_item(p) for p in prefix):
+            continue      # ward granted to another object
+        tail = low[m.end():].strip().lstrip('—–-').strip()
+        mana = life = 0
+        for i, part in enumerate(p.strip() for p in tail.split(',')):
+            mm = re.fullmatch(r'\{(\d+)\}', part)
+            ml = re.fullmatch(r'pay (\d+) life', part)
+            if mm:
+                mana += int(mm.group(1))
+            elif ml:
+                life += int(ml.group(1))
+            elif i == 0:
+                return (0, 0)     # an unpayable cost shape: refused
+            else:
+                break             # a later keyword in the same list
+        return (mana, life)
+    return (0, 0)
+
+
+def parse_ward_cost(oracle: str) -> int:
+    """The generic-mana part of the permanent's own Ward cost
+    (`parse_ward`); 0 when its ward has no mana part, is refused, or
+    is not its own."""
+    return parse_ward(oracle)[0]
+
+
+def parse_ward_life_cost(oracle: str) -> int:
+    """The life part of the permanent's own Ward cost (`parse_ward`):
+    "Ward—Pay 7 life" -> 7, "Ward—{2}, Pay 2 life" -> 2."""
+    return parse_ward(oracle)[1]
 
 
 def parse_can_target_player(oracle: str) -> bool:
@@ -1500,6 +1575,8 @@ def classify_activation_effect(effect_text: str):
     if put_counter is not None:
         if put_counter['self']:
             return K.PUT_COUNTER_SELF, put_counter['amount'], 0, 0
+        if put_counter.get('scope') == 'team':
+            return K.PUT_COUNTER_TEAM, put_counter['amount'], 0, 0
         return K.PUT_COUNTER_TARGET, put_counter['amount'], 0, 0
 
     return K.UNCLASSIFIED, 0, 0, 0
@@ -1809,6 +1886,21 @@ _PUT_COUNTER_EFFECT_TARGET_RE = re.compile(
     r'target (?P<quals>(?:[a-z][a-z\-\']* )*?)'
     r'(?P<noun>' + _COUNTER_SELF_WORDS + r')'
     r'(?P<scope> you control)?')
+#   TEAM   "put a +1/+1 counter on each [other] [artifact] creature [you control]"
+#
+# The TEAM scope (CR 122.1 on every permanent the sentence names; 22 Modern
+# activated abilities — Gavony Township, Steel Overseer, Leyline of
+# Abundance, Shalai, Mikaeus, the Mentor cycle) is not targeted (CR 115.1):
+# its recipient set is computed at resolution from the card types it names,
+# under the named controller(s), optionally excluding the source. A
+# qualifier the CARD-TYPE vocabulary cannot hold (a subtype, a colour,
+# "attacking") is refused, never approximated — the same rule the TARGET
+# scope follows.
+_PUT_COUNTER_EFFECT_TEAM_RE = re.compile(
+    r'put (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? on each '
+    r'(?P<other>other )?(?P<quals>(?:[a-z][a-z\-\']* )*?)'
+    r'(?P<noun>' + _COUNTER_SELF_WORDS + r')'
+    r'(?P<scope> you control)?')
 # Card-type words a put-counter target requirement can express. A
 # qualifier outside this set (a subtype, "another", a colour) narrows the
 # target in a way `TargetRequirement` would have to approximate, so the
@@ -1816,6 +1908,13 @@ _PUT_COUNTER_EFFECT_TARGET_RE = re.compile(
 _PUT_COUNTER_TYPE_WORDS = frozenset({
     'creature', 'artifact', 'enchantment', 'land', 'permanent',
     'planeswalker', 'vehicle', 'token', 'battle', 'equipment'})
+# The TEAM scope's recipient predicate reads `CardInstance.effective_card_types`
+# (a CardType per word, or 'permanent' for any). Words that are subtypes or
+# instance flags rather than card types (vehicle, token, battle, equipment)
+# would need a second predicate, so a mass sentence naming one is refused.
+_PUT_COUNTER_TEAM_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'permanent',
+    'planeswalker'})
 
 
 def parse_activation_put_counter(effect_text: str) -> Optional[Dict]:
@@ -1855,6 +1954,20 @@ def parse_activation_put_counter(effect_text: str) -> Optional[Dict]:
             return None
         return {'kind': kind, 'amount': n, 'self': True, 'types': [],
                 'owner': 'any'}
+
+    m = _PUT_COUNTER_EFFECT_TEAM_RE.fullmatch(low)
+    if m is not None:
+        kind = _canonical_counter_kind(m.group('kind'))
+        n = _count(m.group('n'))
+        if kind is None or n <= 0:
+            return None
+        words = (m.group('quals') or '').split() + [m.group('noun')]
+        if any(w not in _PUT_COUNTER_TEAM_TYPE_WORDS for w in words):
+            return None
+        return {'kind': kind, 'amount': n, 'self': False, 'scope': 'team',
+                'types': words,
+                'owner': 'you' if m.group('scope') else 'any',
+                'other': bool(m.group('other'))}
 
     m = _PUT_COUNTER_EFFECT_TARGET_RE.fullmatch(low)
     if m is None:
@@ -1967,6 +2080,14 @@ def parse_activated_abilities(oracle: str):
                     types=frozenset(spec['types']),
                     owner_scope=spec['owner'],
                     raw_phrase=body.strip().lower())]
+        elif kind is K.DAMAGE_ANY_TARGET:
+            # CR 602.2b: "deals N damage to any target" is chosen when the
+            # ability is activated -- a creature, planeswalker or player
+            # (CR 115.4). The requirement is the target solver's own parse
+            # of the body, the one owner of what a target phrase admits.
+            from .target_solver import parse as parse_targets
+            target_requirements = list(parse_targets(body))
+            targets_required = len(target_requirements)
         # TUTOR_* kinds carry their structured search constraint on the
         # ability — parsed here, at load time, never re-derived at runtime.
         tutor_data = None
@@ -1978,7 +2099,8 @@ def parse_activated_abilities(oracle: str):
             graveyard_exile_data = parse_activation_graveyard_exile(body)
         # PUT_COUNTER_* kinds carry their structured shape the same way.
         put_counter_data = None
-        if kind in (K.PUT_COUNTER_SELF, K.PUT_COUNTER_TARGET):
+        if kind in (K.PUT_COUNTER_SELF, K.PUT_COUNTER_TARGET,
+                    K.PUT_COUNTER_TEAM):
             put_counter_data = parse_activation_put_counter(body)
         # Delayed timing (CR 603.7). Derived from the SAME helper
         # `classify_activation_effect` used to reach the inner kind, so the
@@ -3864,6 +3986,32 @@ def parse_can_destroy_nonland_permanent(oracle: str) -> bool:
     return 'destroy target nonland permanent' in oracle.lower()
 
 
+# The effect verbs that make a triggered ability's effect material rather
+# than vanilla — the same list the AI's self-ETB same-turn signal reads.
+_MATERIAL_EFFECT_VERBS = (
+    'deal', 'draw', 'discard', 'destroy', 'exile', 'counter', 'return',
+    'gain', 'lose', 'create', 'search', 'put', 'add', 'scry', 'surveil',
+    'mill', 'amass', 'investigate', 'clue', 'sacrifice', 'choose',
+)
+_SAGA_CHAPTER_ONE_RE = re.compile(
+    r'(?:^|\n)\s*i\s+[—-]\s*(.*?)(?:\n\s*ii\s+[—-]|$)', re.S)
+
+
+def parse_saga_chapter_one_material(oracle: str, subtypes) -> bool:
+    """True when a Saga's chapter I has a material effect.
+
+    CR 714.3a: as a Saga enters, its controller puts a lore counter on it,
+    which triggers chapter I at once (CR 714.2b) — so the chapter's effect
+    is value on the turn the Saga is cast. The chapter is the text between
+    "I —" and "II —"; it is material when it carries an effect verb (the
+    same verb list a self-ETB's material test uses). Parsed once at DB load.
+    """
+    if not oracle or 'Saga' not in (subtypes or ()):
+        return False
+    m = _SAGA_CHAPTER_ONE_RE.search(oracle.lower())
+    return bool(m) and any(v in m.group(1) for v in _MATERIAL_EFFECT_VERBS)
+
+
 def parse_has_scaling_token_finisher(oracle: str) -> bool:
     """Return True if the card creates a storm-scaled number of tokens.
 
@@ -4408,19 +4556,6 @@ def parse_has_recurring_trigger(oracle: str) -> bool:
     return bool(re.search(r'whenever ', lo))
 
 
-def parse_limits_opponent_spell_timing(oracle: str) -> bool:
-    """Return True for cards that restrict opponents to sorcery-speed casts.
-
-    Matches Teferi, Time Raveler's static: 'cast spells only any time they
-    could cast a sorcery'.  Replaces the full-phrase runtime substring check.
-
-    Class size: ~5-10 Modern-legal cards with this static (Teferi family).
-    """
-    if not oracle:
-        return False
-    return 'cast spells only any time they could cast a sorcery' in oracle.lower()
-
-
 def parse_has_charge_counter_wipe(oracle: str) -> bool:
     """Return True for charge-counter permanents that destroy by mana value.
 
@@ -4482,6 +4617,89 @@ def parse_reanimates_from_graveyard(oracle: str) -> bool:
         return False
     gy_idx = lo.find('graveyard')
     return lo.find('battlefield', gy_idx) >= 0
+
+
+# ── Graveyard-to-exile replacement (CR 614.1a, 614.6) ─────────────────
+#
+# "If <objects> would be put into <whose> graveyard [from anywhere], exile
+# it instead" and "If a creature <an opponent controls> would die, exile it
+# instead": a permanent's static replacement over OTHER objects. Each
+# sentence is one rule: {'scope', 'whose', 'colors', 'types', 'tokens',
+# 'nontoken', 'controlled_by'}, read by `ZoneManager.graveyard_exile_source`.
+# A variant with more than the exile ("instead exile it with a void counter
+# on it", "and you gain 2 life"), a condition ("dealt damage by ~ this
+# turn"), a spell "cast this way" or the card itself is refused.
+_GY_EXILE_RE = re.compile(
+    r"^if (?P<subj>[a-z ,'-]+?) would (?:(?P<die>die)|be put into "
+    r"(?P<whose>a|an opponent's|your) graveyard(?: from anywhere)?), "
+    r"exile it instead$")
+_COLOR_LIST = r"(?:white|blue|black|red|green)(?: or (?:white|blue|black|red|green))*"
+_CARD_TYPE_LIST = (r"(?:instant|sorcery|creature|artifact|enchantment|land"
+                   r"|planeswalker)(?: or (?:instant|sorcery|creature|artifact"
+                   r"|enchantment|land|planeswalker))*")
+
+
+def _gy_exile_subject(subj: str, dies: bool) -> Optional[Dict]:
+    """The objects a graveyard-to-exile rule covers, or None."""
+    rule = {'colors': None, 'types': None, 'tokens': False,
+            'nontoken': False, 'controlled_by': None}
+    if dies:
+        m = re.fullmatch(r"an? (?P<nt>nontoken )?creature"
+                         r"(?: (?P<ctrl>an opponent controls|you control))?",
+                         subj)
+        if m is None:
+            return None
+        rule.update(types=frozenset({'creature'}), tokens=not m.group('nt'),
+                    nontoken=bool(m.group('nt')),
+                    controlled_by={'an opponent controls': 'opponents',
+                                   'you control': 'you'}.get(m.group('ctrl')))
+        return rule
+    if subj == "a card or token":
+        rule['tokens'] = True
+        return rule
+    if subj == "a card":
+        return rule
+    if subj == "a permanent":
+        rule['tokens'] = True
+        return rule
+    m = re.fullmatch(r"an? (?P<cols>%s) permanent, spell, or card not on the "
+                     r"battlefield" % _COLOR_LIST, subj)
+    if m:
+        rule.update(colors=frozenset(_TUTOR_COLOR_WORDS[w] for w in
+                                     m.group('cols').split(' or ')),
+                    tokens=True)
+        return rule
+    m = re.fullmatch(r"an? (?P<types>%s) card" % _CARD_TYPE_LIST, subj)
+    if m:
+        rule['types'] = frozenset(m.group('types').split(' or '))
+        return rule
+    return None
+
+
+def parse_graveyard_exile_replacements(oracle: str) -> tuple:
+    """A permanent's static graveyard-to-exile replacements, one rule per
+    sentence (see `_GY_EXILE_RE`), from its text with reminder text
+    stripped. Empty when it prints none the engine can run."""
+    low = strip_reminder_text(oracle or '').lower()
+    if 'exile it instead' not in low:
+        return ()
+    rules = []
+    for line in low.split('\n'):
+        for sentence in re.split(r"(?<=\.)\s+", line.strip()):
+            m = _GY_EXILE_RE.fullmatch(sentence.rstrip('.').strip())
+            if m is None:
+                continue
+            dies = bool(m.group('die'))
+            rule = _gy_exile_subject(m.group('subj').strip(), dies)
+            if rule is None:
+                continue
+            scope = 'dies' if dies else (
+                'battlefield' if m.group('subj').strip() == 'a permanent'
+                else 'anywhere')
+            whose = {'a': 'any', "an opponent's": 'opponents',
+                     'your': 'you'}.get(m.group('whose'), 'any')
+            rules.append(dict(rule, scope=scope, whose=whose))
+    return tuple(rules)
 
 
 def parse_exiles_cards_bound_for_graveyard(oracle: str) -> bool:
@@ -4551,19 +4769,31 @@ def parse_requires_creature_target(oracle: str) -> bool:
     return 'target creature' in lo or 'creature spell' in lo
 
 
-def parse_has_alternate_exile_cost(oracle: str) -> bool:
-    """Return True for spells with an 'exile a card from your hand' alternate cost.
+_ALTERNATE_EXILE_RE = re.compile(
+    r"(?:(?P<cond>if it's not your turn), )?(?:you may )?exile an? "
+    r"(?P<color>white|blue|black|red|green) card from your hand rather than "
+    r"pay this spell's mana cost")
 
-    Matches Grief / Solitude / Ephemerate-family pattern: 'exile a' +
-    'rather than pay' in oracle text.
 
-    Class size: ~10 Modern-legal Evoke elementals and similar (Grief,
-    Subtlety, Solitude, Endurance, Fury).
+def parse_alternate_exile_cost(oracle: str):
+    """The alternative cost "exile a <colour> card from your hand rather
+    than pay this spell's mana cost" (CR 118.9) as (colour, whether it
+    holds only when it's not your turn), or None.
+
+    The five Forces print "If it's not your turn, you may exile ...";
+    Snapback prints no condition. A card "with mana value X" (the Shoals),
+    a graveyard card (Stalwart Valkyrie) and a cost of no card (Mindbreak
+    Trap) are other shapes.
     """
     if not oracle:
-        return False
-    lo = oracle.lower()
-    return 'exile a' in lo and 'rather than pay' in lo
+        return None
+    m = _ALTERNATE_EXILE_RE.search(oracle.lower())
+    if m is None:
+        return None
+    from .mana import Color
+    color = {"white": Color.WHITE, "blue": Color.BLUE, "black": Color.BLACK,
+             "red": Color.RED, "green": Color.GREEN}[m.group("color")]
+    return color, m.group("cond") is not None
 
 
 def parse_has_mana_value_wipe(oracle: str) -> bool:
@@ -4678,6 +4908,59 @@ def parse_has_pump_grant(oracle: str) -> bool:
     return 'gets +' in lo or 'additional +' in lo
 
 
+# "(up to one) target creature gets ±N/±M [and gains/has <keyword>]" — the
+# one P/T-modifier clause shape, signed, whatever its duration. Callers add
+# the duration they own ("until end of turn" for pump spells, "until your
+# next turn" for parse_until_next_turn).
+_PT_MOD_CLAUSE = (
+    r'(?:up to one )?target creature[^.]*?gets ([+-]\d+)/([+-]\d+)'
+    r'(?: and (?:gains|has) ([a-z ,]+?))?')
+
+
+def _pt_mod_keyword(phrase: str) -> str:
+    if not phrase:
+        return ""
+    for word in _KEYWORD_WORDS:
+        if word in phrase:
+            return word
+    return ""
+
+
+# A keyword-only grant — the zero-P/T case of the same targeted modifier
+# ("target creature gains double strike until end of turn").
+_KW_GRANT_CLAUSE = (
+    r'(?:up to one )?target creature[^.]*?(?:gains|has) ([a-z ,]+?) until end of turn')
+
+
+def _modelled_keywords(phrase: str) -> "tuple[str, ...]":
+    """Every keyword the phrase names that the engine models — the Keyword
+    enum is the vocabulary — in the order they appear."""
+    from .cards import Keyword
+    words = [k.name.lower().replace('_', ' ') for k in Keyword]
+    found = [(phrase.find(w), w) for w in words if re.search(r'\b' + w + r'\b', phrase)]
+    ordered = tuple(w for _, w in sorted(found))
+    # "X or Y" is a choice (CR 608.2d): one keyword is granted — the
+    # first named, a legal choice for the controller.
+    if ' or ' in phrase and ordered:
+        return ordered[:1]
+    return ordered
+
+
+def parse_pump_spell_keywords(oracle: str) -> "tuple[str, ...]":
+    """The keywords a targeted modifier grants until end of turn — with a
+    P/T change ("+2/+2 and gains flying") or alone ("gains double strike").
+    Only keywords the engine models are returned."""
+    if not oracle:
+        return ()
+    text = strip_reminder_text(oracle).lower()
+    p, t, _ = parse_pump_spell(oracle)
+    if p or t:
+        m = re.search(_PT_MOD_CLAUSE + r' until end of turn', text)
+        return _modelled_keywords(m.group(3) or "") if m else ()
+    m = re.search(_KW_GRANT_CLAUSE, text)
+    return _modelled_keywords(m.group(1)) if m else ()
+
+
 def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     """Parse a "target creature gets +N/+M until end of turn [and
     gains/has <keyword>]" combat-trick spell into (power, toughness,
@@ -4690,33 +4973,208 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     Class size: ~200 Modern-legal combat tricks (Giant Growth, Might of
     Old Krosa, Monstrous Rage's base bonus, Blossoming Defense, ...).
     The single generic resolver replaces the per-card EFFECT_REGISTRY
-    handlers this shape would otherwise need.
+    handlers this shape would otherwise need. The clause shape is the
+    shared `_PT_MOD_CLAUSE`; a pump is its non-negative end-of-turn case.
     """
     if not oracle:
         return 0, 0, ""
     text = strip_reminder_text(oracle).lower()
-    # The bonus and a keyword grant share one clause: "+1/+0 and gains
-    # first strike until end of turn", "+2/+2 and gains hexproof until end
-    # of turn". Reading only the bare "+N/+M until end of turn" shape left
-    # 137 of the 323 Modern pump spells typed as no pump at all.
-    m = re.search(
-        r'target creature[^.]*?gets \+(\d+)/\+(\d+)'
-        r'(?: and (?:gains|has) [a-z ,]+?)? until end of turn', text)
-    if not m:
-        return 0, 0, ""
-    power, tough = int(m.group(1)), int(m.group(2))
-    # A keyword granted in the same sentence ("and gains trample", "and
-    # has flying"). Scoped to the pump clause to avoid a later sentence.
+    m = next((mm for mm in re.finditer(_PT_MOD_CLAUSE + r' until end of turn', text)
+              if not mm.group(1).startswith('-') and not mm.group(2).startswith('-')),
+             None)
+    if m is None:
+        # The zero-P/T case: a keyword-only grant.
+        g = re.search(_KW_GRANT_CLAUSE, text)
+        kws = _modelled_keywords(g.group(1)) if g else ()
+        return (0, 0, kws[0]) if kws else (0, 0, "")
+    # A keyword granted in the same clause window ("and gains trample", or a
+    # rider sentence right after) — the window the pump shape has always read.
     clause = text[m.start():m.start() + 120]
-    keyword = ""
     kw_m = re.search(r'(?:gains|has) ([a-z ]+?)(?: until end of turn|[.,]|$)',
                      clause)
-    if kw_m:
-        for word in _KEYWORD_WORDS:
-            if word in kw_m.group(1):
-                keyword = word
-                break
-    return power, tough, keyword
+    return int(m.group(1)), int(m.group(2)), _pt_mod_keyword(kw_m.group(1) if kw_m else "")
+
+
+# "Until your next turn" (CR 611.2b) — a duration wrapped around an effect
+# the engine already owns. The duration phrase is removed and the inner text
+# must be exactly one owned shape; anything else is refused.
+_NEXT_TURN_PREFIX = re.compile(r'^until your next turn, ')
+_NEXT_TURN_SUFFIX = re.compile(r' until your next turn$')
+_FLASH_PERMISSION_RE = re.compile(
+    r'^you may cast (sorcery|creature) spells as though they had flash$')
+
+
+_BOUNCE_SENTENCE_RE = re.compile(
+    r"return (?:up to (?:one|two|three) |(?:one|two|three) )?target [^.]*? to "
+    r"(?:its|their) owner(?:'s|s'|s) hands?")
+
+
+def parse_bounce_target(oracle: str):
+    """The target requirement of "return [up to N] target <types> [scope]
+    to its owner's hand" (CR 608.2b) — the battlefield requirement the
+    target solver parses from that sentence, or None."""
+    if not oracle or "owner" not in oracle:
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _BOUNCE_SENTENCE_RE.search(low)
+    if not m:
+        return None
+    from .target_solver import parse as _parse_targets
+    # "target spell or <permanents>": the permanent half is the bounce on
+    # the battlefield (the stack half is a separate target shape).
+    sentence = re.sub(r"target spell or ", "target ", m.group(0))
+    reqs = [r for r in _parse_targets(sentence) if r.zone == "battlefield"]
+    return reqs[0] if reqs else None
+
+
+_ATTACK_OBSERVER_RE = re.compile(
+    r"(until your next turn, )?whenever a creature attacks you( or a planeswalker you control)?, "
+    r"(?:it gets ([+-]\d+)/([+-]\d+) until end of turn"
+    r"|(?:its|that creature's) controller loses (\w+) life(?: and you gain (\w+) life)?)(?:\.|$)",
+    re.M)
+
+
+def parse_attack_observer(oracle: str) -> "Optional[dict]":
+    """"[Until your next turn, ]whenever a creature attacks you [or a
+    planeswalker you control], <effect>" (CR 508.1 / 603.2). Effects typed:
+    the attacker gets ±N/±M until end of turn; its controller loses N life
+    [and you gain M life]. Returns ``{'scope': 'you'|'you_or_pw',
+    'duration': 'static'|'until_next_turn', 'effect': {...}}`` or None
+    (other effects — draw, investigate, counters, emblems — refused)."""
+    if not oracle or "attacks you" not in oracle:
+        return None
+    m = _ATTACK_OBSERVER_RE.search(strip_reminder_text(oracle).lower())
+    if not m:
+        return None
+    if m.group(3) is not None:
+        effect = {'kind': 'pt_mod', 'power': int(m.group(3)), 'toughness': int(m.group(4))}
+    else:
+        loss = _NUMBER_WORDS.get(m.group(5)) if not m.group(5).isdigit() else int(m.group(5))
+        gain_w = m.group(6)
+        gain = 0 if gain_w is None else (int(gain_w) if gain_w.isdigit()
+                                         else _NUMBER_WORDS.get(gain_w))
+        if loss is None or gain is None:
+            return None
+        effect = {'kind': 'drain', 'loss': loss, 'gain': gain}
+    return {'scope': 'you_or_pw' if m.group(2) else 'you',
+            'duration': 'until_next_turn' if m.group(1) else 'static',
+            'effect': effect}
+
+
+_GROUP_RESTRICTION_RE = re.compile(
+    r"(?:^|[.:—•]\s*|, )creatures( your opponents control| target player controls)?"
+    r"( without flying)? can't (attack or block|block|attack) (this turn|until your next turn)",
+    re.M)
+
+
+def parse_group_restriction(oracle: str) -> "Optional[dict]":
+    """A resolved restriction on a class of creatures (CR 508.1c / 509.1b):
+    "creatures [your opponents control | target player controls] [without
+    flying] can't (attack or block | block | attack) <duration>". A
+    rule-modifying effect, so the class is re-evaluated for its whole
+    duration (CR 611.2c covers only characteristic/control changes).
+    Unqualified "creatures can't attack" is the combat-prevention class's
+    player-scoped lock and is left to it. Returns ``{'actions',
+    'controller': 'any'|'opponents', 'without_keyword', 'duration'}``."""
+    if not oracle or "can't" not in oracle:
+        return None
+    m = _GROUP_RESTRICTION_RE.search(strip_reminder_text(oracle).lower())
+    if not m:
+        return None
+    owner, without, verb, dur = m.groups()
+    if verb == 'attack' and not owner and not without:
+        return None
+    return {'actions': {'attack or block': ('attack', 'block'), 'block': ('block',),
+                        'attack': ('attack',)}[verb],
+            'controller': 'opponents' if owner else 'any',
+            'without_keyword': 'flying' if without else None,
+            'duration': 'this_turn' if dur == 'this turn' else 'until_next_turn'}
+
+
+_OBJECT_RESTRICTION_RE = re.compile(
+    r"(?:^|[.:—•]\s*|, )(up to (one|two|three) target creatures?|one or two target creatures"
+    r"|target creature(?: an opponent controls)?) can't (attack or block|block|attack)"
+    r" (this turn|until your next turn)", re.M)
+
+
+def parse_object_restriction(oracle: str) -> "Optional[dict]":
+    """A resolved restriction on chosen creatures (CR 508.1c / 509.1b):
+    "(up to N | one or two) target creature(s) can't (attack or block |
+    block | attack) (this turn | until your next turn)". Returns
+    ``{'actions': tuple, 'count': int, 'duration': 'this_turn' |
+    'until_next_turn'}`` or None. Group shapes ("creatures without flying
+    can't block"), filtered targets and statics ("enchanted creature can't
+    block") are refused — they are other selectors."""
+    if not oracle or "can't" not in oracle:
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _OBJECT_RESTRICTION_RE.search(low)
+    if not m:
+        return None
+    subject = m.group(1)
+    if subject.startswith("up to"):
+        count = _NUMBER_WORDS[m.group(2)]
+    elif subject.startswith("one or two"):
+        count = 2
+    else:
+        count = 1
+    actions = {'attack or block': ('attack', 'block'), 'block': ('block',),
+               'attack': ('attack',)}[m.group(3)]
+    return {'actions': actions, 'count': count,
+            'duration': 'this_turn' if m.group(4) == 'this turn' else 'until_next_turn'}
+
+
+def parse_until_next_turn(oracle: str) -> "Optional[dict]":
+    """Type an "until your next turn" effect by its wrapped shape.
+
+    Returns one of
+      {'kind': 'pt_mod', 'scope': 'target', 'power', 'toughness', 'keyword'}
+      {'kind': 'pt_mod', 'scope': 'yours', 'power', 'toughness', 'keywords'}
+      {'kind': 'cost_reduction', 'rule': <parse_cost_reduction rule>}
+      {'kind': 'flash_permission', 'types': [...]}
+    or None. The inner text is parsed by the owners of each shape
+    (`_PT_MOD_CLAUSE`, `parse_team_pump`, `parse_cost_reduction`) and must
+    be matched in full — a compound effect is never half-applied.
+    """
+    if not oracle:
+        return None
+    text = strip_reminder_text(oracle).lower().strip().rstrip('.')
+    if 'until your next turn' not in text or '\n' in text:
+        return None
+    inner = _NEXT_TURN_SUFFIX.sub('', _NEXT_TURN_PREFIX.sub('', text)).strip()
+    if 'until your next turn' in inner or not inner:
+        return None
+    m = re.fullmatch(_PT_MOD_CLAUSE, inner)
+    if m:
+        kws = _modelled_keywords(m.group(3) or "")
+        return {'kind': 'pt_mod', 'scope': 'target',
+                'power': int(m.group(1)), 'toughness': int(m.group(2)),
+                'keyword': kws[0] if kws else "", 'keywords': list(kws)}
+    # The zero-P/T case: a keyword-only grant on a target.
+    g = re.fullmatch(r'(?:up to one )?target creature (?:gains|has) ([a-z ,]+)', inner)
+    if g:
+        kws = _modelled_keywords(g.group(1))
+        # Every word must be a modelled keyword — a partial grant is refused.
+        named = [w.strip() for w in re.split(r',| and ', g.group(1)) if w.strip()]
+        if kws and len(kws) == len(named):
+            return {'kind': 'pt_mod', 'scope': 'target', 'power': 0,
+                    'toughness': 0, 'keyword': kws[0], 'keywords': list(kws)}
+        return None
+    if inner.startswith('creatures you control get '):
+        team = parse_team_pump(inner + ' until end of turn.')
+        if team and not team.get('scaling') and not team.get('others_only'):
+            return {'kind': 'pt_mod', 'scope': 'yours',
+                    'power': team['power'], 'toughness': team['toughness'],
+                    'keywords': list(team.get('keywords') or [])}
+        return None
+    fm = _FLASH_PERMISSION_RE.fullmatch(inner)
+    if fm:
+        return {'kind': 'flash_permission', 'types': [fm.group(1)]}
+    if re.fullmatch(r'[a-z ,]+ spells you cast cost \{\d+\} less to cast', inner):
+        rule = parse_cost_reduction(inner)
+        if rule:
+            return {'kind': 'cost_reduction', 'rule': rule}
+    return None
 
 
 _LOOT_RE = re.compile(
@@ -5063,41 +5521,34 @@ def parse_has_surveil(oracle: str) -> bool:
 _MODAL_HEADER_RE = re.compile(
     r'choose\s+(one or both|up to (?:one|two|three|four)|one|two|three|four)\b',
     re.IGNORECASE)
-_MODAL_COUNT = {
-    'one': 1, 'two': 2, 'three': 3, 'four': 4,
-    'one or both': 2,
-    'up to one': 1, 'up to two': 2, 'up to three': 3, 'up to four': 4,
-}
-
-
-def parse_modal_spell(oracle: str) -> "tuple[bool, int, list]":
+def parse_modal_spell(oracle: str) -> "tuple[bool, list]":
     """Parse a "Choose one/two/... —" modal spell into its mode clauses.
 
-    Returns ``(is_modal, choose_count, modes)`` where ``modes`` is the
-    list of bullet-point (•) mode clause strings, verbatim, in order.
-    Non-modal cards return ``(False, 0, [])``.
+    Returns ``(is_modal, modes)`` where ``modes`` is the list of
+    bullet-point (•) mode clause strings, verbatim, in order. Non-modal
+    cards return ``(False, [])``.
 
     Class: every modal spell — charms (Warping Wail, Thraben Charm),
     modal removal/wipes (Brotherhood's End), Kozilek's Command, the
-    Commands, etc. The choose-count and the mode clauses are the two
-    facts an accurate resolver needs: WHICH mode(s) the controller
-    picks, and the real text of each (the synthesized per-mode ability
-    description is lossy — a mode's mana-value cap is dropped from it).
+    Commands, etc. The mode clauses are the real text of each mode (the
+    synthesized per-mode ability description is lossy — a mode's
+    mana-value cap is dropped from it). How many modes may be chosen is
+    the typed spell host's header (`AbilityEffects.choose`, read by
+    `engine.modal_spell.choose_range`).
     """
     if not oracle or '•' not in oracle:
-        return False, 0, []
+        return False, []
     m = _MODAL_HEADER_RE.search(oracle)
     if not m:
-        return False, 0, []
-    count = _MODAL_COUNT.get(m.group(1).lower(), 1)
+        return False, []
     # Mode clauses are the bullet-prefixed segments after the header.
     tail = oracle[m.end():]
     modes = [seg.strip().strip('.').strip()
              for seg in tail.split('•')[1:]]
     modes = [seg for seg in modes if seg]
     if len(modes) < 2:
-        return False, 0, []
-    return True, count, modes
+        return False, []
+    return True, modes
 
 
 def parse_has_scry(oracle: str) -> bool:
@@ -5255,7 +5706,8 @@ def parse_has_look_hand_selection(oracle: str) -> bool:
 # resolver moves cards through the zone funnel and must NOT fire on-draw
 # watchers (Orcish Bowmasters / Sheoldred — CR 121.1c).  The exile-and-play
 # "impulse draw" shape ("exile the top N, you may play those cards") is a
-# SEPARATE mechanic already handled by the Tag.IMPULSE_DRAW branch.
+# SEPARATE mechanic, resolved from the typed spell by the effect
+# dispatcher's card-flow family (exile, then a permission to play).
 _DIG_WORD_NUM = {'a': 1, 'an': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
                  'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
                  'ten': 10}
@@ -6074,6 +6526,9 @@ _TARGETED_REMOVAL_RE = re.compile(
     r'^(destroy|exile) target (' + _REMOVAL_TYPESPEC_ALT + r')'
     r'(?: an opponent controls)?'
     r'(?: with mana value (\d+|x) or less)?\.?$')
+_COUNTED_REMOVAL_RE = re.compile(
+    r"^(destroy|exile) (?:up to (?:one|two|three|four|five)|one or two|"
+    r"two|three|four|five|any number of) target [^.]*\.?$")
 _REMOVAL_RIDER_TOKENS = (
     'search', 'draw', 'gain', 'you may', 'create', ' then ', 'sacrific',
     'loses', 'counter', 'put ', 'shuffle', 'instead', ' if ', 'scry',
@@ -6095,6 +6550,101 @@ _TURN_SCOPED_RESTRICTION_RES = (
     ('no_attacks', re.compile(r"creatures can't attack this turn")),
     ('fog', re.compile(r"prevent all (?:combat )?damage that would be dealt this turn")),
 )
+
+
+# Hand-refill wheels: "each player shuffles their hand [and graveyard] into
+# their library, then draws seven cards" / "each player discards their hand,
+# then draws seven cards" (+ the optional "if it's your turn, end the turn").
+_WHEEL_SHUFFLE_RE = re.compile(
+    r"each player shuffles their hand( and graveyard)? into their library,"
+    r" then draws (\w+) cards")
+_WHEEL_DISCARD_RE = re.compile(
+    r"each player discards their hand, then draws (\w+) cards")
+_NUMBER_WORDS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                 'six': 6, 'seven': 7, 'eight': 8}
+
+
+def parse_hand_refill(oracle: str) -> "dict | None":
+    """A hand-refill wheel. Returns ``{'mode': 'shuffle'|'discard',
+    'graveyard': bool, 'count': int, 'ends_turn': bool}`` or None.
+    Parsed once into `CardTemplate.hand_refill`; resolved by the generic
+    resolver branch. "End the turn" is CR 723 (GameState.end_the_turn)."""
+    if not oracle or 'each player' not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _WHEEL_SHUFFLE_RE.search(low)
+    if m:
+        mode, gy, word = 'shuffle', bool(m.group(1)), m.group(2)
+    else:
+        m = _WHEEL_DISCARD_RE.search(low)
+        if not m:
+            return None
+        mode, gy, word = 'discard', False, m.group(1)
+    count = _NUMBER_WORDS.get(word)
+    if count is None:
+        return None
+    return {'mode': mode, 'graveyard': gy, 'count': count,
+            'ends_turn': "if it's your turn, end the turn" in low}
+
+
+# Static draw restriction (CR 101.2): "each opponent / each player can't
+# draw more than N card(s) each turn" and "players can't draw cards" (cap 0).
+_DRAW_LIMIT_RE = re.compile(
+    r"(each opponent|each player) can't draw more than (\w+) cards? each turn")
+_DRAW_NONE_RE = re.compile(r"(players|each player|each opponent|your opponents) can't draw cards")
+
+
+def parse_draw_limit(oracle: str) -> "dict | None":
+    """A static draw limit (CR 101.2 applied to draws). Returns
+    ``{'who': 'opponents'|'all', 'max': int}`` or None. Parsed once into
+    `CardTemplate.draw_limit`; enforced by GameState.draw_cards."""
+    if not oracle or "can't draw" not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m0 = _DRAW_NONE_RE.search(low)
+    if m0:
+        return {'who': 'opponents' if m0.group(1) in ('each opponent', 'your opponents')
+                else 'all', 'max': 0}
+    m = _DRAW_LIMIT_RE.search(low)
+    if not m:
+        return None
+    cap = _NUMBER_WORDS.get(m.group(2))
+    if cap is None:
+        return None
+    return {'who': 'opponents' if m.group(1) == 'each opponent' else 'all',
+            'max': cap}
+
+
+# CR 101.2 turn-scoped cast prohibition, typed by scope and spell filter.
+# Conditional scopes ("players dealt damage this way", "its controller",
+# "if mana was spent") are deliberately absent — refused, not half-applied.
+_CAST_PROHIBITION_RE = re.compile(
+    r"(?<![a-z] )(target player|each opponent|your opponents|each player|all players|players)"
+    r" can't cast (noncreature |creature )?spells this turn")
+_CAST_PROHIBITION_WHO = {
+    'target player': 'target', 'each opponent': 'opponents',
+    'your opponents': 'opponents', 'each player': 'all',
+    'all players': 'all', 'players': 'all',
+}
+
+
+def parse_cast_prohibition(oracle: str) -> "dict | None":
+    """"<who> can't cast [noncreature|creature] spells this turn" (CR 101.2).
+
+    Returns ``{'who': 'target'|'opponents'|'all',
+    'filter': 'all'|'noncreature'|'creature'}`` or None. Parsed once at
+    load into `CardTemplate.cast_prohibition`; applied by the generic
+    resolver branch and enforced by the cast gate. The subject must start
+    the clause (a lookbehind rejects "players dealt damage this way can't").
+    """
+    if not oracle or "can't cast" not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _CAST_PROHIBITION_RE.search(low)
+    if not m:
+        return None
+    kind = (m.group(2) or '').strip() or 'all'
+    return {'who': _CAST_PROHIBITION_WHO[m.group(1)], 'filter': kind}
 
 
 def parse_turn_scoped_restriction(oracle: str) -> "str | None":
@@ -6212,7 +6762,7 @@ def parse_targeted_removal(oracle: str):
     if not oracle:
         return None
     low0 = oracle.lower()
-    if 'destroy target' not in low0 and 'exile target' not in low0:
+    if (('destroy' not in low0 and 'exile' not in low0) or 'target' not in low0):
         return None
     text = strip_reminder_text(oracle).strip()
     lines = [ln.strip() for ln in text.split('\n') if ln.strip()]
@@ -6222,20 +6772,37 @@ def parse_targeted_removal(oracle: str):
         if m:
             hit = m
             break
+    counted = None
     if hit is None:
-        return None
+        # A counted target ("destroy up to two target artifacts and/or
+        # enchantments"): the target solver owns the grammar and the count.
+        for ln in lines:
+            low = ln.lower()
+            cm = _COUNTED_REMOVAL_RE.match(low)
+            if cm:
+                from .target_solver import parse as _parse_targets
+                reqs = [r for r in _parse_targets(low) if r.zone == "battlefield"]
+                if len(reqs) == 1 and reqs[0].count_max > 1:
+                    counted = (cm.group(1), reqs[0], ln)
+                    break
+        if counted is None:
+            return None
     for ln in lines:
         low = ln.lower()
-        if _TARGETED_REMOVAL_RE.match(low):
+        if _TARGETED_REMOVAL_RE.match(low) or (counted and ln == counted[2]):
             continue
         lead = re.split(r"[ —–\-{:]", low, 1)[0]
         if lead in _KEYWORD_ABILITY_LEADS:
             continue
         if "can't be countered" in low or 'less to cast' in low \
-                or 'additional cost' in low:
-            continue
+                or 'additional cost' in low or 'rather than pay' in low:
+            continue  # a cost / uncounterable line, not a resolution effect
         if any(tok in low for tok in _REMOVAL_RIDER_TOKENS):
             return None  # a real extra resolution effect — refuse
+    if counted is not None:
+        action, req, _ln = counted
+        return {'action': action, 'types': sorted(req.types), 'mv': None,
+                'count': req.count_max}
     mv_raw = hit.group(3)
     mv = None if mv_raw is None else ('x' if mv_raw == 'x' else int(mv_raw))
     return {
@@ -6411,14 +6978,52 @@ def _classify_loyalty_effect(text: str):
     return _K.UNCLASSIFIED, None, 0
 
 
+def loyalty_slot_for(lines, i: int) -> str:
+    """The slot of loyalty line `i` (CR 606): the one owner of the rule.
+
+    `lines` is the face's printed loyalty lines in order, each given by its
+    cost: an int for a fixed cost (only the sign is read), anything else --
+    the grammar passes the printed "+X" / "−X" -- for a variable cost. The
+    first loyalty-positive line is "plus", a zero line "zero", the first
+    loyalty-negative line "minus" and the second "ult"; a line whose slot
+    is already taken (a second positive or zero line, a third negative
+    line) gets "" -- no slot.
+
+    A variable-cost line gets "" and takes no slot from a later line. The
+    slots are those of legacy's line set (`_LOYALTY_LINE_PATTERN` reads fixed
+    costs only), so a caller passing the printed superset and a caller
+    passing fixed lines only agree on every fixed line. Giving X lines slots
+    re-slots minus/ult wherever an X line precedes a fixed negative line
+    (design doc A12): a behaviour change for its own measured commit.
+    """
+    taken = set()
+    for j in range(i + 1):
+        cost = lines[j]
+        if not isinstance(cost, int):
+            slot = ""                      # variable cost: no slot (A12)
+        elif cost > 0:
+            slot = "plus"
+        elif cost == 0:
+            slot = "zero"
+        else:
+            slot = "ult" if "minus" in taken else "minus"
+        if slot in taken:
+            slot = ""
+        if j == i:
+            return slot
+        if slot:
+            taken.add(slot)
+    return ""
+
+
 def parse_loyalty_abilities(oracle: str, loyalty: Optional[int] = 0) -> Dict:
     """Parse and classify a planeswalker's printed loyalty abilities.
 
-    Returns ``{slot: LoyaltyAbility}`` keyed by the same slot names
-    `engine.player_state._parse_planeswalker_abilities` uses — "plus"
-    (the first loyalty-positive line), "zero", "minus" (the first
-    loyalty-negative line) and "ult" (the second) — so the AI chooser
-    and the engine agree on what "the minus" means.
+    Returns ``{slot: LoyaltyAbility}`` keyed by the slot names
+    `loyalty_slot_for` assigns — "plus" (the first loyalty-positive line),
+    "zero", "minus" (the first loyalty-negative line) and "ult" (the
+    second) — so the AI chooser and the engine agree on what "the minus"
+    means.
 
     Empty dict for a card with no printed loyalty abilities.
     """
@@ -6428,20 +7033,13 @@ def parse_loyalty_abilities(oracle: str, loyalty: Optional[int] = 0) -> Dict:
     if not oracle:
         return result
 
-    plus_found = False
-    for cost_str, desc in _LOYALTY_LINE_PATTERN.findall(oracle):
-        cost = int(cost_str.replace('−', '-'))
+    lines = _LOYALTY_LINE_PATTERN.findall(oracle)
+    costs = [int(cost_str.replace('−', '-')) for cost_str, _ in lines]
+    for i, (_, desc) in enumerate(lines):
+        cost = costs[i]
         desc = desc.strip().rstrip('.')
-        if cost > 0 and not plus_found:
-            slot = "plus"
-            plus_found = True
-        elif cost == 0:
-            slot = "zero"
-        elif cost < 0:
-            slot = "ult" if "minus" in result else "minus"
-        else:
-            continue  # a second loyalty-positive line: no slot for it
-        if slot in result:
+        slot = loyalty_slot_for(costs, i)
+        if not slot:
             continue
         kind, requirement, draws = _classify_loyalty_effect(desc)
         result[slot] = LoyaltyAbility(

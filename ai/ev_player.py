@@ -213,6 +213,19 @@ class Play:
 # EVPlayer — the complete AI player
 # ─────────────────────────────────────────────────────────────
 
+def _as_its_land_face(card):
+    """The card as the land it is played as: itself, or -- for a modal
+    double-faced card -- a view of it carrying its land face's template
+    (CR 712), so a land's value reads that face."""
+    face = card.template.playable_land_face
+    if face is None or face is card.template:
+        return card
+    import copy
+    view = copy.copy(card)
+    view.template = face
+    return view
+
+
 class EVPlayer:
     """EV-based AI player. All decisions are EV comparisons.
 
@@ -255,12 +268,16 @@ class EVPlayer:
         # Phase 2c.3 cache: `assess_combo` is O(chains) expensive
         # (worst case ~10K simulations per call) and `_score_spell`
         # invokes it for every legal play.  All spells scored within
-        # one `decide_main_phase` call share the same EVSnapshot, so
-        # identity-based caching is sufficient and correct: the snap
-        # changes when the game state changes, and a new snap means
-        # a new id().
-        self._assess_snap_id: int = 0
-        self._assess_value = None
+        # one `decide_main_phase` call share the same EVSnapshot, so a
+        # per-snapshot memo is correct, but only by identity: a new snap
+        # can reuse a freed one's id(), so the memo checks the object
+        # itself (ai.object_memo).
+        # Per-snapshot combo assessment memo (ai.object_memo.memo_on).
+        self._assess_memo: dict = {}
+        # The main phase's assembly state (engine / sink / lethal-line
+        # facts, `ai.assembly_state`) — built once per decide_main_phase
+        # iteration and threaded into every reader, like `bhi`.
+        self._assembly = None
 
         # Mulligan decider — reuse existing.
         #
@@ -364,8 +381,10 @@ class EVPlayer:
         below 5" intent for keepable hands while honoring the land
         invariant the trigger declares.
         """
-        lands = [c for c in hand if c.template.is_land]
-        spells = [c for c in hand if not c.template.is_land]
+        # A modal double-faced card's land face is a land option (CR 712).
+        from ai.predicates import is_land_option
+        lands = [c for c in hand if is_land_option(c)]
+        spells = [c for c in hand if not is_land_option(c)]
 
         # 0-land hard floor takes precedence over hand-size leniency.
         # Delegated to MulliganDecider so the rule lives in one place
@@ -453,6 +472,10 @@ class EVPlayer:
             self.goal_engine.check_transition(game, self.player_idx)
 
         snap = snapshot_from_game(game, self.player_idx)
+        # One owner of engine / sink / lethal-line facts for this iteration
+        # (payoff sequencing §2.1); every reader below consumes this object.
+        from ai.assembly_state import assemble
+        self._assembly = assemble(game, self.player_idx, snap, bhi=self.bhi)
 
         # ── ACTIVATION region — activated win-condition lines ──
         # Battlefield permanents' activated abilities that represent
@@ -479,7 +502,8 @@ class EVPlayer:
         # effect kind rather than applied wholesale.
         from ai.activation_ev import activation_candidates
         for _perm, _ab_idx, _tgts, _ev, _reason in activation_candidates(
-                game, self.player_idx, snap, excluded=excluded_activations):
+                game, self.player_idx, snap, excluded=excluded_activations,
+                assembly=self._assembly):
             # Holdback is the ONLY real mana-cost signal in this score:
             # position_value's mana term is clamped by max(0, mana_diff), so
             # spending mana contributes exactly 0.0 to the projection.
@@ -511,6 +535,12 @@ class EVPlayer:
                 return None
 
         lands = [c for c in legal if c.template.is_land]
+        if not lands:
+            # A modal double-faced card's land face (CR 712) gives the same
+            # land drop a true land does, and the card also keeps its spell
+            # face: it is a land candidate only when no true land is.
+            lands = [c for c in legal if not c.template.is_land
+                     and c.template.playable_land_face is not None]
 
         # Identify suspend cards (sorcery-speed special action, distinct
         # from casting). Suspend-only cards (CMC 0, suspend keyword) are
@@ -525,7 +555,10 @@ class EVPlayer:
 
         spells = [c for c in legal
                   if not c.template.is_land
-                  and c not in suspend_only]
+                  and c not in suspend_only
+                  # legal only for its land face: not a cast candidate
+                  and (c.template.playable_land_face is None
+                       or game.can_cast(self.player_idx, c))]
 
         # Identify cycling cards (special action, not casting)
         cycling_cards = [c for c in me.hand if game.can_cycle(self.player_idx, c)]
@@ -598,7 +631,8 @@ class EVPlayer:
                 or me.life > l.template.fetchland.life_cost
             ]
             for land in safe_lands:
-                ev = self._score_land(land, me, spells, game)
+                ev = self._score_land(_as_its_land_face(land), me, spells,
+                                      game)
                 candidates.append(Play("play_land", land, [], ev,
                                        f"Land: {land.name} (EV={ev:.1f})"))
 
@@ -729,6 +763,15 @@ class EVPlayer:
             # Spells that need targets but have none = skip
             if self._spell_requires_targets(spell) and not targets:
                 continue
+            # Cast with no target, a modal spell performs only its modes
+            # that need none (CR 700.2a): it is cast for those only when
+            # they are worth something to its caster.
+            from engine import modal_spell as _modal
+            if (not targets and _modal.in_scope(spell.template)
+                    and _modal.has_targeted_mode(spell.template)):
+                from ai.modal import chosen_modes_value
+                if chosen_modes_value(game, spell, self.player_idx, []) <= 0:
+                    continue
 
             _tgt_reason = getattr(self, "_last_target_reason", "")
             self._last_target_reason = ""
@@ -1073,11 +1116,15 @@ class EVPlayer:
         # actually delivers. Same credit the activated-tutor branch of
         # ai/activation_ev.py applies.
         from engine.activation import ActivationManager
-        from engine.constants import LOOP_SHORTCUT_MANA
-        engine_bonus = 0
-        if ActivationManager.would_complete_unbounded_engine(
-                game, self.player_idx, target.template):
-            engine_bonus = LOOP_SHORTCUT_MANA - delivered_cmc
+        from ai.assembly_state import engine_completion_credit
+        # Completing an unbounded mana loop is worth the shortcut mana only
+        # when a sink is reachable to convert it — whole when the sink is
+        # in hand / on the battlefield / behind another access, draw-
+        # discounted when the only access is this very tutor, zero when
+        # the engine is already live (payoff sequencing §2.7).
+        engine_bonus = engine_completion_credit(
+            game, self.player_idx, self._assembly, target.template, snap,
+            spending=card)
         ev += ((creature_tutor_x_net_value(best_x, delivered_cmc)
                 + engine_bonus) * mult * per_mana)
 
@@ -1094,7 +1141,12 @@ class EVPlayer:
             accelerates = (
                 ('etb_land_from_hand' in target_tags and land_in_hand)
                 or bool(getattr(target.template, 'produces_mana', None))
-                or getattr(target.template, 'extra_land_drops', 0) > 0)
+                or getattr(target.template, 'extra_land_drops', 0) > 0
+                # An engine completion is acceleration — the loop's mana
+                # arrives next untap. Without this the hold withholds the
+                # enabler whenever the payoff ceiling is out of reach.
+                or ActivationManager.would_complete_unbounded_engine(
+                    game, self.player_idx, target.template))
             if not other_access_in_hand and not accelerates:
                 payoff_total_cost = (t.cmc or 0) + top_cmc * mult
                 # Mana trajectory: one land drop per turn (rules constant).
@@ -1233,7 +1285,7 @@ class EVPlayer:
                      if card.name in self._payoff_names else frozenset())
         ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
                              bhi=self.bhi, goal=goal_value,
-                             role_tags=role_tags)
+                             role_tags=role_tags, assembly=self._assembly)
 
         # ── Free cast bonus (generic) ──
         # Any spell offered for 0 effective mana (Ragavan exile, cascade,
@@ -1293,11 +1345,15 @@ class EVPlayer:
             ev += max(hand_denial_value(t, game, self.player_idx, snap),
                       self._self_fill_value(card, snap, me))
 
-        # ── Evoke overlay: projection doesn't model 2-card cost ──
-        if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
-            # Evoking costs an extra card — subtract its future clock value
-            from ai.clock import card_clock_impact
-            ev -= card_clock_impact(snap) * EVOKE_CARD_LOSS_MULTIPLIER  # losing a card is significant
+        # ── Evoke overlay: the projection drops the evoked body; an
+        # exile evoke cost also spends a second card (CR 702.74a) ──
+        from ai.effective_cmc import CAST_MODE_EVOKE, cast_mode_of
+        if cast_mode_of(card, snap, game=game,
+                        player_idx=self.player_idx) == CAST_MODE_EVOKE:
+            if t.evoke_exile_color is not None:
+                # Subtract the exiled card's future clock value
+                from ai.clock import card_clock_impact
+                ev -= card_clock_impact(snap) * EVOKE_CARD_LOSS_MULTIPLIER  # losing a card is significant
             # But if we're dying, evoking removal is still worth it
             if snap.am_dead_next:
                 ev += EVOKE_DESPERATE_BONUS
@@ -1323,12 +1379,13 @@ class EVPlayer:
         # composition / draw-probability modelling — beyond v2).
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
-            snap_id = id(snap)
-            if snap_id != self._assess_snap_id:
-                self._assess_snap_id = snap_id
-                self._assess_value = assess_combo(
-                    game, self.player_idx, self.goal_engine, snap)
-            ev += card_combo_modifier(card, self._assess_value, snap, me, game,
+            # Once per live snapshot (ai.object_memo: an id-only memo
+            # served a freed snapshot's assessment to a new one).
+            from ai.object_memo import memo_on
+            assess_value = memo_on(
+                self._assess_memo, snap, (),
+                lambda: assess_combo(game, self.player_idx, self.goal_engine, snap))
+            ev += card_combo_modifier(card, assess_value, snap, me, game,
                                        self.player_idx)
 
         # Land-sacrifice tutor (Scapeshift shape) fizzle gate.
@@ -1712,6 +1769,15 @@ class EVPlayer:
                 c for c in me.creatures
                 if c.instance_id not in _seen
                 and 'etb_value' in getattr(c.template, 'tags', set())]
+            # The creature the blink will actually return — the same
+            # choice the engine's blink handler makes — is charged too:
+            # a temporarily-hasty attacker (Dash, a haste grant) with no
+            # ETB and no rider loses its attack exactly as a presumed
+            # target does (CR 400.7).
+            _actual = self._presumed_reset_target(me, snap)
+            if _actual is not None and all(
+                    c.instance_id != _actual.instance_id for c in presumed):
+                presumed.append(_actual)
             charges = [self._forfeited_attack_charge(c, snap)
                        for c in presumed
                        if self._blink_would_forfeit_attack(c)]
@@ -2599,6 +2665,17 @@ class EVPlayer:
                 land.name, 0.0)
             ev += declared * LAND_GAMEPLAN_PRIORITY_SCALE
 
+        # ── A land a permission lets us play only this turn ──
+        # (an impulse draw's last turn, CR 611.2) is gone at cleanup
+        # unless played; a land in hand stays held. When one in hand
+        # competes for the same land play, playing the expiring one keeps
+        # that held card: it is worth one held card more, at the
+        # position's own per-card rate (`card_clock_impact`).
+        from ai.playable_cards import expires_this_turn
+        if (expires_this_turn(game, self.player_idx, land)
+                and any(c.template.is_land for c in me.hand)):
+            ev += card_clock_impact(snap)
+
         return ev
 
     def _reanimation_readiness_boost(self, snap: EVSnapshot) -> float:
@@ -3014,6 +3091,12 @@ class EVPlayer:
     # COMBAT — reuse existing CombatPlanner
     # ═══════════════════════════════════════════════════════════
 
+    def decide_attack_targets(self, game, attackers) -> dict:
+        """CR 508.1b: which planeswalker (if any) each attacker attacks —
+        see ai/attack_targets.py."""
+        from ai.attack_targets import choose_attack_targets
+        return choose_attack_targets(game, self.player_idx, attackers)
+
     def decide_attackers(self, game) -> List["CardInstance"]:
         """Decide which creatures to attack with."""
         from ai.turn_planner import extract_virtual_board
@@ -3085,9 +3168,8 @@ class EVPlayer:
                 for i in range(pumps):
                     card_to_discard = discardable[i]
                     if card_to_discard in me.hand:
-                        me.hand.remove(card_to_discard)
-                        card_to_discard.zone = "graveyard"
-                        me.graveyard.append(card_to_discard)
+                        game.zone_mgr.move_card(game, card_to_discard, "hand",
+                                                "graveyard", cause="discard")
                         # Permanent +1/+1 counters, not temp mods
                         if hasattr(creature, 'plus_counters'):
                             creature.add_plus_counters(1, game)
@@ -3113,7 +3195,11 @@ class EVPlayer:
             if getattr(c.template, 'has_attack_trigger', False):
                 return True
             return False
-        total_power = sum(c.power for c in valid if (c.power or 0) > 0)
+        # The unblocked reach — the same fold the assembly-state line
+        # projector uses (`attack_reach`, through_blocks=False), so the
+        # declarer and the projector cannot drift.
+        from ai.assembly_state import attack_reach
+        total_power = attack_reach([(c.power or 0, False) for c in valid])
         # Lethal if unblocked is a property of the TURN: the pump instants
         # castable after blocks add their power to an attacker (CR 509.4
         # window) — the same packing `_burn_reach_this_turn` applies to
@@ -4211,10 +4297,14 @@ class EVPlayer:
 
         # ── Opp creatures (only if killable by this damage) ──
         from engine.target_solver import can_be_targeted
+        from ai.ward_targeting import ward_rules_out_target
         for c in opp.creatures:
             # Hexproof / protection from this spell's colour (CR
-            # 702.11d / 702.16b): not a target at all.
+            # 702.11d / 702.16b): not a target at all; a ward the caster
+            # would not get past (CR 702.21a) only gets it countered.
             if not can_be_targeted(c, spell, self.player_idx):
+                continue
+            if ward_rules_out_target(game, self.player_idx, spell, c):
                 continue
             remaining_toughness = (c.toughness or 0) - getattr(
                 c, "damage_marked", 0)
@@ -4316,7 +4406,7 @@ class EVPlayer:
         # "Target creature" is legal on the opponent's creature too, so
         # cast-time legality never protects this choice; with no own
         # creature there is no target and the spell is not cast.
-        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+        if (getattr(t, 'has_targeted_pump', False)
                 and 'removal' not in tags):
             mine = list(game.players[self.player_idx].creatures)
             if not mine:
@@ -4411,11 +4501,15 @@ class EVPlayer:
 
             from engine.target_solver import can_be_targeted as _targetable
 
+            from ai.ward_targeting import ward_rules_out_target
+
             def _reachable(c):
-                # The X bound AND the permanent's own targeting
-                # restrictions (hexproof / protection, CR 702.16b).
+                # The X bound, the permanent's own targeting restrictions
+                # (hexproof / protection, CR 702.16b), and a ward this
+                # spell's caster would not get past (CR 702.21a).
                 return ((_x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling)
-                        and _targetable(c, spell, self.player_idx))
+                        and _targetable(c, spell, self.player_idx)
+                        and not ward_rules_out_target(game, self.player_idx, spell, c))
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -4477,9 +4571,11 @@ class EVPlayer:
         if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
             from engine.target_solver import can_be_targeted as _targetable
+            from ai.ward_targeting import ward_rules_out_target
             nonland = [c for c in opp.battlefield
                        if not c.template.is_land
-                       and _targetable(c, spell, self.player_idx)]
+                       and _targetable(c, spell, self.player_idx)
+                       and not ward_rules_out_target(game, self.player_idx, spell, c)]
             # An X-bound target ("with mana value X or less") is legal only
             # up to the X the caster can pay — the same engine formula
             # cast-time legality uses (CR 601.2b/c). Before this the pick
@@ -4552,9 +4648,13 @@ class EVPlayer:
         from ai.ev_evaluator import snapshot_from_game
         from engine.target_solver import can_be_targeted
         snap = snapshot_from_game(game, player_idx)
-        # Hexproof / protection from this spell's colour: not targets.
+        # Hexproof / protection from this spell's colour: not targets; a
+        # ward this caster would not get past only gets the spell
+        # countered (CR 702.21a, ai/ward_targeting).
+        from ai.ward_targeting import ward_rules_out_target
         candidates = [c for c in creatures
-                      if can_be_targeted(c, card, card.controller)]
+                      if can_be_targeted(c, card, card.controller)
+                      and not ward_rules_out_target(game, self.player_idx, card, c)]
         if not candidates:
             return None
         # For burn removal, filter out creatures this spell cannot kill.
@@ -4956,6 +5056,13 @@ class EVPlayer:
         if t.is_creature or CardType.PLANESWALKER in t.card_types:
             return False
 
+        # A modal spell with a mode that needs no target can be cast
+        # choosing that mode alone (CR 601.2c, 700.2a); whether that is
+        # worth casting is the caller's question (`ai.modal`).
+        from engine import modal_spell
+        if modal_spell.in_scope(t) and modal_spell.has_untargeted_mode(t):
+            return False
+
         # Classified land-destruction spells (typed field, parse-once):
         # "Destroy target land" cannot resolve without a target.
         if getattr(t, 'destroys_target_land', False):
@@ -4979,7 +5086,7 @@ class EVPlayer:
         # A targeted pump (typed "+N/+M until end of turn") needs the
         # creature it is aimed at; cast with no chosen target it resolves
         # doing nothing (a Phyrexian pip paid for nothing, 2026-09-08).
-        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+        if (getattr(t, 'has_targeted_pump', False)
                 and 'removal' not in tags):
             return True
         for ability in t.abilities:

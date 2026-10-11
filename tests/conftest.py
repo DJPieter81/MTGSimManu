@@ -156,6 +156,19 @@ def card_db():
     return shared_card_database()
 
 
+@pytest.fixture(scope="session")
+def pool_effects(card_db):
+    """One eager clause-grammar parse of every template of the shared card
+    DB ({name: CardEffects}, read-only), for the pool-wide tool tests (the
+    census, the equivalence tool): ~18 s of CPU once per session instead of
+    once per test. `parse_pool` without `populate` pins nothing on a
+    template; CardEffects are frozen."""
+    from types import MappingProxyType
+    from engine.effect_grammar import parse_pool
+
+    return MappingProxyType(parse_pool(card_db))
+
+
 @pytest.fixture
 def game_runner(card_db):
     """Create a fresh GameRunner for each test."""
@@ -175,8 +188,11 @@ def dimir_deck():
 
 
 def run_seeded_game(runner, deck1_name, deck2_name, seed=42):
-    """Helper: run a single game with a fixed seed."""
+    """Helper: run a single game with a fixed seed. The engine draws from
+    `runner.rng`, so that is the RNG seeded (as run_meta._run_game does);
+    the global module is seeded too for legacy callers."""
     random.seed(seed)
+    runner.rng.seed(seed)
     d1 = MODERN_DECKS[deck1_name]
     d2 = MODERN_DECKS[deck2_name]
     return runner.run_game(
@@ -221,3 +237,31 @@ def pytest_configure(config):
         "llm_eval_real_model: marks LLM eval tests that hit a real model "
         "(skipped unless --run-eval is passed).",
     )
+
+
+def typed_walker(card_db, game, controller, text, loyalty, counters=None):
+    """A planeswalker on the battlefield whose loyalty lines are typed the
+    way the card database types a real walker's (parse_loyalty_abilities
+    then _type_loyalty_clauses) — fixture for loyalty-choice tests."""
+    import copy as _copy
+    from engine.cards import CardInstance
+    from engine.oracle_parser import parse_loyalty_abilities
+    tpl = _copy.copy(card_db.get_card("Karn, the Great Creator"))
+    tpl.name = "Fixture Walker"
+    tpl.oracle_text = text
+    tpl.loyalty = loyalty
+    tpl.back_face_oracle = ""
+    # The copy carries Karn's effects memo; the memo key (name, text,
+    # facts) already differs, and clearing it keeps the fixture honest.
+    tpl.set_effects(None)
+    # Clauses sliced from THIS walker's own lines (a bare clause would
+    # carry EMPTY_EFFECTS).
+    tpl.loyalty_abilities = card_db._type_loyalty_clauses(
+        tpl.name, parse_loyalty_abilities(text, loyalty), walker=tpl, face=0)
+    pw = CardInstance(template=tpl, owner=controller, controller=controller,
+                      instance_id=game.next_instance_id(), zone="battlefield")
+    pw._game_state = game
+    pw.enter_battlefield()
+    pw.loyalty_counters = loyalty if counters is None else counters
+    game.players[controller].battlefield.append(pw)
+    return pw

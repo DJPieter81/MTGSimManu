@@ -5297,3 +5297,2322 @@ Replay `replays/zoo_vs_toolbox_tip.txt` (Domain Zoo vs Creatures Toolbox s50000,
 2. By the time Craterhoof lands, the support creatures are **tapped by those activations** (Fiend Artisan tapped, Druid tapped/looping), so only Craterhoof (haste) attacks for **8** (L967-970) instead of a pumped-team alpha strike; Zoo (23 life) survives and exiles Craterhoof with Leyline Binding next turn (L999-1000).
 
 **Subsystem / class:** the "unbounded-mana → outlet / payoff sequencing" AI lane — (a) a sacrifice-tutor (Fiend Artisan, Birthing Pod, Neoform class) must not sacrifice its own assembled engine/payoff pieces and must stop re-activating once the payoff is found; (b) once a lethal mass-pump payoff (Craterhoof / `team_pump_data`) is reachable, the AI must sequence to the alpha strike (deploy + swing the whole pumped team) rather than tapping the board out on the tutor first. `ai/ev_player.py` activation/attacker sequencing + Fiend Artisan sac-target selection; `ActivationManager.would_complete_unbounded_engine`. Class-sized (sac-tutors × mass-pump payoffs × unbounded engines); lifts Toolbox and deflates its Zoo/Dimir/Tron 95/92 donations. FIX = next unit (failing test first); this entry is the required pre-code subsystem naming.
+
+### Lane T fix — leg (a): a sac-cost activation must not cannibalise a live engine (2026-09-14, `ai/activation_ev.py`)
+
+Leg (a) of the subsystem above. In `activation_candidates`, at the point the
+sacrifice victim is chosen, the candidate is now suppressed when that victim is
+a member of a **live unbounded mana engine** —
+`ActivationManager.engines_lost_if_removed(game, idx, sacrificed) > 0` (the same
+predicate `ai/clock._creature_static_value` already prices). Class: every
+sacrifice-a-creature activation (Fiend Artisan, Birthing Pod, altars, Viscera
+Seer, …) × every unbounded engine. No card names, no new numeric literal
+(boolean guard), reuses an owned predicate — single-owner `{target_pick:12,
+damage_write:42, counter_write:5}` and magic-numbers baselines unchanged.
+
+Why the projection missed it (root cause): the sacrifice-cost term in
+`activation_candidates` charges a land's mana (`is_land`) and a creature's board
+power, but a 0-power mana-creature like Devoted Druid is neither a land nor
+carries power, so eating it read as ~free; a valuable fetch (Craterhoof, MV 8)
+then swamped the near-zero projected cost and the tutor fired, sacrificing the
+assembled loop. The gate keys on engine membership, not on power, so it is exact
+where `position_value` is blind.
+
+**Failing test first** `tests/test_sac_activation_does_not_eat_its_own_engine.py`:
+the tutor is not offered when its only fodder is a live engine member (RED
+today — fires at ev≈2.81 sacrificing Druid/Vizier to fetch Craterhoof); still
+offered when an expendable body exists (picks the expendable, no
+over-suppression); unaffected on a non-engine board. Pins kept green:
+`test_tutor_credit_for_engine_completing_piece`,
+`test_opportunity_cost_prices_mana_and_engines`,
+`test_unbounded_untap_mana_engine_shortcut`,
+`test_sacrifice_activation_pays_its_cost_cr602_2b` (26 passed). Anchor 29, **no
+flips**; chunk A 2285, chunk B 2370; all 8 ratchets at baseline.
+
+**Measurement — field flat (honest negative).** Same-seed n=20 Bo3 (50000 grid,
+`--parallel`, `MTG_LLM_DECISION_SCORER_OFFLINE=1`, quiet box), pre-fix worktree
+`98b1c0d` vs the fixed tree: Creatures Toolbox field **21.0% → 21.2%** (+0.2pp);
+Toolbox vs Domain Zoo **5% → 5%**; Toolbox vs Dimir Midrange **5% → 0%** (one
+game the other way). Below the ≥2.2pp field / ~11pp cell movement bar — **no
+material movement**. The gate is narrow by construction: it bites only once the
+deck's expendable fodder (spare Dryad Arbor) is exhausted and the sole remaining
+victim is an engine piece, and the replay shows Toolbox has already lost the
+game to Zoo's clock + removal on Fiend Artisan by then, so the late-game
+engine-eating is not the pivotal loss driver in these cells.
+
+**Shipped anyway (rules-quality, not a WR chase).** The fix is a genuine,
+tested AI-correctness improvement — the AI must not eat its own assembled combo
+engine for mid-game value — with a red→green pin, clean anchor/ratchets/chunks,
+and zero regression. Per CLAUDE.md it is not reverted to move a cell.
+
+**Lane-T re-prioritisation:** this is unit 1 of the Lane-T lane with no
+movement (loop-break at 3). The measurement discredits the "engine
+cannibalisation is Toolbox's pivotal loss" hypothesis: the real driver is
+earlier (Zoo's clock + Fatal Push on Fiend Artisan T5). Leg (b) — sequence to
+the pumped-team alpha strike once a lethal `team_pump_data` payoff is reachable —
+is the more promising lever, but the flat field says the outlier program should
+re-weight toward Lane C (control shells) / the earlier Toolbox loss, not a third
+swing at the sac-tutor. Recorded so the hypothesis is not re-run blind.
+
+---
+
+# Deep audit (2026-09-15/16) — auditor expansion, 5-panel diagnosis, WR-resolution loop
+
+## Phase 1 — rules-auditor expansion (PR #572, CI green)
+The auditor's "0 violations" was a coverage illusion (15 invariants). Added 5
+classes (now 20): `unhandled/<timing>` + `606/loyalty_unexecutable_kind` census
+folds (c0), `104.3c/empty_library_loss` (c2), `601.2f/reduction_pips_preserved`
+(c3), `508.1a/attacker_legal` + `509.1a/blocker_legal` (c4); report census
+dedup (c5); pinned the 4 untested SBA sub-invariants (c6). The triggered-ability
+family (delayed-trigger absence, ward) was DEFERRED — no clean typed field / the
+CR 603.3 exemption makes a resolve_stack-seam ward check false-positive-prone.
+**Audited matrix (`--matrix -n 20 --rules-audit`, aborted=0): ZERO rule
+violations** — the engine is rules-correct on every audited class. Ranked
+backlog is all census: `keyword/unmodelled` + the new `unhandled/replacement`
+(graveyard-exile family: Dauthi Voidwalker, Rest in Peace, Sanctifier en-Vec)
+and `unhandled/spell` (Practiced Offense, Demonic Dread). Doc:
+`docs/diagnostics/2026-09-15_deep_audit_backlog.md`. So the WR outliers are
+decision-quality, not rules bugs.
+
+## Phase 2 — five-panel strategic audit
+`docs/history/audits/2026-09-15_5panel_deep_audit.md`. Ranked, class-sized,
+card-name-free findings for the below-band lanes. Loop order: U0 bo3_trace
+repair; U1 declinable loyalty (control + Phase-1 convergence); U2
+unbounded-mana-engine sink gate (Toolbox); U3 flicker floor (both blink);
+U4 holdback uncastable-color; U5 combo-enabler deploy priority; U6 X-wipe
+own-collateral; U7 Dash needs a combat projection. Hollow One / Amulet reported
+as hate-swing / construction, not engine units. Clock sign-inversion stays
+falsified.
+
+## WR-resolution loop (structural fixes only)
+- **U0 (`d30aa0d`)** — repaired `tools/bo3_trace.py` (excluded_activations kwarg
+  + deleted pass_threshold); tooling, unblocks reasoning-inlined tracing.
+- **U1 (`aa5fb9f`)** — an optional loyalty activation is declinable (CR 606.3):
+  `ai/pw_ability.choose_pw_ability` returns `PW_DECLINE` for a loyalty-negative
+  whiff (targeted primary effect has no legal target, race not failing) instead
+  of ticking the walker to death; `engine/game_runner._activate_planeswalkers`
+  honours it. Class-sized (564 unclassified loyalty abilities, 8 MB-PW decks),
+  no card names, no literal. Anchor: one turn-only drift (4c Omnath vs Goryo's
+  7→6, winner unchanged), refreshed. **Measured (same-seed n=20 field): Azorius
+  Control (WST) 41.5 → 45.2 (+3.7pp)**, key cells vs Domain Zoo 5→20, vs 4c
+  Omnath 5→10, vs Eldrazi Tron 5→10, vs Dimir 20→25 — a confirmed mover; lifts
+  the control shells toward band and tightens the over-performers' control
+  matchups. Loop counter: 1 unit, moved (>2.2pp) — reset.
+- **Next:** U2 (unbounded-mana-engine credit gated on sink reachability —
+  `ai/ev_player._gate_x_tutor_payoff` engine_bonus branch + the activated-tutor
+  credit; mirror `_overlay_land_sacrifice_fizzle`; reuse/extend
+  `ai/combo_calc._tutor_has_payoff_access` into a generic mana-sink predicate),
+  then U3 (flicker floor). Field/matrix measurement batched every 2-3 units.
+
+- **U2 (`2bc0461`)** — unbounded-mana-engine completion credit gated on sink
+  reachability (`ai/combo_calc.unbounded_mana_sink_reachable`, both the cast
+  `_gate_x_tutor_payoff` and the activated `activation_candidates` seams).
+  Predicate tests + updated engine-credit pin; ratchets baseline; anchor 29 no
+  flips; both chunks green (A pass, B 2398). **Measured (same-seed n=20):
+  Creatures Toolbox 21.0 → 21.5 (flat, +0.5pp).** Root of the flatness: Toolbox
+  always carries a sink (Craterhoof + Walking Ballista in its 60), so the gate
+  is a no-op for it — the fix protects the *general* case (a deck completing an
+  unbounded loop with no sink), not Toolbox. A correct fix kept for correctness
+  (not reverted). The real Toolbox lever is payoff SEQUENCING (fetch/deploy the
+  sink and alpha-strike once the engine is up), the harder Lane-T leg (b).
+  **Unbounded-mana/Toolbox lane now has 2 flat structural fixes (Lane-T sac-gate
+  +0.2, U2 sink-gate +0.5) — a 3rd swing would hit loop-break; pivoting to a
+  fresh decisive lane (U3 flicker floor, both blink outliers) instead.**
+
+## Payoff-sequencing design (2026-09-16, written 2026-09-23)
+`docs/design/2026-09-16_payoff_sequencing_design.md` — judge-panel winner
+(AssemblyState, 2/3 votes) with all three refuters' amendments applied. Two
+findings reshape the Toolbox lane: (1) the intended X=8 Craterhoof line is
+COUNTERED on the traced board (Stubborn Denial fires when the payer is
+tapped out; `ai/response.py:532-540`), and `toolbox_dimir.txt:809-827` shows
+the same into Counterspell — so every line carries a BHI `p_resolves` and
+the delivery order is resolution-weighted, not a boolean; (2) the sink that
+is actually on the battlefield in 6/6 loop-live turns is Leyline of
+Abundance's team-counter ACTIVATION, which the engine refuses
+(UNCLASSIFIED) — so U1 is a new `PUT_COUNTER_TEAM` activated-ability class
+(CR 122) before any AI change. X sizing gets one owner
+(`CastManager.affordable_x`; the inline `:1828` copy omits fixed pips —
+engine 10 vs AI 8). Single-deck lane stated honestly (only Toolbox holds a
+typed sink in its 60; E-Tron's Ballista is SB-only; Amulet has no sink).
+Units: U0 affordable_x owner → U1 PUT_COUNTER_TEAM → U2 assembly_state →
+U3 the four readers (U2+U3 one measured commit), gated by the s60500 replay
+showing an ability-line kill or a withheld tutor, never "X=8 + alpha".
+Architecture + EV-orchestration-audit workflows remain parked (account
+credit block); their cached prefixes are resumable.
+
+### Payoff-sequencing U0 — X sizing: verified-before-build, pinned (2026-09-24)
+The refuters' "inline copy omits fixed pips" reading was wrong in effect:
+`CastManager.cast_spell` pays the base cost (taps lands) BEFORE the X block
+reads `untapped_mana_capacity()`, so the budget at `:1828` is already net
+of the fixed pips (probe: 3 Forests + {X}{G} tutor with a 3-drop and a
+1-drop in the library → X=1, one land left; 4 Forests → X=3; never X=3 on
+three lands). It is also net of any cost REDUCTION actually applied, which
+`affordable_x`'s printed-cmc formula is not — swapping it in after payment
+would subtract the base twice. Not changed; pinned instead:
+`tests/test_x_cost_paid_never_exceeds_capacity_minus_pips.py` (CR 601.2h,
+2 tests, green on the unchanged engine). Design doc §5 U0 amended.
+
+### Payoff-sequencing U1 — `PUT_COUNTER_TEAM` is an executable activated-ability class (CR 122.1 / 115.1, 2026-09-24)
+The mass scope of the put-counter class ("[Cost]: Put N <kind> counters on
+each [other] [artifact] <type> [you control]") was UNCLASSIFIED, so rule 9b
+refused it before any cost was charged — the outlet on the battlefield in
+every loop-live Toolbox turn (Leyline of Abundance's `{6}{G}{G}`) was
+inert. Now: `parse_activation_put_counter` types it once at DB load with
+`scope='team'` (owner you/any, `other`, card-type words only — a subtype,
+colour, "attacking", "that entered this turn", "and/or Vehicle" or a
+trailing rider is refused whole); `classify_activation_effect` routes it to
+the new `ActivationEffectKind.PUT_COUNTER_TEAM` (`targets_required=0`);
+`ActivationManager.RESOLVABLE_EFFECT_KINDS` admits it (schema-incoherence
+and refill guards extended, "each other" never refills its own cost);
+`_resolve_put_counter` computes the recipient set from
+`effective_card_types` under the named controller(s) and writes each counter
+through `adjust_counters` (single-owner unchanged); auditor invariant
+`122/team_counter_placed` restates the set independently. AI enumeration
+stays WITHHELD alongside SELF/TARGET (pinned) — valuation is the design's
+U2. Class: 12 plain printed abilities (Gavony Township, Steel Overseer,
+Leyline of Abundance, Shalai, Mikaeus, Genku, Katilda, Aron, Durable
+Handicraft, Abandoned Air Temple, …); the restricted variants (the Mentor
+cycle "with <keyword>", Shaile/Novijen/Raucous Entertainer "that entered
+this turn", Sandstorm Salvager "creature token", Iron Spider "and/or
+Vehicle") stay refused and are recorded as the next parser lead.
+Tests: `tests/test_put_counter_team_activation.py` (15, red→green) + the
+mass-pin in `tests/test_put_counter_activation.py` updated. Ratchets all at
+baseline (single-owner 12/42/5, magic 13, registry 87). Behaviour flat by
+construction (AI withholds; no registered deck's engine heuristic fires it).
+Shipped `af51c42`, CI green.
+
+### Payoff-sequencing U2+U3 — `ai/assembly_state.py`, one owner of engine / sink / lethal-line facts (2026-09-24, `53c95a5`)
+**The first confirmed mover on the Toolbox lane.** `assemble()` runs once
+per main-phase iteration and every reader consumes the same object:
+`is_mana_sink` (exactly the mana-scaling shapes: X damage, Overrun mass
+pump, `PUT_COUNTER_TEAM` activation — a storm/discard-scaled token maker is
+NOT a sink, `combo_calc.unbounded_mana_sink_reachable` is now a wrapper),
+every access to a sink (cast / activate / X-tutor cast / activated tutor)
+with its damage projected THROUGH blocks after payment-tapping the team (a
+live loop covers the shortfall; an entering body attacks only with haste;
+an X sink delivered without entry counters is a 0/0, not an access), its
+`p_resolves` from the single BHI query, and `best_line` maximising
+`p_resolves × win_swing` (`win_swing` lifted into `ai/clock.py` beside
+`position_value`; the Storm chain credit calls it). `engine_completion_credit`
+replaces the boolean sink gate: 0 with the loop live, whole with a sink in
+hand / on the battlefield / behind another access, otherwise
+draw-discounted by the exact hypergeometric over the surviving horizon.
+Readers: `activation_candidates` enumerates a team-counter activation ONLY
+as the first step of the best line and credits the line (X-damage ping and
+activated-tutor first steps likewise); `compute_play_ev` credits the cast
+that starts the line outside the combo-chain gate; the tutor delivery
+choice orders `(delivers_lethal, completes_engine, value)` with the lethal
+verdict computed at cast-time truth; the X-tutor hold treats an engine
+completion as acceleration (Dimir T4 negative control: the enabler is
+still fetched at X=2); `decide_attackers` reads the same `attack_reach`
+fold as the projector. Once the board already reaches lethal the line's
+next step is combat (the first replay activated 40× past lethal; now 7).
+Not built here (recorded): the BHI tax-counter branch of `p_resolves`
+(no posterior API for soft-counter taxes exists yet — casts are weighted
+by `1 − p_interaction` only), the picker rewrite through
+`choose_tutor_delivery` (the pickers still size X by `default_tutor_rank`;
+the delivery callback applies the three-tier order among the eligible at
+that X), `tutor_to_hand` accesses, and `payoff_affordable` / the RAMP
+transition (deferred by design §7).
+- **Replay gate (design §8.1) PASSED:** `--bo3 "Creatures Toolbox" "Domain
+  Zoo" -s 60500` — pre: Zoo 2-0 (T9, T8); post: **Toolbox wins G1 on T4**
+  (Nature's Rhythm at X=2 fetches the enabler, loop live, 7 team-counter
+  activations, alpha for 81), then Zoo T6/T6 → 2-1. The line is the
+  uncounterable ability line, never "X=8 + alpha".
+- **Measured (same-seed n=20 Bo3, 50000 grid, `--parallel`, offline
+  scorer; pre = worktree `af51c42`): Creatures Toolbox field 21.2 → 28.3
+  (+7.1pp)** — vs Broodscale 5→35, Dimir 0→15, Eldrazi Ramp 30→45, Ruby
+  Storm 30→45, Azorius Blink 50→65, Goryo's 45→55, Amulet 75→85, Pinnacle
+  10→30; vs Domain Zoo 5→5, Prowess 5→5, Grixis 10→5. Toolbox band
+  [30,70]: now 1.7pp below the floor from 9.2 below. Lane counter RESET
+  (movement ≥ 2.2pp).
+- Tests `tests/test_assembly_state_lethal_line.py` (14, red→green); pins
+  green unedited (tutor engine-credit, unbounded shortcut, sink
+  reachability, X-tutor payoff selection, sac-activation gate). Anchor 29
+  no flips. Chunks A 2325 / B 2430. Ratchets at baseline
+  (`ai/assembly_state.py` pinned at 0 bare literals).
+- **Guard: Domain Zoo field same-seed pre/post 73.3 → 73.3, every cell
+  identical (6 draws credited to nobody on both).** The unit moves only a
+  deck whose line it models; no over-reach onto the aggro/midrange field.
+- Next on this lane: Toolbox is 1.7pp under its [30,70] floor — the two
+  deferred legs (the BHI tax branch of `p_resolves`; the picker rewrite
+  through `choose_tutor_delivery`) are the remaining Toolbox levers, and
+  the s60500 G2/G3 losses are Zoo's T6 clock (the band question). The
+  loop pivots to the next below-band deck with structural headroom
+  (Jeskai Blink −16.2, the flicker floor at `ai/ev_player.py:1672`).
+
+### Jeskai Blink lane — a Saga's chapter I is same-turn value (CR 714.3a, 2026-09-25, `1b693bf`)
+**Replay-first diagnosis** (s50000 Bo3, Jeskai 0-2 vs 4c Omnath and vs
+Eldrazi Tron): Fable of the Mirror-Breaker sat in the opening hand on turns
+3–6 against Omnath (Phelia cast twice into removal instead) and until turn
+12 against Tron. The recorded flicker-floor lead was NOT the losing
+decision. Probe on a turn-3 board: Fable −0.15 with `deferral: True`,
+Phelia +1.98. Subsystem: `compute_play_ev`'s deferral gate
+(`_enumerate_this_turn_signals`) found no same-turn signal for a Saga —
+an enchantment with no "when … enters" clause — and returned the exposure
+cost before the projection ran, so the existing Saga chapter projection
+was never reached. A Saga's chapter I triggers as it enters (lore counter
+on entry, CR 714.3a / 714.2b).
+- Fix: typed `CardTemplate.saga_chapter_one_material` (parsed at DB load,
+  chapter I carries a material effect verb — the self-ETB verb list); the
+  signal enumerator reads it. 121 of 183 Sagas. Registered carriers: Fable
+  (Jeskai Blink, Boros Energy, Boros Ponza), The Legend of Roku (Boros
+  Energy). Tests `tests/test_saga_chapter_one_is_same_turn_value.py` (3,
+  red→green). Ratchets at baseline.
+- **Measured (same-seed n=20 Bo3, `--parallel`, pre = worktree
+  `4f34404`): Jeskai Blink field 28.3 → 41.0 (+12.7pp)** — vs Azorius
+  Control 10→55, WST 0→45, Izzet Prowess 20→45, Eldrazi Ramp 15→40, Boros
+  Energy 20→40, Boros Ponza 25→40, Eldrazi Tron 5→20, 4c Omnath 5→15; down
+  vs Affinity 65→55, Amulet 80→70, Broodscale 10→0. Band [45,60]: 4.0pp
+  below the floor from 16.7. Lane counter reset.
+- Anchor: two flips, both diverging at a Fable cast the pre-change tree
+  deferred — Jeskai Blink vs 4c Omnath s50000 (T5 Fable instead of
+  Prismatic Ending; Omnath → Jeskai, T9) and Boros Ponza vs Boros Energy
+  s51000 (T9 Fable instead of Seasoned Pyromancer; Ponza T16 → Energy
+  T12). Accepted as rules-correct and refreshed.
+- Guards (same seeds, n=20, pre → post): Boros Energy 60.0 → 61.0,
+  Boros Ponza 50.4 → 51.7, Domain Zoo 73.3 → 72.5 — all inside the 2.2pp
+  noise band; the two other Fable decks gain slightly, as the rule
+  predicts. Anchor 29 passed after refresh; chunks A 2326 / B 2433; CI
+  green on `f68b389`.
+- Next: Jeskai Blink is 4.0pp under its floor. Re-replay its worst
+  remaining cells (Broodscale 0, 4c Omnath 15, Eldrazi Tron 20) on the new
+  head before choosing the next unit.
+
+### Jeskai Blink lane — a pre-combat blink is charged its actual target's attack (CR 400.7, 2026-09-25, `e839889`)
+Re-replays on `d1b47ef` (s50000 Bo3): Jeskai now beats 4c Omnath 2-0 (was
+0-2 before the Saga unit); loses to Eldrazi Tron 1-2 and Broodscale 0-2.
+Broodscale G2 T5: Dash Ragavan, then Ephemerate on it pre-combat (scored
+−0.03 and cast) — the new object lost Dash's haste, did not attack, then
+chump-blocked and died. Subsystem: `_score_spell`'s Main-1 forfeit charge
+priced only presumed targets (EOT riders, `etb_value` creatures), not the
+creature the engine's blink handler actually returns
+(`_presumed_reset_target`). Fix: include it. Tests
+`tests/test_blink_charges_the_attack_of_its_actual_target.py` (3; 2
+red→green); 51 blink/rebound/reanimation tests green; ratchets baseline.
+- **Measured (same-seed n=20, pre = `d1b47ef`): Jeskai Blink 41.0 → 40.4
+  (flat), Azorius Blink 27.9 → 29.2 (flat), Domain Zoo 72.5 → 72.5.**
+  Anchor 29 no flips; chunks A 2329 / B 2433; CI green on `e839889`.
+  A correct-play fix kept, not a mover: the dash-then-blink line is rare.
+  Lane counter: 1 flat unit after the Saga mover.
+- **Paused for the metagame refresh.** Search snippets (all metagame sites
+  are blocked by the session egress proxy, so no page could be read)
+  indicate the registered shares (mtgdecks 2026-07-05, lists mtgtop8
+  2026-08-08) are stale: Boros Energy weighted 15.9% vs ~4–6.6% now;
+  Domain Zoo 4.0% vs ~2.6% (not tier 1); Goryo's 1.5% vs ~10%; Mono-Green
+  Broodscale #1 after the Baltimore RC and Esper Blink ~6–8% are not
+  registered. No Modern B&R change on 2026-08-10. A refresh (lists +
+  shares + Marvel Super Heroes in the card DB) changes every measured
+  number, so the loop resumes on the refreshed matrix and bands.
+
+## Meta refresh (2026-09-27) — current lists, shares and card DB; full matrix n=60
+
+Card DB MTGJSON 5.3.0+20260926 (adds Marvel Super Heroes, `215e674`);
+17 registered decks moved to current mtgtop8 lists and shares
+(`7a13373`, data/tier1_decklists/2026-09-27/); test/doc fallout `74dcb24`.
+Matrix: 25 decks, Bo3, n=60, `--parallel --rules-audit`, 300 pairs,
+~4h45m wall; **aborted 0**, draws 496 (credited to nobody). Calibration
+34 in band / 62 out.
+
+Field WR (flat), old lists (09-13) → new lists: Domain Zoo 71.6 → 78.0,
+Boros Energy 61.1 → 67.7, Broodscale 62.5 → 66.2, Izzet Prowess
+60.3 → 61.1, 4c Omnath 57.8 → 70.5, Living End 56.2 → 65.5, Jeskai
+Blink 28.8 → 52.2, Creatures Toolbox 20.8 → 36.2, Amulet 23.3 → 33.2;
+falls: Azorius Control 45.2 → 8.8, Boros Ponza 49.2 → 16.9, Ruby Storm
+55.0 → 24.2, Eldrazi Tron 68.3 → 49.1, Dimir 64.1 → 45.8.
+
+**Read with care — the biggest falls are on decks whose new lists carry
+unmodelled cards** (recorded in `74dcb24`): Azorius Control (Day's
+Undoing), Ruby Storm (Hex Magic ×4, a no-op), Boros Ponza (a new
+land-destruction control shell on a regenerated starter gameplan), and
+gameplans pruned of cut cards without their replacements named. These
+are sim-fidelity gaps to diagnose by replay before any band is set from
+them — not the decks' real strength.
+
+Rules audit: 1 violation class — `704.5f/lethal_damage`, 24 findings in
+16 games of ONE pair: Reflection of Kiki-Jiki (Fable's transformed back
+face) survives lethal damage. Real engine bug (SBA on a transformed
+permanent); next rules unit. Census: Hex Magic, Sanctifier en-Vec
+replacement, unmodelled keywords (Ocelot Pride first).
+
+## Unit TF — a transformed permanent's creature gates read its current face (2026-09-27)
+
+**Found by the auditor, not a replay.** The 2026-09-27 audited matrix
+(`audits/rules_audit_20260927T051427Z.jsonl`) recorded the run's only real
+violation: 24 × `704.5f/lethal_damage`, all "Reflection of Kiki-Jiki survives
+2 damage at toughness 2" (Jeskai Blink vs Ruby Storm).
+
+**Root cause.** `CardInstance.has_summoning_sickness` / `can_attack` /
+`can_block` / `is_dead` (`engine/cards.py`) gated on `template.is_creature`
+(the printed front face) instead of `effective_is_creature` (the current face
+— the accessor `PlayerState.creatures` already uses). A Saga transformed into
+a creature was listed as a creature but never died to lethal damage and could
+neither attack nor block. Class: 153 pool DFCs whose creature-ness differs
+between faces.
+
+**Commits.**
+- `438463a` — the four gates read the current face (CR 711.8). Tests: dies to
+  lethal damage via the SBA; attacks and blocks; creature-front/planeswalker-back
+  has no creature gates once transformed; the existing `704.5f/lethal_damage`
+  invariant is silent on a transformed face (the unit's invariant).
+- `ddf93a3` — the first measurement moved Jeskai Blink +11.9pp in one step,
+  which exposed a second defect: `_transform_permanent` modelled every
+  transform as in-place. "Exile ~, then return it transformed" is a new object
+  (CR 400.7) — summoning-sick and untapped — so the returned Reflection had
+  been attacking/tapping the turn it came back. New `returns_as_new_object`
+  parameter; the Saga final-chapter and dies-observer exile-return callers pass
+  True, the coin-flip and spell-count in-place callers keep the default.
+  Tests: helper new-object path, in-place path, lore-counter path.
+
+**Checks.** Ratchets at baseline; chunks A 2308 / B 2418; anchor 29 green with
+no net fixture change (438463a's one turn drift, Jeskai Blink vs 4c Omnath
+s50000 9→8, reverted to 9 with ddf93a3); CI green on both heads. Audited
+`--matchup "Jeskai Blink" "Ruby Storm" -n 20 --rules-audit`: 0 violations
+(only the Hex Magic `unhandled/spell` census row).
+
+**Measurement** (same seeds, n=20 Bo3, `--parallel`, pre = worktree at e955ca9):
+
+| field | pre | 438463a only | final (ddf93a3) |
+|---|---|---|---|
+| Jeskai Blink | 49.6 | 61.5 | **51.9** (+2.3) |
+| Boros Energy | 67.1 | 66.7 | 66.5 (−0.6) |
+| Boros Ponza | 17.5 | 17.5 | 17.5 (0.0) |
+
+Jeskai Blink stays inside [45,60]; the guards are flat. The intermediate 61.5
+was the unsick Reflection — recorded so the number is not mistaken for a result.
+
+**Lead, not built.** The Legend-of-Roku-shaped Saga branch in
+`GameRunner._process_saga_chapters` does not transform at all: it exiles the
+Saga and creates a hasty 4/4 token as a proxy (a separate code path; its own
+unit if the census or auditor ranks it).
+
+## Azorius Control / Ruby Storm collapse — diagnosis (2026-09-27, before any code)
+
+The 2026-09-27 matrix put Azorius Control at 8.8 (0–2% vs most of the field)
+and Ruby Storm at 24.2. Replays (`--bo3 "Azorius Control" "Eldrazi Tron"`
+and `--bo3 "Ruby Storm" "Pinnacle Affinity"`, s50000, on `8e56f39`) and the
+audited-matrix census agree: **the new lists carry cards the engine resolves
+as nothing.**
+
+- **Azorius Control** is now the Orim's Chant / Isochron Scepter / Narset /
+  Day's Undoing prison list (win condition: Solitude beats under the lock).
+  - Silence ×3 — `turn_scoped_restriction == 'no_spells'` is parsed, but only
+    Orim's Chant's registered handler ever sets `silenced_this_turn`; every
+    other member resolves blank (census `unhandled/spell Silence`).
+    Class: 10 pool cards "… can't cast [type] spells this turn" (who: target
+    player / your opponents / all players / its controller; filter: all /
+    noncreature / creature).
+  - Day's Undoing ×3 — no model (census). Class: 10 hand-refill wheels
+    ("shuffle hand [and graveyard] into library, then draw seven" ×6,
+    "discard hand, then draw seven" ×4).
+  - Narset's "each opponent can't draw more than one card each turn" — no
+    model; it is what makes Day's Undoing one-sided. Class: 2 statics
+    (Narset, Spirit of the Labyrinth) — folded into the wheel unit as a draw
+    rule, not its own unit.
+  - Replay G3: mana-screwed on two lands T2–T9; the mulligan also sent back a
+    5-land seven on hand score (21 < 24) and does not count an MDFC's land back
+    face as a land — recorded as a mulligan lead, not the collapse.
+- **Ruby Storm**: Hex Magic ×4 resolves blank (census). Shape "exile your
+  hand, then draw that many; you may play the exiled cards until end of your
+  next turn" — 2 pool cards; built only if it can reuse the impulse-play
+  permission already modelled for IMPULSE_DRAW.
+
+**Units, in order:** (1) turn-scoped cast prohibition as a class, deleting
+Orim's Chant's card-name handler (registry 87 → 86); (2) hand-refill wheel +
+draw-limit static; (3) Hex Magic shape if it fits the impulse permission.
+Each measured on the Azorius Control / Ruby Storm fields, same seeds.
+
+### Units from the Azorius Control / Ruby Storm diagnosis (2026-09-27)
+
+**Unit CP — turn-scoped cast prohibition as a class (`a5baa97`, CR 101.2).**
+`CardTemplate.cast_prohibition` ({who, filter}) + one generic resolver
+branch + one gate predicate `CastManager.cast_is_prohibited` for every cast
+route. Orim's Chant's name-keyed handler deleted (registry 87 → 86). A free
+cast (cascade, "without paying") was not gated before and now is. Auditor
+invariant `101.2/cast_prohibition`.
+
+**Unit WH — hand-refill wheels, static draw restrictions, "end the turn"
+(`7531146`, CR 101.2 / 723).** `CardTemplate.hand_refill` (10 pool cards),
+`CardTemplate.draw_limit` (5 pool cards, incl. "players can't draw cards" as
+a cap of 0) enforced in `GameState.draw_cards`, and
+`GameState.end_the_turn` (stack exiled; runner skips to cleanup, which runs
+the skipped end step's expiry). Auditor invariant
+`723.1/cast_after_turn_end`. Day's Undoing leaves the silent-unhandled
+allowlist. Smoke Bo3 vs Eldrazi Tron: Scepter-Silence locks in the
+opponent's upkeep; the wheel refills 7 vs 1 under Narset; the turn ends.
+
+**Hex Magic (Ruby Storm ×4) not built:** its shape ("exile your hand, then
+draw that many; play the exiled cards until end of your next turn") has one
+spell in the pool — below the class-size rule and the narrow-field ratchet.
+Stays allowlisted.
+
+**Measurement** (same seeds, n=20 Bo3, `--parallel`; each side a pinned
+worktree):
+
+| field | pre (`5666eb4`) | after CP (`a5baa97`) | after WH (`7531146`) |
+|---|---|---|---|
+| Azorius Control | 10.0 | 12.3 (+2.3) | **24.6** (+12.3) |
+| Ruby Storm | 26.2 | 26.5 | — (no wheel/prohibition cards) |
+
+Azorius Control draws 20 → 47: the lock now holds but games reach the turn
+cap. Still below its band.
+
+**Leads recorded, not built (AI layer):**
+- Under a full lock Azorius Control does not close: the opponent's
+  planeswalker (Ugin, +3 life a turn — legal under Silence) is never
+  attacked, so two Solitudes net 3 damage a turn and the game hits turn 30.
+  Attack-target selection vs planeswalkers.
+- Azorius casts Day's Undoing with a full hand of 7 and no draw limiter
+  (refilling the opponent) — the AI has no model of a symmetric wheel.
+- Ruby Storm fires Past in Flames on T4 with one flashback target vs a
+  turn-5 Pinnacle kill (sequencing).
+- The mulligan counts an MDFC's land back face as a spell, and sent back a
+  5-land seven with Solitude + Narset on hand score.
+
+**Measurement hygiene note:** the first CP post run read the working tree
+while WH was being edited; it was discarded and re-run from pinned
+worktrees. Every later measurement runs from a worktree pinned at the
+commit under test.
+
+## Unit PW — creatures attack planeswalkers (`f3ae60f`) + loyalty-pool residency (`9bc1b59`) (2026-09-27)
+
+**PW (`f3ae60f`, CR 506.1 / 508.1b / 506.4).** Every attacker hit the
+defending player — no planeswalker was ever attackable. `CombatAssignment`
+carries a defender; `declare_attackers(…, attack_targets)`; unblocked damage
+and trample excess go to the planeswalker via `deal_damage`; none if it left
+(506.4). Auditor `508.1b/attack_target_legal`. AI `ai/attack_targets.py`
+compares `permanent_threat(pw)` with the same damage to face, both as
+position-value deltas in the owner's frame; lethal goes face. Generic fix on
+the way: `permanent_threat` read **0.0 for every planeswalker** (the snapshot
+carries no loyalty) — it now credits the remaining loyalty pool, which also
+corrects removal and burn targeting against planeswalkers.
+
+**Residency (`9bc1b59`).** `expected_future_value` capped every pool at
+current loyalty and ignored attackers. Residency = nearer game clock or
+loyalty / attacking power; a useful non-negative ability makes the pool last
+the whole residency.
+
+**Measurement** (same seeds, n=20, pinned worktrees `18c7e6d` → `f3ae60f`):
+
+| field | pre | post | draws pre → post |
+|---|---|---|---|
+| Azorius Control | 24.6 | 26.2 (+1.6) | 45 → 29 |
+| Eldrazi Tron | 47.1 | 51.2 (+4.1) | 22 → 20 |
+| Boros Energy (guard) | 66.2 | 67.3 (+1.1) | |
+| Domain Zoo (guard) | 75.8 | 72.9 (−2.9) | |
+
+Fewer turn-cap draws for Azorius Control; Tron rises (its attackers can now
+hit Teferi/Narset); Zoo falls toward its band.
+
+**Next unit, planned not built — loyalty lines that do nothing.** 23 of the 31
+printed loyalty lines in registered decks are `LoyaltyEffectKind.UNCLASSIFIED`
+and refused before activation (Grist's token, Narset's dig, Ashiok's mill,
+Kaito's stun, Tyvar's untap, Tamiyo's regrowth, Karn's wish, Teferi's +1…).
+Generic route: classify each line once at load against the shared oracle
+resolver's effect classes (the same typed parsers spells use — token,
+draw/dig, mill, tap/stun, return, counters, "until your next turn" statics)
+and dispatch through them, refusing only lines no class covers. Then value a
+loyalty tick by its typed effect with the clock primitives (life, cards,
+damage, removal via permanent_threat) instead of one generic "average card"
+— the calibration gap that keeps `ai/attack_targets.py` choosing face.
+
+## Unit CL — one clause resolver; loyalty lines as clauses; scaled draws (2026-09-27)
+
+User chose "full refactor first" after the probe showed the old resolver ran
+267 of 724 dead loyalty lines pool-wide but only 2 of 23 in registered decks.
+
+**S1 (`cfcae90`) — `engine/clause_resolver.py`, one owner of "resolve an
+effect clause".** The ~700-line inline branch sequence of
+`resolve_spell_from_oracle` moved, in order, into a registry of
+`ClauseHandler(gate, apply)`; gates are pure over the clause's static facts,
+so `clause_is_executable` is a static answer. **Behaviour-identical:** 24
+seeded verbose games (8 spell-heavy matchups × 3 seeds) byte-identical
+before/after; anchor 29 with no drift.
+
+**S2 (`d5ebee9`) — loyalty lines are clauses (CR 606.1).** Each unclassified
+line gets a template built from its own text by the DB pipeline and becomes
+`LoyaltyEffectKind.CLAUSE` when a gate accepts it; dispatched through the
+clause owner with the walker as source. 272 pool lines executable;
+unexecutable count 646 → 394. Auditor `606/loyalty_clause_resolved`.
+
+**Scaled draw (`88931ca`, CR 608.2).** S2's measurement moved Dimir Midrange
+41.7 → 52.7 in one step — flagged (>10pp) and traced: Kaito's "surveil 2,
+then draw a card for each opponent who lost life this turn" drew a flat card
+every turn, because the card-flow handler ignored "for each <X>". Class: 82
+pool cards (spells over-drew all along). Now N × count(scaler) for "<type>
+you control" / "opponent who lost life this turn"; other scalers are refused
+and recorded as census `608.2/uncountable_scaler`. One loyalty line (Tamiyo,
+the Moon Sage minus) withdrawn from mis-execution (baseline 394 → 395).
+
+**Measurement** (same seeds, n=20, pinned worktrees):
+
+| field | pre-S2 (`cfcae90`) | S2 (`d5ebee9`) | fixed (`88931ca`) |
+|---|---|---|---|
+| Dimir Midrange | 41.7 | 52.7 (flat-draw bug) | **45.6** (+3.9) |
+| Creatures Toolbox | 35.2 | 34.4 | — |
+
+**Leads, not built:** a clause handler runs the part of a compound line it
+recognises (Grist's token without its "then mill"); the one zone write in
+the nonland bounce handler still bypasses the zone funnel (moved verbatim in
+S1); S3 families next — "until your next turn" statics (30 pool / 6
+registered lines), counters/+N (68), mill/discard/life (80), emblems (54);
+then S4, pricing a loyalty tick by its typed clause.
+
+### S3a — "until your next turn" as a duration (`1cd59dd`, CR 611.2b)
+
+The duration is the mechanic; the wrapped effects are ones the engine owns.
+`parse_until_next_turn` removes the duration phrase and runs the existing
+owners on the inner text (full match only — compound effects refused):
+the shared signed P/T clause `_PT_MOD_CLAUSE` (now also backing
+`parse_pump_spell`, output identical on all 22,738 pool cards),
+`parse_team_pump`, `parse_cost_reduction`, and "cast <type> spells as though
+they had flash". Duration owners fire at the controller's own untap:
+`ContinuousEffect(duration="until_next_turn", controller)` +
+`cleanup_until_next_turn`, and player-scoped `temp_cost_rules` /
+`flash_permission_types` cleared by `reset_turn_tracking`. Generalised on
+the way: one cost matcher (`_cost_rule_applies`) inside
+`count_cost_reducers` for permanents and temporary rules (two special-case
+reads of a never-written field deleted); `pump_target` picks an opposing,
+legally targetable creature for a P/T reduction with no chosen target.
+Auditor `611.2b/until_next_turn_expired`. Loyalty unexecutable 395 → 389
+(Teferi, Time Raveler +1; Ral +1). One anchor flip replayed at the exact
+seed and accepted (WST vs WST v2 s50500: first divergence T4, Teferi +1).
+
+**Measurement** (same seeds, n=20, pinned worktrees `5d826a9` → `1cd59dd`):
+
+| field | pre | post |
+|---|---|---|
+| Azorius Control | 24.0 | **34.0** (+10.0; draws 42 → 36) |
+| Ruby Storm | 24.8 | 23.8 |
+| Jeskai Blink (guard) | 50.0 | 49.6 |
+| Domain Zoo (guard) | 74.0 | 72.3 |
+
+The +10.0 sits on the skill's "suspect a second defect" line; an audited
+Azorius Control vs Domain Zoo run (n=10) on `1cd59dd` shows **0 rule
+violations** (census only), and the gain matches Teferi now +1-ing every
+turn (sorcery-speed sweepers on the opponent's turn, loyalty that survives).
+Ral's +1 does not move Storm (its losses are sequencing, recorded earlier).
+
+**Next (S3b):** "whenever a creature attacks you … it gets −N/−0" duration
+triggers (Tamiyo ×2), animate-a-permanent (Karn), attack/block restrictions
+and keyword-only grants — then S4, pricing a loyalty tick by its clause.
+
+### S3b-1 — keyword-only grants (`596e4ee`, fix `955f465`, CR 613.1f)
+
+"Target creature gains <kw> until end of turn" is the zero-P/T case of the
+shared targeted-modifier clause (135 pool cards; the typed keyword was set
+on 1). Keywords come from the `Keyword` enum; instants/sorceries only; one
+predicate `CardTemplate.has_targeted_pump` for the resolver and two AI
+sites; "X or Y" grants one (CR 608.2d — caught as an over-credit on
+Practiced Offense before measuring). Auditor `613.1f/keyword_granted`.
+Loyalty unexecutable 389 → 384.
+
+| field (same seeds, n=20, `7d66cb1` → `955f465`) | pre | post |
+|---|---|---|
+| Izzet Prowess | 60.6 | 61.0 |
+| Hollow One | 33.8 | 34.8 |
+| Domain Zoo | 72.3 | 74.0 |
+| Boros Energy (guard) | 66.7 | 66.5 |
+
+Flat, as expected: the AI's combat-trick valuation (`ai/ev_player.py` ~3762)
+prices P/T only, so keyword-only tricks are cast rarely — an AI lead, not a
+rules gap. Practiced Offense's "+1/+1 counter on each creature target player
+controls" half still does not resolve (under-credit, recorded).
+
+## Temporal model (docs/design/2026-09-28_temporal_state_model.md)
+
+User directive: a broader mechanism for timing, duration and state, then
+"needs to be more generalized / abstracted". Model: every continuous effect
+is `Effect(Selector, Modification, Duration, Origin)` over one event clock;
+gates read only `rules_query`. Reproduced drift defect: a "this turn" effect
+flag on the active player survives the opponent's next turn.
+
+**G1 (`bbf1199`)** — `engine/turn_clock.py` (all turn-boundary resets and
+expiries as ordered subscribers), `engine/effect_model.py` (Duration /
+Selector / Modification / Origin / Effect), `engine/rules_query.py` (every
+gate — cast, lockout, flash permission, cost delta incl. AI, draw limit,
+attack / be-attacked, combat prevention — reads through it; G1 internals are
+adapters), ratchet `tools/check_temporal_state.py` (raw reads 16, clock
+bypass 0; CI step). **Behaviour-identical: 24 seeded verbose games
+byte-identical vs the previous head**; CI green (full suite).
+
+**Next — G2, one family per commit:** cast prohibitions + permissions (incl.
+the lockout static), cost deltas (removing the runtime oracle scan), draw
+limits, attack / be-attacked / damage prevention (fixes the leak, failing
+test + auditor `611.2a/this_turn_effect_expired`); then G3 (card `temp_*`
+onto object-scoped effects, CR 400.7), G4 (delayed triggers on the clock);
+then S3b-2/3, animation and S4 as instances of the model.
+
+**G2.1 (`b3cb74c`) — cast prohibitions and permissions are Effects.**
+Resolved silences / cast prohibitions register `PROHIBIT cast` effects,
+flash permission a `PERMIT cast_as_flash` (UNTIL_YOUR_NEXT_TURN); the
+sorcery-speed lockout is a static `PROHIBIT cast_outside_sorcery_timing`
+derived from its source. Fixes the cast-side leak: a prohibition resolved
+on its target's own turn now ends with that turn (CR 611.2a). Auditor
+`611.2a/this_turn_effect_expired` at TURN_BEGINS. Same seeds, n=20, pinned
+worktrees `c4a47f2` → `b3cb74c`: Azorius Control field 34.0 → 32.3 (draws
+36 → 38), Ruby Storm 23.8 → 23.8, Domain Zoo 74.0 → 74.0 — flat on all
+three (a rules-correctness unit; the leak rarely fires in these decks).
+
+**G2.2 (`ca1b87c`, test follow-up `c9fb3ff`) — cost deltas are Effects.** Static
+reducers are typed once at load (`CardTemplate.cost_reduction_rule`) and
+derived as `COST_DELTA` statics; resolved "until your next turn, … cost {N}
+less" rules are stored effects; `count_cost_reducers` delegates to
+`rules_query.cost_delta` (the runtime oracle scan is gone). **24 seeded
+verbose games byte-identical vs `b3cb74c`**; chunks A 2328 / B 2489.
+
+**G2.3 (`7466fd1`) — draw limits are LIMIT Effects.** A permanent's typed
+`draw_limit` is a static `LIMIT draw` effect while its source is there;
+`rules_query.draw_limit` takes the tightest covering LIMIT (statics and
+resolved alike); `GameState._draw_limit_for` (a second battlefield scan)
+deleted. Behaviour-identical by construction (same caps, same min).
+
+**G2.4 (`cb07b0e`) — attack prohibitions and combat-damage prevention are
+THIS_TURN Effects (the reproduced leak).** A Fog cast during the opponent's
+combat set both players' flags; the opponent's flag was cleared only at the
+opponent's next untap, so it prevented the caster's own attacks the turn
+after. Now `PROHIBIT attack` / `PROHIBIT be_attacked` / `PREVENT_DAMAGE
+combat` effects expire as the game turn ends. Every `rules_query` family
+reads the registry; `PlayerState` combat attributes are views. Temporal
+raw reads 8 → 5. Test `tests/test_rule_effects_combat_family.py` (red
+before).
+Verified on `cb07b0e`: chunk A 2328, chunk B 2503 (anchor unchanged).
+
+**G3a (`8ea4a83`) — a resolved effect on a chosen object follows the object,
+not the card (CR 400.7 / 611.2c).** `create_pump_spell_effect` matched its
+target by `instance_id` alone, so a creature shrunk by an "until your next
+turn" −N/−0 (or pumped) and then blinked kept the modification on its new
+object. Effects now record `target_obj = (instance_id, battlefield_entry_seq)`;
+auditor `400.7/effect_follows_old_object`. Same seeds, n=20, pinned worktrees `c9fb3ff` → `07f4e4a` (G2.3 + G2.4 + G3a together): Azorius Control 32.7 → 32.7, Jeskai Blink 49.0 → 49.0, Azorius Blink 35.0 → 35.0 — identical; the leaks these close did not arise in these seeds. **G3b deferred:** the card
+`temp_*` channel already honours both rules (cleared at cleanup, CR 514.2,
+and on leaving the battlefield, `zone_manager`) — moving it onto layer
+effects is a refactor with 19 test fixtures of churn and no rules gain; it
+waits until a rule needs layer interaction for it. Lead recorded:
+`ai/ev_player.py` (~:3120) moves cards hand→graveyard and places counters
+directly — the AI mutating game state.
+
+**S3b-2 — per-creature "can't attack / block" as PROHIBIT effects on an
+OBJECT selector (CR 508.1c / 509.1b / 611.2c).** Class: 82 pool cards whose
+clause is "(up to N | one or two) target creature(s) can't (attack or block
+| block | attack) (this turn | until your next turn)"; typed once as
+`CardTemplate.object_restriction` (81 / 82 populated), registered carriers
+Untimely Malfunction's mode (Ruby Storm SB) and Kaito, Dancing Shadow's +1
+(loyalty unclassified 384 → 383). The clause registers `PROHIBIT
+attack|block` effects whose selector is the chosen object `(instance_id,
+battlefield_entry_seq)` — a blinked creature is free (400.7) — with THIS_TURN
+or UNTIL_YOUR_NEXT_TURN duration; `can_attack` / `can_block` ask
+`rules_query.object_prohibited`; `declare_blockers` now drops a block by a
+creature that can't block (it checked evasion only, never the blocker's own
+gate). The 508.1a / 509.1a auditors restate the restriction from the effect
+records. Group shapes ("creatures without flying can't block", 83 pool) are
+the FILTER selector — next. Chunks A 2331 / B 2513, anchor unchanged. No
+registered main-deck carrier: rules correctness, no measurement.
+
+**S3b-3 — "whenever a creature attacks you [or a planeswalker you control]"
+observers as OBSERVE effects (CR 603.2 / 611.2b / 611.3a).** Typed once as
+`CardTemplate.attack_observer` (scope, effect, duration): effects the
+attacker gets ±N/±M until end of turn, or its controller loses N life [and
+you gain M]; draw / investigate / counters / emblems refused. A permanent's
+printed observer is a static OBSERVE effect (WHILE_SOURCE); a resolved
+"until your next turn, whenever …" is stored until the controller's next
+turn. `CombatManager._fire_attack_observers` fires once per creature
+attacking the covered player (the wider scope also on attacks at their
+planeswalkers); auditor `603.2/attack_observer_fired` restates the count
+from the records. Registered carrier: Tamiyo, Seasoned Scholar's +2 (Dimir
+×3) — loyalty unclassified 383 → 382. New owner `engine/damage.lose_life`
+(CR 119.3: loss of life is not damage, but counts as life lost this turn);
+three direct `.life -=` loss writes moved onto it — single-owner
+damage_write 42 → 39. Same seeds, n=20, pinned worktrees `e227494` → `ac2d8d5`: Dimir Midrange
+field 45.4 → 45.4 (draws 4 → 4) — identical; Tamiyo flips only on a third
+draw in a turn, so the +2 rarely arises in these seeds.
+
+**S3b-2b — class restrictions ("creatures [your opponents control]
+[without flying] can't block / attack <duration>") as PROHIBIT effects with
+a FILTER selector (CR 508.1c / 509.1b).** A rule-modifying effect, so its
+class is re-evaluated for its whole duration (CR 611.2c's locked-in set
+covers only characteristic / control changes): a creature entering later,
+or losing flying, is covered. Typed as `CardTemplate.group_restriction`
+(12 / 13 pool; the 13th is Orim's Chant's unqualified "creatures can't
+attack", which stays with the combat-prevention class). `Selector.covers_object`
+evaluates FILTER against controller (relative to the effect's controller)
+and keyword; `rules_query.object_prohibited` reads OBJECT and FILTER alike;
+the 508.1a / 509.1a auditors restate the filter independently. Chunks A 2349
+/ B 2514. No registered carrier: rules correctness.
+
+## S4 — loyalty valuation on the spell-EV scale (2026-09-29)
+
+Plan: value a loyalty line by the board change its clause projects, through
+the spell projector. **Cheap evidence falsified the direct version first:**
+through `_project_spell`, a creature bounce projected 0.0 and a dig 0.025
+against 2.15 for a kill — the projector has no bounce term, and a bounce
+spell (not only a loyalty line) was invisible to it. User chose to extend
+the shared projector. That exposed a rules gap underneath, fixed first:
+
+**S4a — bounce is one typed class (CR 608.2b / 400.3).** "Return target
+creature to its owner's hand" (Unsummon shape) resolved as nothing: the only
+gate was a runtime string test for "nonland permanent", which also ignored
+the chosen target and hexproof and edited zone lists directly.
+- `target_solver`: the three-entry compound phrase table becomes one grammar
+  — a type list of any length ("artifact, creature, enchantment, or
+  planeswalker") with its controller scope; an "instead" alternative re-states
+  a target rather than adding one. Pool diff of `parse()`: 167 cards change,
+  all widenings / added scopes / genuinely second targets (Relic Crush).
+- `CardTemplate.bounce_target` (typed requirement, 197 / 268 of the class;
+  the rest are plural "up to N target creatures" — `target_solver` parses no
+  plural target anywhere: the next rules gap — and stack-only "target spell").
+- `clause_resolver.resolve_bounce` — the one owner (spells, channel, loyalty
+  lines): legal targets from the solver, the chosen target honoured, the
+  owner's hand; auditor `400.3/bounced_to_owners_hand`. Zone-mutation
+  baseline for clause_resolver 1 → 0.
+Registered carriers: Otawara (Dimir), Colossal Skyturtle and Sink into
+Stupor (Living End), Into the Flood Maw (Prowess SB), Teferi (Blink SB).
+Chunks A 2360 / B 2514, anchor unchanged.
+S4a measured (same seeds, n=20, `56e7442` → `2f1d6f7`): Dimir Midrange 45.4
+→ 45.4, Living End 57.3 → 57.3 — identical.
+
+**S4b (`9b1abd4`) — the spell projector credits a creature bounce.** Reads the
+typed `bounce_target` of an instant / sorcery (or a sorcery-typed ability
+clause): the most threatening legal opposing creature leaves the board and
+the card returns to the opponent's hand, so `position_value` prices the swing
+on its own card term (worth less than destroying it). A permanent whose
+*ability* bounces (a walker's line) projects no bounce when cast — caught by
+`test_planeswalker_loyalty_pool_decays_with_opp_clock` before push.
+
+**S4c (`eee5c54`) — a loyalty line is valued by its projected clause.** Every
+line carries its typed clause; `loyalty_line_value` = board delta of the
+clause projected as an ability (`_project_spell(as_ability=True)`) + the
+walker's pool at its new loyalty (`expected_future_value(loyalty=)`, through
+`persistent_power`) + a noncreature bounce priced by `permanent_threat` ×
+replay tempo + `ultimate_win_line_value` for win/lock lines; highest value is
+activated, all below holding → decline. The integer table, always-ult and
+the panic / suicide / whiff special rules are deleted (they fall out of the
+value). The engine passes the typed resolvable lines (runtime re-parse gone,
+oracle-runtime-parse 178 → 177).
+
+Measured on the fixtures before choosing the units: a drawn card is worth
+0.025 in `position_value`, one loyalty activation ≈ 0.5, a creature kill
+≈ 2–5.6. The card term is the outlier (a spell-wide calibration lead, not
+changed here). Pinned-test restatements (explicit): the suicide fixture gets
+a turn-6 opponent's lands; the "real bounce target" is a 5/5 threat, and a
+new test pins that a bare replayable two-drop does not pay for three loyalty
+(the old table activated on any legal target).
+
+Leads recorded: `position_value`'s card term (a card ≈ 1% of a kill);
+"deals N damage to target creature" projected as face damage when no
+creature is present (burn branch); `target_solver` parses no plural target;
+activation ordered against spells inside the main-phase planner.
+
+**S4c follow-ups** — `4e70d13` a quoted ability a loyalty line grants is not
+its effect (CR 113.1a / 114.4; 12 emblem-only lines had resolved their
+granted ability at once — loyalty unclassified 382 → 394, raised
+deliberately); `1a8fa66` a directly built walker types its clauses like a
+loaded one; `082abc9` anchor: three turn-only drifts refreshed (winners
+unchanged; first divergence on 4/5c vs Pinnacle s50500 is T10 Wrenn and Six
+taking +1 over the −1 ping on Memnite).
+
+**S4c measured (same seeds, n=20, pinned worktrees `9b1abd4` → `082abc9`):**
+Azorius Control 33.1 → **30.0 (−3.1)**, Ruby Storm 24.0 → 22.1, Dimir
+Midrange 45.4 → 44.8, Jeskai Blink 49.0 → 49.2; Eldrazi Tron 45.8 → 47.7,
+Domain Zoo 74.0 → 75.6, Boros Energy 66.5 → 66.5. **Azorius Control's −3.1
+is past the movement bar and is treated as a regression, not accepted:** the
+projection under-values what walker lines hit — a 1/1 artifact creature's
+synergy (removal subtracts raw power only; the Memnite choice above) and a
+card in hand (0.025). The fix belongs in the per-verb projection (plan
+stage E-AI: removal subtracts `creature_threat_value`, the card term
+re-derived) — the next AI unit, pulled ahead of the family switches.
+
+## S5 — a counted target is one requirement with a count (`0b370ba`, CR 115.1/115.3/601.2c)
+
+`target_solver.parse` parsed no plural target anywhere ("up to two target
+creatures", "two target permanents", "one or two …", "any number of …" →
+`[]`). A length-preserving singulariser + one count reader set count_min /
+count_max on the same requirement (308 pool cards whose target parsed to
+nothing now parse; 772 gain counts); every distinct creature target phrase
+is its own requirement; `target_solver.choose_targets` is the one chooser
+(distinct, legal, filled to the count; auditor `115.3/distinct_targets`);
+counted removal; a cast trigger whose effect is a typed removal resolves
+through the clause resolver (Ulamog's "exile two target permanents" had done
+nothing); Force of Vigor's card-name handler deleted (registry 86 → 85,
+single-owner target_pick 12 → 11). Measured (`082abc9` → `0b370ba`, n=20):
+**Eldrazi Tron 47.7 → 50.0 (+2.3)**, Amulet Titan 27.7 → 27.9, Hollow One
+35.6 → 35.6, Boros Energy 66.5 → 66.5, Domain Zoo 75.6 → 75.4.
+
+## Clause and trigger grammar (docs/design/2026-09-29_clause_and_trigger_grammar.md)
+
+User: "Generalize significantly" → "Both, clause first". Every unit this
+month had added another per-shape parser + typed field + handler (~30 effect
+parsers, only 2 using `target_solver`; 10 of 22 clause handlers reading raw
+text at runtime; triggers inline with no real stack, no generic upkeep /
+end-step dispatch, 42 card-name ETB handlers). Design by a 17-agent workflow
+(6 verb-family pool surveys, 3 designs, 3 judges, synthesis, 3 adversarial
+refuters using registered-deck cards, amend): the Layered Clause Cascade —
+one grammar to typed `EffectSpec`s held on `CardTemplate.effects`, one
+dispatcher over the existing owners, strangler migration one verb family per
+commit, then `TriggerSpec` on an event bus with real trigger stack items.
+
+**E0 stage 1 (spec steps 0–6, `acec168`…`231ce27`, no behaviour change):**
+seeded-game digest tool + baseline recorded on `0b370ba` (26 games incl. 6
+post-sideboard; combined `bc47e2df…`); the design doc; additive
+`effect_model` vocabulary (payload-only kinds, applied kinds fail closed,
+value-typed filter support: `without_keyword` admits exactly the `Keyword`
+values `covers_object` compares); `target_solver.parse_located` /
+`parse_spans` from `parse()`'s own placement (0 differences over 53,310 pool
+texts; the mana-value ceiling now read at the placed phrase, not a
+first-occurrence find); `oracle_parser.loyalty_slot_for` as the one slot rule
+(dead duplicate `player_state._parse_planeswalker_abilities` deleted —
+oracle-runtime-parse 177 → 176; loyalty abilities unchanged for all 316
+walkers); four resolution-choice callbacks declared, uncalled; the
+`engine/effect_spec.py` schema (frozen+slotted, 8 invariants as written,
+every nested spec walked, lowering always valid). Two adversarial reviewers
+raised 14 findings (2 major); all verified and fixed with red-first tests.
+Verified independently before push: every ratchet at baseline, digest
+`--check` byte-identical (26 games), chunks A 2405 / B 2549.
+
+**E0 stage 2 (spec steps 8–11, the twelve grammar leaves, `b697e18`…`c2fc5d5`, no behaviour change):**
+`engine/effect_grammar/` holds L0 `normalize` (offset map, self-forms,
+nested quotes, reminder spans), `keywords` (CR 701/702 tables, M3 face
+filter, A8 cost rule), `lexicon` (section-4 verb table, A12 loyalty
+superset), and the nine closed sub-grammars `sub/{target, participant,
+filter, amount, quantity, condition, duration, dest, payload}`. One leaf
+contract lives in `sub/__init__.py` and is pinned by
+`tests/test_effect_grammar_leaf_contract.py`:
+- one `(host, span, *, lemma)` calling convention with host-absolute spans;
+- one "nothing here" encoding;
+- closed `<leaf>.<code>` refusal details, with refusals reaching the census unchanged;
+- one keyword table, one count-word table and one possessive vocabulary;
+- an acyclic `LEAF_EDGES`;
+- bounded caches with a package `clear_caches`.
+
+Every leaf was built in its own worktree and checked by an adversarial
+reviewer. Two integration reviewers followed (cross-leaf consistency; pool
+behaviour and performance), and all real findings were fixed with red-first tests.
+
+Pool coverage, measured:
+- target: 84.6% of slots typed;
+- filter: 59.9% typed; the rest are deliberate A21 refusals (history and relative clauses, computed bounds, unions);
+- normalize: self-references 99.8% resolved, pronouns 100%.
+
+Legacy-side disagreements are seeded into design section 10 for the step-18
+allowlist. Verified independently before push: every ratchet at baseline,
+1482 grammar tests pass, digest `--check` byte-identical (26 games), and the
+agent's chunk runs give A 3855 / B 2549.
+
+**Open: the load budget.** The leaves alone take about 2.2 s, plus 0.72 s
+for L0, against the 3.0 s whole-grammar budget (design section 12), before
+L1–L5 exist. Stage 3 therefore makes `CardTemplate.effects` lazy for every
+template, not only synthetic ones. A game parses only the cards it touches,
+pool-wide tools parse eagerly, and `CardDatabase()` load time is unchanged.
+An on-disk cache is held in reserve if the pool tools become too slow.
+
+**E0 stage 3 (spec steps 9–13, the grammar spine; `f7a2d03`…`a777c3d`, no behaviour change):**
+- **Layers:**
+  - **L1 `structure.py`** gives one host per ability: KEYWORD 26%, TRIGGERED 25%, SPELL 13%, ACTIVATED 12%, STATIC 12%, and so on. 0 hosts are uncovered, and 0 loyalty-slot disagreements with the legacy owner.
+  - **L2/L3 `clauses.py`** handles frames, connectives and the lemma-gated split.
+  - **L4 `patterns.py`** has nine verb-family rows.
+  - **L5 `link.py`** handles sub-abilities, pronouns, instead and RESULT refs. Every spec goes through `validate_spec`.
+  - **Package entry points:** `parse_template` / `parse_face` / `parse_effects` / `parse_pool`.
+- **Typed share:** 72.3% of 44,316 pool specs, and 73.9% of the 870 specs on registered-deck cards.
+  - By host kind: MANA_ABILITY 95, TRIGGERED 78, ACTIVATED 78, MODE 77, LOYALTY 75, SPELL 73, STATIC 61.
+- **Step 13:** `CardTemplate.effects` parses lazily per template and memoises it, keyed on the complete parse input. Loyalty clause templates slice their walker's LOYALTY host.
+  - `CardDatabase()` load CPU: 18.78 s before vs 19.15 s after, inside the ~2 s run-to-run spread.
+  - 0 templates hold effects after a load. One template parses in about 2 ms.
+- **The budget, honestly:** the eager whole-pool pass (`parse_pool`, used only by tools) measures 18.3–19.5 s CPU, against the 4.0 s budget agreed on 2026-10-01.
+  - Roughly half of L5 is `validate_spec` over every spec.
+  - Games never take that path. Their cost is the per-template lazy parse, and load time is unchanged.
+  - The eager pass is pinned at a regression ceiling, not at 4.0 s. Bringing it toward the budget (validation once per distinct spec, cheaper L1 cascade) is open.
+- **Every layer** was built, adversarially reviewed and fixed: 27 review findings fixed red-first, plus 2 integration fixes (granted-ability costs read from the printed quote; meld layout fact).
+- **One pre-existing test-isolation bug surfaced and was fixed** (`e2e1369`): `test_activation_safety_valves.py` rebound `activated_abilities` on the shared card DB's template, and the new pool cost invariant caught it as a false regression when the chunk ran in order.
+- **Verified independently before push:** every ratchet at baseline; digest `--check` byte-identical (26 games); chunk B 2549 passed. Chunk A had 4179 passed and 1 failure (the isolation bug); the failing pair was re-run before and after the fix.
+
+**Jev classifier backend (`7393bdd`):**
+- For a decision-model provider (`typesafe:`), `classify_oracle` asks one boolean per `Tag`, worded from the prompt's tag table. `decision_to_tags` maps the answers back to the committed cache's shape.
+- Live check (scratch data only):
+  - On the 36 committed cards, 31 match exactly, and 45 of Jev's 46 tags agree.
+  - On the 357 registered-deck cards (2 min, 0 errors), 103 would gain tags they lack today, 67 of them ETB_ORACLE_TRIGGER.
+- The committed cache is unchanged. Adopting Jev's tags changes game behaviour, so it waits for a same-seed A/B.
+
+**E0 stage 4 (views, dispatcher skeleton, tools, eager speed; `3f2b6c5`…`72e3f99`, no behaviour change):**
+- **Units:**
+  - `engine/effect_views.py` — 146 FieldDerivations, legacy quirk predicates and domain masks;
+  - `engine/effect_resolver.py` — skeleton with no callers, pinned by an AST test;
+  - `tools/effect_census.py` — 72.3% of 44,316 specs typed, 73.9% on registered-deck cards;
+  - `tools/effect_spec_equivalence.py` — 2.85M comparisons over 147 records, the allowlist seeded from section 10;
+  - `tools/host_resolution_equivalence.py` — legacy self-check, 0 divergences;
+  - the `check_effect_parsers.py` ratchet, wired into CI;
+  - the eager parse cut 17% (27.95 → 23.12 s on this container) with output byte-identical over all 22,738 templates.
+- **The 4.0 s eager budget is not reachable** without the on-disk cache or restructuring L0–L4 (flat profile). The regression ceiling stays at 30 s because absolute CPU drifts about 2x between containers. Games parse lazily.
+- **Two shared-template test leaks fixed:** `e2e1369`, and `ec44461` (Wall of Omens given a draw ability on the shared DB's template). The equivalence pool test caught both.
+- **Open:** the absolute-CPU ceilings for L0+L1 (4.0 s, at 1.0x its share) and the duration leaf tipped over once inside the 13-minute chunk while passing alone on both the parent and this commit. They sit at their edge on a slow container.
+- **Verified before push:** ratchets at baseline, digest byte-identical, chunk B 2562 passed; chunk A 4348 passed with only those two CPU ceilings failing.
+
+**Jev oracle-tag cache A/B (rejected, 2026-10-02):**
+- **Setup:** Jev classified all 357 registered-deck cards (107 gain or change tags). The same-seed n=20 Bo3 full matrix ran pre against post.
+- **Outcome:** every deck within ±0.8 pp except Grixis Reanimator, 57.5 → 60.8 (+3.3), almost all of it from Instant Reanimator vs Grixis, 65 → 45 (4 of 20 seeds flipped). Draws 173/175, aborted 0.
+- **Root cause, from a seed-51000 Bo3 diff:** Jev tagged Archon of Cruelty `ON_OWN_DRAW_LIFE_GAIN`, which it does not have. `engine/zone_transfer.py` reads that tag and gave Grixis 3 life per draw.
+- **Decision:** the committed cache is unchanged. The lasting fix is structural: five engine rules read classifier tags (on-draw triggers, ETB surveil, ETB graveyard return, impulse draw, the sorcery-speed lockout). They should read parsed effects (`CardTemplate.effects`) in an E-family switch, leaving the tags as AI hints only. One wrong model answer must not become a game rule.
+
+**Meta refresh 2026-10-04: sharded n=60 Bo3 matrix, and the new site pipeline (`ce1995f`…):**
+- **Pipeline:** `tools/meta_site/` builds `data/meta_site.json` (pydantic schema) from the results, card detail, gameplan archetypes, meta shares, calibration bands and narrative JSON. One renderer writes the matrix dashboard, both showcase copies and the legacy `metagame_data.jsx`. Data is embedded as one JSON block, so no name can break a script. `build_dashboard.py` / `build_showcase.py` are thin wrappers.
+- **The run:**
+  - `.github/workflows/matrix_shards.yml`, run 37184389810: 25 row shards + plan + assemble, 27/27 jobs green, about 20 minutes.
+  - `tools/resumable_matrix.py --row` per runner; 62 cells seeded from the local checkpoint.
+  - 600 cells × 60 Bo3 matches = 18,000 matches. **Aborted 0**, draws 578.
+- **Calibration:** 20 of 25 decks in band (09-27: 18). Out of band:
+  - above: Domain Zoo;
+  - below: Affinity, Amulet Titan, Ruby Storm, Boros Ponza.
+- **Movement vs the 09-27 n=60 run:** Azorius Control 8.7 → 30.4 (+21.7), consistent with the rules units measured since (CP/WH, S3a). Every other deck moved by at most 6.3 pp.
+
+| Deck | 09-27 flat | 10-04 flat | Δ | 10-04 weighted | band | verdict |
+|---|---|---|---|---|---|---|
+| Domain Zoo | 78.0 | 76.7 | -1.3 | 77.2 | 50–65 | above |
+| 4c Omnath | 70.5 | 69.7 | -0.8 | 62.0 | 30–70 | in |
+| Boros Energy | 67.7 | 65.8 | -1.9 | 69.2 | 50–70 | in |
+| 4/5c Control | 59.1 | 63.7 | +4.6 | 61.2 | 30–70 | in |
+| Living End | 65.6 | 63.1 | -2.5 | 62.0 | 30–70 | in |
+| Broodscale Bloodchief | 66.2 | 61.8 | -4.4 | 61.2 | 30–70 | in |
+| Izzet Prowess | 61.1 | 61.5 | +0.4 | 65.9 | 50–65 | in |
+| Azorius Control (WST v2) | 58.8 | 59.7 | +0.9 | 56.2 | 30–70 | in |
+| Pinnacle Affinity | 63.9 | 57.6 | -6.3 | 60.0 | 30–70 | in |
+| Grixis Reanimator | 61.7 | 57.6 | -4.1 | 61.1 | 30–70 | in |
+| Jeskai Blink | 52.2 | 53.1 | +0.9 | 56.9 | 45–60 | in |
+| Instant Reanimator | 56.5 | 52.4 | -4.1 | 51.9 | 45–60 | in |
+| Eldrazi Tron | 49.1 | 50.8 | +1.7 | 43.8 | 50–65 | in |
+| Azorius Control (WST) | 46.9 | 50.5 | +3.6 | 46.9 | 30–70 | in |
+| Eldrazi Ramp | 52.0 | 48.4 | -3.6 | 46.9 | 30–70 | in |
+| Goryo's Vengeance | 51.0 | 48.3 | -2.7 | 49.8 | 30–70 | in |
+| Affinity | 50.2 | 45.3 | -4.9 | 46.8 | 50–65 | below |
+| Dimir Midrange | 45.8 | 45.1 | -0.7 | 46.8 | 45–60 | in |
+| Azorius Blink | 37.4 | 35.6 | -1.8 | 33.7 | 30–70 | in |
+| Creatures Toolbox | 36.2 | 35.2 | -1.0 | 38.7 | 30–70 | in |
+| Hollow One | 34.5 | 33.3 | -1.2 | 31.4 | 30–70 | in |
+| Azorius Control | 8.7 | 30.4 | +21.7 | 25.0 | 30–70 | in |
+| Amulet Titan | 33.3 | 27.6 | -5.7 | 26.9 | 45–60 | below |
+| Ruby Storm | 24.2 | 18.8 | -5.4 | 18.5 | 40–55 | below |
+| Boros Ponza | 17.0 | 16.9 | -0.1 | 15.1 | 30–70 | below |
+
+- **Rules audit on the run:** 626 findings.
+  - 119 violations, all `510.2/creature_dealt` (top detail: Phelia, Exuberant Shepherd), across 103 games and 43 pairs. **Next unit:** decide engine gap or auditor false positive from a replay of one flagged game.
+  - Census: `keyword/unmodelled` 398, `unhandled/spell` 74 (Hex Magic), `unhandled/replacement` 35 (Sanctifier en-Vec).
+- **Provenance fixes found while publishing:**
+  - The audit JSONL is gitignored and per-machine. The site was counting an unrelated 09-15 file, so it showed 0 violations. An audited run now records `rules_audit: {violations, findings}` in its own results file (`run_meta.save_results`), and the site reads only that. The 10-04 results were stamped with the counts from the assemble job's log.
+  - The footer showed the runner's absolute script path, which overflowed phone width by 68 px. It is now shown relative to the repository, and footer text wraps.
+- **Card-level detail** is still the 09-27 `card_data.json`. A sharded `extract_card_data` workflow is the follow-up.
+
+**510.2 audit rows, first pass (`6b2c4c0`):**
+- **Auditor fix:** the restated 510.2 now also knows CR 506.4. An unblocked attacker whose attacked planeswalker left the battlefield or changed controller is not expected to deal damage. This is restated independently of the engine's `_planeswalker_still_attackable`, and a broken engine check is still caught (pinned).
+- **Probe, inconclusive:** 120 audited Bo1 games (Azorius Blink vs Jeskai Blink, Jeskai Blink vs Azorius Control (WST), Azorius Blink vs Azorius Control; 40 each from seed 50000) showed **0 excused cases and 0 violations**. So the 506.4 path is not shown to be the source of the 119 rows, and the rows did not reproduce at this sample size (expected rate about 1 per 75 Phelia-deck games).
+- **Next:** get the exact seed and pair of a flagged game. The runner's audit JSONL was not kept, so re-run one audited shard on Actions with the JSONL uploaded as an artifact, then replay that game.
+
+**510.2 audit rows: resolved as an auditor false positive (CR 506.4).**
+- **A/B on Actions,** the same three Phelia rows (Azorius Blink, Jeskai Blink, 4c Omnath) at n=60 Bo3 with the same seeds. A diagnostic request naming `rows`; each shard prints its audit totals and violations.
+  - **Without the 506.4 clause** (throwaway branch with only `6b2c4c0`'s auditor change reverted): 25 `510.2/creature_dealt` rows (10 + 10 + 5). Mostly Phelia; also Ragavan, Slickshot Show-Off, Archon of Cruelty, Detective's Phoenix. Examples: Azorius Blink vs Jeskai Blink seed 75000 T6; Jeskai Blink vs Eldrazi Tron seed 58500 T5.
+  - **With it** (`fece3d7`): **0 violations**, with the audit active (17–20 findings per shard).
+- **Conclusion:** every row was an unblocked attacker whose attacked planeswalker had left the battlefield before damage. CR 506.4 / 510.1b say it deals no combat damage. The engine was right and the auditor's restatement was missing the clause.
+  - The 10-04 page count of 119 is therefore 119 false positives. No engine change, so the game digest is unaffected.
+- **Seen along the way (AI quality, not rules):** Phelia's attack handler picks "the opponent's best nonland permanent" (`engine/card_effects.py`, `phelia_attack`) and often exiles the planeswalker Phelia herself is attacking. That removes her own damage, and the walker returns at the end step with fresh loyalty. The choice is also strategic logic living in an engine handler. Candidate unit: move the target choice to the AI layer and value "the walker I'm attacking" by the damage it would have taken.
+
+**Planeswalker entry loyalty and the end-step exile (`c933190`, `a429077`, `cd8f48d`):**
+- **Symptom:** while checking the 510.2 rows, Phelia's attack trigger was seen exiling the walker Phelia attacked. Reading the handler surfaced two rules gaps under it.
+- **Rules (engine):**
+  - **CR 306.5b:** a planeswalker enters with its printed loyalty by any path. Only the cast path set it; any other entry left the counters zeroed by the leave-battlefield cleanup, so the walker died to SBA 704.5i.
+    - **Owner:** `CardInstance.enter_battlefield`; the `spell_resolution` copy was removed.
+    - **Class:** every planeswalker × every non-cast entry (blink return, put onto the battlefield, reanimation).
+  - **CR 400.7:** the delayed-return exile moved cards by hand, so a returned permanent kept its counters, damage and attachments. It now goes through `zone_mgr.move_card` both ways. Zone-mutation baseline 66 → 64.
+  - **Auditor:** `306.5b/entry_loyalty` at the funnel's battlefield entry, pinned both ways.
+- **Decision (AI):** `ai/temporary_exile.temporary_exile_share`.
+  - An "exile until the next end step" removes, from a walker, only its loyalty above printed less the combat damage already aimed at it (CR 506.4). Every other permanent counts whole.
+  - The handler drops a candidate whose share is 0 and ranks the rest by threat × share.
+  - **Class:** 33 pool cards carry the delayed-return exile shape (`class_census`); Phelia is the registered member.
+- **Measurement:** same seeds, the three Phelia rows, n=20 Bo3 on Actions (diagnostic `rows` requests with per-cell print).
+
+  | Deck | A `fece3d7` | B +loyalty | C2 +AI | C2 − A |
+  |---|---|---|---|---|
+  | 4c Omnath | 70.2 | 70.8 | 70.8 | +0.6 |
+  | Azorius Blink | 34.2 | 34.4 | 35.0 | +0.8 |
+  | Jeskai Blink | 49.2 | 49.4 | 49.0 | −0.2 |
+
+  Cells changed: 23 (A → B) and 7 (B → C2), none by 10 pp or more. Audit: 0 violations on every arm.
+- **Caught by the measurement:** the first AI cut (arm C) dropped any candidate whose threat × share was 0. Because the threat primitive scores some engine permanents 0 (Spelunking, Cultivator Colossus), Jeskai Blink vs Amulet Titan went 75 → 65. `cd8f48d` filters on the share alone (pinned red-first). C2 is flat.
+- **Leads not built:**
+  - `permanent_threat` scores engine permanents (Spelunking, Amulet-style enablers, land-count bodies on an empty board) at 0. That is a primitive calibration unit.
+  - The rest of the 33-card delayed-return class still has no typed field or generic handler (only Phelia is registered).
+  - Throwaway branches `claude/exile-arm-a`, `claude/exile-arm-b` and `claude/audit510-pre` remain on the remote; the session cannot delete branches.
+
+**Mana engines in the threat primitive (`aa28da8`):**
+- **Symptom:** `permanent_threat` scored mana engines 0 (Spelunking, an extra-land-drop enchantment, a cost reducer). Every removal and exile picker built on it walked past them, which the end-step-exile measurement exposed.
+- **Rule (AI):** a permanent that adds mana on future turns is worth that mana, at the per-mana rate `position_value` already gives mana now (`mana_clock_impact`), discounted by `urgency_factor`.
+- **Owner:** `ai/mana_engine.engine_mana_next_turn` feeds `EVSnapshot.my_/opp_engine_mana`, which feeds a `position_value` term. `permanent_threat`'s remove-and-compare sees it with no special branch.
+- **Public information only:** hand size and library composition.
+  - An extra land drop adds a mana per drop that a land beyond the normal drop is expected to fill (CR 305.2).
+  - A cost reducer saves its amount, capped at the generic cost, on each expected matching spell (`oracle_resolver._cost_rule_applies`).
+- **Class:** 27 extra-land-drop and 100 cost-reducer pool cards.
+  - **Refused:** the untap-on-enter watcher (Amulet of Vigor, Spelunking, The Wandering Minstrel: 3 cards) is below the class rule. It stays a runtime oracle match in `land_manager` and scores 0 as before.
+- **Tests:** `tests/test_mana_engine_value.py` (7). The digest moved one Bo3 (Azorius Control vs Ruby Storm 58500). Anchor: 29 passed.
+- **Measurement:** full 25-row matrix, n=20 Bo3, same seeds on Actions (pre `1924594`, post `9e57bb4`).
+  - 23 of 600 cells changed. Every deck's field WR is within ±0.5 pp (largest: Ruby Storm +0.5, Grixis Reanimator −0.3).
+  - One cell moved 15 pp or more: Azorius Control (WST v2) vs Ruby Storm, 80 → 95. Control now removes the Medallions as threats.
+  - Neutral on the field; kept as a correctness fix to the primitive.
+- **Leads not built:**
+  - The cast projection (`_project_spell`) does not add the cast card's own engine mana, so casting an engine is still valued without it.
+  - The untap-watcher shape above.
+  - Cost reducers keyed on spell type beyond the parser's four targets.
+
+**Cast projection credits an engine's own mana (`aae2de6`):**
+- `_project_spell` now calls `engine_mana_next_turn(game, idx, extra=(cast template,), hand_delta=-1)`, the same single owner, so casting a cost reducer or an extra-land-drop permanent is valued with the mana it brings. Pinned red-first (`tests/test_mana_engine_value.py`, 9 tests). Digest unchanged; anchor 29 passed.
+- **Measurement:** full 25-row n=20 Bo3 on Actions, same seeds. The pre baseline is the previous unit's post run (`9e57bb4`, the same engine code as `8adb288`); post is `a592fdb`.
+  - 36 of 600 cells changed. Every deck within ±0.6 pp except Ruby Storm −1.2.
+  - Three Storm cells moved by 15 pp or more, in both directions: Storm vs Broodscale 10 → 30; Living End vs Storm 65 → 85; Eldrazi Ramp vs Storm 70 → 85.
+- **Noise floor (new finding):** a second run of identical code (`claude/engine-arm-pre2`, 432 cells extracted) differed from the first on 3 cells by 5 pp each. Two of them were Storm cells (Storm vs Living End, Storm vs Creatures Toolbox) and the third Goryo's vs Broodscale.
+  - These are long combo games, so this is the wall-clock `GAME_TIMEOUT_SECONDS` truncating on loaded runners (the CLAUDE.md sequencing rule 2).
+  - Storm's −1.2 sits inside that floor. The unit reads as neutral and stays as a correctness fix.
+  - **Lead:** sharded diagnostic runs should neutralise the deadline, as `tools/refresh_wr_baseline.py` does, before small per-cell deltas are trusted.
+
+**Determinism of sharded matrix runs (`e35c96f`, `c9a3859`, `707a028`, `ed884e2`, `84f5442`):**
+- **Symptom:** two runs of identical code disagreed on 1–3 cells per run, 5 pp each, mostly in Storm, Goryo's and other long combo games. There were 0 aborts. The earlier A/B notes (the projection unit's "noise floor") were partly this.
+- **Ruled out, by measurement:**
+  - The per-game deadline: 0 aborts, and it is now neutralised for sharded runs anyway (`--neutralise-deadline`, with `SEEDED_REPLAY_TIMEOUT_SECONDS` moved to `ai/scoring_constants` so shards need no pytest).
+  - Hash seeds: `PYTHONHASHSEED` 1 vs 2 gave identical cells.
+  - The filesystem: no unsorted listing reaches game code.
+- **Reproduced:** each cell alone was stable, but two concurrent local 2-worker runs of the Storm row disagreed. The cause is state that survives across cells in a worker process.
+- **Causes:** two per-snapshot memos keyed on `id(snap)`. CPython reuses a freed object's id, so a new snapshot could receive a dead one's value, depending on the worker's allocation history:
+  - the combo evaluator's baseline cache (`_BASELINE_CACHE`), which was also never evicted, so it grew without bound;
+  - EVPlayer's combo-assessment memo (`_assess_snap_id`).
+- **Fix:** `ai/object_memo.memo_on`, one memo that checks identity through a weak reference and evicts an entry when its object is collected. Both memos use it.
+  - Also, by the same "order must not matter" rule: a deck's gameplan no longer depends on which caller loads it first (`snapshot_from_game` loaded bare, and Jeskai Blink / 4/5c Control would otherwise cache a JSON-only `always_early`; latent in practice, digest unchanged).
+- **Evidence:**
+  - Before: every pair of concurrent local Storm-row runs disagreed on 1–2 cells; on Actions, C/D 2/48 and pre/pre2 3/432.
+  - After: local E/F agree on 24/24, Actions G/H on 48/48, and the runner and this container agree cell for cell (24/24).
+  - Digest unchanged; anchor 29 passed.
+- **Consequence:** same-seed A/Bs on Actions are now exact, so any per-cell difference is a real effect of the change.
+
+**Ward: every cost the engine can pay, wherever the keyword is printed (`b98883f`):**
+- **Chosen by the census, per CLAUDE.md:**
+  - The 10-04 audit's top coverage row was `keyword/unmodelled` (398 findings).
+  - The census is unchanged since 09-27, but the per-card breakdown showed real ward gaps behind it.
+  - Colossal Skyturtle's "Flying, ward {2}" and Sire of Seven Deaths' "Ward—Pay 7 life" both parsed to no ward.
+- **Rule (CR 702.21a; CR 119.4 for life payment):** "counter it unless that player pays [cost]". The cost is whatever follows the keyword, which may be mana, life, or both. Life is payable only from a total at least the payment.
+- **Defects** (parser read only clause-initial ward and only mana):
+  - 34 pool cards print ward after another keyword;
+  - 15 "Pay N life" cards;
+  - 3 combined "Ward—{2}, Pay 2 life" cards owed only the mana.
+- **Fix:**
+  - `oracle_parser.parse_ward` is the one parser: (mana, life), own keyword-list ward only.
+  - Refused shapes (discard, sacrifice, collect evidence, variable life) yield (0, 0) and are never half-applied.
+  - New field `ward_life_cost`.
+  - `optional_costs.ward_owed` / `offer_ward_tax` pay both parts, through the existing mana payment and the existing `_game_pay_life`.
+  - Auditor `702.21a/ward_paid`, pinned both ways.
+  - Pool: 109 mana, 15 life, 3 combined, 27 refused, 80 granted-only.
+- **Measurement:** full 25-row same-seed A/B, n=20 Bo3, deterministic since `84f5442`. Pre `ddb08ed`, post `efcc13b`, 599 cells compared.
+  - 7 cells changed, **every one involving Eldrazi Ramp** (2 Sire of Seven Deaths main). Eldrazi Ramp vs Eldrazi Tron 65 → 80; the rest ±5. Eldrazi Ramp field +0.6; every other deck within ±0.5. 0 aborts in both arms.
+  - Mechanism confirmed in 20 `--bo3` replays of Eldrazi Ramp vs Eldrazi Tron: Tron's targeted removal hit Sire's 7-life ward 17 times and was countered each time (Kozilek's Command 9, Dismember 5, Warping Wail 3). Before the fix those spells resolved free.
+- **Leads:**
+  - **Next unit:** removal targeting prices only the MANA part of ward (`_threat_score`). Tron aimed 17 removal spells at a ward it then declined to pay, so target choice should price ward with the same pay/skip projection the payment decision uses.
+  - "Ward—Discard a card" (12 pool cards) through the discard funnel.
+  - Ward granted to another object (80 cards: equipment, anthems) needs the continuous-effects layer.
+
+**Ward follow-ups: target choice (`c630b5b`) and targeted ETB triggers (`c6dca3e`):**
+- **Target choice (AI):** `ai/ward_targeting.ward_rules_out_target` asks the resolution's own question before casting.
+  - Can the caster pay (mana left after the spell itself; life at least the life part, CR 119.4)?
+  - Would `decide_optional_cost` over the ward's OptionalCost pay?
+  - If not, the permanent is not a target. Applied at both pickers: the main-phase `_choose_targets` (burn, removal and exile branches) and the response picker `_pick_best_removal_target`.
+  - Same-seed replays of Eldrazi Ramp vs Eldrazi Tron: wasted removal 17 → 6 (main-phase picker only) → 0 (both).
+- **Anchor flip accepted as rules-correct** (`771f2bd`): Affinity vs Domain Zoo s50500, replayed from pinned worktrees.
+  - Before: a 0-mana Leyline Binding exiled Kappa Cannoneer (Ward {4}) for free.
+  - After: Zoo exiles Claws of Gix, and Affinity wins on turn 7.
+- **ETB triggers (engine, CR 702.21a "spell or ability"):**
+  - A permanent's targeted ETB trigger carries its target on the permanent spell's item, which the spell-level check skips, so every ETB trigger passed ward free.
+  - Fix: `optional_costs.ward_gate` is now the one ward check over a target list, used by spell resolution and by the ETB dispatch. An unpaid ward counters the ETB ability; the permanent still enters.
+  - Shared audit `ResolutionManager._audit_ward_paid` (702.21a/ward_paid), pinned both ways on the ETB path.
+- **Measurement** (full 25-row same-seed A/Bs, n=20 Bo3, deterministic):
+  - Target choice: 26 cells changed. Domain Zoo −1.5, 4c Omnath −0.9; Pinnacle Affinity and Eldrazi Ramp +0.6; Affinity +0.3; all others within ±0.3.
+  - ETB gate: 8 cells changed, all a warded-threat deck vs an ETB-removal deck; every deck within ±1.
+  - Whole ward cluster from `ddb08ed`: Eldrazi Ramp +1.6, Pinnacle Affinity +0.7, Affinity +0.5 (toward its 50–65 band), Domain Zoo −1.5 (toward its 50–65 band from above), 4c Omnath −1.1. 0 aborts throughout.
+- **Leads:**
+  - Triggered abilities that pick their target at resolution inside a handler (an attack trigger, the generic oracle ETB resolver) still bypass the gate, and the auditor cannot see them. Routing those picks through `target_solver` closes both; the `target_pick` single-owner ratchet tracks the sites.
+  - The engine-side `_threat_score` still deducts a mana-only ward literal for handler picks.
+
+**Resolution-time target picks (`571dd90`) and the gameplan cache key (`1c03d99`):**
+- **Rule (CR 601.2c / 608.2b / 702.11d / 702.16b / 702.21a):** a resolving spell or ability affects the target chosen when it was put on the stack. A pick made on resolution never chooses a permanent the source may not target, and it meets that permanent's ward.
+- **Defect:** handlers re-picked their own "best" target at resolution and ignored the cast-time target: Kolaghan's Command, Wear // Tear, Celestial Purge, Solitude's ETB. Several skipped the legality check; none met ward for a pick of their own. The {T} ping activation and attack triggers dealt "any target" damage with direct life/damage writes.
+- **Owners:**
+  - `engine/target_solver.pick_resolution_target`: the cast-time target while legal, else the best legal candidate whose ward the controller would get past, which meets that ward now.
+  - `oracle_resolver.resolve_any_target_damage`: the same for "N damage to any target", with damage through `engine/damage.deal_damage`.
+- **Ratchets:** `target_pick` 11 → 0. Four handlers were routed. Six non-targeting functions are marked with the reason (library searches, "each" effects). The detector learned the owner's entry points. `damage_write` 39 → 36.
+- **Digest unchanged; anchor passes.**
+- **Order-dependence, bisected:** the local sweep failed anchor[24] (Grixis Reanimator vs Azorius Blink s53000) reproducibly, but only after other tests; CI and the anchor alone passed.
+  - Bisecting 296 files, then per test, gave `test_load_all_gameplans`. `load_all_gameplans()` without decklists cached a JSON-only plan for every deck under the bare name, and games then read it (`always_early` differs for Jeskai Blink and 4/5c Control). It is the same defect class as `707a028`, through the other loader.
+  - The cache is now keyed on (deck, derived-with-decklist). Pinned red-first; the polluting pair passes; 708 gameplan tests and the anchor pass.
+- **Order-dependence sources fixed so far:** two `id()`-keyed memos and both gameplan loaders.
+
+## E1 — damage and life on the effect dispatcher (2026-10-08)
+
+Design doc `docs/design/2026-09-29_clause_and_trigger_grammar.md`, sections 11 ("As built in E1"), 14 and 18.3. The first verb family resolves through the typed effect grammar. Class: 616 pool cards deal damage to a chosen target (13 registered-deck cards).
+
+**Byte-identical steps (seeded digest unchanged on each):**
+- **E1.0 `61f1358`:** `engine/effect_conditions.py` is the one owner of resolution-time counts. It holds:
+  - the primitives: graveyard card types, permanents controlled, opponents who lost life;
+  - the legacy adapters (`scaler_count`, `direct_damage_condition_met`, `effective_direct_damage`), moved out of `clause_resolver` and `oracle_resolver`;
+  - later, the typed evaluators for STATE `count` / `card_types` and the amounts LITERAL, X, and X_DEFINED over domain.
+- **E1.1 `496c220`:** `engine/effect_executors.py` holds DAMAGE, LOSE_LIFE and GAIN_LIFE through their owners. Each executor and evaluator declares `supports`, so `can_execute` fails closed per shape. The dispatcher carries the carrier's live source object (a resolving spell is in no zone) and a `legacy_only()` switch for the harness.
+- **E1.2 `8c53adb`:** `engine/effect_carrier.py` is the switch.
+  - The burn-spell handler offers its SPELL host. Every activated ability offers its host under its kind's family.
+  - Strict damage now admits printed "instead" upgrades.
+  - Harness proof (`tools/host_resolution_equivalence.py --switched`): 131 pool pairs, 131 identical to their legacy apply on six boards × two seeds, the dispatcher entered on each. The record `tools/host_harness_switched.json` is what gate parity holds new-path pairs to, and a CI step re-runs it.
+  - Pairs a card-name handler intercepts (Grapeshot then) or whose cast-time list another targeting host shares (Resounding Thunder) stay on legacy fallback.
+
+**Behaviour changes, each red first, with its auditor invariant:**
+- **E1.b1 `dfe0986` — a target is the object that was targeted (CR 608.2b, 400.7).**
+  - Before: a removal spell aimed at a creature blinked in response (the AI's "blink: save own targeted creature") still killed the returned creature. A ping activated at a creature that died went to the opponent's face. A target that gained hexproof was still hit.
+  - Fix: one snapshot helper (`stack.snapshot_targets`) records each card target's zone and battlefield entry when chosen, for a cast and for an activation; the activation snapshot had looked targets up through a method that does not exist. `ResolutionManager` re-checks identity and targetability, and abilities fizzle like spells.
+  - Auditor `608.2b/resolve_target`, restated from the snapshot.
+  - **Measured:** 0 of 600 cells changed (n=20 Bo3, full matrix). The lines it fixes did not decide any of these games.
+- **`bd837d1` (+ pins `cfef3a4`) — a target's zone is named by its own sentence (CR 115.1, 601.2c).**
+  - `target_solver.parse`'s loose graveyard fallback fired on any "target <type>" whenever the oracle held a graveyard phrase anywhere. So Unholy Heat's "target creature or planeswalker" became "a creature card in your graveyard", and the spell could not be cast at a creature unless its caster had a creature card in their own graveyard. Violent Urge was affected the same way.
+  - 137 pool cards' cast-time requirements change, every one a wrong graveyard requirement removed. Registered-deck cards: Unholy Heat, Violent Urge, Kraul Harpooner, Tyvar, Grist.
+  - Auditor `601.2c/target_zone`, restated from the grammar's typed slot.
+- **E1.b2 `d2b4fd2` — burn spells with no card-name handler.**
+  - Grapeshot, Unholy Heat and Tribal Flames registry handlers deleted: registry 85 → 82. Tribal Flames' handler went face and never dealt less than 2.
+  - A family-generic clause handler, "dispatched", last in the registry, carries a spell no legacy handler claims.
+  - The DAMAGE executor binds each chosen value itself: an illegal target is not affected and never redirected. An unbound slot keeps the owner's rule. The caster's -2 marker reaches the caster.
+  - 66 pool spells moved off the legacy per-ability fallback. Each difference is recorded as an intended change with its class: unlogged damage now logged; a creature-only spell no longer hits face with no legal target; the fallback resolved nothing; the fallback misread the spell.
+  - Digest: Ruby Storm games lose only the deleted handler's duplicate Grapeshot lines.
+  - **Measured together with `bd837d1`** (pre = E1.b1 arm): 30 cells changed, **every one involving Izzet Prowess**. Izzet Prowess field +0.2; every deck within ±0.3; 0 aborts; audit violations 0.
+  - Mechanism confirmed in replays (Izzet Prowess vs Boros Energy s50000/s51000): Unholy Heat is now cast on turn 3 at a creature (Guide of Souls, Ajani). Before, it was cast only once its controller's graveyard held a creature card, usually later and for 6.
+- **E1.b3 `dfa4a21` — loyalty-line and land damage through the damage owner.**
+  - A planeswalker's damage line picks its recipient through the shared resolution-time picker: legal, ward met, killable creatures first, else the opponent. Its damage goes through the owner, so a killed creature dies by state-based action (CR 704.5g) and face damage is life lost.
+  - A pain land's damage to its controller goes through `deal_damage`, so it is life lost this turn (CR 120.3a).
+  - `damage_write` 35 → 32 (36 → 35 with Tribal Flames).
+  - Auditor `115.4/loyalty_damage_target`.
+  - Digest: two Wrenn and Six games only gain the now-logged face damage.
+  - **Measured** (pre = the E1.b2 arm): 2 cells changed, Domain Zoo vs Ruby Storm and Azorius Control (WST) vs Ruby Storm, each one game toward Ruby Storm; Ruby Storm +0.2; every other deck within ±0.1; 0 aborts; audit violations 0. Mechanism: Ruby Storm's only DAMAGE loyalty line, Ral, Leyline Prodigy's −2 (the back face of Ral, Monsoon Mage), now picks a legal target through the shared picker and deals its damage through the owner. None of the three decks plays a pain land.
+- **Whole E1, from the pre arm (`57a8384`, = E1.2) to E1.b3:**
+  - 32 of 600 cells changed (30 involving Izzet Prowess, 2 involving Ruby Storm).
+  - Every deck within ±0.3; 0 aborts in all four arms; audit violations 0 throughout.
+  - Arms, n=20 Bo3, all 25 rows: e1-arm-pre `57a8384`, e1-b1-post `cf96099`, e1-b2-post `2aa23e1`, e1-b3-post `e1bd0ac`.
+
+**Ratchets:**
+- card-name registry 85 → 82;
+- `damage_write` 36 → 32;
+- effect-parser (f) legacy-fallback pairs 5223 → 5091;
+- gate parity 234 pairs on the new path of 5325 (166 proven identical, 68 intended changes, each with its reason).
+
+**Leads (not built):**
+- **Activated "any target" abilities never choose a target.** `ActivatedAbility.target_requirements` is empty for Goblin Bombardment and its class, so the engine's empty-list rule always sends them face. The AI should choose on activation (CR 602.2b). That also unblocks the next item.
+- **Loyalty damage lines onto the dispatcher:** waits for the AI to choose a loyalty line's target on activation. One unbound-slot rule cannot serve both the activated "face" convention and the loyalty "engine pick".
+- The non-battlefield `Handle` ordinal (CR 400.7 outside the battlefield), needed by E2.
+- Multi-target and divided damage slots (`count_max > 1`), and a CAST_FACT (kicked) evaluator, so upgrades like "if kicked, 4 instead" become executable.
+
+## Aimed damage activations — one owner of where declared damage goes (2026-10-09)
+
+Class: 101 pool abilities read "deals N damage to any target" (Goblin Bombardment, High Noon, Walking Ballista, The Filigree Sylex and every pinger). Every one carried an empty `target_requirements`, so the AI declared nothing and the engine's empty-list rule sent all of them to the opponent's face. Two runner paths also made damage activations outside the AI and the activation owner.
+
+**U1 `2de1ec4` — the requirement is typed at load (CR 602.2b), byte-identical.**
+- `parse_activated_abilities` gives DAMAGE_ANY_TARGET its requirement from `target_solver.parse(body)`: ("any", {"any"}) on all 101.
+- Auditor `602.2b/activation_target`: every permanent declared as a target of an activated ability is one its source may target (the activation counterpart of `601.2c/cast_target`).
+- Tests: the requirement on a real member and pool-wide; the audit both ways.
+
+**U2 `7293caf` (+ baseline row `2f02dc3`) — `ai/damage_targets.py`, the one AI owner.**
+- `choose_damage_recipient` compares, in the attack chooser's currency (the opponent's position value lost), N damage to the face (`face_damage_value`, moved from `attack_targets._face_value`) against each opposing creature or planeswalker the damage destroys (`permanent_threat`).
+  - Lethal damage goes to the face; ties go to the face.
+  - Candidates pass slot admission, `can_be_targeted` and `ward_rules_out_target` (with the ability's own mana committed).
+- `damage_destroys`: lethal damage (CR 120.6/704.5g), deathtouch (702.2b), indestructible (702.12b), planeswalker loyalty (120.3c/704.5i).
+- `ai/activation_ev`'s damage branch declares the chosen target. A kill is worth the cost terms plus `permanent_threat` (the removal scorer's currency); the face keeps its projection exactly; the first step of a lethal line declares the face.
+- `target_solver.slot_admits_player` / `slot_admits_permanent`: one owner of what a slot admits, lifted out of the damage executor's binding (harness unchanged).
+- Digest byte-identical: no seeded game has the AI choose a damage activation.
+
+**U3 `edc1177` — the runner's damage shortcuts retire.**
+- `_activate_goblin_bombardment` (end step, oracle-gated) removed creatures from the battlefield list, wrote `opponent.life -= 1` and set `game_over` itself; its non-lethal branch did nothing. It is replaced by:
+  - `ai/activation_ev.lethal_damage_outlet_plan`: the sacrifice-outlet activations (13 pool abilities) whose summed damage is lethal now, counted from their costs — one victim each in the sacrifice callback's order, mana out of `available_mana_estimate`, a {T} or once-each-turn outlet once — or `[]` short of lethal;
+  - `GameRunner._activate_lethal_damage_outlets`, which executes the plan through `ActivationManager.activate` at the opponent, re-planning before each activation. Costs go through the zone funnel (dies triggers fire), damage through the owner, and the game ends by SBA.
+- The "{T}: this creature deals N damage to any target" regex branch of `_activate_tap_abilities` is gone: the AI activates such abilities through `ActivationManager`, aimed by U2. No registered deck plays one.
+- Ratchets: `damage_write` 32 → 31, zone mutation `game_runner` 16 → 15, oracle runtime parse 176 → 173.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows. Pre = e1-b3-post (`e1bd0ac`; its engine, AI, deck and tool code is identical to `ce02660`, the head before U1); post = aim-post (`7b8c4e3`, code `edc1177`).
+- 36 of 600 cells changed: 25 involve Boros Energy and 11 Boros Ponza; no other cell moved.
+- Boros Energy 64.8 → 68.1 (+3.3, +32 matches of its 960; band 50–70, still in). Boros Ponza 19.5 → 20.1 (+0.6, High Noon in its main deck). Every other deck within ±0.7, each from its cells against those two.
+- 0 aborts in both arms; draws 173 → 177; audit violations 0 in both (findings 465 → 467, census rows), the new `602.2b/activation_target` included.
+- **Mechanism, replayed exactly on the matrix path** (Boros Energy vs Azorius Blink, the cell 55 → 70: seeds 50000, 55500, 56000 and 57000 flipped toward Boros Energy, 51000 away; match s55500, lost 1–2 before, won 2–1 after):
+  - Before, Goblin Bombardment only ever pinged the face (four main-phase face pings in the match).
+  - After, it sacrifices tokens to kill Azorius Blink's Ocelot Pride (three times) and Phelia: game 2 turn 5 is the first divergence.
+  - In game 3, combat leaves the opponent at 4, and the end-step plan sacrifices four creatures for exactly lethal through the activation owner (each victim through the zone funnel, the loss by SBA).
+- No deck moved more than 5 pp, so no bisect was required. The replay names the change in Boros Energy's cells: U2's aim plus U3's end-step lethal.
+- This closes the E1 lead "Activated 'any target' abilities never choose a target".
+
+**Context:** a sacrifice cost is priced by the cost projection's `my_power` drop, which inherits `position_value`'s known sentinel cliff: a slow clock facing a faster one reads worse than no clock, so feeding a lone 1-power attacker to an outlet can project as a gain. Fixing the cliff was A/B-measured and falsified (`docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md`); this unit does not change it.
+
+**Leads (not built):**
+- Loyalty damage lines choose their target on activation: a loyalty ability resolves with no stack item, and the chooser returns only a slot. Ral −2 (divided), Ajani 0 (reflexive) and both Chandra lines are misclassified as DAMAGE, and the AI double-counts a damage line.
+- The spell burn chooser (`EVPlayer._enumerate_burn_targets`, profile-weighted with planeswalker constants) and the engine's resolution-time pick (`oracle_resolver._pick_damage_target`, literal weights in the engine) onto `ai/damage_targets`.
+- `enumerate_legal_targets` returns `[]` for zone "any": an "any target" slot has creature and planeswalker candidates (CR 115.4).
+- Planeswalker chip damage short of death (no primitive prices lost loyalty).
+
+## Engine rules read card text, never classifier tags — unit C: static cast-timing restrictions (2026-10-09)
+
+Program: the engine rules that read oracle-classifier tags move onto the card's parsed text, so one wrong model answer can never become a game rule. Prompted by the rejected Jev tag-cache A/B, where a false `ON_OWN_DRAW_LIFE_GAIN` tag gave Grixis life on every draw. Five engine sites read seven tags; the committed cache holds 36 cards, so each rule fired only for the cards someone tagged.
+
+**Pin:** `tests/test_engine_reads_no_classifier_tags.py` lists the engine modules still reading tags. The list may only shrink: 4 → 3 with this unit.
+
+**Rule (CR 101.2, 307.1, 604.1, 611.3a):** a printed restriction on when players may cast applies as printed, read from the card's own text.
+
+**Class:** four printed sentences on nine pool cards.
+
+| Printed sentence | Cards |
+|---|---|
+| "Your opponents can't cast spells during your turn." | Voice of Victory (Boros Energy MB ×4), Dromoka, Kutzil, Jennifer Walters |
+| The leading "During your turn, ... can't cast spells or activate abilities of artifacts, creatures, or enchantments." | Grand Abolisher, Myrel |
+| "Each opponent can cast spells only any time they could cast a sorcery." | Teferi, Time Raveler (11 decks); Teferi, Mage of Zhalfir |
+| "Players can cast spells only during their own turns." | Dosan |
+
+**Before:**
+- Two owners decided the sorcery-speed lockout:
+  - a classifier tag read by `can_cast`;
+  - a substring field read only by the runner's instant windows.
+- They disagreed: Teferi, Mage of Zhalfir only closed the windows, and Grand Abolisher got Teferi's rule.
+- Voice of Victory and the rest were enforced nowhere.
+
+**`eaf209f`:**
+- **Grammar:**
+  - "during your turn", leading or trailing, is the TURN condition of "as long as it's your turn". It is one table in the condition leaf; every other "during ..." stays refused.
+  - "can cast spells only any time they could cast a sorcery / during their own turns" and the cast-or-activate conjunction are typed PROHIBIT specs.
+- **Read path:**
+  - `Effect` carries a printed condition, and `rules_query` evaluates it.
+  - `cast_prohibited` answers own-turn-only.
+  - New `activation_prohibited`, read by `can_activate`.
+- **Derivation:** `continuous_effects` builds these effects from each permanent's printed static PROHIBIT specs. The tag read is deleted, and the player-flag views apply the same condition.
+- **One owner:** the runner's windows ask `rules_query`. Deleted: the legacy field, its parser and the dead lockout set.
+- **Auditor:** `101.2/cast_timing`, restated from the battlefield's printed specs.
+- **Tests:** red first.
+
+**Grammar side effects, recorded:**
+- 73 "during your turn" statics are now typed: STATIC typed share 0.6077 → 0.6223.
+- 9 still-refused ones now stop at their own leaf.
+- 44 spec-equivalence comparisons lost their coincidental UNMODELLED_CLAUSE explanation; no view value changed:
+  - 43 are legacy-side readings, recorded as 9 allowlist rows in design doc section 10;
+  - one is grammar-side and stays UNEXPLAINED: Sorin, where `target_solver.parse` types "target player or planeswalker" as players only.
+- The Kaito witness's known gap closes.
+
+**Digest:** one game changes. In Azorius Control (WST v2) vs Boros Energy s53500, Azorius no longer flashes in Wan Shi Tong at Boros Energy's end step under Voice of Victory. Same winner, 7 turns instead of 9.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = aim-post (`7b8c4e3`, code `edc1177`).
+- **C1** (post arm ctime-post, `56e8c72`):
+  - 9 of 600 cells changed, every one involving Boros Energy (Voice of Victory).
+  - Boros Energy 68.1 → 69.0 (+0.8); every other deck within ±0.5; 0 aborts.
+  - The new auditor recorded **465** `101.2/cast_timing` violations, all against Teferi, Time Raveler's printed restriction, every one through a route that skipped the timing check:
+    - Isochron Scepter copies of Orim's Chant (212) and Silence (142), fired in the opponent's upkeep;
+    - Ephemerate rebound recasts at upkeep (102);
+    - Blazing Rootwalla madness casts (9).
+- **C2 `a8868f4` — a printed cast-timing restriction binds every cast route** (red first; one predicate, `rules_query.cast_time_restricted`):
+  - `can_cast` asks it before every route (madness, warp, escape included).
+  - `CastManager.free_cast_allowed` gates the free path, and each route asks it before moving or paying, so a refused cast leaves the card where its rules put it:
+    - the Scepter copy is not paid for;
+    - rebound and suspend stay exiled (CR 702.88a, 702.62a);
+    - a cascade hit goes to the bottom (CR 702.85a);
+    - plot stays plotted;
+    - madness goes to the graveyard.
+- **C2 measured** (post arm ctime2-post, `4c0a99a`, against C1):
+  - 18 cells changed, all among the Teferi / Scepter / Ephemerate / madness decks.
+  - Azorius Control −0.5; every other deck within ±0.2.
+  - **Audit violations 465 → 0.**
+  - Largest cell: Azorius Control vs 4c Omnath, 25 → 10. Its 32 violating casts under C1 (9 seeds) were Scepter copies of Orim's Chant / Silence and Ephemerate rebounds against 4c Omnath's Teferi, and now none happen.
+- **Whole unit C** (pre → C2): 27 cells changed.
+  - Boros Energy +0.8, Dimir Midrange −0.5, Azorius Control −0.5; every other deck within ±0.2.
+  - 0 aborts; audit violations 0.
+- No deck moved more than 5 pp.
+
+**Leads (not built):**
+- **Cascade is modelled at the cascading spell's resolution**, not at its cast trigger. When the stack is already empty there, the printed sorcery-timing restriction cannot see it. Separately, the mass-reanimation cascade shortcut resolves Living End without casting it, so counterspells cannot interact (CR 702.85a).
+- **Warp and escape recasts skip the normal timing check** (CR 307.1). The printed restrictions now bind them; the ordinary sorcery timing does not.
+- **A suspended card whose free cast fails for another reason** (no legal target) still goes to the graveyard instead of staying exiled (CR 702.62a).
+- **"Target player or planeswalker" is typed players-only** in `target_solver.parse`: Lava Spike-class burn, Sorin's +2.
+- **Fires of Invention's self-restriction** stays refused.
+- **Mana abilities:** a your-turn activation restriction (Grand Abolisher, Myrel) covers mana abilities of artifacts, creatures and enchantments, which the payment path does not consult.
+
+## Engine rules read card text, never classifier tags — unit E: enter-trigger surveil and regrowth (2026-10-10)
+
+**Rule (CR 113.1, 603.2, 603.3d, 608.2b, 701.42):** an enter trigger is an ability its permanent has because its text says so. "When ~ enters, surveil N" surveils; "When ~ enters, [you may] return target card from your graveyard to your hand" returns a legal card its controller picks. A classifier tag neither adds nor removes the trigger.
+
+**Before:**
+- The enter resolver surveilled only for the ten surveil lands tagged `ETB_SURVEIL_N`.
+- It regrew only for Eternal Witness (`ETB_RETURN_FROM_GY_TO_HAND`). It chose the card by an in-engine score (nonland, then mana value) and moved it outside the zone funnel.
+- Every untagged member entered and did nothing, unseen by the silent-miss diagnostic: 50 surveil hosts and 53 regrowth cards by text.
+
+**What changed:**
+- **E.1 `c28405c` — enter-trigger carrier and SURVEIL:**
+  - `effect_carrier.dispatch_etb` resolves a face's TRIGGERED(SELF_ENTERS) hosts through the dispatcher. `etb_plan` takes them whole or not at all, card-flow family only, after the typed-field branches.
+  - The card-flow SURVEIL executor goes through `GameState.surveil`.
+  - The harness gains an ETB host kind; its legacy apply follows the engine's order (registry handler, else the enter resolver).
+  - Gate parity 234 → 281.
+- **E.1b `f13b220` — the surveil tag branch is deleted.** A tag alone never surveils.
+- **E.2 `500c321` — regrowth:**
+  - **Executor:** the card-flow MOVE executor moves graveyard → hand through `ZoneManager.move_card`.
+    - An unbound slot is the controller's pick out of `target_solver.enumerate_legal_targets`, through the A35 `choose_cards` callback.
+    - The engine keeps only distinct pool members, at most `count_max`, and fills a required target (CR 601.2c, 603.3d) by `callbacks.default_card_pick`.
+    - A chosen card is re-checked on resolution (CR 608.2b).
+  - **Callbacks:** the dispatcher's `choose_optional_effect` and the executors' `choose_cards` are answered.
+    - Default: perform, and pick by the engine's delivery rank.
+    - AI (`ai/resolution_choices.py`): perform; pick by `choose_tutor_delivery`, leaving a card that serves its plan from the graveyard (`discard_advisor.serves_plan_from_graveyard`) unless a required target needs it.
+  - The regrowth tag branch is deleted.
+  - Gate parity 281 → 313.
+  - Ratchets: effect-parser (b) 106 → 103, zone mutation 63 → 62.
+  - `f88a18f` locks in the census rise it caused (deck removal ready share 0 → 0.0116).
+- **Pin:** `engine/oracle_resolver.py` reads no classifier tag. `STILL_READING_TAGS` 3 → 2 (`zone_transfer.py`, `clause_resolver.py`).
+
+**Harness:** 313 pairs on the new path, 166 proven and 147 intended. The intended pairs are the 79 enter-trigger hosts whose legacy side resolved nothing, untagged or, since the branches' deletion, at all. The self-check is unchanged: 237 hosts, 0 divergences.
+
+**Digest:** byte-identical (`e38f25a5`) at every step.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = ctime2-post (`4c0a99a`, code `a8868f4`); post = etb-e-post (`5ed6cd7`, code `500c321`).
+- 22 of 600 cells changed, every one with 4/5c Control, the Eternal Witness deck: its regrowth is now the AI's delivery choice, not the engine's (nonland, mana value) pick.
+- 4/5c Control 66.7 → 67.2 (+0.5); every other deck within ±0.3.
+- 0 aborts; audit findings 463 → 459, violations 0.
+- No deck moved more than 5 pp.
+
+**Leads (not built):**
+- **"Instant or sorcery card" leaves `target.union` residue:** Archaeomancer, Mnemonic Wall, Izzet Chronarch and Scholar of the Ages stay off the carrier. It is a grammar unit of its own.
+- **Optional damage, life and surveil specs** are still refused by those executors (`_plain_participants`). The callback is wired; each family adds its own AI valuation (`ai.resolution_choices.perform_optional_effect`).
+- **Targeted ETB damage and removal** keep their legacy resolvers (A36): the carrier binds no targets, and those executors resolve an unbound slot by the owner's rule.
+
+## Engine rules read card text, never classifier tags — unit D: draw-triggered abilities (2026-10-10)
+
+**Rule (CR 113.1, 121.1, 603.2, 603.3d, 701.47a):** "Whenever <player> draws a card" triggers on the draw its text names:
+- who draws, relative to the controller;
+- which card of the turn it is;
+- when printed, not on the first card the drawer draws in their own draw step.
+
+"That player" is the drawer. A triggered ability's targets are chosen as it is put on the stack. A classifier tag neither adds nor removes the trigger.
+
+**Before:** a tag-gated fan-out in `zone_transfer` resolved draw triggers for three cached cards only.
+- Bowmasters and Underworld Dreams: damage to the drawer.
+- Sheoldred: life loss and life gain.
+- It wrote life directly (`life -=`).
+- It gave Underworld Dreams Bowmasters' draw-step exemption, which Underworld Dreams does not print.
+- It sent Bowmasters' "any target" damage to the drawer and never amassed.
+- The rest of the class, 93 pool cards by text, did nothing.
+
+**Steps:**
+- **D.1 `dbf90e3`, grammar:** `EventHint.DRAW` plus a typed `TriggerHead.draw`, a `DrawEvent(drawer, nth, except_first_in_draw_step)` read from one closed table. A head with an unread rider stays a DRAW head with `draw=None`. Equivalence AGREE +16: draw heads that create tokens no longer pass for lifegain heads.
+- **D.2 `1c4d642`, dispatcher:** `TriggerEvent(player)` binds `Ref(EVENT_PLAYER)` as a life spec's actor and a damage spec's recipient. With no event, nothing is bound.
+- **D.3 `da33b60`, the draw carrier:**
+  - `effect_carrier.dispatch_draw_triggers` resolves typed draw hosts in stack order (CR 603.3b), each card whole or not at all.
+  - Its strict shape is `STRICT["draw_trigger"]`, read by the carrier and the closure alike.
+  - Trigger targets are picked as the trigger goes on the stack: `target_solver.legal_slot_choices` gives the legal choices, `callbacks.choose_trigger_targets` picks (by default the opponent's face; the AI uses `choose_damage_recipient`), and a required target is filled.
+  - `GameState.draw_cards` counts `cards_drawn_in_draw_step`.
+- **D.4 `137c8e6`, amass:**
+  - One amass owner, `PermanentEffects.amass`: a 0/0 black Army token through the token owner, then +1/+1 counters through the counter funnel.
+  - A KEYWORD_ACTION executor (family tokens_counters) performs it.
+  - Bowmasters' draw trigger is taken by the carrier: it aims and amasses.
+- **D.5 `21e8f2e`, retire:**
+  - The tag fan-out, its amount regex, the free-first-draw approximation and the two direct life writes are deleted.
+  - Rules-audit census `603.2/draw_trigger_unresolved` records the remaining silent misses.
+- **`b767f03`:** three fixtures that relied on the tag carry the cards' printed text.
+
+**Pins and ratchets:**
+- `STILL_READING_TAGS` 2 → 1 (`clause_resolver.py`, unit I).
+- Single-owner `damage_write` 31 → 29; oracle runtime parse 173 → 172.
+- Gate parity 313 → 332: 19 draw pairs, all intended changes, because the legacy side resolves no draw trigger.
+
+**Digest:** one game changed at D.4, Jeskai Blink vs 4c Omnath s51500. The change is log text only: the Army is created through the token owner, with the same plays, winner and turns. Re-recorded as `c12511b6`.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = etb-e-post (`5ed6cd7`, code `500c321`); post = draw-d-post (`39bef1d`, code `21e8f2e`).
+- 25 of 600 cells changed, every one with 4c Omnath, Orcish Bowmasters' deck. Its draw trigger now aims through the AI, killing X/1s, and grows an Orc Army.
+- 4c Omnath 66.6 → 66.9 (+0.3); every other deck within ±0.4.
+- 0 aborts; audit violations 0.
+- Audit findings 459 → 496. Contributors: the new census rule, whose only registered member is Tamiyo, Inquisitive Student's third-draw transform, with no executor; and the 25 changed Omnath cells, which play different games.
+- No deck moved more than 5 pp.
+
+**Leads (not built):**
+- **Bowmasters' enter damage** still picks in its name-keyed handler (and writes life directly). Retiring it needs the enter-trigger carrier to take targeted damage hosts with trigger-time targets (`trigger_targets`), which would take the class at once.
+- **The AI's per-draw damage projection** (`ai/bhi._per_event_taxes_table`) still reads tags; derive it from the typed draw heads.
+- **The other 70 draw hosts** (counters, tokens, draws, transforms) resolve nothing until their families' executors land. The census ranks them.
+- **"The first card in each of their draw steps"** is counted from the drawer's own draw step; a draw in another player's draw step is not an exemption.
+
+## Engine rules read card text, never classifier tags — unit I: impulse draw (2026-10-10)
+
+**Rule (CR 305.1, 400.7, 406, 601.2a, 601.2f, 611.2, 121.1c):** "Exile the top N cards of your library. <Duration>, you may play those cards" exiles the cards, never puts them in hand, and is no draw. The cards may be played from exile with the normal timing and cost, a land as the turn's land play, while the permission lasts. A card that leaves exile is a new object the permission no longer names. A classifier tag neither adds nor removes the effect.
+
+**Before:** a tag-gated clause handler moved the seven tagged cards' "revealed" cards into the hand, forever. The rest of the class (118 pool cards by text) did nothing. Ruby Storm's Reckless Impulse and Wrenn's Resolve (4 each) were a permanent two-card draw.
+
+**Steps:**
+- **I.1a `c03b519`, grammar:** "the top N cards of your library" is a typed library position (`CardFilter(zone="library", owner="you", position="top")`), staged to the exile verb only.
+- **I.1b `22d81c2`, grammar:** "you may play / cast those cards" is a PERMIT over the exile's RESULT (the "may" is the grant, not an optional effect).
+- **I.1c/I.2 `69cd02c`, temporal:** `DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN`, bound to the controller and the creation turn; `ClockEvent.turn` stamped by `emit`.
+- **I.3a `11366d2`, the permission engine:**
+  - card-flow EXILE (the top N through the zone funnel, not a draw) and CONTINUOUS PERMIT executors;
+  - `rules_query.permitted_objects` / `play_permitted`: the one read path ("cast" covers spells only; the object must still be in exile);
+  - `can_cast`, `play_land` and `get_legal_plays` admit a permitted exiled card (normal timing and cost; a land is the land play);
+  - CR 400.7: a card that leaves exile (cast, played, or moved by the zone funnel) leaves every permission (`ContinuousEffectsManager.forget_object`), so a ritual cast from exile and exiled again by flashback is not castable again.
+- **I.3b `a95b1d7`, the switch:** the strict card-flow view admits the impulse pair by its typed shape; card flow joins `SPELL_FAMILIES`; the tag handler is deleted. **No engine module reads a classifier tag** (`STILL_READING_TAGS` 1 → 0). The closure models that an unswitched handler that accepts a spell keeps it (three surveil spells).
+- **I.3c `506192f`, payment:** the mana payment found the spell by name in hand and graveyard only, so a spell cast from exile got no cost reduction (Ruby Medallion) and was refused after `can_cast` admitted it. It now reads the zones a spell is cast from.
+- **I.4 `7c05b2b`, the AI:**
+  - `ai/playable_cards`: the one AI owner of the cards a plan can play (hand + permitted exile), the held cards (those that outlast this turn) and `plan_view`;
+  - the plan readers take the playable cards: combo readiness and modifier, the storm chain estimator, payoff reachability, the reducer-deploy signal, the goal engine's payoff checks, the lethal-line assembler;
+  - the position counts held cards; a card whose permission ends this turn spends no held card, is never deferred (signal `permission_ends_this_turn`, from the engine's one expiry predicate), and an expiring land outscores a land in hand by one held card (`card_clock_impact`).
+- **I.5 `3affd88`, retire:** the AI's two impulse draw counters read the parsed spell (`ai.predicates.is_impulse_draw`); the classifier coverage gate, which existed only because an engine rule read the tag, is retired with its CI step.
+
+**Switched pairs:** 375 (167 proven identical, 208 intended changes with reasons). Unit I added 42 intended: 5 impulse spells (exile with a permission; legacy moved tagged ones to hand), 26 regrowth spells (legacy resolved nothing for the text; unit E's MOVE executor now does) and 11 impulse enter triggers (legacy nothing). Commune with Lava is proven.
+
+**Local diagnosis (Ruby Storm, 200 Bo1 games vs Dimir Midrange, Boros Energy, Domain Zoo, Azorius Control; seeds 50000+500i):**
+
+| Code | Storm |
+|---|---|
+| tag shortcut (cards to hand forever, `11366d2`) | 29.5% |
+| I.3c, the rules-correct engine alone | 11.5% |
+| I.3c + I.4 | 26.5% |
+
+Root causes found on replays of flipped seeds:
+- s51000: Artist's Talent from exile refused at payment (the I.3c bug).
+- s52500: the chain stopped because payoff reachability read the hand only; the old win also rode a false positive (a fetchland counts as a "dig", lead below).
+- s52500, turn 7: four permitted cards expired while the AI spent its mana on a draw it could make any turn (the expiry signal and the held-card accounting).
+
+**Matrix (same-seed n=20 Bo3, all 25 rows; pre = draw-d-post `39bef1d`):**
+- I.3b arm (`9d94fca`, with the payment bug): Ruby Storm 18.3 → 4.0 (−14.4); every other deck +0.1 to +1.2 (Storm's opponents); 42 cells changed; audit findings 496 → 486, violations 0.
+- I.3c arm (`a190f49`, the rules-correct engine alone): Ruby Storm 18.3 → 5.1 (−13.2); 43 cells changed, every one Storm's; every other deck +0.1 to +1.4; audit findings 496 → 481, violations 0; 0 aborts. Storm moved more than 5 pp: replayed above, the mechanisms named and fixed in I.3c and I.4.
+- **I.4 arm (`2e493f2`, the unit as shipped; I.5 is byte-identical):** Ruby Storm 18.3 → 15.4 (−2.9; +10.3 over the engine-alone arm); 33 cells changed, every one Storm's; every other deck within ±0.7; audit findings 496 → 486, violations 0; 0 aborts. No deck moves more than 5 pp. Storm's −2.9 is the rules cost of impulse draw: the tag shortcut was a permanent two-card draw, and the cards now expire.
+- Provenance: the proxy blocks the raw-log host, so some shard logs were transcribed from the MCP tool's inline output (cross-checked against each log's progress lines where present); every non-Storm cell of both arms equals the pre arm, which checks those transcriptions.
+
+**Leads (not built):**
+- **The turn planner's board is dead code in practice:** `ai/evaluator.estimate_spell_value` reads an undefined `_game_phase`, so `turn_planner.extract_virtual_board` raises NameError whenever the hand holds a spell; both callers (`ev_player`'s combat planner, `response.py`'s response evaluation) swallow it in `except Exception` and fall back. Measured on 9 games (Boros Energy vs Domain Zoo, Jeskai Blink vs Dimir Midrange, Affinity vs Eldrazi Tron, 3 seeds each): 54 of 61 calls raised; the planners ran only on spell-free hands. The assignment is dead (`phase` is never read), so the fix is one line, but it switches the planners on for every deck: its own unit, measured.
+- **A fetchland is a "dig" toward a payoff:** `ev_evaluator._is_real_dig` counts every `is_tutor` card, and a fetchland's search makes `_payoff_reachable_this_turn` true.
+- **Graveyard and stack casts are charged a held card** by `_project_spell` (`my_hand_size - 1`): flashback and escape casts look a card dearer; `response.py` projects an opponent's spell already on the stack as if cast from hand (the counter-tax caller compensates, that one does not).
+- **Warp's re-cast from exile:** `can_cast` admits it for the warp cost with an artifact; the re-cast is for the mana cost, so `cast_spell` refuses it (Quantum Riddler, pre-existing).
+- **Ragavan's combat-damage exile** (Boros Energy, Jeskai Blink, Domain Zoo) still runs an oracle-substring path in `combat_manager` that puts the opponent's card into the attacker's hand (a land in it can be played; the card changes controller). It is a "cast that card this turn" permission over a card in its owner's exile; `permitted_cards` reads the player's own exile until that carrier lands. Its exile of "the top card of that player's library" is still refused by the grammar (`participant.library_position`). The Legend of Roku's chapter I (name-keyed handler, to hand) is the same class.
+- **Cori Mountain Monastery's activation** (Boros Ponza) types fully -- exile the top card, play it until the end of your next turn -- and the unit I executors run it, but its effect kind is UNCLASSIFIED, so the activation carrier has no family for it and it does nothing. An activation route for typed card-flow hosts would take it.
+- **Unmodelled impulse shapes:** "you may play up to two of those cards" (March of Reckless Joy) and Glimpse the Impossible's end-step cleanup are refused whole (each moved cards to hand before); "that card" from another player's library.
+- **CR 400.7 outside the funnels:** a permitted card that leaves exile by a direct zone write and returns is still named (the known gap of `effect_resolver.Handle`).
+
+## Unit P: the turn planner's board builds for a hand holding spells (2026-10-10)
+
+**Defect:** `ai/evaluator.estimate_spell_value` read `_game_phase(...)` and `GamePhase`, names no module defines. They were deleted before this history's first commit. `turn_planner.extract_virtual_board` values every spell in hand through it, so it raised NameError whenever the hand held a spell: 54 of 61 calls over nine games. Both callers catch every exception:
+- `ev_player`'s combat planner fell back to its free-attacker heuristic;
+- `response.py`'s `TurnPlanner.evaluate_response` fell back to the legacy response path.
+
+The architecture's planners ran only on spell-free hands. (Unit I's lead said `phase` was never read. It is: the ramp bonus reads it, so the fix is not a deleted line.)
+
+**Steps:**
+- **P `d194031`:**
+  - the ramp bonus reads the clock's stage of the game, `ai.clock.life_phase`: DEVELOP gets the early bonus, GRIND the mid bonus, PANIC or LETHAL the late bonus (no turn threshold; the snapshot is taken only for a ramp or mana-source spell);
+  - `engine/permanent_effects` imports the `Set` its annotations name;
+  - **`tests/test_engine_and_ai_load_no_undefined_names.py`:** a static scan pinned at zero. Every name a module in `engine/` or `ai/` loads is bound in it or a builtin, so a NameError can no longer hide behind a broad `except`. There were 5 unbound loads.
+  - With the fix, 12 games build 55 boards, 19 attack plans and 36 response evaluations with no exception.
+- **P.2 `94b055d`:** the revived response planner built its candidates from every instant in hand, skipping the printed counter-target restrictions the legacy path enforced; it cast Consign to Memory at Orcish Bowmasters (`tests/test_colorless_only_counter_not_cast_at_colored_spell.py` went red on P). `ResponseDecider._counter_can_target` is now the one check both paths read: a spell, its class (noncreature, instant or sorcery), colorless only.
+
+**Digest:** P changes 9 of 26 games with no winner change (`82dcf1f4`); P.2 changes one more with the same winner (`1230c85c`). The anchor drifts in turns only.
+
+## Unit W: warp from the rules (2026-10-10)
+
+**Rule (CR 702.185a):** "Warp [cost]" means "You may cast this card from your hand by paying [cost] rather than its mana cost" and "If this spell's warp cost was paid, exile the permanent this spell becomes at the beginning of the next end step. Its owner may cast this card after the current turn has ended for as long as it remains exiled."
+
+**Defect:**
+- The engine required an artifact on the battlefield to warp from hand (`can_cast` and `cast_spell`) and to cast the exiled card again; no rule asks for one.
+- It charged that re-cast the warp cost; the warp cost is a cast from the hand only.
+
+Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Azorius Blink; ×2 in Instant Reanimator) could never be warped in an artifact-free deck. The pool has 32 warp cards.
+
+**Steps (`3a1de08`):**
+- The warp cost is payable from hand with no other condition.
+- The end-step warp exile registers the owner's permission to cast the card from exile, through the one rule-effect store (`permit_play` gains an optional first turn: from the next turn on). The permission path (unit I) gives the re-cast its normal timing and cost, and leaving exile ends it (CR 400.7).
+- The special `_warped` branches in `can_cast` and `get_legal_plays` are deleted: a flag on an exiled card grants nothing.
+- Two older tests pinned the invented artifact gate and a flag-driven re-cast for the warp cost; they now pin the rule.
+
+**Digest:** 9 games change, each with a warp deck, and one winner flips (Boros Energy vs Domain Zoo s58000 g3 goes to Domain Zoo); `440c520d`. Anchor:
+- Jeskai Blink vs 4c Omnath s50000 and Pinnacle Affinity vs 4/5c Control s50000 flip;
+- Affinity vs Domain Zoo s50500 and Instant Reanimator vs Boros Ponza s51500 change turns only;
+- all of them are warp decks.
+
+**Suites:** locally both chunks pass on the head (4480 + 2711). P and W alone each fail only the Consign test that P.2 fixes.
+
+**Measured (same-seed n=20 Bo3, all 25 rows):**
+- **P arm** (`73d998a`, with the counter defect P.2 fixes), pre = unit I's arm:
+  - 370 of 600 cells changed: attacks and responses are planned in every deck now.
+  - No deck moves 5 pp. Azorius Control (WST) −4.5, Azorius Blink +2.4, Hollow One +2.1, Dimir Midrange +2.0, Izzet Prowess +1.5; every other deck within ±1.4.
+  - Audit findings 486 → 486, violations 0; 0 aborts.
+- **P.2 + W arm** (`86f7fac`), pre = the P arm:
+  - 269 cells changed.
+  - The Quantum Riddler decks gain: Instant Reanimator +4.6, 4c Omnath +4.3, Jeskai Blink +2.4. Affinity +5.7.
+  - Dimir Midrange −2.2, Eldrazi Ramp −2.0, Domain Zoo −1.8, Azorius Control (WST) −1.7; every other deck within ±1.2.
+  - Audit findings 486 → 492, violations 0; 0 aborts.
+- **Cumulative, against unit I's arm:** Affinity +6.2, Azorius Control (WST) −6.1, 4c Omnath +3.9, Instant Reanimator +3.2, Domain Zoo −3.0; the rest within ±2.6.
+- **Over 5 pp, replayed:**
+  - **Affinity (W).** Before W, Pinnacle Emissary was refused 50 times from exile in 20 Bo1 games against Living End. The old branch admitted it for its warp cost, then the payment charged the full cost, and each refusal burned a main-phase action. After W there are 0 refusals and 5 legal re-casts for its mana cost.
+  - **Azorius Control (WST) (P).** The response planner now decides 48 of 81 response windows against Domain Zoo, with choices the legacy path did not make (instant-speed removal; counters at different threats). An attribution run (Bo1, 100 games against Domain Zoo, Dimir Midrange, Hollow One, Amulet Titan and Azorius Control, both seats) gives 50.0% with both planners, 54.0% with the response planner off and 51.0% with the combat planner off: within noise, pointing at the response planner (lead below).
+- The W-only arm was cancelled by the matrix workflow when the next arm was queued; P.2 changes one digest game, so the second arm's movement is W's.
+
+**Leads (not built):**
+- **The response planner for counterspell decks:** compare `TurnPlanner.evaluate_response`'s choice with the legacy path's window by window (Azorius Control (WST) against Domain Zoo first), and decide which owner decides, folding the legacy heuristics (triage, counter-tax deadness) into one.
+- **Living End's Endurance is refused from hand** about 63 times per 20 games (`can_cast` admits, `cast_spell` refuses), before and after these units.
+- **Combat-damage-to-a-player triggers** (465 pool hosts; registered: Psychic Frog's draw, Ragavan's Treasure and exile) still run an oracle-substring block in `combat_manager`:
+  - any "draw a card" draws;
+  - any "treasure" makes a Treasure;
+  - any "exile the top card" exiles the defending player's top card. Even cards that exile from their own library (Prophetic Flamespeaker, Moria Marauder) take it, and the cast permission is put into the attacker's hand by substring.
+  - The typed carrier (unit D's pattern) needs DRAW and CREATE_TOKEN executors, "that player's library", and a permission over another player's exiled card.
+
+## Unit R1: a cast permission over another player's exiled card (2026-10-10)
+
+**Rule (CR 108.3, 400.3, 601.2a):** "Exile the top card of that player's library. Until end of turn, you may cast that card." The card stays in its **owner's** exile, and the permitted player may cast it from there with its normal timing and cost. Cast this way, it is the caster's spell: a permanent enters under the caster's control, and an instant or sorcery goes to its owner's graveyard. "Cast" never covers a land.
+
+**Defect:** Ragavan, Nimble Pilferer (×4 in Boros Energy, Jeskai Blink and Domain Zoo) put the exiled card into the attacker's hand, changed its controller, flagged it to go back to exile at end of turn and marked it a free cast. So:
+- a land exiled this way was a playable land in hand;
+- the card counted as a held card;
+- the AI scored a cast it pays for as free.
+
+**Steps (`5f24dcf`):**
+- `combat_manager`: the defending player's top card moves to their exile through the zone funnel, and the attacker gets a cast-only permission this turn (`effect_model.permit_play`). The end-of-turn "returned to exile" block in `turn_manager` is deleted (the permission ends in the cleanup step, CR 514.2).
+- Every permission read path now finds the card in its owner's exile:
+  - `rules_query.permitted_cards` (every player's exile);
+  - `can_cast` and `cast_spell` (the removal and the CR 400.7 forget);
+  - the land play;
+  - the payment's cost-reduction zones (`can_cast` counted the reduction, but the payment found no card and charged the full cost);
+  - the AI's `playable_cards`.
+- Zone mutation 62 → 59.
+
+**Digest:** 5 games change, with no winner change.
+- In Boros Energy vs Affinity s50000, Ragavan's Claws of Gix ({0}) is now cast in main 2. Before, the false free-cast bonus scored it +1.5, but casting it from hand spent a held card, so passing won. From exile, under a permission that ends this turn, it is not held.
+- The other four change log lines only.
+- Anchor unchanged.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `ragavan-r1-post`, pre = `planner-p2-post`):** no deck moves more than 1.0 pp (Living End −1.0, Domain Zoo −0.6, Eldrazi Ramp +0.5; every other deck within ±0.4). 73 of 600 cells change at n=20, the largest in Ragavan matchups (Domain Zoo vs Living End +25, Living End vs Jeskai Blink −15, Jeskai Blink vs Domain Zoo +15). Auditor: 0 violations (findings 492 → 485). No deck crosses the 5 pp replay threshold.
+
+## A spell cast from exile counts for storm in the play projection (2026-10-10)
+
+**Defect:** `_project_spell` incremented the projected storm count by the held cards a cast spends. Since I.4, a card whose permission ends this turn spends none, so casting an impulse-exiled card counted for no storm (CR 702.40a) in every plan reading the projection. Fixed in `3932277`: the storm count is charged for every cast, and the hand only for a held card. Digest byte-identical.
+
+
+## Unit V: evoke and costs that exile a card from hand, from the rules (2026-10-10)
+
+**Class:**
+- 32 evoke cards: 29 print a mana cost ("Evoke {2}{U}"), 3 a card to exile ("Evoke — Exile a white card from your hand.").
+- 6 cards with the alternative cost "exile a <colour> card from your hand rather than pay this spell's mana cost": the five Forces ("if it's not your turn") and Snapback.
+- Registered: Solitude (8 decks ×4), Endurance, Subtlety, Wistfulness (Living End ×4), Force of Negation, Force of Vigor.
+
+**Defects:**
+- Only the em-dash evoke form was parsed, so no mana evoke could be cast (29 cards, Wistfulness among them), and an evoke paid no mana.
+- Both exile costs took a card sharing the spell's colour identity. "A white card" is a card whose colour is white (CR 105.2): a green Dryad Arbor pays Endurance, and a colourless Hallowed Fountain does not pay Force of Negation.
+- The engine decided for the caster:
+  - no evoke while the mana cost was payable;
+  - no evoke while the opponent had no creature, through a card-name lookup (the elementals' targets are their enter triggers', CR 603.3d);
+  - a pitched card picked by tag thresholds, which vetoed the cast after the controller had chosen to evoke;
+  - for the Forces, "not your turn" applied to every such spell, the cheapest card exiled, and always this way on the opponent's turn, even with the mana cost payable.
+- The runner's instant windows listed every evoke-tagged creature; evoke grants no flash.
+
+**Steps:**
+- **V.1 (`b6ef971`, registry follow-up `e609502`):**
+  - `parse_evoke_cost`, both printed shapes, and `CardTemplate.evoke_exile_color`.
+  - `CastManager.evoke_payable` / `evoke_exile_candidates` are the one check `can_cast` and `cast_spell` read. The evoke is the controller's `should_evoke`; the card is their `choose_exile_from_hand`, and declining casts nothing. The evoke mana is paid, and the card leaves through the funnel.
+  - AI `choose_card_to_exile_from_hand`, lifted from the engine: declared keystones last; otherwise the least worth by the strip value; never the last reachable copy of a live plan role (an exiled card is not relocated).
+  - `_eval_evoke` refuses a creature-removal evoke with no opposing creature. The engine's deleted check had masked this: 4/5c Control evoked Solitude at Ornithopter on the stack.
+  - `ai.effective_cmc.cast_mode_of`: the projection pays the evoke mana and puts the evoked creature in the graveyard, not on the board. The body credit had Living End evoke Wistfulness over casting Shardless Agent.
+  - Zone mutation 59 → 58.
+- **V.2 (`ad2c6a4`):**
+  - `parse_alternate_exile_cost` (colour and condition) replaces the boolean flag.
+  - `CastManager.alternative_exile_candidates` is read by `can_cast`, `cast_spell` and the AI's pitch-counter predicate.
+  - The controller's `should_exile_instead_of_paying` decides whether to pay this way (AI: only when the mana cost cannot be paid); the card is the shared `choose_exile_from_hand` pick.
+  - Oracle runtime parse 172 → 170; zone mutation 58 → 57.
+
+**Digest:**
+- V.1: 3 games change, with no winner change.
+  - Jeskai's Solitude keeps Ephemerate, a declared keystone.
+  - Living End evokes Wistfulness for {G/U}{G/U}.
+  - Jeskai no longer evokes Solitude (pitching Ephemerate) at a 2-drop.
+- V.2: 4 games change and 2 winners flip.
+  - Dimir pays Force of Negation's mana instead of pitching Kaito, and Kaito's own surveil then bins Murktide: Domain Zoo wins.
+  - Azorius pays Force of Negation's mana, keeps Sink into Stupor, and wins a long game against Ruby Storm.
+- Anchor: V.1 changes three games' turns only; V.2 is unchanged.
+
+**Measured (same-seed n=20 Bo3, all 25 rows; auditor 0 violations in every arm):**
+- V.1 arm (`evoke-v1-post`, pre = `ragavan-r1-post`): 4c Omnath −3.6, Boros Ponza −1.5, Living End −1.5; every other deck within ±1.0. 244 cells change, because evoke decisions move in a dozen decks.
+- V.2 arm (`evoke-v2-post`, which also carries the storm projection fix; pre = V.1's): every deck within ±1.6 (Living End +1.6, Instant Reanimator −1.5, Dimir Midrange +1.1). 126 cells change.
+- Across the unit (R1's arm to V.2's): 4c Omnath −4.3, Instant Reanimator −2.3, Azorius Control (WST) +1.5. No deck crosses the 5 pp replay threshold.
+
+**Lead:** 4c Omnath's −4.3 is the unit's largest move. Its four Solitudes and one Endurance now follow the AI's evoke and pitch decisions instead of the engine's. Its worst cells (vs Eldrazi Ramp, Jeskai Blink, Azorius Control (WST v2)) are where to replay first.
+
+
+## Unit R2: combat-damage-to-a-player triggers from text (2026-10-10)
+
+**Rule (CR 510.2, 603.2, 603.3d):** a "whenever ~ deals combat damage to a player" ability triggers on that damage, and does what its text says. "That player" is the player dealt the damage.
+
+**Defect:** an oracle-substring block in combat ran for every attacker that dealt damage to a player:
+- any "draw a card" drew;
+- any "treasure" made a Treasure;
+- any "exile the top card" exiled the defending player's top card.
+
+So Prophetic Flamespeaker exiled the opponent's card instead of its own, "draw two cards" drew nothing, printed life loss and gain and Food were skipped, Equipment triggers never ran, and damage to a planeswalker triggered nothing. The class is 465 pool hosts; registered: Ragavan, Nimble Pilferer and Psychic Frog.
+
+**Steps:**
+- **R2.1 (`3a91ad9`, grammar):**
+  - A combat-damage head types its dealer and recipient (`TriggerHead.combat_damage`, a closed table; 365 of 465 heads).
+  - "The top card of that player's library" is the damaged player's: the participant leaf leaves its player `Anaphor` in the filter's owner, and the linker binds it like the participant "that player".
+- **R2.2 (`8713022`, executors):**
+  - DRAW (the controller draws N, through `draw_cards`), CREATE_TOKEN (a predefined Treasure, Food or Clue, through `create_token`), and the EXILE of the event player's library.
+  - A38: `strict_card_flow` had admitted every card-flow verb, relying on DRAW having no executor. It now names the switched verbs (SURVEIL, MOVE, and the impulse pair). Without that, the new executor would silently have switched 379 activated "draw a card" hosts.
+- **R2.3 (`eee2141`, carrier):**
+  - `effect_carrier.dispatch_combat_damage_triggers`, with one combat entry point and the "a player or planeswalker" heads on planeswalker damage.
+  - Harness case COMBAT_DAMAGE, and closure handler `combat_damage:dispatch` (28 pool hosts).
+- **R2.4 (`61a55d7`, retire):**
+  - The substring block is deleted.
+  - Census `603.2/combat_damage_trigger_unresolved` ranks the hosts no carrier takes yet.
+  - Oracle runtime parse 170 → 165.
+
+**Gate parity:** 403 new-path pairs: 167 proven, 236 intended, all with reasons. The 28 combat-damage pairs are each a recorded change: 15 draws whose legacy added a log line, the "draw two cards", printed life loss and gain, Food, three own-library impulse exiles, and Ragavan's log lines.
+
+**Digest:** byte-identical at R2.1, R2.2 and R2.4. R2.3 changes 6 games, every one a Ragavan or Psychic Frog game, in log lines only (`80379502`). Anchor unchanged.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `combat-r2-post`, pre = `evoke-v2-post`):** 6 of 600 cells change, in the Instant and Grixis Reanimator, Azorius Control and Azorius Blink rows; every deck is within ±0.3 (Grixis Reanimator +0.3, Azorius Control −0.3), and the Ragavan and Psychic Frog decks are unchanged, as the log-only digest predicted. Audit findings 485 → 471, violations 0; 0 aborts.
+
+**Leads (not built):**
+- The carrier takes 28 of 465 hosts. The next shapes by count:
+  - "put a +1/+1 counter on ~" (30 hosts; PUT_COUNTERS has no executor);
+  - "that player discards" (DISCARD);
+  - optional draws ("you may draw");
+  - Equipment and Aura dealers ("equipped creature", 38 hosts);
+  - batched heads ("one or more creatures you control").
+
+## V.3: the strip value weighs creature keystones, and graveyard hate needs a graveyard (2026-10-10)
+
+**From unit V's lead:** 4c Omnath was down 4.3 pp. In 48 seeded games against its four worst opponents, it pitched Omnath, Locus of Creation (its namesake payoff) 13 times, against 6 before unit V. The engine's old pitch veto had been hiding two AI defects.
+
+**Defects:**
+- **The strip value** (`ai.ev_evaluator.score_card_for_opponent_strip`) is what a card in hand is worth to its owner. It is read by a discard spell aimed at that hand and by the AI's pitch. It added the declared keystone weights (critical pieces, always-early, mulligan keys) to non-creatures only: Omnath, a mulligan key, scored 6 against Ephemerate's 100.
+- **`_eval_evoke`** evoked a graveyard-hate enter trigger at a graveyard holding nothing but lands: 4c Omnath evoked Endurance on its own turn 1, pitching Omnath.
+
+**Fix (`93ae8cd`):**
+- The keystone weights apply to every card type.
+- Such an evoke is refused.
+
+In the same 48 games Omnath is pitched 8 times; the rest are mostly the only card of its colour, spent on a reanimated Griselbrand or a Hollow One at 9 life. Discard follows the same value: Dimir's Thoughtseize now takes Shardless Agent (Living End's critical piece).
+
+**Digest:** 2 games change, with no winner change (`ed54ead8`). **Anchor:** Creatures Toolbox vs Grixis Reanimator s52000 flips to Creatures Toolbox. Grixis's Thoughtseize takes Birds of Paradise, a declared Toolbox keystone, over Nature's Rhythm.
+
+**Measured** with unit A in one arm (below).
+
+## Unit A: an activated ability the legacy classifier does not read resolves from its typed text (2026-10-10)
+
+**Rule (CR 602.2, 406, 601.2a):** an activated ability does what its text says. "{3}{R}, {T}: Exile the top card of your library. Until the end of your next turn, you may play that card." exiles the card and grants the permission, exactly as the spell form does (unit I).
+
+**Defect:** the legacy activation classifier leaves such an ability UNCLASSIFIED, which has no legacy apply. `can_activate` refused it, so the engine never offered it and the AI never activated it: Boros Ponza's Cori Mountain Monastery (×4) was a Mountain. 23 pool cards print an activated or loyalty impulse draw.
+
+**Step (`8c52a79`):**
+- `effect_carrier.activation_family`, one owner read by the carrier, the closure and the harness:
+  - a classified ability dispatches in its derivation's family, as before;
+  - an UNCLASSIFIED ability dispatches in card flow when its typed host is in `strict_card_flow` and the dispatcher can execute it (the impulse pair, SURVEIL, or MOVE from graveyard to hand).
+  - A classified ability never changes path; an UNCLASSIFIED one had nothing to regress.
+- `ActivationManager.can_activate` admits such an ability (rule 9b: a kind is resolvable when an owner resolves it).
+- AI (`activation_candidates`): the ability is projected as the cards it lets the player play past this turn (`ai.predicates.impulse_cards_held`: N when the permission outlasts the turn, 0 when it ends this turn, read from the typed host).
+
+**Gate parity:** 471 new-path pairs, 174 proven and 297 intended, all with reasons. Of the 68 new pairs, 61 diverge and 7 are identical. Every divergence is an ability that did nothing before: 30 surveils, 17 regrowths (Colossal Skyturtle's channel among them), 10 impulse draws (Cori among them) and 4 top-of-library exiles. The registered-deck self-check pins 243 hosts (Cori and Colossal Skyturtle join), with no new no-ops.
+
+**Digest:** byte-identical; the roster's Boros Ponza game never reaches four spare mana with Cori untapped. **Anchor:** Boros Ponza vs Boros Energy s51000 flips to Boros Ponza (turn 14, was a turn-7 loss); Cori is activated on turns 6, 9, 10 and 11. **Suites:** 4524 + 2712 passed.
+
+**Measured:** shared with V.3: one arm, `v3a-post` (`ab42167`), pre = `combat-r2-post`, same-seed n=20 Bo3, all 25 rows. 233 of 600 cells change, because V.3's strip value is what every discard spell and every pitch reads.
+- Living End +4.4 (58.0 → 62.4), the largest move and under the 5 pp replay threshold. It runs four each of Endurance, Subtlety and Force of Negation, whose evoke and pitch choices V.3 changes; its largest cells are vs Domain Zoo 20 → 40 and vs Affinity 50 → 65.
+- Goryo's Vengeance +2.7, Boros Ponza +2.6 (unit A: Cori; vs Azorius Blink 5 → 30, vs Instant Reanimator 35 → 55), 4c Omnath +1.6 (V.3's target; it recovers a third of unit V's −4.3), Dimir Midrange +1.1.
+- Azorius Blink −2.4, Grixis Reanimator −2.0, Broodscale Bloodchief −1.9, Affinity −1.6, Creatures Toolbox −1.5; every other deck within ±1.0.
+- Audit findings 471 → 472, violations 0; 0 aborts. No deck crosses the 5 pp replay threshold.
+- Provenance: the shard results were read from each job's log tail (the CELL rows and the AUDIT line) and every row set was checked for shape (24 rows, the 24 other decks once each).
+
+**Leads (not built):**
+- The AI activates only the impulse shape. An UNCLASSIFIED surveil or regrowth activation is executable, but no AI value is projected for it yet.
+- A "this turn" impulse activation is valued at 0 held cards; its worth is the card played now.
+
+## Unit COL: an object's colour is its characteristic, never its colour identity (2026-10-10)
+
+**Rule (CR 105.2, 202.2, 702.114a):** an object's colour comes from the mana symbols in its mana cost, its colour indicator and its characteristic-defining abilities; devoid makes a card colourless. Colour identity (CR 903.4) also counts the symbols in rules text and exists for Commander deck construction only. No game rule reads it.
+
+**Defect:** six engine paths and two AI paths read colour identity where the rule reads colour:
+- **Consign to Memory** ("counter target triggered ability or colorless spell") fizzled against Cranial Plating (equip {B}{B}, black identity) and against devoid spells (Sowing Mycospawn, Basking Broodscale). The AI's target check reads the colour, so it cast Consign there, and the card was wasted.
+- **Celestial Purge** ("exile target red or black permanent") could take Cranial Plating. A land exclusion compensated for the identity read on dual lands.
+- **Sanctifier en-Vec** ("exile all black and red cards from all graveyards") exiled colourless dual and basic lands and colourless artifacts.
+- **Summoner's Pact** and the tutor-spec matcher ("a green creature card") found devoid creatures. The matcher fell back to the identity whenever a template had no colours, which is exactly the colourless case.
+- The **cost-rule matcher** ("red spells you cast cost {1} less") reduced devoid spells with a red symbol, and so did the AI storm chain's copy of that rule.
+- The **AI response enumerator's pitch check** read a classifier tag and the identity. A land "paid" Force of Negation, and "if it's not your turn" was ignored.
+
+**Class:** 627 pool cards condition on an object's colour, 22 of them registered (213 copies). 127 pool cards are devoid; devoid is the coverage census's top "none" row. 12 registered nonland cards have a colour that differs from their identity. Consign to Memory is in Jeskai Blink's main deck ×4 and in 12 sideboards.
+
+**Steps (`aeb97af`; census follow-up `fee19c0`):**
+- Every rule reads the colour:
+  - `CardInstance.colors` (layer 5 included) for an object;
+  - `CardTemplate.colors` (MTGJSON `colors`) for a template-level matcher.
+  - Sites: the tutor matcher (identity fallback deleted), Consign, Purge (land exclusion deleted), Sanctifier, Summoner's Pact, `_cost_rule_applies`, `CardDatabase.search`, and the AI chain's red-spell discount.
+- The AI's pitch candidate asks the engine's owners, `CastManager.alternative_exile_candidates` and `evoke_exile_candidates`. The tag read `_has_pitch_alt_cost` is deleted.
+- The mana planner keeps the identity as a mana-symbol demand (flashback, split halves and abilities), annotated `# color-identity-allow:`.
+- **Auditor:** `105.2/colour_restricted_reduction` in `rules_query.cost_delta`. A reduction for spells of one colour applied only to a spell of that colour, restated from the printed colours.
+- **Ratchet:** a static scan pins identity reads in `engine/` and `ai/` at zero, outside annotated lines.
+
+**Tests (red first):** `tests/test_color_is_a_characteristic_not_identity.py` (12). Nine MockTemplate fixtures gain the `colors` field the code reads.
+
+**Digest / anchor / suites:** the digest is byte-identical (26 games, `ed54ead8`); none of its games reaches a colourless spell with a coloured identity under one of these rules. Anchor 29 passed, unchanged. Ratchets at baseline; census, spec equivalence and the switched-host harness unchanged. Suites 4536 + 2712 passed; CI green.
+
+**Census follow-up (`fee19c0`):** devoid's only rule ("this object is colorless") is a characteristic MTGJSON encodes in `colors`, which every colour rule now reads. The coverage census counts such a word as modelled (`rules_audit_census._CHARACTERISTIC_FOR_WORD`, status "characteristic (colors)"). The next rows with no model are metalcraft (10), ferocious (4), harmonize (4) and ninjutsu (2).
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `col-post` `32c3f6a`, pre = `v3a-post`):** 6 of 600 cells change, each a predicted pairing:
+- Jeskai Blink +0.4: its four main-deck Consign to Memory now counter Cranial Plating and devoid spells (vs Pinnacle Affinity 55 → 60, vs Broodscale Bloodchief 45 → 50).
+- Pinnacle Affinity −0.2, Broodscale Bloodchief −0.2.
+- Every other deck's row is identical.
+Audit findings 472 → 472, violations 0; 0 aborts.
+
+**Leads (not built):**
+- **Pact upkeep payment.** "At the beginning of your next upkeep, pay {2}{G}{G}. If you don't, you lose the game." is not modelled, so Summoner's Pact (Amulet Titan ×2) is a free tutor. There are 5 Pacts; the class is delayed upkeep pay-or-lose and pay-or-sacrifice triggers.
+- **Stack exits bypass the zone funnel.** Consign's counter writes the graveyard directly, so a flashback spell is not exiled (CR 702.34a). Subtlety's stack → library and Spell Queller's stack → exile do the same. The owners are `ResolutionManager._move_countered_stack_item` and `zone_mgr.move_card_from_stack`.
+- **The AI storm chain re-implements cost reduction:** a count of `cost_reducer`-tagged permanents, applied to red instants and sorceries. It should read each reducer's typed `cost_reduction_rule` through `_cost_rule_applies`: Medallion reduces red creatures too, and Ral reduces every instant and sorcery.
+- **Orcish Bowmasters' enter half** is still name-keyed, with direct `life -=` writes. The 84 pool enter-trigger damage hosts stay legacy.
+- **Cast refusals at head:** 5 of 2,092 casts in 100 games across all 25 decks (Pinnacle Emissary 4 of 26, Kappa Cannoneer 1 of 5). The Endurance refusal lead is resolved by unit V (0 refusals in 20 Living End games).
+## Ruby Storm: Bo3 replay root cause (2026-10-10, at `aeb97af`)
+
+Ruby Storm is at about 18% in the v3a arm (band 40–55). Its row is low across the field, from 5% to 35%, so the deficit is Storm's own execution, not one matchup.
+
+**Replay:** Ruby Storm vs Eldrazi Ramp, Bo3 s50000 (`run_meta.py --bo3`) plus `--trace` of game 1. Storm wins game 1 on turn 9 and loses games 2 and 3 (turns 9 and 8).
+
+**Divergent turn (game 1, Storm's turn 3; trace global T5).** The hand is Ral, Wrenn's Resolve, Pyretic Ritual ×2 and Manamorphose, with Artist's Talent on the battlefield and three lands. The sequence:
+- Ral, then Wrenn's Resolve, which exiles Bloodstained Mire and Pyretic Ritual.
+- Three Pyretic Rituals, scored −1.0, −1.5 and then from exile. That is 7 red mana with nothing to spend it on.
+- Pass. The mana empties, and Manamorphose stays in hand, scored −989.9.
+
+Storm then has one card in hand and does nothing on turns 4–5.
+
+**AI mechanism** (`ai/combo_calc.card_combo_modifier`, the ritual gates):
+- **Storm 0:** a ritual with no finisher path is held (`STORM_HARD_HOLD`). Correct.
+- **Storm ≥ 1, the mid-chain gate:** with no finisher and no Past in Flames line, "a draw remains in hand" (`_has_draw_in_hand`, here Manamorphose) turns the hard hold into a soft −1.0. The rituals are cast on the promise of a dig.
+- **The dig itself is then hard-held.** Manamorphose is tagged a ritual, its net mana is 0, and no *other* draw is in hand, so the same gate holds it at −989.9. The chain spends three rituals on a draw it refuses to make. Manamorphose also never burns mana (it costs 2 and adds 2), so the gate's premise, "its mana empties at phase end" (CR 500.4), is false for it.
+
+**Engine defects seen in the same turn** (each makes Storm's spells cheaper than the rules allow):
+- **`parse_cost_reduction`:** "Noncreature spells you cast cost {1} less" is parsed as `target: creature`, because "creature spell" is a substring of "noncreature spells". Artist's Talent therefore reduced Ral.
+- **Over-wide and false reductions.** The field holds 148 rules.
+  - 25 come from sentences that reduce no spell: activated, equip and keyword costs, and affinity reminder text. Training Grounds' "activated abilities … cost {2} less" became a 2-mana discount on every red spell, because "reduce" contains "red".
+  - About 55 restricted subjects parse to `target: all` and reduce every spell: artifact (6), enchantment (5), Equipment (3), subtype spells (Dinosaur, Dragon, Goblin, …), legendary, historic, colorless.
+  - A card with two reducer sentences keeps only the first (Grand Arbiter Augustin IV).
+- **Class levels (CR 716) are not modelled.** Artist's Talent's level-2 static applies from level 1. There are 27 Classes in the pool; Artist's Talent is the only registered one (Ruby Storm ×2).
+- **A transformed DFC keeps its front face's cost-reduction static** (`cost_reduction_rule` is per template, not per face). Ral, Leyline Prodigy kept Monsoon Mage's "instant and sorcery spells cost {1} less" after transforming: the first post-flip Pyretic Ritual cost one mana. Back-face reducers (Curious Homunculus, Duskwatch Recruiter, Heliod) are never parsed.
+
+**Units this names:**
+- **Engine:** "a cost reduction reduces exactly the spells its text names, on the face and level that print it" (CR 601.2f, 712.8e, 716). 148 parsed rules; the 3 registered reducers are all Ruby Storm's. Expected effect: Storm down.
+- **AI:** "a ritual gate counts only the digs the AI will make; a mana-neutral cantrip is a dig, not a ritual". Expected effect: Storm up.
+
+## Unit CR: a cost reduction reduces exactly the spells its text names, on the face and level that print it (2026-10-10)
+
+**Rule (CR 601.2f, 712.8e, 716.2a):** "<qualities> spells [you cast] cost {N} less to cast" reduces the total cost of each spell with those qualities. A static ability functions only while its permanent has it: a transformed double-faced permanent has only its back face's abilities, and a Class has a level's abilities only once it has gained that level. A reduction that names no caster ("Instant and sorcery spells cost {2} less") covers every player's spells.
+
+**Defect:** the typed field (`cost_reduction_rule`) read the whole oracle text by substring:
+- "noncreature" read as "creature", because it contains "creature spell". Artist's Talent therefore reduced Ral.
+- Every subject it did not know reduced every spell: artifact, enchantment, Equipment, subtype, legendary, historic, colorless and multicolored subjects (about 55 rules).
+- Any "cost {N} less" anywhere was a spell reduction (25 rules): activation and keyword costs, ordinal and conditional sentences, reminder text.
+- The first colour word anywhere in the card coloured the rule. Training Grounds' "activated abilities … cost {2} less" became a 2-mana discount on every red spell, because "reduce" contains "red".
+- A second reducer sentence was dropped (Grand Arbiter Augustin IV).
+- The front face's reduction stayed after a transform: Ral, Leyline Prodigy kept Monsoon Mage's reduction. Back-face reducers were never parsed.
+- A Class's level-2 reduction applied from level 1 (Artist's Talent, Ruby Storm ×2).
+
+**Class:** 148 pool templates carried a reducer rule. Now there are 80 front faces (81 rules) and 3 back faces (Curious Homunculus, Duskwatch Recruiter, Rowan/Will). The 3 registered reducers are all Ruby Storm's: Ruby Medallion, Ral and Artist's Talent.
+
+**Steps (`98af2d0`):**
+- **Parse.** `oracle_parser.parse_static_cost_reductions` gives one rule per reducer sentence, `{'amount', 'qualities', 'who'}`:
+  - `qualities` are alternatives of quality words: a colour, colorless, mono- or multicolored, a card type or non<type>, a supertype, a subtype, historic, or permanent;
+  - it reads only the text before any Class level header, with reminder text stripped;
+  - a sentence of any other shape is refused, never widened to every spell.
+- **Match.** `oracle_resolver._cost_rule_applies` reads the qualities against the spell's printed characteristics. It is the single matcher for the engine (`rules_query.cost_delta`) and the AI (`ai/mana_engine`).
+- **Face.** `oracle_resolver.reduction_rules_of` gives the rules of the face a permanent shows (`cost_reduction_rules`, `back_face_cost_reduction_rules`).
+- **Who.** A rule with no "you cast" derives an `ALL_PLAYERS` cost-delta effect.
+- **Auditor:** `601.2f/reduction_names_the_spell`, a reduction applied to a spell names it. It is restated from the raw printed fields as a word set and replaces unit COL's `105.2/colour_restricted_reduction`.
+
+**Tests (red first):**
+- `tests/test_cost_reduction_reads_its_text.py` (11): names the spells; subject alternatives and refusals; activation or keyword costs reduce no spell; reminder text; one reduction per sentence; controller-only and every-player; transformed faces; Class levels; the auditor both ways.
+- Six existing pins move to the new shape.
+
+**Equivalence:** the `cost_reduction_rules` row compares amounts (AGREE 22658, UNMODELLED_CLAUSE 80). LEGACY_COST_REDUCTION_SCOPE (13) and 6 UNEXPLAINED rows are gone.
+
+**Digest / anchor / suites:**
+- The digest changes in 5 Ruby Storm games, with no winner flip:
+  - bo1 4c Omnath vs Ruby Storm 57500;
+  - bo1 Ruby Storm vs Dimir Midrange 50500;
+  - bo3 Azorius Control vs Ruby Storm 58500 g1–g3.
+- Anchor 29 passed.
+- Ratchets at baseline; census and harness unchanged.
+- Suites 4547 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `cr-post` `6e6f0d2`, pre = `col-post`):** 40 of 600 cells change, every one in Ruby Storm's row or column:
+- Ruby Storm −3.3 (15.3 → 12.0). Artist's Talent no longer reduces at level 1, and Ral no longer reduces after it transforms, so Storm's chains cost what the rules say.
+- Every other deck moves by at most ±0.7, which is its cells against Ruby Storm.
+
+Audit findings 472 → 444, violations 0; 0 aborts. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- Class level-up activations ("{2}{R}: Level 2") are not modelled, so a Class never gains a level; 27 Classes in the pool, Artist's Talent registered.
+- Conditional reducers ("during your turn", "as long as this creature is tapped", the first spell each turn) and chosen-quality reducers ("spells of the chosen type") are refused, not modelled.
+- The AI storm chain's cost model (`combo_chain.classify_card`, `flashback_chain_viable`) still counts `cost_reducer`-tagged permanents instead of reading `reduction_rules_of` through `_cost_rule_applies`.
+
+## Unit RG: a combo hold waits only for a play the AI will make (2026-10-10)
+
+**Decision principle:** a hold is the opportunity cost of a later play. The later play counts only if the AI's own main phase will make it:
+- the same-turn filter does not defer the cast (`ev_evaluator.cast_is_deferred`, the filter `decide_main_phase` applies);
+- for a ritual's dig, the mana the ritual leaves pays for it this turn, since ritual mana empties at the end of the phase (CR 500.4, 106.4).
+
+A dig puts new cards in hand or play (`_is_real_dig`: the typed draw and tutor fields), never a classifier tag. A ritual that draws is its own dig.
+
+**Defect:** each combo hold counted plays the AI never makes.
+- **Storm finisher and tutor holds** counted cards the main phase defers.
+  - Hex Magic and Valakut Awakening have no same-turn signal: "draw that many" is unparsed, and Hex Magic does nothing (next unit).
+  - At storm 14 with 7 mana, Storm held Grapeshot (15 damage) and a castable Wish for a second Grapeshot, then passed.
+- **The mid-chain ritual gate** admitted rituals at a soft penalty because Manamorphose remained as a dig, then hard-held Manamorphose as a ritual with no other dig. The mana emptied unused.
+- **The gate's dig check** read the `cantrip` / `card_advantage` / `draw` tags, so Past in Flames counted as a draw.
+
+**Class:** every storm-keyword finisher (18 pool cards), every tutor with payoff access, and every mid-chain ritual. Registered: Ruby Storm.
+
+**Steps (`6fb47d8`):**
+- `ev_evaluator.cast_is_deferred` is the one deferral predicate. The storm-finisher and tutor fuel counts exclude deferred casts.
+- `combo_calc._digs_the_ai_will_make` gives the gate's digs:
+  - the ritual itself when it digs;
+  - each other dig that is not deferred and whose effective cost (`ai.effective_cmc`) the mana left after this ritual pays.
+- The gate's hard hold, soft path and cascade-risk count all read that one set. The tag-based `_has_draw_in_hand` is deleted.
+
+**Tests (red first):**
+- `tests/test_combo_holds_count_only_plays_the_ai_makes.py` (7; 6 red before the fix) uses real cards and the deck's gameplan roles:
+  - the finisher and tutor holds ignore deferred fuel;
+  - a finisher still waits for fuel the AI casts;
+  - a ritual that draws is its own dig;
+  - the gate counts only spells that draw, and only a dig the ritual's mana pays for;
+  - the storm-14 position closes instead of passing.
+- Three mock-based files state once, at the predicate, that their mock fuel is a cast the AI makes.
+
+**Storm Bo1 scan** (48 games, seeds 50000/50500 against the field):
+- Storm wins 4 → 8.
+- Soft rituals cast while their dig was hard-held: 26 events → 0.
+- Passes with mana floating: 75 → 49, and none now has Grapeshot in hand at storm ≥ 3. The rest are passes on Hex Magic / Valakut Awakening hands, which the next unit addresses.
+
+**Digest / anchor / suites:**
+- 4 Ruby Storm games change, with one flip. In bo3 Azorius Control vs Ruby Storm s58500 g1, Wish now fetches Empty the Warrens at storm 6 instead of passing, and Storm wins on T6. Replayed and intended; the match ends 2-0, so the digest holds 25 games (`01b27479`).
+- Anchor 29 passed.
+- Suites 4554 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `rg-post` `4abd787`, pre = `cr-post`):** 38 of 600 cells change, every one in Ruby Storm's row or column.
+- Ruby Storm +7.3 (12.0 → 19.3). Every other deck moves by at most ±1.4, which is its cells against Ruby Storm.
+- Audit findings 444 → 436, violations 0; 0 aborts.
+- **Replay of the >5 pp move** (`_run_pair` path, Ruby Storm vs Amulet Titan, the cell 5 → 40; 1/20 → 8/20 locally, 7 seeds flip). At s50500 game 2, Storm's third turn chains Pyretic, Reckless Impulse, Pyretic and Wrenn's Resolve to storm 6.
+  - Before, it passed with Grapeshot in hand, held for Valakut Awakening, a card the main phase defers.
+  - Now Grapeshot deals 7 (Amulet 20 → 13), and Storm wins on T7 and takes game 3.
+
+**Leads (not built):**
+- A finisher held for fuel the AI casts can strand itself: the fuel's cost may leave the finisher unaffordable. The hold does not ask whether the finisher stays castable after the fuel.
+- Two finishers in reach (Grapeshot in hand plus Wish for another) are not added up as one lethal line. Each finisher's lethal check sees only its own damage.
+- Past in Flames is tagged `cantrip`, so `combo_continuation` fires for it over an empty graveyard.
+
+## Unit HX: "exile all the cards from your hand, then draw that many" and "you may play cards exiled this way" parse and resolve (2026-10-10)
+
+**Rule (CR 406, 121.1, 601.2a, 608.2c):** the text says to exile every card in the controller's hand, then draw as many cards as that instruction moved, then let the controller play the exiled cards until the end of their next turn. "That many" is the result of an earlier instruction, and "cards exiled this way" names the cards the exile moved, not the result of the nearest instruction.
+
+**Defect:** Hex Magic (Ruby Storm ×4) resolved to nothing. It was the rules-audit census's top unhandled spell.
+- The grammar refused "all the cards from your hand", because the filter took "the" for a reference.
+- It refused "you may play cards exiled this way": the permission's object list knew "those cards", not a bare "this way" reference.
+- The card-flow family had no executor for a whole-hand exile and no count for "that many".
+
+The main phase deferred Hex Magic in any case (unit DR), so four main-deck cards were blank.
+
+**Class:**
+- "<play/cast> … exiled this way": 10 pool cards.
+- The determiner "all the <noun>": 17 pool cards.
+- Exiling a whole hand: 7 pool cards.
+
+Registered: Hex Magic (Ruby Storm ×4). Endurance (Living End ×4 and others) parses further, but its MOVE still has no executor, so it stays legacy.
+
+**Steps (`338b0b5`, fixture `d1d0b25`):**
+- **Grammar:**
+  - The determiner "all the" is "all".
+  - The bare one-word "cards exiled this way" is a reference to the earlier action it names. A longer bare phrase ("creature and land cards revealed this way") stays with the filter, after a census diff caught three regressions.
+  - The permission takes "(the) cards exiled this way" as its object.
+  - 18 cards parse further, none regresses (census FILTER 1550 → 1534, CLAUSE 1806 → 1803).
+- **Engine (card-flow family):**
+  - EXILE takes the controller's whole hand, in both typed forms. Face-down and partial exiles are refused.
+  - "That many" is the number of objects the referenced instruction produced (CR 608.2c), read from the resolution's results.
+  - The strict shape admits a DRAW only as "that many" of an exile in the same host, so a plain "draw N" stays on its legacy carrier (A38). That is pinned for Divination and Consider.
+- **Auditor:** `406/exile_all_cards_from_hand`, a whole-hand exile leaves no card in hand, restated from the zone itself.
+
+**Tests (red first):** `tests/test_exile_your_hand_then_draw_that_many.py` (12; 8 red):
+- grammar: "all the" is "all", and "this way" binds the exile;
+- engine: the whole hand goes to exile, that many cards are drawn, and the permission lasts until the end of the next turn;
+- the empty hand; the family boundary; the auditor both ways.
+
+The dispatcher-tables pin gains the hand zone. The legacy self-check's no-op set drops Hex Magic, and the state-changing floor goes 171 → 172.
+
+**Harness and equivalence:**
+- Harness: 472 new-path pairs (+1, Hex Magic: an intended change, since legacy resolved nothing).
+- Spec equivalence re-recorded:
+  - 15 DERIVED_COVERAGE_GROWTH (typed discards and draws the legacy substring fields miss);
+  - 10 pairs, newly compared once their clause was typed, disagree with legacy fields: Barbed Shocker and Book Devourer (`deals_targeted_damage`, recurring-trigger fields), Collective Defiance and Incendiary Command (`can_target_planeswalker`), Endurance (`can_target_player`, `has_destroy_or_exile`, `has_graveyard_recursion`), Shattered Perception.
+
+**Digest / anchor / suites:**
+- Digest: 2 Ruby Storm games change. bo1 Ruby Storm vs Dimir Midrange 50500 flips to Storm (T10): Hex Magic exiles Ral and draws, and the chain reaches Reckless Impulse → Wish → Grapeshot for 14 at storm 13. Replayed, intended.
+- Anchor 29 passed.
+- Suites 4566 + 2713 passed with the fixture fix.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `hx-post` `1cfb573`, pre = `rg-post`):** 43 of 600 cells change, every one in Ruby Storm's row or column.
+- Ruby Storm +6.9 (19.3 → 26.1). Every other deck moves by at most ±0.7, which is its cells against Ruby Storm.
+- Audit findings 436 → 421, violations 0; 0 aborts.
+- **Replay of the >5 pp move** (`_run_pair` path, Ruby Storm vs Affinity, the cell 5 → 25; 1/20 → 5/20 locally).
+  - At s53000 game 1, T5, Hex Magic exiles Storm's four-card hand (two Past in Flames, Ral, Wooded Foothills) and draws four. The chain runs on: Manamorphose, a second Hex Magic, then a Past in Flames cast from exile under the permission and a flashback run. Storm wins on T5, where before Hex Magic resolved to nothing.
+
+**Leads (not built):**
+- The 10 legacy-field disagreements above.
+- Endurance's MOVE ("puts all the cards from their graveyard on the bottom of their library in a random order") has no executor.
+- Escape to the Wilds and Chandra, Heart of Fire now type their permission, but their other clauses ("you may play an additional land", the discard) keep them on legacy.
+
+## Unit DR: a spell that draws for its caster is read from its typed DRAW (2026-10-10)
+
+**Rule (CR 121.1):** a spell that makes its controller draw cards draws, whatever its count's wording: "draw four cards", "draw seven cards", "draw that many cards". An impulse draw (exile the top N, may play them) is no draw (CR 121.1c).
+
+**Defect:** the AI asks two questions of a spell, and both read `has_draw_effect`, a substring list that stops at "draw three cards":
+- does casting it deliver card draw this turn (the same-turn signal the main phase's deferral filter reads)?
+- is it a dig (payoff reachability, the ritual gate's digs)?
+
+"Draw four cards" (Tidings, Into the Story, Thoughtflare) and "draw that many cards" (Hex Magic) drew nothing as far as the AI could see. So the main phase deferred Hex Magic outside a last-turn signal, even once unit HX made it resolve.
+
+**Class:** 20 pool instants and sorceries whose resolution draws for the caster in a form the substring list misses. Registered: Hex Magic (Ruby Storm ×4).
+- The whole-card view would also have caught Griselbrand (an activation), Ral (a back-face loyalty ability) and Fable (a later chapter). None of those is what casting the card draws this turn, so the predicate reads the spell host only.
+
+**Steps (`6971314`):** `ai.predicates.spell_draws` reads the spell's typed DRAW with no other drawer printed ("each player draws" and "target player draws" are not the caster's draw). The card_draw signal and `_is_real_dig` read it alongside the legacy field, which still carries the impulse and look-at-the-top dig shapes.
+
+**Tests (red first):** `tests/test_a_spell_that_draws_is_read_from_its_typed_draw.py` (13: the predicate both ways, the signal, the dig).
+
+**Digest / anchor / suites:**
+- Digest: 4 Ruby Storm games change. bo1 4c Omnath vs Ruby Storm 57500 flips to Storm (T8 → T6): Storm casts Hex Magic on its third turn, exiling four cards it may still play and drawing four. Replayed, intended.
+- Anchor: one turn-only drift refreshed (Boros Energy vs Ruby Storm s50500, same winner, T7 → T6).
+- Suites 4579 + 2713 passed.
+
+**Measured (`dr-post` `4f25256`, pre = `hx-post`):** 44 of 600 cells change, every one in Ruby Storm's row or column.
+- Ruby Storm +2.0 (26.1 → 28.1). Individual Storm cells swing by up to ±30 in both directions, because a Hex Magic cast changes every later draw of the game.
+- Every other deck moves by at most ±0.9.
+- Audit findings 421 → 418, violations 0; 0 aborts. No deck moves more than 5 pp.
+
+## Unit SZ: a resolving spell goes where its own text puts it (2026-10-10)
+
+**Rule (CR 608.2n):** as the final part of an instant or sorcery spell's resolution, the spell is put into its owner's graveyard, unless its own instructions put it elsewhere. Examples: "Shuffle Green Sun's Zenith into its owner's library", "Exile Alrund's Epiphany", "put ~ on the bottom of its owner's library". A countered or fizzled spell performs none of its instructions, so it goes to the graveyard.
+
+**Defect:** the grammar already types each instruction as a MOVE or EXILE of the spell itself, but the stack exit never read it.
+- Green Sun's Zenith (Amulet Titan ×3, Creatures Toolbox) went to the graveyard. It could not be found again, and Domain Zoo's Territorial Kavu exiled it.
+- The X-creature tutor's self-shuffle rider fired only for a card already in the graveyard, which a resolving spell never is. Its own comment named the stack exit as the missing hook.
+
+**Class:** 80 pool instants and sorceries move themselves as they resolve:
+- 58 exile themselves;
+- 10 shuffle themselves into the library;
+- 4 go to a library position;
+- 8 return to hand on a condition (refused here).
+
+Registered: Green Sun's Zenith.
+
+**Steps (`9157eb5`):**
+- `ResolutionManager._own_destination` reads an unconditional move of the spell itself (zone, position, nth).
+- The one owner, `_move_resolved_spell_off_stack`, applies it to a resolved spell only (`resolved=True`). Flashback's exile (CR 702.34a), rebound, and a copy ceasing to exist (CR 707.10a) still come first.
+- The library position is applied after the funnel move: shuffled in, top, bottom, or Nth from the top.
+- The tutor's dead rider is deleted.
+- **Auditor:** `608.2n/resolved_spell_destination`, a resolved spell ends where its text puts it, restated from its raw typed specs.
+
+**Tests (red first):** `tests/test_a_resolving_spell_goes_where_its_text_puts_it.py` (6; 4 red): shuffled into the library (tutor and damage shapes), a countered spell goes to the graveyard, flashback still exiles, and the auditor both ways.
+
+**Digest / anchor / suites:**
+- Digest: 1 game changes with the same winner and turns (Creatures Toolbox vs Grixis Reanimator 56000: Green Sun's Zenith returns to the library).
+- Anchor: one turn-only drift refreshed (Amulet Titan vs Living End s50000, same winner, T5 → T7).
+- Harness unchanged.
+- Suites 4585 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `sz-post` `b3d7ad9`, pre = `dr-post`):** 74 of 600 cells change, every one in a row or column of a Green Sun's Zenith deck (Amulet Titan ×3, Creatures Toolbox ×4).
+- Amulet Titan +1.5 (26.8 → 28.2). Creatures Toolbox is net 0 (31.0 → 31.0, with cells swinging both ways).
+- Every other deck moves by at most ±1.1, which is its cells against those two decks.
+- Audit findings 418 → 419, violations 0; 0 aborts. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- Conditional self-moves (the Pulses' "if an opponent has more life than you, return ~ to its owner's hand") and Approach of the Second Sun's "otherwise … seventh from the top" stay with their handlers.
+- Buyback and Omen ("then shuffle this card into its owner's library", reminder text) are not typed as self-moves.
+
+## Ruby Storm and Amulet Titan after units CR–SZ: scan evidence (2026-10-11)
+
+**Ruby Storm** (band 40–55). The same-seed n=20 Bo3 matrix moved:
+
+| Arm | col | CR | RG | HX | DR | SZ |
+|---|---|---|---|---|---|---|
+| Ruby Storm | 15.3 | 12.0 | 19.3 | 26.1 | 28.1 | 29.3 |
+
+These are two-perspective field figures from `compare_arms`. In the 48-game Bo1 scan (seeds 50000/50500 against the field), Storm wins 4 at `aeb97af`, 8 after RG, and 14 at the SZ head.
+
+Remaining patterns at the head:
+- **Next-turn fuel holds the finisher this turn.** At storm 6 with 1–2 mana, Storm holds Grapeshot because the hand has two Hex Magic (cost 3, uncastable this turn), then passes. It happens in 8 of 48 games, all one opening at s50500.
+  - The finisher hold counts fuel for any turn, a design pinned by `tests/test_storm_finisher_holds_for_chain.py` (hold at storm 3 for two Past in Flames next turn).
+  - The commit/develop comparison (`scarce_payoff_commit_ev`) sets develop reach to 0 whenever storm ≥ 1.
+  - The coherent rule is that a hold waits only for fuel castable this turn, with next turn's line priced by a reach model the code does not have.
+- Past in Flames is tagged `cantrip`, so it counts as chain fuel and gets `combo_continuation` over an empty graveyard. 49 pool spells are tagged `cantrip` with no typed draw or dig; 2 are registered (Past in Flames, Malevolent Rumble).
+
+**Amulet Titan** (band 45–60, matrix 28.2). In a 48-game Bo1 scan (seeds 50000/50500 against the field, SZ head):
+- Amulet wins 20.
+- Primeval Titan or Cultivator Colossus is cast in 26 games, almost always on global turn 7, which is Amulet's fourth turn (19 of 26), and the deck wins 14 of those 26.
+- Summoner's Pact finds Titan 29 times; its upkeep payment is still unmodelled, which favours Amulet.
+- Green Sun's Zenith finds Arboreal Grazer 24 times, Aftermath Analyst 14, Titan 6, Dryad 2.
+- Scapeshift is cast 27 times. In the traced games it sacrifices and refetches lands with no payoff in hand.
+
+The deck assembles Titan about two turns later than the real list's turn-2/3 Amulet starts. The lever is the mana sequencing of Amulet of Vigor with bounce lands (an AI planning unit), not a rules gap found so far. No unit is built from this; the next units come from the rules-audit ranking, which the matrix shards now print (`484d86e`).
+
+## Unit GH: a graveyard-bound object is exiled instead while a static replacement covers it (2026-10-11)
+
+**Rule (CR 614.1a, 614.6, 700.4):** a permanent's static replacement exiles an object that would be put into a graveyard, and the object never reaches the graveyard:
+- "if a card or token would be put into a graveyard from anywhere, exile it instead" (Rest in Peace);
+- "...into an opponent's graveyard..." (Leyline of the Void);
+- "if a black or red permanent, spell, or card not on the battlefield would be put into a graveyard..." (Sanctifier en-Vec);
+- "if a creature an opponent controls would die, exile it instead".
+
+A creature exiled instead of dying did not die.
+
+**Defect:** the zone funnel recorded the miss as an unhandled replacement and put the card in the graveyard. Rest in Peace, Leyline of the Void and Sanctifier en-Vec (23 registered copies in 7 decks; the Bo3 answers to Living End, Goryo's Vengeance and the reanimator decks) did nothing but their other abilities.
+
+**Class:** 17 pool cards typed:
+- Rest in Peace, Leyline of the Void, Sanctifier en-Vec, Dryad Militant, Samurai of the Pale Curtain, Necrodominance, Festival of Embers;
+- the death family: Vren, Liesa, Garruk Veiled Butcher, Gisa, Head of the Hunt, Misery's Shadow, Nemata, Stone of Erech, Valentin.
+
+Refused (recorded, not half-applied): Dauthi Voidwalker ("with a void counter on it"), The Darkness Crystal ("and you gain 2 life"), Kumano ("dealt damage by ~ this turn").
+
+**Steps (`7700164`, audit fix `a657e7d`):**
+- `oracle_parser.parse_graveyard_exile_replacements` produces the typed `CardTemplate.graveyard_exile_replacements`: {scope, whose, colors, types, tokens, nontoken, controlled_by} per sentence.
+- One matcher, `ZoneManager.graveyard_exile_source`, is asked by both funnel exits and by the death owner.
+  - It is decided before the card leaves its zone, so a destroyed Rest in Peace exiles itself (CR 614.12).
+  - A replaced death skips undying, persist, modular, the death count, dies triggers and observers.
+  - A discard into exile is still a discard (CR 701.8).
+- Every graveyard arrival is asked. Twelve direct `graveyard.append` writes now go through the funnel:
+  - Unmarked Grave, Gifts, Archon's sacrifice, Emry's mill, Scapeshift's sacrifice, the cascade Living End;
+  - flashback's land sacrifice;
+  - the saga, Map and charge-bomb sacrifices;
+  - the AI's pump discard.
+- Consign to Memory's counter uses the stack-exit owner (a countered flashback spell is exiled, CR 702.34a).
+- A suspended card whose last-counter cast fails stays exiled (CR 702.62a).
+- A test pins that no engine or AI code appends to a graveyard outside the funnel. The zone-mutation baseline drops 57 → 45.
+- **Auditor:** `614.6/graveyard_exile_replacement`, restated from the unfiltered "from anywhere" rules.
+- **Audit fix (`a657e7d`):** the SZ auditor `608.2n/resolved_spell_destination` now accepts a spell exiled instead. The gh-post arm showed 943 false violations of it in the Sanctifier, Rest in Peace and Leyline decks.
+
+**Tests (red first):** `tests/test_a_graveyard_bound_object_is_exiled_instead.py` (18). They cover the typed shapes, the refusals, and each family on the engine path:
+- a discard; a death (no death count); a resolved spell; a countered spell; a mill;
+- Leyline's opponents-only scope, Sanctifier's colours, the death family's controller;
+- the replacement ending with its permanent;
+- the funnel pin;
+- the auditors both ways.
+
+Also: `tests/test_free_casts_honour_cast_timing_restrictions.py` (the suspend fallback).
+
+**Digest / anchor / suites:**
+- Digest: 3 games change, log lines only (Consign's counter logs the stack exit; the pump discard logs its cause).
+- Anchor: 29 passed.
+- Suites: 4603 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `gh-post` `ca9a19b`, pre = `sz-post`):** 51 of 600 cells change.
+- Azorius Control (WST) +1.9 (45.8 → 47.7): Sanctifier ×3 main deck, Rest in Peace in the sideboard. Its cells against Living End (+15) and Grixis Reanimator (+15) carry it.
+- Every other deck moves by at most ±0.6.
+- Non-violation findings 419 → 383: the unhandled Rest in Peace and Sanctifier census rows are gone.
+- 0 aborts; no deck moves more than 5 pp.
+
+**Leads (not built):**
+- **Spell-scoped replacement.** "If that creature would die this turn, exile it instead" (Lava Coil, Magma Spray, Scorching Dragonfire and about 60 pool spells) is a per-object replacement created on resolution, a different shape.
+- **Linked follow-ups.** The exile applies but the follow-up does not: Valentin's and Head of the Hunt's "when you do" reflexive triggers, and Gisa's "exiled with Gisa" return.
+- **Simultaneous destruction.** The engine destroys one by one, so a wrath that destroys Rest in Peace with creatures exiles only the creatures processed before Rest in Peace leaves (CR 614.12 exiles all).
+- **Living End.** It exiles the battlefield's creatures. The card sacrifices them into the graveyards, where they die and stay as fuel.
+
+## Unit TF: a permanent that exiles itself and returns transformed is a new object showing its back face (2026-10-11)
+
+**Rule:** "Exile ~, then return ~ to the battlefield transformed under its owner's control" (CR 400.7, 712, 306.5b).
+- The permanent leaves the battlefield, and a new object enters with its back face up: summoning sick, untapped, with none of the old object's counters or damage.
+- A planeswalker back face enters with the loyalty that face prints.
+- The return finds only the card its own exile moved (CR 400.7).
+- Off the battlefield a double-faced card has only its front face (CR 712.8a). On it, a transformed permanent has only its back face's characteristics and abilities (CR 712.8e).
+
+**Defects:**
+- Tamiyo's "when you draw your third card in a turn" flip never happened: `603.2/draw_trigger_unresolved` in 22 of 25 rows of the rank-1 arm.
+- The legacy flips moved the card around the zone funnel:
+  - A flipped Fable kept its lore counters, so chapter III re-fired every turn and the Reflection was always summoning sick.
+  - A flipped Ral bounced to hand stayed a back face. It was recast as a 0-loyalty planeswalker and died at once.
+  - A flipped Reflection attacking resolved the front face's chapter I text, so its quoted token trigger made a 2/2 creature token.
+
+**Class:** 53 pool cards print the exile-and-return-transformed shape. Registered (16 copies): Ajani ×4, Fable ×4, Ral ×4, Tamiyo ×3, Roku ×1.
+
+**Steps (`8e48d74`):**
+- **Executors.** `effect_executors.self_exile` ("exile ~", the source still the object the ability came from) and `self_return_transformed` ("return ~ … transformed under its owner's / your control", only the card this resolution's exile moved). EXILE and MOVE run them, and the draw carrier's strict shape takes the pair.
+- **One return owner.** `oracle_resolver.return_transformed` puts the card back through the zone funnel (`move_card(..., transformed=True)`). The legacy exile-and-return flips (Ajani, Fable, Roku) route through it.
+- **Zone funnel.**
+  - A battlefield entry under a player's control sits on that player's battlefield (CR 108.4).
+  - Leaving the battlefield restores the front face.
+  - `CardInstance.enter_battlefield` reads entry loyalty from the face shown.
+- **Face-shown reads** in the three places the replays exposed: the attack-trigger resolver, the saga check (a flipped Saga is a creature, not a Saga), and Living End's creature sweep (a flipped planeswalker is not a creature).
+- **Auditors:** `306.5b/entry_loyalty`, now face-aware and restated from the raw face fields, and `712.8a/front_face_off_battlefield`.
+- **Detectors.** Both runtime-oracle detectors recognise the face-shown text method as an oracle read, so the moved reads still count (b stays 101).
+
+**Tests (red first):** `tests/test_a_permanent_returned_transformed_is_a_new_back_face_object.py` (12):
+- the shape is executable;
+- the third draw returns a new back-face object at its back face's loyalty, under its owner's control;
+- a permanent that already left is neither exiled nor returned;
+- the funnel route (revolt counts the flip; counters are gone);
+- the front face off the battlefield;
+- back-face attack triggers, a flipped Saga, the creature sweep;
+- both auditors both ways.
+
+**Digest / anchor / suites:** 3 matches change, each replayed:
+- **Azorius Control vs Ruby Storm s58500:** the bounced Ral is recast as a creature, and Storm wins on T6, not T8. g2 and g3 follow through the match RNG.
+- **Jeskai Blink vs Eldrazi Tron s59500 g1, winner flip to Jeskai:** chapter III fires once and the Reflection attacks from T8.
+- **Living End vs Dimir s59000:** Tamiyo flips and survives Living End; same winner and turns.
+
+Anchor 29 passed. Suites 4615 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `tf-post` `ef1c074`, pre = `gh-post`):** 47 of 600 cells change.
+- Jeskai Blink +3.1 (51.5 → 54.6): the Reflection is one object that attacks and copies.
+- Ruby Storm +1.0 (28.9 → 29.9): the bounced Ral fix.
+- Every other deck moves by at most ±0.9.
+- Violations 943 → 0: the 608.2n audit fix. Findings 358.
+- The Tamiyo finding is gone. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- **Goblin Shaman.** The Fable token's own attack trigger (create a Treasure) is not modelled.
+- **Quoted abilities.** A quoted token ability inside a card's text is matched as the card's own by the legacy attack resolver. It is harmless on a Saga front face, but a creature printing such a token would misfire.
+- **Front-face reads on permanents.** 49 engine and 55 AI sites read `template.is_creature`. The ones that concern a permanent should read the face shown (`effective_is_creature`); a sweep is its own unit.
+- **Living End** exiles the battlefield's creatures instead of sacrificing them (see unit GH).
+
+## Unit DS: a creature put into a graveyard from the battlefield dies, whatever moves it (2026-10-11)
+
+**Rule (CR 700.4):** "dies" means "is put into a graveyard from the battlefield".
+- Each of these is a death:
+  - destruction and lethal damage;
+  - a sacrifice paid as a cost;
+  - a sacrifice an effect demands: evoke, escape-less Phlage, an edict, annihilator, a mobilize token at end of turn.
+- A death triggers the creature's own dies abilities (undying, persist, modular, "when ~ dies") and every "whenever a creature dies" observer, and it counts as a creature that died this turn.
+- A permanent that is not a creature does not die.
+
+**Defect:** the death owner (`PermanentEffects._creature_dies`) ran the death effects only for the paths that called it, and sacrifices went through the zone funnel directly.
+- A creature sacrificed for Goblin Bombardment, an evoked elemental's sacrifice and an annihilator sacrifice triggered nothing and counted for nothing.
+- An undying creature sacrificed as a cost stayed in the graveyard.
+
+**Class:** every path that moves a creature from the battlefield to a graveyard:
+- activation costs (sacrifice another or self);
+- evoke and escape sacrifices;
+- the runner's sacrifice abilities;
+- annihilator and Archon's sacrifices;
+- end-of-turn token sacrifices.
+
+Hundreds of pool cards sacrifice creatures.
+
+**Steps (`7db44d1`):**
+- `ZoneManager.move_card` hands any battlefield → graveyard move of a creature (on the face it shows, or an animated land) to the death owner.
+- The death owner performs the move through the funnel as the death (`dying=True`), so nothing is processed twice.
+- The dead SBA-manager loop no longer counts deaths by hand.
+- **Auditor:** `700.4/dies`, a creature reaching a graveyard from the battlefield was moved by the death owner, restated from the raw face fields.
+
+**Tests (red first):** `tests/test_a_creature_put_into_a_graveyard_from_the_battlefield_dies.py` (6; 3 red):
+- the funnel move is a death (the count, and a drain observer);
+- a creature sacrificed for an activation cost dies (undying returns it);
+- a land does not die;
+- a death is processed once;
+- the auditor both ways.
+
+**Digest / anchor / suites:**
+- Digest: 8 games change by log lines only ("<creature> dies" for sacrificed mobilize tokens, Voice of Victory, Guide of Souls); winners and turns unchanged.
+- Anchor 29 passed. Census, equivalence and harness unchanged.
+- Suites 4622 + 2713 passed.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `ds-post` `4d900d3`, pre = `tf-post`):** 16 of 600 cells change.
+- Boros Energy −0.6 (66.5 → 65.8).
+- Broodscale Bloodchief +0.4: its death observers see sacrifices.
+- Every other deck moves by at most ±0.2.
+- Findings 361, violations 0. No deck moves more than 5 pp.
+
+**Leads (not built):** Living End exiles the battlefield's creatures instead of sacrificing them. Its shape is one pool card and mass sacrifice is nine (below the class rule), so it is recorded as a known gap.
+
+## Unit AT: a type an effect adds is the object's characteristic while the effect lasts (2026-10-11)
+
+**Rule (CR 205.1b, 613.1d, 611.2c, 514.2):** "Until end of turn, target creature you control becomes an Avatar in addition to its other types and gains flying, first strike, lifelink, and hexproof".
+- The chosen object has the added subtype and keywords until the cleanup step, when every until-end-of-turn effect ends at once.
+- The effect applies to that object only. One that leaves and returns is a new object with neither.
+
+**Defect:** Enter the Avatar State (Hollow One ×2) resolved to nothing (`unhandled/spell` in 22 of 25 rows of the gh-post arm). Nothing in the engine could add a type to an object.
+
+**Class:** 27 pool cards add a type to an object.
+- On the new path: Enter the Avatar State and Jump Scare (spells), and the unclassified activations of Liquimetal Coating, Liquimetal Torque, Myr Landshaper, Neurok Transmuter and Stegron.
+- Registered: Avatar State ×2 (MB), Liquimetal Coating ×2 (SB).
+
+**Steps (`908b6a0`):**
+- **Layer 4.** `CardInstance.cem_types_added` / `cem_subtypes_added` are cleared each recalculation and when the object leaves the battlefield, and are read through `effective_card_types` / `effective_subtypes`. `create_type_adding_effect` binds the chosen object.
+- **Executor.** The CONTINUOUS executor runs a type, keyword or P/T change on the object a target slot names, this turn.
+- **Family.** A new family, `type_change`, joins the spell switch and the unclassified-activation switch.
+  - The executor declares it as the only family its characteristic shapes run in (`allowed_families`, read by the dispatcher's executability check).
+  - The pump family's haste grants and legacy pump spells therefore stay on their legacy appliers until that switch is proven host by host.
+  - A first attempt that let the shape run in the pump family moved 118 activations and a dozen legacy pump spells onto the new path. It was narrowed before commit.
+- **CR 514.2.** The cleanup step's end-of-turn expiry now recalculates the layer system. The manager dropped the effects but left their values on the objects until the next recalculation.
+- A "target permanent" slot admits every permanent.
+- **Auditor:** `400.7/new_object_added_types`.
+
+**Tests (red first):** `tests/test_a_type_an_effect_adds_lasts_while_the_effect_does.py` (7). The executor purity pin admits the new declaration; the harness no-op fixture is regenerated (244 hosts).
+
+**Digest / anchor / suites:**
+- Harness: 480 pairs (179 proven, 301 intended).
+- Digest byte-identical; anchor 29 passed.
+- Suites 4629 + 2713 passed.
+
+**Measured (same-seed n=20 Bo3, `at-post` `6b914ba`, pre = `ds-post`):** 1 of 600 cells changes (Azorius Control vs Dimir Midrange −5); every deck within ±0.1.
+- The Avatar State finding is gone. Findings 361 → 339; violations 0.
+- The per-event ranking now holds one row: Surgical Extraction (SB ×8).
+
+**Leads (not built):**
+- **The pump family switch.** It needs a reconciliation of the two keyword-grant mechanisms (legacy `temp_keywords` against the layer system's `cem_keywords`) before the harness can prove it.
+- **Keyword counters** (CR 122.1b) are not modelled.
+- **Guide of Souls.** "Whenever you attack" has no carrier, and "target attacking creature" no target requirement.
+
+## Unit MD: a modal double-faced card's land face can be played as the turn's land (2026-10-11)
+
+**Rule (CR 712, 305.1, 712.8a):** "Sink into Stupor // Soporific Springs" is its front face, an instant, everywhere off the battlefield and the stack.
+- Its controller may cast that face, or play the back face as the turn's land play.
+- Played as a land, the permanent is Soporific Springs: a land that taps for {U} and enters tapped unless its controller pays 3 life.
+- When it leaves the battlefield it is the instant again.
+
+**Defect:** nothing ever offered the land face.
+- The decks that count these cards among their lands held them as spells.
+- Azorius Control never played its Sink into Stupor in a 24-game scan, and its mulligans counted it as a spell.
+- `LandManager.play_land` put any card it was handed onto the battlefield, including a Lightning Bolt.
+
+**Class:** 50 pool modal double-faced cards have a land back face. 15 registered main-deck copies in 7 decks:
+- Sink into Stupor in Azorius Control, Dimir Midrange, Pinnacle Affinity and Living End;
+- Valakut Awakening in Ruby Storm and Living End;
+- Witch Enchanter in Jeskai Blink and Azorius Blink.
+
+**Steps (`af72721`):**
+- `CardDatabase` builds the land back face as a full template from that face's own data (`CardTemplate.back_face_template`).
+- `CardTemplate.playable_land_face` is the face a player may play as a land: the card itself, a modal card's land face, or None.
+- `LandManager.play_land` plays only a land face. A modal card's back face becomes the permanent's template, so every land read is that face's: its mana, whether it enters tapped, and the 3-life untap payment.
+- The zone funnel restores the card's own template when it leaves the battlefield (CR 712.8a).
+- `get_legal_plays` offers the land face while a land play is left.
+- **AI:**
+  - A true land and the land face give the same land drop, and the modal card also keeps its spell. So the land face is a land candidate only when no true land is, scored as the land it is.
+  - A card that is legal only for its land face is not a cast candidate.
+  - The keep, the 0-land floor and the bottom choice's land floor count a land face as a land option (`ai.predicates.is_land_option`).
+- **Auditor:** `712.8a/front_face_off_battlefield` also reads a swapped face template.
+
+**Tests (red first):** `tests/test_a_modal_double_faced_land_face_is_a_land_play.py` (12). They cover:
+- the typed face;
+- the land play, with its mana, the life-or-tapped entry, the front face off the battlefield, and the land-play limit;
+- a non-land is no land play;
+- the AI plays the face only when it has no true land;
+- the keep and the bottom floor count it;
+- the auditor both ways.
+
+**Digest / anchor / suites:**
+- Anchor: 6 entries for decks carrying modal lands were refreshed. Two winner flips were replayed:
+  - Grixis Reanimator vs Azorius Blink s53000: Witch-Blessed Meadow, played untapped, casts Phelia on turn 5.
+  - Azorius Control vs Azorius Control (WST) s50000: the keep counts Sink into Stupor, and the control mirror reaches the turn cap as a draw.
+  - The other four are turn-only shifts.
+- Digest: 9 games change. One Bo3 game 3 flips (Azorius Control vs Ruby Storm s58500), downstream of game 2: Ruby Storm plays Valakut Stoneforge as its land.
+- Suites: 4641 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, `md-post` `eae8d99`, pre = `at-post`):** 226 of 600 cells change.
+
+| Deck | Before | After | Change |
+|---|---|---|---|
+| Pinnacle Affinity | 61.6 | 70.1 | +8.5 |
+| Azorius Control | 30.8 | 37.9 | +7.1 |
+| Azorius Blink | 36.0 | 39.6 | +3.5 |
+
+- Every other deck moves by at most ±2.3.
+- Violations 0 (findings 339 → 347); 0 aborts.
+- Both decks that move more than 5 pp were replayed against the AT head, cell-exact (both arms reproduce their matrix cells locally):
+  - **Jeskai Blink vs Pinnacle Affinity** (12/20 → 5/20), s50500 game 2. On turn 3 Pinnacle Affinity plays Soporific Springs, tapped, as its third land, then casts Kappa Cannoneer on turn 4. Pre, with two lands, it cast Cranial Plating.
+  - **Affinity vs Azorius Control** (13/20 → 6/20), s51000 game 3. Azorius Control's keep counts five lands instead of four, and on turn 6 it plays Soporific Springs as its sixth land. It wins on turn 23 instead of losing on turn 17.
+- Pinnacle Affinity now sits 0.1 above the default field band (30–70). The gain is the land face it was always allowed to play.
+
+**Leads (not built):**
+- **Modal spells' targets.**
+  - Avengers Disassembled (Boros Ponza MB ×3) is never cast. The AI asks every modal spell with a targeted mode for a target (`_spell_requires_targets` reads any ability's `targets_required`). It never aims the land mode, so it drops the spell, even though "deals 3 damage to each creature" needs no target (CR 601.2c, 700.2a).
+  - The same gate covers 65 pool modal spells, including Lorehold Charm and Warping Wail.
+  - "Choose one or both" is resolved as both. The modal resolver's gate counts its range as two of two, and "one or more" parses as "one".
+- **Tiered modes.** Fire Magic resolves its best tier without paying that tier's additional cost.

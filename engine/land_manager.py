@@ -33,7 +33,8 @@ class LandManager:
     @staticmethod
     def play_land(game: "GameState", player_idx: int,
                   card: "CardInstance") -> None:
-        """Play a land from hand to battlefield.
+        """Play a land from hand -- or from exile under a permission to
+        play it (CR 305.1) -- to the battlefield.
 
         Hand→battlefield is dispatched through
         `engine.zone_transfer.transfer(..., kind=TransferKind.ETB)` so
@@ -50,12 +51,37 @@ class LandManager:
         max_lands = 1 + player.extra_land_drops
         if player.lands_played_this_turn >= max_lands:
             return
-        if card not in player.hand:
+        # Only a land is played as a land (CR 305.1): the card itself, or a
+        # modal double-faced card's land back face (CR 712).
+        face = card.template.playable_land_face
+        if face is None:
+            return
+        # A land is played from hand, or from exile under a permission to
+        # play it ("you may play those cards", CR 305.1); either way it is
+        # the turn's land play (CR 305.2).
+        from . import rules_query
+        if card in player.hand:
+            src_zone, src_list = "hand", player.hand
+        elif (card.zone == "exile" and card in game.players[card.owner].exile
+              and rules_query.play_permitted(game, player_idx, card)):
+            # In its owner's exile (CR 400.3), whoever plays it.
+            src_zone, src_list = "exile", game.players[card.owner].exile
+        else:
             return
 
-        player.hand.remove(card)
+        src_list.remove(card)
+        if src_zone == "exile":
+            # CR 400.7: the land is a new object; the permission that
+            # named the exiled card no longer names it.
+            game.continuous_effects.forget_object(card.instance_id)
         player.lands_played_this_turn += 1
         card.controller = player_idx
+        if face is not card.template:
+            # The back face is played: the permanent is that face, and only
+            # that face (CR 712); the zone funnel restores the card's own
+            # template when it leaves the battlefield (CR 712.8a).
+            card._front_template = card.template
+            card.template = face
 
         # ── Fetchland: play then immediately crack ──
         # Fetchlands sacrifice themselves on resolution; no ETB
@@ -83,7 +109,7 @@ class LandManager:
         #    (`EFFECT_REGISTRY.execute(EffectTiming.ETB)` + generic
         #    `resolve_etb_from_oracle`).
         transfer(game, card,
-                 src_zone="hand", dst_zone="battlefield",
+                 src_zone=src_zone, dst_zone="battlefield",
                  kind=TransferKind.ETB, controller=player_idx)
 
         # ── Post-entry tapped-state finalisation ──

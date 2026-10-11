@@ -243,6 +243,10 @@ class EVSnapshot(BaseModel):
     opp_artifact_count: Numeric = 0
     my_enchantment_count: Numeric = 0
     opp_enchantment_count: Numeric = 0
+    # Expected extra mana each side's permanents add next turn (extra land
+    # drops, cost reducers) — ai/mana_engine.engine_mana_next_turn.
+    my_engine_mana: float = 0.0
+    opp_engine_mana: float = 0.0
     # Conditional activation flags — set True during snapshot_from_game
     # when an oracle-visible card on my / opp's visible zones references
     # the relevant count threshold (metalcraft, affinity for artifacts,
@@ -419,18 +423,26 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
     me_deck = getattr(me, "deck_name", None)
     if me_deck:
         try:
-            from decks.gameplan_loader import load_gameplan
-            _gp = load_gameplan(me_deck)
+            # The one gameplan path (decklist + db supplied): a bare
+            # loader call here cached a JSON-only plan, so the plan a
+            # process held depended on which caller ran first.
+            from ai.gameplan import get_gameplan
+            _gp = get_gameplan(me_deck)
             if _gp is not None:
                 archetype_subtype = getattr(_gp, "archetype_subtype", None)
         except Exception:
             archetype_subtype = None
 
+    # The cards each player holds: the hand and the exiled cards a
+    # permission lets them play past this turn (`ai.playable_cards`) -- an
+    # impulse draw's cards are held resources while the permission lasts,
+    # as the spell's own projection counted them.
+    from ai.playable_cards import held_cards
     snap = EVSnapshot(
         my_life=me.life,
         opp_life=opp.life,
-        my_hand_size=len(me.hand),
-        opp_hand_size=len(opp.hand),
+        my_hand_size=len(held_cards(game, player_idx)),
+        opp_hand_size=len(held_cards(game, 1 - player_idx)),
         my_mana=me.available_mana_estimate + me.mana_pool.total(),
         opp_mana=opp.available_mana_estimate,
         my_total_lands=len(me.lands),
@@ -508,6 +520,9 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
             snap.opp_artifact_count += 1
         if CardType.ENCHANTMENT in types:
             snap.opp_enchantment_count += 1
+    from ai.mana_engine import engine_mana_next_turn
+    snap.my_engine_mana = engine_mana_next_turn(game, player_idx)
+    snap.opp_engine_mana = engine_mana_next_turn(game, 1 - player_idx)
 
     # Scaling-active detection — only accept count-based resource bonuses
     # when a card in the relevant player's visible zones has oracle text
@@ -1054,6 +1069,16 @@ def _grants_graveyard_flashback(oracle: str) -> bool:
     return False
 
 
+def cast_is_deferred(card: "CardInstance", snap: EVSnapshot,
+                     game: "GameState" = None, player_idx: int = 0) -> bool:
+    """The main phase defers this cast: no same-turn signal fires
+    (`_enumerate_this_turn_signals`), so `compute_play_ev` scores it at
+    its exposure cost and `decide_main_phase` passes rather than cast it.
+    The one deferral predicate: a hold that waits for a later play reads
+    it, so it never waits for a cast the AI will not make."""
+    return not _enumerate_this_turn_signals(card, snap, game, player_idx)
+
+
 def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
                                   game: "GameState" = None,
                                   player_idx: int = 0,
@@ -1116,6 +1141,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if _has_self_etb_effect(oracle):
         signals.append('etb_trigger')
 
+    # 1b. A Saga's chapter I (CR 714.3a: the lore counter is put on as the
+    #     Saga enters, triggering chapter I at once, CR 714.2b). The
+    #     chapter's effect is this turn's value exactly as a self-ETB is.
+    #     Typed at DB load (`saga_chapter_one_material`).
+    if getattr(t, 'saga_chapter_one_material', False):
+        signals.append('saga_chapter_one')
+
     # 2. Cast trigger or storm keyword (spell counts its chain).
     if 'storm' in keywords or getattr(t, 'has_cast_trigger', False):
         signals.append('cast_trigger')
@@ -1131,9 +1163,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     # 5. Card draw this turn — includes true draw, library-dig
     #    "put X into your hand", and impulse-draw "exile top N, may
     #    play".  All three deliver same-turn card advantage even
-    #    though only the first uses the literal verb "draw".
+    #    though only the first uses the literal verb "draw".  A true
+    #    draw is read from the spell's typed DRAW (`spell_draws`), so
+    #    "draw four cards" and "draw that many cards" count too.
+    from ai.predicates import spell_draws
     if (_oracle_signals_card_draw(oracle)
-            or getattr(t, 'has_draw_effect', False)):
+            or getattr(t, 'has_draw_effect', False)
+            or spell_draws(t)):
         signals.append('card_draw')
 
     # 6. Tutor — library search OR Wish-style play-from-outside.
@@ -1209,7 +1245,8 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if ('cost_reducer' in tags
             and not t.is_instant and not t.is_sorcery
             and game is not None):
-        me_hand = game.players[player_idx].hand
+        from ai.playable_cards import playable_cards
+        me_hand = playable_cards(game, player_idx)
         if any(c is not card and not c.template.is_land
                and (c.template.cmc or 0) > 0
                for c in me_hand):
@@ -1370,6 +1407,15 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             if payoff_reach:
                 signals.append('flashback_combo_with_gy_fuel')
 
+    # 17. A card a permission lets the player play only until this turn
+    #     ends (an impulse draw's last turn, CR 611.2): casting it next
+    #     turn is not an option, so it is never deferrable. The engine's
+    #     one expiry predicate answers (`rules_query`).
+    if game is not None and getattr(card, 'zone', None) == 'exile':
+        from engine import rules_query
+        if rules_query.permission_ends_this_turn(game, player_idx, card):
+            signals.append('permission_ends_this_turn')
+
     return signals
 
 
@@ -1438,8 +1484,12 @@ def _is_real_dig(card: "CardInstance") -> bool:
     t = card.template
     # ``has_draw_effect`` covers: "draw a card", "draw N cards",
     # "look at the top", "exile the top … you may play/cast".
+    # ``spell_draws`` reads the spell's typed DRAW, whatever the count's
+    # wording ("draw four cards", "draw that many cards").
     # ``is_tutor`` covers: "search your library", Wish-style fetch.
-    return getattr(t, 'has_draw_effect', False) or t.is_tutor
+    from ai.predicates import spell_draws
+    return (getattr(t, 'has_draw_effect', False) or spell_draws(t)
+            or t.is_tutor)
 
 
 def _payoff_reachable_this_turn(card: "CardInstance",
@@ -1476,8 +1526,11 @@ def _payoff_reachable_this_turn(card: "CardInstance",
     payoffs, tutor-tagged enablers, or cascade payoffs.
     """
     from engine.cards import Keyword as _Kw
+    from ai.playable_cards import playable_cards
     me = game.players[player_idx]
-    hand = me.hand
+    # The cards the plan can play this turn: the hand and the exiled cards
+    # a permission names (`ai.playable_cards`).
+    hand = playable_cards(game, player_idx)
     for c in hand:
         kws = c.template.keywords or set()
         tags_c = c.template.tags or set()
@@ -1910,7 +1963,8 @@ def _has_useful_minus_ability(oracle: str) -> bool:
 
 
 def expected_future_value(card: "CardInstance",
-                           snap: EVSnapshot) -> float:
+                           snap: EVSnapshot,
+                           loyalty: Optional[int] = None) -> float:
     """Power-equivalent value of a permanent's future activation pool.
 
     Composes across permanent types without per-type branching at the
@@ -1937,11 +1991,18 @@ def expected_future_value(card: "CardInstance",
     from ai.clock import loyalty_pool_value
     t = card.template
 
-    # Only planeswalkers carry an "activation pool" today.
-    if CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
+    # Only planeswalkers carry an "activation pool" today. A permanent on
+    # the battlefield is read by its current face (a transformed DFC) and
+    # its current loyalty; a card being cast by its printed values.
+    on_board = getattr(card, 'zone', None) == 'battlefield'
+    if on_board:
+        if not getattr(card, 'effective_is_planeswalker', False):
+            return 0.0
+    elif CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
         return 0.0
 
-    oracle = (t.oracle_text or '').lower()
+    oracle = ((card._effective_oracle_text() if on_board else t.oracle_text)
+              or '').lower()
     tags = getattr(t, 'tags', set())
 
     # Prefer the W0-A classifier tag when present; fall back to
@@ -1969,13 +2030,32 @@ def expected_future_value(card: "CardInstance",
     # on an empty board. Equal to "loyalty - 1" historical estimate
     # (first +1 is sunk; ticks 2..loyalty count) when both terms
     # match, but composes generically via clock primitives.
+    loyalty_override = loyalty
     loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
-    # opp_clock is a continuous float; treat NO_CLOCK as the loyalty
-    # budget — no opp pressure means we drain the pool fully.
+    if on_board and (getattr(card, 'loyalty_counters', 0) or 0) > 0:
+        loyalty = card.loyalty_counters
+    if loyalty_override is not None:
+        # The pool at a hypothetical loyalty (after an activation's cost).
+        if loyalty_override <= 0:
+            return 0.0
+        loyalty = loyalty_override
+    # Residency: the walker stays until the game ends (the nearer of the
+    # two clocks) or until attacking power removes its loyalty (creatures
+    # can attack planeswalkers, CR 508.1b) — whichever comes first. An
+    # unknown horizon (no clock on either side, nothing attacking) falls
+    # back to the loyalty budget.
     from ai.clock import NO_CLOCK
-    survival_turns = (loyalty if snap.opp_clock >= NO_CLOCK
-                       else max(0.0, snap.opp_clock))
-    activations = min(float(loyalty), survival_turns)
+    attack_survival = (loyalty / snap.opp_power if snap.opp_power > 0
+                       else NO_CLOCK)
+    residency = min(snap.my_clock, snap.opp_clock, attack_survival)
+    if residency >= NO_CLOCK:
+        residency = float(loyalty)
+    residency = max(0.0, residency)
+    # A useful non-negative ability refills or holds loyalty each turn, so
+    # the pool lasts the whole residency; otherwise every activation spends
+    # loyalty and the pool is also capped by it.
+    activations = (residency if has_useful_plus
+                   else min(float(loyalty), residency))
     # Discount slightly when the immediate +1 isn't useful (we lose
     # the on-entry tick's value but the minus abilities still pay
     # off over residency). Use the loyalty pool as the natural
@@ -1986,12 +2066,35 @@ def expected_future_value(card: "CardInstance",
     return loyalty_pool_value(activations, snap)
 
 
+def _expires_this_turn(game, player_idx, card) -> bool:
+    from ai.playable_cards import expires_this_turn
+    return expires_this_turn(game, player_idx, card)
+
+
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
-                   game: "GameState" = None, player_idx: int = 0) -> EVSnapshot:
-    """Project the board state after casting a spell (without mutating game state)."""
+                   game: "GameState" = None, player_idx: int = 0,
+                   as_ability: bool = False) -> EVSnapshot:
+    """Project the board state after casting a spell (without mutating game state).
+
+    ``as_ability``: project the same effect as an activated ability (a
+    loyalty line's clause) — no card leaves the hand, no mana is paid and
+    no spell is cast (storm)."""
     t = card.template
     tags = getattr(t, 'tags', set())
+    # The cast spends a held card -- except a card whose permission ends
+    # this turn, which is gone at cleanup either way (`ai.playable_cards`).
+    spends_held = not as_ability and not (
+        game is not None and _expires_this_turn(game, player_idx, card))
+    spell_count = len([card]) if spends_held else 0
+    # How the cast is paid (`ai.effective_cmc.cast_mode_of`): an evoke when
+    # only the evoke cost can be paid now -- its creature is sacrificed as
+    # it enters (CR 702.74a), so its body never joins the board.
+    from ai.effective_cmc import (CAST_MODE_EVOKE, CAST_MODE_NORMAL,
+                                  cast_mode_of)
+    cast_mode = (CAST_MODE_NORMAL if as_ability else cast_mode_of(
+        card, snap, game=game, player_idx=player_idx))
+    evoked = cast_mode == CAST_MODE_EVOKE
     projected = EVSnapshot(
         my_life=snap.my_life,
         opp_life=snap.opp_life,
@@ -2001,7 +2104,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_toughness=snap.opp_toughness,
         my_creature_count=snap.my_creature_count,
         opp_creature_count=snap.opp_creature_count,
-        my_hand_size=snap.my_hand_size - 1,  # we cast it from hand
+        my_hand_size=snap.my_hand_size - spell_count,  # we cast it from hand
         opp_hand_size=snap.opp_hand_size,
         # M9 — charge the *effective* mana cost (delve / evoke /
         # on-board cost reducers / affinity / improvise) instead of
@@ -2012,14 +2115,17 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # (Midrange F5) — Murktide projecting as a 7-mana spell,
         # Storm rituals un-discounted under Medallion, Solitude
         # priced at 3WW.
-        my_mana=max(0, snap.my_mana - effective_cmc(
+        my_mana=max(0, snap.my_mana - (0 if as_ability else effective_cmc(
             card, snap, game=game, player_idx=player_idx,
-        )),
+            cast_mode=cast_mode,
+        ))),
         opp_mana=snap.opp_mana,
         my_total_lands=snap.my_total_lands,
         opp_total_lands=snap.opp_total_lands,
         turn_number=snap.turn_number,
-        storm_count=snap.storm_count + 1,
+        # A cast counts for storm from wherever it is cast (CR 702.40a),
+        # held card or not; an activated ability is no cast.
+        storm_count=snap.storm_count + (0 if as_ability else len([card])),
         my_gy_creatures=snap.my_gy_creatures,
         opp_gy_creatures=snap.opp_gy_creatures,
         my_energy=snap.my_energy,
@@ -2037,13 +2143,24 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_artifact_count=snap.opp_artifact_count,
         my_enchantment_count=snap.my_enchantment_count,
         opp_enchantment_count=snap.opp_enchantment_count,
+        my_engine_mana=snap.my_engine_mana,
+        opp_engine_mana=snap.opp_engine_mana,
         my_artifact_scaling_active=snap.my_artifact_scaling_active,
         opp_artifact_scaling_active=snap.opp_artifact_scaling_active,
     )
 
+    # A permanent spell that is a mana engine adds its next-turn mana
+    # (ai/mana_engine), read against the board after the cast resolves.
+    from engine.cards import CardType
+    if (game is not None and not as_ability and not t.is_land
+            and CardType.INSTANT not in t.card_types
+            and CardType.SORCERY not in t.card_types):
+        from ai.mana_engine import engine_mana_next_turn
+        projected.my_engine_mana = engine_mana_next_turn(
+            game, player_idx, extra=(t,), hand_delta=-spell_count)
+
     # Increment count fields when the cast puts an artifact or
     # enchantment onto the battlefield (non-land permanent only).
-    from engine.cards import CardType
     if not t.is_land:
         if CardType.ARTIFACT in t.card_types:
             projected.my_artifact_count += 1
@@ -2080,16 +2197,20 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             if hasattr(card, 'toughness') and card.toughness is not None:
                 tough = card.toughness
 
-        projected.my_power += max(0, p)
-        projected.my_toughness += max(0, tough)
-        projected.my_creature_count += 1
+        if evoked:
+            # Sacrificed as it enters: the body goes to the graveyard.
+            projected.my_gy_creatures += 1
+        else:
+            projected.my_power += max(0, p)
+            projected.my_toughness += max(0, tough)
+            projected.my_creature_count += 1
 
-        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
-               for kw in getattr(t, 'keywords', set())}
-        if kws & {'flying', 'menace', 'trample'}:
-            projected.my_evasion_power += max(0, p)
-        if 'lifelink' in kws:
-            projected.my_lifelink_power += max(0, p)
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in getattr(t, 'keywords', set())}
+            if kws & {'flying', 'menace', 'trample'}:
+                projected.my_evasion_power += max(0, p)
+            if 'lifelink' in kws:
+                projected.my_lifelink_power += max(0, p)
 
         # Recurring trigger valuation: `_project_token_bonus` walks the
         # oracle clause-by-clause and returns immediate (ETB) and
@@ -2241,7 +2362,27 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 projected.my_lifelink_power += p * power_factor
 
     # Removal — kills best opponent creature
-    if 'removal' in tags and not 'board_wipe' in tags:
+    # A bounce is the resolving effect only of an instant or sorcery (or a
+    # sorcery-typed ability clause); a permanent's bounce is one of its
+    # abilities (a loyalty line, an ETB), not what casting it does.
+    bounce_req = (getattr(t, 'bounce_target', None)
+                  if (t.is_instant or t.is_sorcery) else None)
+    if bounce_req is not None and game is not None:
+        # CR 608.2b: a bounce takes the chosen legal creature off the
+        # opponent's board and gives the card back — position_value then
+        # prices the swing on its own card term (tempo, not card advantage).
+        from engine.target_solver import enumerate_legal_targets
+        theirs = [c for c in enumerate_legal_targets(game, player_idx, bounce_req)
+                  if c.controller != player_idx and c.effective_is_creature]
+        if theirs:
+            gone = max(theirs, key=lambda c: creature_threat_value(c, snap))
+            projected.opp_power = max(0, projected.opp_power - (gone.power or 0))
+            projected.opp_toughness = max(0, projected.opp_toughness - (gone.toughness or 0))
+            projected.opp_creature_count = max(0, projected.opp_creature_count - 1)
+            projected.opp_hand_size = projected.opp_hand_size + len([gone])
+
+    if ('removal' in tags and not 'board_wipe' in tags
+            and bounce_req is None):
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
             # Damage-based removal removes only what its damage KILLS
@@ -2676,9 +2817,10 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # REAL draw (impulse-reveal excluded, CR 121.1c).  The projection
     # must price the same events or every cast decision walks into
     # damage the chain estimator already knows about (seed 60101 T5:
-    # Manamorphose at 2 life into two Bowmasters).  Single source of
-    # truth mirrored from the engine: `Tag.IMPULSE_DRAW` zeroes the
-    # draw count; `opp_static_damage_per_card_event` prices the board.
+    # Manamorphose at 2 life into two Bowmasters).  An impulse draw's
+    # cards go to exile, not hand (`predicates.is_impulse_draw`, read
+    # from the parsed spell): zero draws; `opp_static_damage_per_card_event`
+    # prices the board.
     if game is not None:
         from ai.bhi import opp_static_damage_per_card_event
         _cast_tax = opp_static_damage_per_card_event(game, player_idx,
@@ -2727,7 +2869,8 @@ def project_counter_tax_payment(card: "CardInstance", snap: EVSnapshot,
 def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
                               tax_amount: int,
                               game: "GameState" = None,
-                              player_idx: int = 0) -> EVSnapshot:
+                              player_idx: int = 0,
+                              life: int = 0) -> EVSnapshot:
     """Project the board state if a Ward "counter this spell/ability
     unless its controller pays {N}" tax (CR 702.21a) is paid, and
     `card` — the CASTER'S OWN spell/ability, already on the stack,
@@ -2755,22 +2898,26 @@ def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
     stack item alive", not evidence the two mechanics are the same
     thing.
     """
-    return project_counter_tax_payment(card, snap, tax_amount,
-                                        game=game, player_idx=player_idx)
+    projected = project_counter_tax_payment(card, snap, tax_amount,
+                                             game=game, player_idx=player_idx)
+    # A life part of the ward cost ("Ward—Pay 7 life") is paid from the
+    # caster's life on top of any mana part.
+    if life:
+        projected = projected.model_copy(update={"my_life": projected.my_life - life})
+    return projected
 
 
 def _projected_real_draws(card: "CardInstance") -> int:
-    """Projected REAL draw events from resolving `card` — the mirror
-    of the engine's impulse split in `oracle_resolver`.
+    """Projected REAL draw events from resolving `card`.
 
-    Impulse-tagged cards (Tag.IMPULSE_DRAW, the same classifier
-    verdict the engine branch gates on) are NOT draws (CR 121.1c) →
-    0.  Otherwise: 'draw N cards' parses N; the look-and-keep shape
-    ('put one of them into your hand') counts as one draw, matching
-    the engine's real-draw branch.
+    An impulse draw (`predicates.is_impulse_draw`: the parsed spell
+    exiles the top of its controller's library) is NOT a draw (CR
+    121.1c) → 0.  Otherwise: 'draw N cards' parses N; the look-and-keep
+    shape ('put one of them into your hand') counts as one draw,
+    matching the engine's real-draw branch.
     """
-    from ai.oracle_classifier import Tag, tags_for
-    if Tag.IMPULSE_DRAW in tags_for(card.template.name):
+    from ai.predicates import is_impulse_draw
+    if is_impulse_draw(card.template):
         return 0
     oracle = (card.template.oracle_text or '').lower()
     import re as _re
@@ -2980,12 +3127,13 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 
 def _draw_count_for_chain_step(card_template) -> int:
     """How many real-draw events a chain-step draw spell triggers.
-    IMPULSE_DRAW-tagged → 0 (CR 121.1c reveal, not draw). Else parse
-    "draws N cards" from oracle; default 1. Numeral tuple index IS
-    the integer value — no per-N constants. Mirrors the parser in
-    `_project_spell` so chain & per-spell projections agree."""
-    from ai.oracle_classifier import has_tag, Tag
-    if has_tag(card_template.name, Tag.IMPULSE_DRAW):
+    An impulse draw (`predicates.is_impulse_draw`, read from the parsed
+    spell) → 0 (CR 121.1c: exile, not draw). Else parse "draws N cards"
+    from oracle; default 1. Numeral tuple index IS the integer value —
+    no per-N constants. Mirrors the parser in `_project_spell` so chain
+    & per-spell projections agree."""
+    from ai.predicates import is_impulse_draw
+    if is_impulse_draw(card_template):
         return 0
     _NUMERALS = ('zero', 'one', 'two', 'three', 'four',
                  'five', 'six', 'seven')
@@ -3002,7 +3150,8 @@ def _draw_count_for_chain_step(card_template) -> int:
 
 
 def _estimate_combo_chain(game, player_idx: int, first_card=None):
-    """Simulate casting all chainable spells from hand to estimate kill potential.
+    """Simulate casting all chainable spells the player can play (hand and
+    permitted exile, `ai.playable_cards`) to estimate kill potential.
 
     Returns (can_kill: bool, storm_count: int, total_damage: int, chain: list[str])
 
@@ -3021,8 +3170,10 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
     from ai.bhi import (opp_static_damage_per_card_event,
                         _parse_event_amount)
     from ai.oracle_classifier import has_tag, Tag
+    from ai.playable_cards import plan_view
 
-    me = game.players[player_idx]
+    # The chain's cards: the hand and the exiled cards a permission names.
+    me = plan_view(game, player_idx)
 
     # Count cost reducers on battlefield
     reducers = sum(1 for c in me.battlefield
@@ -3140,8 +3291,13 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     detailed: bool = False,
                     bhi: "BayesianHandTracker" = None,
                     goal: Optional[str] = None,
-                    role_tags: frozenset = frozenset()):
+                    role_tags: frozenset = frozenset(),
+                    assembly=None):
     """Compute the expected value of casting a spell using 1-ply lookahead.
+
+    ``assembly`` is the main phase's `ai.assembly_state.AssemblyState`
+    (threaded like ``bhi``): when this card is the first step of its best
+    lethal line, the line's resolution-weighted win swing is credited.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
 
@@ -3334,8 +3490,8 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, player_idx, first_card=card)
             p_resolves = 1.0 - p_interaction
-            from ai.clock import position_value
-            win_swing = max(0.0, 100.0 - position_value(snap))
+            from ai.clock import win_swing as _win_swing
+            win_swing = _win_swing(snap)
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
@@ -3352,6 +3508,18 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 # against aggro we can't survive.
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
+
+    # Lethal-line first step (payoff sequencing §2.8 reader 2). Tag-free
+    # and OUTSIDE the combo-chain gate above: an Overrun shell or a Tron
+    # X-sink line is not archetype `combo`. The line's projected kill is
+    # credited at the same resolution weight the chain credit uses, so
+    # the cast that starts the line is the best play once the line exists.
+    if assembly is not None and assembly.best_line is not None:
+        from ai.assembly_state import STEP_CAST
+        from ai.clock import win_swing as _win_swing
+        _step = assembly.best_line.first_step
+        if _step[0] == STEP_CAST and _step[1] == card.instance_id:
+            ev += (1.0 - p_interaction) * _win_swing(snap)
 
     # ── Life-phase + goal gear-shift (M4, A2) ──
     # Pure lookups over `strategy_profile.phase_weights` and
@@ -3595,10 +3763,13 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
         `None` if the gameplan can't be resolved — tag-based fallback
         still applies.
 
-    For creatures the threat is delegated to `creature_threat_value`,
-    which is the same oracle-driven scorer used everywhere else for
-    "how scary is this creature?". For non-creatures we combine
-    gameplan-role membership (highest signal) with tag-based weights.
+    The victim's declared keystones (critical pieces, always-early,
+    mulligan keys) weigh every card type: a creature the deck lists is as
+    much its plan as a spell it lists. A creature's own worth is then
+    `creature_threat_value`, the same oracle-driven scorer used everywhere
+    else for "how scary is this creature?" (it already credits ETB and
+    scaling, so no tag weight is added); a non-creature's is its tag
+    weights.
 
     Returns 0.0 for an unrecognised non-creature with no tags / no
     gameplan listing — the caller's fallback (highest-CMC non-land)
@@ -3608,15 +3779,7 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
     t = card.template
     name = getattr(t, 'name', '') or ''
 
-    # Creatures: route through the existing oracle-driven threat
-    # function. Returns ~1-15 for typical Modern bodies; large
-    # threats can score higher. We do NOT add a creature-only bonus
-    # here — `creature_threat_value` already credits ETB / scaling.
-    if getattr(t, 'is_creature', False):
-        return float(creature_threat_value(card, snap))
-
-    # Non-creatures: gameplan signal first (data-driven, no card
-    # names in this file), then tag-based weighting.
+    # Gameplan signal first (data-driven, no card names in this file).
     score = 0.0
     if opp_gameplan is not None:
         critical = getattr(opp_gameplan, 'critical_pieces', None) or set()
@@ -3628,6 +3791,11 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
             score += _DISCARD_SCORE_ALWAYS_EARLY
         if name in keys:
             score += _DISCARD_SCORE_MULLIGAN_KEY
+
+    # Creatures: the oracle-driven threat function. Returns ~1-15 for
+    # typical Modern bodies; large threats can score higher.
+    if getattr(t, 'is_creature', False):
+        return score + float(creature_threat_value(card, snap))
 
     tags = getattr(t, 'tags', set()) or set()
     for tag, weight in _DISCARD_TAG_WEIGHTS.items():

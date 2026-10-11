@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import FrozenSet, List, Literal, Optional, TYPE_CHECKING
+from typing import FrozenSet, List, Literal, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .cards import CardInstance
@@ -167,23 +167,25 @@ _GRAVEYARD_ZONE_HINTS = (
     "in your graveyard",
 )
 
-# Battlefield compound patterns — same dispatch order as the existing
-# _battlefield_legal_targets() helper.
-_BATTLEFIELD_COMPOUND = [
-    # Three-type compound (Teferi Time Raveler's -3, March of Otherworldly
-    # Light, Angelic Purge, Banishing Stroke, … — 13 cards in the pool).
-    # Listed FIRST so the two-type and single-type patterns below cannot
-    # capture just "artifact" and silently narrow a three-type target set
-    # down to artifacts only.
-    ("target artifact, creature, or enchantment",
-     frozenset({"artifact", "creature", "enchantment"})),
-    ("target artifact or creature",     frozenset({"artifact", "creature"})),
-    ("target artifact or enchantment",  frozenset({"artifact", "enchantment"})),
-    ("target creature or planeswalker", frozenset({"creature", "planeswalker"})),
-    # Land-destruction compound form (Pillage class): castable off either
-    # permanent type — CR 601.2c needs only one legal target among the union.
-    ("target artifact or land",         frozenset({"artifact", "land"})),
-]
+# Battlefield compound targets: a list of two or more permanent types
+# joined by commas and a final "or" ("target artifact or creature",
+# "target artifact, creature, enchantment, or planeswalker") is the union
+# of its types — one grammar for every length, with the optional
+# controller scope that may follow it.
+_TYPE_WORD = r"(?:artifact|creature|enchantment|planeswalker|land|battle)"
+_COMPOUND_RE = re.compile(
+    rf"\btarget\s+({_TYPE_WORD}(?:\s*,\s*(?:or\s+)?{_TYPE_WORD})*\s*,?\s+or\s+{_TYPE_WORD})"
+    r"(\s+(?:an\s+opponent|that\s+player)\s+controls?|\s+you\s+control)?\b")
+
+
+def _compound_matches(oracle_l: str):
+    for m in _COMPOUND_RE.finditer(oracle_l):
+        types = frozenset(re.findall(_TYPE_WORD, m.group(1)))
+        scope_phrase = (m.group(2) or "").strip()
+        scope = ("you" if scope_phrase.startswith("you")
+                 else "opponent" if scope_phrase else "any")
+        yield m, types, scope
+
 
 # "target [non]land permanent" / "target permanent" — supertype-aware.
 _PERMANENT_PATTERN = re.compile(
@@ -247,7 +249,130 @@ def _detect_mode_group(oracle_l: str, hit_idx: int,
     return 1
 
 
+# "Any number of target …" (CR 115.1): no upper bound on the count.
+ANY_NUMBER = 1 << 30
+
+_NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+                 "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+_PLURAL_TARGET_NOUNS = re.compile(
+    r"\b(creatures|permanents|artifacts|enchantments|lands|planeswalkers|cards"
+    r"|spells|players|opponents|battles)\b")
+_TARGET_SPAN = re.compile(r"\btarget\b[^.;•\n]*")
+_COUNT_BEFORE = re.compile(
+    r"(?:(up to) (\w+)|(one) or (two|three)|(any number) of|(\w+))\s+$")
+
+
+def _singularize_targets(oracle_l: str) -> str:
+    """Rewrite plural target nouns to singular (and "and/or" to "or") inside
+    each target phrase, keeping every index in place (a plural noun loses
+    its "s" to a space), so one singular grammar parses both."""
+    def _span(m):
+        t = _PLURAL_TARGET_NOUNS.sub(lambda n: n.group(1)[:-1] + " ", m.group(0))
+        return t.replace("and/or", "    or")
+    return _TARGET_SPAN.sub(_span, oracle_l)
+
+
+def _singularize_targets_located(oracle_text: str):
+    """`_singularize_targets(oracle_text.lower())` plus its offset map:
+    `offsets[i]` is the input-text index of normalised index `i`
+    (`offsets[len(norm)] == len(oracle_text)`). Singularisation keeps every
+    index in place, so the map only absorbs `str.lower()` length changes
+    (a character whose lowercase form is longer, e.g. U+0130)."""
+    lowered = oracle_text.lower()
+    norm = _singularize_targets(lowered)
+    if len(lowered) == len(oracle_text):
+        offsets = range(len(norm) + 1)
+    else:
+        m = []
+        for i, ch in enumerate(oracle_text):
+            m.extend([i] * len(ch.lower()))
+        m.append(len(oracle_text))
+        offsets = m
+    return norm, offsets
+
+
+def _count_before(text: str, idx: int):
+    """(count_min, count_max) from the words just before a target phrase:
+    "up to N" → (0, N), "one or two" → (1, 2), "any number of" → (0, ∞),
+    "N" → (N, N); None when no count word precedes it."""
+    m = _COUNT_BEFORE.search(text[max(0, idx - 24):idx])
+    if m is None:
+        return None
+    if m.group(1):
+        n = _NUMBER_WORDS.get(m.group(2)) or (int(m.group(2)) if m.group(2).isdigit() else None)
+        return None if n is None else (0, n)
+    if m.group(3):
+        return (1, _NUMBER_WORDS[m.group(4)])
+    if m.group(5):
+        return (0, ANY_NUMBER)
+    w = m.group(6)
+    n = _NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
+    return None if n is None or n == 1 else (n, n)
+
+
+def _parse_placed(oracle_text: str):
+    """The one placement owner. Returns `[(req, norm_start, norm_end)]` in
+    parse() order plus the normalised-to-input offset map; each start is the
+    occurrence parse() claimed for the requirement's phrase (and read its
+    count before, and its mana-value ceiling after), -1 when the phrase was
+    not found."""
+    if not oracle_text:
+        return [], range(1)
+    norm, offsets = _singularize_targets_located(oracle_text)
+    reqs = _parse_singular(norm)
+    import dataclasses as _dc
+    # Each requirement reads the count before ITS occurrence of its phrase:
+    # longer phrases claim their text first, and an occurrence inside an
+    # already-claimed phrase is not this requirement's.
+    claimed: list = []
+    where = {}
+    for i in sorted(range(len(reqs)), key=lambda i: -len(reqs[i].raw_phrase or "")):
+        phrase = reqs[i].raw_phrase
+        start = norm.find(phrase) if phrase else -1
+        while start >= 0 and any(a <= start < b for a, b in claimed):
+            start = norm.find(phrase, start + 1)
+        if start >= 0:
+            claimed.append((start, start + len(phrase)))
+        where[i] = start
+    out = []
+    for i, r in enumerate(reqs):
+        idx = where[i]
+        counts = _count_before(norm, idx) if idx >= 0 else None
+        if counts is not None:
+            r = _dc.replace(r, count_min=counts[0], count_max=counts[1],
+                            is_optional=r.is_optional or counts[0] == 0)
+        elif r.is_optional and r.count_min == 1:
+            # "up to one target X": zero or one (CR 115.1).
+            r = _dc.replace(r, count_min=0)
+        end = idx + len(r.raw_phrase or "") if idx >= 0 else -1
+        out.append((_with_mana_value_ceiling(norm, r, end), idx, end))
+    return out, offsets
+
+
+def parse_located(oracle_text: str) -> List[Tuple[TargetRequirement, int]]:
+    """`parse()` with each requirement's start in the input text: the
+    occurrence parse() itself claimed (never a second search), -1 when its
+    phrase was not found. Order is parse() order, not printed order."""
+    placed, offsets = _parse_placed(oracle_text)
+    return [(r, offsets[s] if s >= 0 else -1) for r, s, _ in placed]
+
+
+def parse_spans(oracle_text: str) -> List[Tuple[TargetRequirement, int, int]]:
+    """`parse_located()` plus each requirement's end offset, both in
+    input-text coordinates; (-1, -1) when the phrase was not found."""
+    placed, offsets = _parse_placed(oracle_text)
+    return [(r, offsets[s], offsets[e]) if s >= 0 else (r, -1, -1)
+            for r, s, e in placed]
+
+
 def parse(oracle_text: str) -> List[TargetRequirement]:
+    """Parse all target requirements from an oracle text, each with its
+    count (CR 115.1 / 601.2c): plural and counted target phrases are the
+    same requirement as their singular form with count_min / count_max."""
+    return [r for r, _ in parse_located(oracle_text)]
+
+
+def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
     """Parse all target requirements from an oracle text.
 
     Returns an empty list when no targets are required (draw, mill,
@@ -286,6 +411,21 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         hint_text = strip_reminder_text(oracle_text).lower()
         if any(h in hint_text for h in _GRAVEYARD_ZONE_HINTS):
             gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
+            # A target's zone is named by its own sentence (CR 115.1):
+            # the graveyard phrase must follow the target phrase before
+            # the sentence ends -- "... among cards in your graveyard" in
+            # a later delirium / threshold sentence does not move a
+            # battlefield target into the graveyard.
+            if gy_match is not None:
+                end = len(oracle_l)
+                for stop in (".", "\n"):
+                    at = oracle_l.find(stop, gy_match.end())
+                    if at != -1:
+                        end = min(end, at)
+                sentence = strip_reminder_text(
+                    oracle_l[gy_match.start():end])
+                if not any(h in sentence for h in _GRAVEYARD_ZONE_HINTS):
+                    gy_match = None
     if gy_match is not None:
         super_word = (gy_match.group(1) or "").strip() or None
         type_word = gy_match.group(2)
@@ -358,17 +498,22 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         # (rare). Keep scanning so modal patterns are not lost.
 
     # ── 3. Battlefield compound targets ─────────────────────────────
-    for phrase, types in _BATTLEFIELD_COMPOUND:
-        idx = oracle_l.find(phrase)
-        if idx >= 0:
-            out.append(TargetRequirement(
-                zone="battlefield",
-                types=types,
-                owner_scope="any",
-                is_optional=_is_optional_at(oracle_l, idx),
-                mode_group=_detect_mode_group(oracle_l, idx, modal_start),
-                raw_phrase=phrase,
-            ))
+    for m, types, scope in _compound_matches(oracle_l):
+        # An "instead" alternative (a kicked / conditional replacement)
+        # re-states the same target rather than adding a second one.
+        sentence_start = oracle_l.rfind(".", 0, m.start()) + 1
+        sentence = oracle_l[sentence_start:oracle_l.find(".", m.end()) % (len(oracle_l) + 1)]
+        if "instead" in sentence and any(
+                r.types == types and r.owner_scope == scope for r in out):
+            continue
+        out.append(TargetRequirement(
+            zone="battlefield",
+            types=types,
+            owner_scope=scope,
+            is_optional=_is_optional_at(oracle_l, m.start()),
+            mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
+            raw_phrase=m.group(0),
+        ))
 
     # ── 4. "target permanent" / "target nonland permanent" ──────────
     perm_match = _PERMANENT_PATTERN.search(oracle_l)
@@ -384,33 +529,32 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=perm_match.group(0),
         ))
 
-    # ── 5. Creature with owner scope ────────────────────────────────
-    you_ctrl = _CREATURE_YOU_CONTROL.search(oracle_l)
-    opp_ctrl = _CREATURE_OPP_CONTROL.search(oracle_l)
-    bare_creature = _CREATURE_BARE.search(oracle_l)
-    if you_ctrl is not None:
-        out.append(TargetRequirement(
-            zone="battlefield",
-            types=frozenset({"creature"}),
-            owner_scope="you",
-            is_optional=_is_optional_at(oracle_l, you_ctrl.start()),
-            mode_group=_detect_mode_group(oracle_l, you_ctrl.start(),
-                                          modal_start),
-            raw_phrase=you_ctrl.group(0),
-        ))
-    elif opp_ctrl is not None:
-        out.append(TargetRequirement(
-            zone="battlefield",
-            types=frozenset({"creature"}),
-            owner_scope="opponent",
-            is_optional=_is_optional_at(oracle_l, opp_ctrl.start()),
-            mode_group=_detect_mode_group(oracle_l, opp_ctrl.start(),
-                                          modal_start),
-            raw_phrase=opp_ctrl.group(0),
-        ))
-    elif (bare_creature is not None
-          and not _is_inside_compound(oracle_l, bare_creature.start())
-          and not _is_target_creature_spell(oracle_l, bare_creature.start())):
+    # ── 5. Creature targets, each with its owner scope ─────────────
+    # Every distinct creature target phrase is its own requirement ("up to
+    # two target creatures you control each deal damage … to target
+    # creature an opponent controls" has two).
+    scoped_spans = []
+    for pat, scope in ((_CREATURE_YOU_CONTROL, "you"),
+                       (_CREATURE_OPP_CONTROL, "opponent")):
+        m = pat.search(oracle_l)
+        if m is not None:
+            scoped_spans.append((m.start(), m.end()))
+            out.append(TargetRequirement(
+                zone="battlefield",
+                types=frozenset({"creature"}),
+                owner_scope=scope,
+                is_optional=_is_optional_at(oracle_l, m.start()),
+                mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
+                raw_phrase=m.group(0),
+            ))
+    for bare_creature in _CREATURE_BARE.finditer(oracle_l):
+        if (any(a <= bare_creature.start() < b for a, b in scoped_spans)
+                or _is_inside_compound(oracle_l, bare_creature.start())
+                or _is_target_creature_spell(oracle_l, bare_creature.start())):
+            continue
+        if scoped_spans and "another target creature" not in oracle_l[
+                max(0, bare_creature.start() - 8):bare_creature.end()]:
+            continue
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({"creature"}),
@@ -420,6 +564,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
                                           modal_start),
             raw_phrase=bare_creature.group(0),
         ))
+        break
 
     # ── 6. Single-type battlefield targets ──────────────────────────
     for token, pat in _SINGLE_TYPE_BATTLEFIELD:
@@ -467,7 +612,6 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=player_match.group(0),
         ))
 
-    _attach_mana_value_bound(oracle_l, out)
     return out
 
 _MV_BOUND_AFTER_RE = re.compile(
@@ -475,26 +619,27 @@ _MV_BOUND_AFTER_RE = re.compile(
     r"\s+with mana value (x|\d+) or less")
 
 
-def _attach_mana_value_bound(oracle_l: str, reqs: List[TargetRequirement]) -> None:
-    """Attach a trailing "with mana value N/X or less" clause to the
-    battlefield requirement it follows (CR 601.2c: the printed ceiling is
-    part of the target's legality). Numeric ceilings populate
-    `max_mana_value`; an X ceiling sets `max_mana_value_is_x`, bound at
-    enumeration time by the caller's affordable X."""
+def _with_mana_value_ceiling(norm: str, req: TargetRequirement,
+                             end: int) -> TargetRequirement:
+    """`req` with the trailing "with mana value N/X or less" clause that
+    follows its phrase where parse() placed it (ending at `end`; CR 601.2c:
+    the printed ceiling is part of the target's legality). Read at that
+    occurrence only -- never at the phrase's first occurrence, which can be
+    inside another requirement's longer phrase. Battlefield requirements
+    only. A numeric ceiling populates `max_mana_value`; an X ceiling sets
+    `max_mana_value_is_x`, bound at enumeration time by the caller's
+    affordable X."""
     import dataclasses as _dc
-    for n, req in enumerate(reqs):
-        if req.zone != "battlefield" or not req.raw_phrase:
-            continue
-        idx = oracle_l.find(req.raw_phrase)
-        if idx < 0:
-            continue
-        m = _MV_BOUND_AFTER_RE.match(oracle_l[idx + len(req.raw_phrase):])
-        if m is None:
-            continue
-        if m.group(1) == "x":
-            reqs[n] = _dc.replace(req, max_mana_value_is_x=True)
-        elif req.max_mana_value is None:
-            reqs[n] = _dc.replace(req, max_mana_value=int(m.group(1)))
+    if req.zone != "battlefield" or not req.raw_phrase or end < 0:
+        return req
+    m = _MV_BOUND_AFTER_RE.match(norm[end:])
+    if m is None:
+        return req
+    if m.group(1) == "x":
+        return _dc.replace(req, max_mana_value_is_x=True)
+    if req.max_mana_value is None:
+        return _dc.replace(req, max_mana_value=int(m.group(1)))
+    return req
 
 
 def _types_for_word(type_word: str) -> FrozenSet[str]:
@@ -518,13 +663,8 @@ def _is_inside_compound(oracle_l: str, idx: int) -> bool:
     phrase like "target artifact or creature" or "target creature or
     planeswalker"? Avoids double-counting bare creature when the
     compound already fired."""
-    for compound, _ in _BATTLEFIELD_COMPOUND:
-        if "creature" not in compound:
-            continue
-        c_idx = oracle_l.find(compound)
-        if c_idx < 0:
-            continue
-        if c_idx <= idx <= c_idx + len(compound):
+    for m, types, _scope in _compound_matches(oracle_l):
+        if "creature" in types and m.start() <= idx <= m.end():
             return True
     return False
 
@@ -635,6 +775,38 @@ def can_be_targeted(card: "CardInstance", source, controller: int) -> bool:
     if _blocked_by_protection(card, source):
         return False
     return True
+
+
+def slot_admits_player(req: TargetRequirement, player_idx: int,
+                       controller: int) -> bool:
+    """Does a target slot admit this player? "Any target" and "target
+    player" do (CR 115.4), within the slot's controller scope ("target
+    opponent" admits only an opponent of `controller`). One owner for the
+    check, read by the binding on resolution and the AI's aim alike."""
+    if not set(req.types) & {"any", "player"}:
+        return False
+    scope = getattr(req, "owner_scope", "any")
+    return not ((scope == "opponent" and player_idx == controller)
+                or (scope == "you" and player_idx != controller))
+
+
+def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
+                          controller: int) -> bool:
+    """Does a target slot admit this permanent by its CURRENT types (CR
+    608.2b reads them on resolution, CR 601.2c when it is chosen)? "Any
+    target" admits a creature or a planeswalker (CR 115.4); a typed slot
+    admits its own types; the slot's controller scope applies. Whether the
+    source may target it is `can_be_targeted`'s question, not this one."""
+    scope = getattr(req, "owner_scope", "any")
+    if (scope == "opponent" and card.controller == controller) or \
+            (scope == "you" and card.controller != controller):
+        return False
+    types = set(req.types)
+    if "permanent" in types:
+        return True                # every object on the battlefield is one
+    admitted = ({"creature", "planeswalker"} if "any" in types
+                else types - {"player"})
+    return bool({t.value for t in card.effective_card_types} & admitted)
 
 
 def _matches_supertype(card: "CardInstance",
@@ -768,6 +940,12 @@ def _spell_token_matches(item_source: "CardInstance",
     return False
 
 
+def spell_matches(req: TargetRequirement, spell: "CardInstance") -> bool:
+    """A spell on the stack is of a kind a stack-zone requirement names
+    ("target sorcery spell", "target creature spell")."""
+    return req.zone == "stack" and _spell_token_matches(spell, req.types)
+
+
 def has_legal_target(game: "GameState", controller: int,
                      req: TargetRequirement,
                      exclude: Optional["CardInstance"] = None,
@@ -824,6 +1002,35 @@ def has_legal_target(game: "GameState", controller: int,
     return False
 
 
+def choose_targets(game: "GameState", controller: int, req: TargetRequirement,
+                   preferred=None, key=None, hostile: bool = True,
+                   exclude: Optional["CardInstance"] = None,
+                   source: Optional["CardInstance"] = None) -> List["CardInstance"]:
+    """Up to ``req.count_max`` distinct legal targets (CR 115.3, 601.2c):
+    the chosen ids that are legal first, in order, then — to fill the count
+    — the remaining legal candidates by ``key`` (highest first; default
+    mana value). ``hostile`` leaves the controller's own permanents out of
+    the fill unless the requirement is scoped to them. The one place a
+    counted target set is chosen."""
+    candidates = enumerate_legal_targets(game, controller, req,
+                                         exclude=exclude, source=source)
+    by_id = {c.instance_id: c for c in candidates}
+    chosen: List["CardInstance"] = []
+    for tid in (preferred or []):
+        c = by_id.get(tid) if isinstance(tid, int) else None
+        if c is not None and all(c is not x for x in chosen):
+            chosen.append(c)
+    limit = max(1, req.count_max or 1)
+    if len(chosen) < limit:
+        def _ctrl(c):
+            return c.controller if c.controller is not None else c.owner
+        pool = [c for c in candidates if all(c is not x for x in chosen)
+                and (not hostile or req.owner_scope == "you" or _ctrl(c) != controller)]
+        pool.sort(key=key or (lambda c: c.template.cmc or 0), reverse=True)
+        chosen.extend(pool[:limit - len(chosen)])
+    return chosen[:limit]
+
+
 def enumerate_legal_targets(game: "GameState", controller: int,
                             req: TargetRequirement,
                             exclude: Optional["CardInstance"] = None,
@@ -875,6 +1082,39 @@ def enumerate_legal_targets(game: "GameState", controller: int,
             continue  # CR 601.2c: beyond the X the caster can pay
         out.append(card)
     return out
+
+
+def legal_slot_choices(game: "GameState", controller: int,
+                       req: TargetRequirement,
+                       source: Optional["CardInstance"] = None,
+                       ) -> Tuple[List[int], List["CardInstance"]]:
+    """(players, permanents) a target slot may name now (CR 115.4, 601.2c,
+    603.3d): the players the slot admits within its controller scope
+    (`slot_admits_player`) and the battlefield permanents it admits by
+    their current types (`slot_admits_permanent`) that `source` may target
+    (`can_be_targeted`: hexproof, protection). One owner for the choices a
+    triggered ability's target is picked from as it is put on the stack;
+    a slot in another zone keeps `enumerate_legal_targets`."""
+    players = [p for p in range(len(game.players))
+               if slot_admits_player(req, p, controller)]
+    if req.zone not in ("any", "battlefield"):
+        return players, enumerate_legal_targets(game, controller, req,
+                                                source=source)
+    permanents = []
+    for p in game.players:
+        for card in p.battlefield:
+            if not slot_admits_permanent(req, card, controller):
+                continue
+            if not can_be_targeted(card, source, controller):
+                continue
+            if not _matches_supertype(card, req.supertype) \
+                    or not _matches_subtype(card, req.subtype):
+                continue
+            if req.max_mana_value is not None and \
+                    (card.template.cmc or 0) > req.max_mana_value:
+                continue
+            permanents.append(card)
+    return players, permanents
 
 
 def has_legal_target_for_spell(game: "GameState", controller: int,
@@ -950,3 +1190,32 @@ def targeted_player(game: "GameState", controller: int,
         if idx is not None:
             return idx
     return (1 - controller) if default_opponent else None
+
+
+def pick_resolution_target(game: "GameState", controller: int,
+                           source: "CardInstance", candidates,
+                           preferred=(), key=None) -> Optional["CardInstance"]:
+    """The permanent a resolving spell or ability acts on — the one owner
+    of a handler's target choice.
+
+    CR 601.2c / 608.2b: the target chosen when it was put on the stack
+    (`preferred`) is the one it affects while still legal. When none was
+    chosen then, the pick made here is the best legal candidate (`key`,
+    highest first): never one `source` may not target (hexproof,
+    protection — `can_be_targeted`), never one whose ward its controller
+    would not get past, and it meets that ward now (CR 702.21a) — an
+    unpaid ward counters the effect, so the pick is None."""
+    legal = [c for c in candidates if can_be_targeted(c, source, controller)]
+    by_id = {c.instance_id: c for c in legal}
+    for tid in (preferred or ()):
+        if tid in by_id:
+            return by_id[tid]      # met ward when it was put on the stack
+    from ai.ward_targeting import ward_rules_out_target
+    pool = [c for c in legal
+            if not ward_rules_out_target(game, controller, source, c, mana_committed=0)]
+    if not pool:
+        return None
+    pick = max(pool, key=key) if key is not None else pool[0]
+    from .optional_costs import ward_gate
+    survives, _ = ward_gate(game, source, controller, [pick.instance_id])
+    return pick if survives else None

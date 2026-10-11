@@ -77,9 +77,20 @@ _FIELD_FOR_WORD = {
 
 _ENUM_NAMES = {k.name.lower().replace("_", " ") for k in Keyword}
 
+# Characteristic-defining abilities (CR 604.3) whose only rule MTGJSON
+# already encodes in the card's printed characteristics, mapped to the
+# `CardTemplate` field that carries them. Such a word is modelled while
+# every rule reads that field: devoid means "this object is colorless"
+# (CR 702.114a), carried by `colors`, and the colour-identity ratchet
+# (tests/test_color_is_a_characteristic_not_identity.py) pins every
+# colour read to it.
+_CHARACTERISTIC_FOR_WORD = {
+    "devoid": "colors",
+}
+
 
 def _modelled(word: str, template) -> bool:
-    if word in _ENUM_NAMES:
+    if word in _ENUM_NAMES or word in _CHARACTERISTIC_FOR_WORD:
         return True
     field = _FIELD_FOR_WORD.get(word)
     if field and getattr(template, field, None):
@@ -106,4 +117,21 @@ def census_template_keywords(template, game=None) -> list:
         if not _modelled(w, template):
             census("keyword/unmodelled", w, f"first seen on {template.name}", game=game)
             out.append(w)
+    return out
+
+
+def census_unhandled_effects(game=None) -> list:
+    """Fold the process-level unhandled-effect sink into the audit census.
+
+    Every effect that resolved through no handler — recorded in
+    `engine.effect_diagnostics` at its resolution seam — becomes an
+    `unhandled/<timing>` coverage fact (once per (timing, card) process-wide,
+    via `census`'s dedupe), so a full audited matrix ranks silent no-ops by
+    frequency alongside the keyword census. Pure observation; returns the
+    (timing, card) pairs recorded."""
+    from . import effect_diagnostics
+    out = []
+    for card_name, timing in effect_diagnostics.unhandled_effects():
+        census(f"unhandled/{timing}", card_name, game=game)
+        out.append((timing, card_name))
     return out

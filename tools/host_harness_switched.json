@@ -1,0 +1,3322 @@
+{
+ "boards": [
+  "empty",
+  "opponent_creatures",
+  "own_creatures",
+  "lands",
+  "stack",
+  "graveyards"
+ ],
+ "description": "Switched (handler, card, host) pairs: `pairs` proven harness-identical -- the switched carrier against its legacy apply on every board and seed, the dispatcher entered -- and `intended`, the pairs whose new path differs from the legacy apply on purpose, each with its reason (a behaviour-change commit). tools/host_resolution_equivalence.py --switched --pool --record writes `pairs` and keeps `intended`; design doc 2026-09-29, section 10, A38. Gate parity holds every pair on the new path to this record.",
+ "intended": [
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Blood Fountain",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Buried Ruin",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Charforger",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Coastal Bulwark",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Codex Shredder",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Colossal Skyturtle",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Cori Mountain Monastery",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Corpse Hauler",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Dark-Dweller Oracle",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Dawnhand Dissident",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Diversion Specialist",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Doom Whisperer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Draugr Recruiter",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Emergent Haunting",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Fields of Strife",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Font of Return",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Forum of Amity",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Geistflame Reservoir",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Glarb, Calamity's Augur",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Golgari Guildmage",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Grim Bauble",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "House Guildmage",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Kishla Village",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Larder Zombie",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Lilypad Village",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Lunatic Pandora",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Memorial to Folly",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Meria, Scholar of Antiquity",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Mind Drill Assailant",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Mystic Forge",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Nyx Weaver",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Ominous Asylum",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Paradox Gardens",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Precognition Field",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Professional Face-Breaker",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Rona, Disciple of Gix",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Rune-Sealed Wall",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Salvage Scout",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Sanguine Spy",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Savage Mansion",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Sinister Hideout",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Sinister Starfish",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Snowslope Hunter",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Soul Stair Expedition",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Soul of Innistrad",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Soul of Innistrad",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Spectacle Summit",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Suburban Sanctuary",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Surveillance Phantasm",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "The Underworld Cookbook",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Titan's Grave",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Tocasia's Dig Site",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Trading Post",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Tuskeri Firewalker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Umbral Collar Zealot",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Undertaker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "University Campus",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Wretched Doll",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Yggdrasil, Rebirth Engine",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Zahur, Glory's Past",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Zuko, Exiled Prince",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Barbed Servitor",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Beast, Erudite Aerialist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Bilbo, Retired Burglar",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Treasure token through the token owner (CR 111.10), as the legacy substring path did on 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Eager Trufflesnout",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Frostbite Pyromental",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed two cards; legacy's substring 'draw a card' never matched 'draw two cards', and it drew none. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Gateway Sneak",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Grotag Night-Runner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Hoard Robber",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Treasure token through the token owner (CR 111.10), as the legacy substring path did on 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Illvoi Infiltrator",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Jeskai Shrinekeeper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller gains the printed 1 life and draws; legacy drew on the substring 'draw a card' and skipped the life gain. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Jhessian Thief",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Mischievous Catgeist // Catlike Curiosity",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Nimble Brigand",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Oakhame Adversary",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Oroku Saki, Shredder Rising",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Prophetic Flamespeaker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Psychic Frog",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Ragavan, Nimble Pilferer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the Treasure, the exile of the damaged player's top card into their exile (CR 400.3) and the cast permission are the same; the zone funnel logs the exile, and legacy's own two log lines are gone. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Scream Puff",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Scroll Thief",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Sea-Dasher Octopus",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Silent Submersible",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Snooping Page",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Soulknife Spy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Stealer of Secrets",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Stromkirk Occultist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Sturmgeist",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Sure-Footed Infiltrator",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Act on Impulse",
+    "SPELL:0:0"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Alchemist's Greeting",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Artillerize",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Auroral Procession",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bala Ged Recovery // Bala Ged Sanctuary",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bathe in Dragonfire",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bituminous Blast",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bombard",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Boulder Salvo",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Collateral Damage",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Command the Storm",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cut // Ribbons",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dead // Gone",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dead Revels",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Demon Bolt",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Devour in Flames",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Disentomb",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dryad's Revival",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dutiful Return",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Electrify",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Electro's Bolt",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Engulfing Eruption",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Enter the Avatar State",
+    "SPELL:0:0"
+   ],
+   "reason": "A type change on a chosen object (unit AT): the target becomes the printed type or subtype in addition to its other types, and gains the printed keywords / P/T, until end of turn, through the layer system's one-shot effects on that object only (CR 205.1b, 611.2c, 613.1d/f, 514.2); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Explosive Singularity",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Conclusion",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Fall",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the legacy per-ability fallback misread the spell (it put the spell onto the battlefield, and with no creature target dealt its damage to the opponent's face); the dispatcher deals the parsed damage to the chosen creature and nothing else."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Finish",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fight On!",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Final Flare",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Find // Finality",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Flame Slash",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ghostfire Slice",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Goblin Grenade",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Grim Harvest",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Hammer of Bogardan",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Heartfire",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Heated Debate",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Hex Magic",
+    "SPELL:0:0"
+   ],
+   "reason": "Exile your hand, draw that many (unit HX): every card in the controller's hand goes to exile through the zone funnel, the controller draws as many cards as were exiled (CR 608.2c: the earlier instruction's result), and may play the cards exiled this way until the end of their next turn (CR 406, 601.2a); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Improvised Club",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Inescapable Blaze",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Inferno Trap",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Jump Scare",
+    "SPELL:0:0"
+   ],
+   "reason": "A type change on a chosen object (unit AT): the target becomes the printed type or subtype in addition to its other types, and gains the printed keywords / P/T, until end of turn, through the layer system's one-shot effects on that object only (CR 205.1b, 611.2c, 613.1d/f, 514.2); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Life from the Loam",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Light 'Em Up",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Light Up the Stage",
+    "SPELL:0:1"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Lightning Axe",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Macabre Reconstruction",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Magma Rift",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Magmatic Sinkhole",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Magnificent End",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "March of the Returned",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Midnight Recovery",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Mine Collapse",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Molten Exhale",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Moonrager's Slash",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Morbid Plunder",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Nature's Spiral",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Photon Blast Barrage",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Processor Assault",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pumpkin Bombardment",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Puncture Blast",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pyromatics",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ragefire",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Raise Dead",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reality Hemorrhage",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reckless Impulse",
+    "SPELL:0:0"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Recollect",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Regenesis",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Regrowth",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reiterating Bolt",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rekindled Flame",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Repeating Barrage",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ritual of Restoration",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rob the Archives",
+    "SPELL:0:1"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sanguine Indulgence",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Scorching Shot",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sear",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shard Volley",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shivan Meteor",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shrapnel Blast",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Skewer the Critics",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Soul Salvage",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Soulless Revival",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Spit Flame",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Squash",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Stoke the Flames",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Strangle",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sudden Shock",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Surging Flame",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Suspicious Detonation",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thundering Rebuke",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Torrent of Stone",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Tribal Flames",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the legacy per-ability fallback resolved nothing; the dispatcher deals the parsed amount (domain: basic land types among lands you control)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Truck Toss",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Unholy Heat",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Unmake the Graves",
+    "SPELL:0:1"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wander in Death",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wildwood Rebirth",
+    "SPELL:0:0"
+   ],
+   "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Witchstalker Frenzy",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wizard's Lightning",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wrath of the Bloodmane",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wrenn's Resolve",
+    "SPELL:0:0"
+   ],
+   "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Fate Unraveler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Gixian Puppeteer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Horizon Chimera",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Irencrag Pyromancer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Kang, Temporal Tyrant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Mindless Conscription",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Niv-Mizzet, Parun",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Niv-Mizzet, the Firemind",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Ob Nixilis, the Hate-Twisted",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Orcish Bowmasters",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Psychosis Crawler",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Queza, Augur of Agonies",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Raven Eagle",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Scrawling Crawler",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Sheoldred, the Apocalypse",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Sheoldred, the Apocalypse",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Spiteful Visions",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Exile ~, then return ~ transformed (unit TF): on the third card its controller draws in a turn, the permanent leaves the battlefield through the zone funnel and the card its own exile moved returns under its owner's control with its back face up, a new object entering with its back face's loyalty (CR 400.7, 712, 306.5b); legacy resolved nothing for this draw trigger."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Underworld Dreams",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Zimone and Dina",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "A.I.M. Synthoids",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Abbot of Keral Keep",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Alania's Pathmaker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Along the Crooked Way",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Anarchist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Auramancer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Baloth Null",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Barrier of Bones",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Broodspinner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cadaver Imp",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cephalid Inkmage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Commercial District",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Conduit Pylons",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Crimson Operative",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Daring Archaeologist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dimir Informant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Disciple of the Sun",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elegant Parlor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elvish Regrower",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Equilibrium Adept",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Eternal Witness",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Exhumer Thrull",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Experimental Synthesizer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Faerie Dreamthief",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Foraging Wickermaw",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Foul Watcher",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gloomshrieker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Golgari Findbroker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gravedigger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Graveshifter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Greenwarden of Murasa",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Griffin Dreamfinder",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gundabad Opportunist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hedge Maze",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hidden Grotto",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Honest Rutstein",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hugs, Grisly Guardian",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Imperious Inkmage",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Interdimensional Web Watch",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Irascible Wolverine",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kulrath Zealot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lazav, the Multifarious",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Leonin Squire",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lightshell Duo",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Loran, Disciple of History",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lotus-Eye Mystics",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lush Portico",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lys Alana Informant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Master of Death",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Meticulous Archive",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Midnight Scavengers // Chittering Host",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Naga Oracle",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Nightblade Brigade",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Nimraiser Paladin",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Omen of the Dead",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Owlin Historian",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pillardrop Rescuer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Proctor of Potential",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Raucous Theater",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rubblebelt Maverick",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sanctum Gargoyle",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sanitation Automaton",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Search the City",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Semester Foreseer // Peer Review",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Shadowy Backstreet",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Shore Lurker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sibsig Muckdraggers",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Starbreach Whale",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sterling Hound",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Stoic Builder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Surveillance Room",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Textbook Tabulator",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thawbringer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thundering Falls",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tilling Treefolk",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Timeless Witness",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Treasure Hunter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trusty Packbeast",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Twilight Diviner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ultimecia, Time Sorceress // Ultimecia, Omnipotent",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Undercity Sewers",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Underground Mortuary",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Valkyrie Aerial Unit",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Vampire Soulcaller",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wary Thespian",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wary Watchdog",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Watcher in the Mist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Whisper Agent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wreckage Wickerfolk",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wurmwall Sweeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  }
+ ],
+ "pairs": [
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Aetherflux Reservoir",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Aladdin's Ring",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Anaba Shaman",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Apocalypse Hydra",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Arc-Slogger",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ballista Watcher // Ballista Wielder",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Barbarian Ring",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Barrage Ogre",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Barrage of Expendables",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blasting Station",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blazing Hellhound",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blighted Gorge",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blood Rites",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Bolrac-Clan Crusher",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Bullseye, Death Dealer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Crackleburr",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Crackling Triton",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Cunning Sparkmage",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Deathbringer Thoctar",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Dynavolt Tower",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Elaborate Firecannon",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ember Hauler",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Endbringer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Explosive Apparatus",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fallen Ferromancer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fanatical Firebrand",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fire Whip",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fireforger's Puzzleknot",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Firemind's Research",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Five-Alarm Fire",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Flamekin Spitfire",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fledgling Mawcor",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Frostwielder",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Gelectrode",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ghirapur Aether Grid",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Goblin Bombardment",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Granite Shard",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Grim Lavamancer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Hagi Mob",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Hatchet Bully",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "High Noon",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Hurler Cyclops",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Icatian Javelineers",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Inferno Fist",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ion Storm",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Jolene, Plundering Pugilist",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Kamahl, Pit Fighter",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Keldon Megaliths",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Kumano, Master Yamabushi",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Lightning Crafter",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Lightning Spear",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Living Twister",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Loot, the Pathfinder",
+   "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Magmaw",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Makeshift Munitions",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Mogg Fanatic",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Molten Vortex",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Molten-Tail Masticore",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Monoskelion",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Moonglove Extract",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Nightfire Giant",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Olivia's Attendants",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Orcish Bloodpainter",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Orcish Vandal",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Pirate Ship",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Prodigal Pyromancer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Prodigal Sorcerer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Pyrite Spellbomb",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Realm-Scorcher Hellkite",
+   "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Retributive Wand",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Rod of Ruin",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Scaldkin",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Seal of Fire",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Seismic Assault",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Shivan Hellkite",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Shock Troops",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Siege-Gang Commander",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Skirsdag Cultist",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Skoa, Embermage",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Slag Strider",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Spawn-Gang Commander",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Springjaw Trap",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Staff of Nin",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Stone-Giant of High Pass",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Stormbind",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Tar Pitcher",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "The Filigree Sylex",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Triskelion",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Twinshot Sniper",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Unyaro Bees",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Valakut Invoker",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Vengeful Devil",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Viashino Fangtail",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Vithian Stinger",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Vulshok Sorcerer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Walking Ballista",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Weaponize the Monsters",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Weather Maker",
+   "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Auriok Salvagers",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Dowsing Shaman",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Jessica Jones, Private Eye",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Liquimetal Coating",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Liquimetal Torque",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Marwyn, the Preserver",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Memorial Vault",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Myr Landshaper",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Neurok Transmuter",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Skull of Orm",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Stegron the Dinosaur Man",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Tragic Poet",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "direct_damage",
+   "Assault // Battery",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Burn Trail",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Channeled Dragonfire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Direct Current",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Explosive Impact",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Fiery Temper",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Firebolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Fires of Undeath",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Flame Jab",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Flame Javelin",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Flame Lash",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Galvanic Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Geistflame",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Glacial Ray",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Grapeshot",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Gut Shot",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Hornet Sting",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lava Dart",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lightning Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lightning Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lightning Strike",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Open Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Precision Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Rift Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Searing Spear",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Searing Wind",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Shock",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Staggershock",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Tarfire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Thunderblade Charge",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Thunderous Wrath",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Tome Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Unfriendly Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Volcanic Hammer",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Assault // Battery",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Burn Trail",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Channeled Dragonfire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Commune with Lava",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Direct Current",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Explosive Impact",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Fiery Temper",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Firebolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Fires of Undeath",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Flame Jab",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Flame Javelin",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Flame Lash",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Galvanic Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Geistflame",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Glacial Ray",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Grapeshot",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Gut Shot",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Hornet Sting",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lava Dart",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lightning Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lightning Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lightning Strike",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Open Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Precision Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Rift Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Searing Spear",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Searing Wind",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Shock",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Staggershock",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Tarfire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Thunderblade Charge",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Thunderous Wrath",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Tome Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Unfriendly Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Volcanic Hammer",
+   "SPELL:0:0"
+  ]
+ ],
+ "seeds": [
+  0,
+  1
+ ]
+}

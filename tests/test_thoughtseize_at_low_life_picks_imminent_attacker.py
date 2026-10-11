@@ -256,7 +256,12 @@ class TestGrindLifeFallsBackToStaticScore:
         # caster-perspective snapshot the real discard path builds
         # (ai/discard_advisor.py: caster_idx = 1 - victim_idx).
         snap = snapshot_from_game(game, caster_idx)
-        scores = [(score_card_for_opponent_strip(c, snap), c) for c in hand]
+        # ... and the victim's gameplan the real path passes (its declared
+        # keystones weigh every card type).
+        from ai.gameplan import get_gameplan
+        victim_plan = get_gameplan(game.players[victim_idx].deck_name)
+        scores = [(score_card_for_opponent_strip(c, snap, victim_plan), c)
+                  for c in hand]
         scores.sort(key=lambda kv: -kv[0])
         expected_static_pick = scores[0][1].name
 

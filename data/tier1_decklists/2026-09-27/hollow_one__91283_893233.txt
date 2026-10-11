@@ -1,0 +1,30 @@
+// Hollow One — mtgtop8 event=91283 deck=893233
+4 Bloodstained Mire
+1 Elegant Parlor
+5 Mountain
+3 Sacred Foundry
+4 Wooded Foothills
+4 Blazing Rootwalla
+4 Detective's Phoenix
+4 Hardened Academic
+4 Hollow One
+4 Marauding Mako
+1 Oliphaunt
+1 Ox of Agonas
+4 Street Wraith
+4 Vengevine
+4 Burning Inquiry
+2 Enter the Avatar State
+4 Faithless Looting
+1 Lorehold Charm
+2 Practiced Offense
+
+Sideboard
+2 Curse of Shaken Faith
+2 Faerie Macabre
+1 Fire Magic
+2 Prismatic Ending
+2 Rough / Tumble
+2 Thraben Charm
+2 Vexing Bauble
+2 Wear / Tear

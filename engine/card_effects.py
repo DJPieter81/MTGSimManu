@@ -214,12 +214,12 @@ def solitude_etb(game, card, controller, targets=None, item=None):
     # target creature. That creature's controller gains life equal to its power."
     # Key rules: targets opponent's creature, gives THEM life equal to power.
     opponent = 1 - controller
-    opp_creatures = legal_targets(game, controller, card,
-                                  game.players[opponent].creatures)
-    if not opp_creatures:
-        return  # No legal targets — the ETB does nothing
-    # Pick the most threatening creature (highest power, then CMC)
-    target = max(opp_creatures, key=_threat_score)
+    from .target_solver import pick_resolution_target
+    target = pick_resolution_target(game, controller, card,
+                                    game.players[opponent].creatures,
+                                    preferred=targets, key=_threat_score)
+    if target is None:
+        return  # No legal target (or its ward countered the trigger)
     life_gain = target.power or 0
     game._exile_permanent(target)
     game.players[opponent].life += life_gain
@@ -417,30 +417,12 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 # Lightning Bolt (N=3) and Lava Dart (N=1) were the two registered pure
 # fixed-N handlers; both are DELETED here, verified redundant with the typed
 # path first (tests/test_direct_damage_shared_resolver.py::
-# TestRegisteredBurnHandlersRetired). Unholy Heat (delirium-scaled amount)
-# and Grapeshot (storm-copied) keep their handlers — a derived/conditional
-# amount is a different mechanic the typed field deliberately does not carry.
-# See docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the full
-# cluster research — which cards were included/excluded and why.
-
-
-@EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 2 (or 6 with delirium) damage")
-def unholy_heat_resolve(game, card, controller, targets=None, item=None):
-    # The only real per-card quirk in this cluster: the printed amount
-    # is conditional on delirium (CR-style card-specific AMOUNT
-    # computation, not a target-resolution difference) — this stays
-    # here; only the target application delegates to the shared
-    # resolver.
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    gy = game.players[controller].graveyard
-    types_in_gy = set()
-    for c in gy:
-        for ct in c.template.card_types:
-            types_in_gy.add(ct)
-    delirium = len(types_in_gy) >= 4
-    damage = 6 if delirium else 2
-    resolve_damage_to_chosen_target(game, card, controller, damage, targets)
+# TestRegisteredBurnHandlersRetired). Unholy Heat (a printed "instead"
+# upgrade under a graveyard condition), Grapeshot (storm-copied) and Tribal
+# Flames (domain-scaled) followed in E1.b2 (design doc 2026-09-29): their
+# parsed spell hosts resolve through the effect dispatcher's damage family
+# (`clause_resolver` "direct_damage" / "dispatched"). See
+# docs/design/rules-foundation-sweep-tracker.md for the cluster history.
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
@@ -491,46 +473,13 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
     if nonlegendary_creatures:
         best = max(nonlegendary_creatures,
                    key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
-        lib.remove(best)
-        best.zone = "graveyard"
-        game.players[controller].graveyard.append(best)
+        game.zone_mgr.move_card(game, best, "library", "graveyard")
         game.rng.shuffle(lib)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Unmarked Grave puts {best.name} in graveyard")
     else:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Unmarked Grave finds nothing (no nonlegendary creatures)")
-
-
-@EFFECT_REGISTRY.register("Grapeshot", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 1 damage to any target")
-def grapeshot_resolve(game, card, controller, targets=None, item=None):
-    # Grapeshot deals 1 damage (base effect) to its declared "any
-    # target". Storm copies are handled by _handle_storm, which calls
-    # this again for each copy, re-declaring the same `item.targets`
-    # (correct: CR 706.10c — Storm copies keep the original targets
-    # unless the caster is offered new ones, which this engine does
-    # not yet model).
-    #
-    # Pre-migration bug: this handler ignored `targets` entirely and
-    # always mutated `opponent.life` directly, bypassing
-    # `engine.damage.deal_damage` — real damage-application drift from
-    # the shared funnel (see
-    # tests/test_burn_damage_shared_resolver.py::TestGrapeshotRespectsDeclaredTarget).
-    # The live AI always casts Grapeshot with `targets=[-1]`
-    # (ai/ev_player.py's storm-finisher target policy), so this fix
-    # does not change any current sim outcome — it just makes the
-    # engine correct for any other caller of a "deal N damage to any
-    # target" storm spell.
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    hit = resolve_damage_to_chosen_target(game, card, controller, 1, targets)
-    if hit is not None:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Grapeshot deals 1 damage to {hit.name}")
-    else:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Grapeshot deals 1 damage"
-                        f" (opponent life: {game.players[1 - controller].life})")
 
 
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,
@@ -988,22 +937,6 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
             player.library.append(c)
 
 
-@EFFECT_REGISTRY.register("Orim's Chant", EffectTiming.SPELL_RESOLVE,
-                           description="Target player can't cast spells this turn")
-def orims_chant_resolve(game, card, controller, targets=None, item=None):
-    # Oracle: "Kicker {W}. Target player can't cast spells this turn. If this
-    # spell was kicked, creatures can't attack this turn." The sim does not
-    # model kicker payments, so every cast resolves as the base (unkicked)
-    # variant — scope is "this turn", never a carryover to the opponent's
-    # next turn. Cast on own main phase → opp is silenced for the remainder
-    # of the current turn (narrow: blocks end-of-turn instants). Cast during
-    # opp's turn (flash/Scepter) → silences their ongoing turn.
-    opponent = 1 - controller
-    game.players[opponent].silenced_this_turn = True
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Orim's Chant silences P{opponent+1} this turn")
-
-
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,
                            description="Target creature gets +2/+2, pay 2 life")
 def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
@@ -1076,24 +1009,6 @@ def expressive_iteration_resolve(game, card, controller, targets=None, item=None
 # Preordain handler removed — oracle_resolver.resolve_spell_from_oracle
 # now matches "draw a card" and fires the draw. Scry portion is approximated
 # as no-op (AI doesn't model deck order).
-
-
-@EFFECT_REGISTRY.register("Tribal Flames", EffectTiming.SPELL_RESOLVE,
-                           description="Deal damage equal to domain (basic land types)")
-def tribal_flames_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    player = game.players[controller]
-    land_types = set()
-    for c in player.battlefield:
-        if c.template.is_land:
-            for st in c.template.subtypes:
-                if st in ("Plains", "Island", "Swamp", "Mountain", "Forest"):
-                    land_types.add(st)
-    damage = min(len(land_types), 5)
-    if damage < 2:
-        damage = 2
-    game.players[opponent].life -= damage
-    game.players[controller].damage_dealt_this_turn += damage
 
 
 @EFFECT_REGISTRY.register("Wish", EffectTiming.SPELL_RESOLVE,
@@ -1297,9 +1212,7 @@ def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
     candidates.sort(key=_gifts_priority)
     found = candidates[:2]
     for card_found in found:
-        lib.remove(card_found)
-        card_found.zone = "graveyard"
-        game.players[controller].graveyard.append(card_found)
+        game.zone_mgr.move_card(game, card_found, "library", "graveyard")
     game.rng.shuffle(lib)
     if found:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -1310,28 +1223,9 @@ def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
 # Missing Card Effects — Artifact/Enchantment Interaction
 # ═══════════════════════════════════════════════════════════════════
 
-@EFFECT_REGISTRY.register("Force of Vigor", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy up to 2 artifacts/enchantments")
-def force_of_vigor_resolve(game, card, controller, targets=None, item=None):
-    from .cards import CardType
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Find artifacts and enchantments on opponent's board
-    valid_targets = [c for c in opp.battlefield
-                     if not c.template.is_land and
-                     (CardType.ARTIFACT in c.template.card_types or
-                      CardType.ENCHANTMENT in c.template.card_types)]
-    # Destroy up to 2, prioritizing highest value
-    valid_targets.sort(key=lambda c: c.template.cmc, reverse=True)
-    destroyed = 0
-    for target in valid_targets[:2]:
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Force of Vigor destroys {target.name}")
-        destroyed += 1
-    if destroyed == 0:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Force of Vigor: no valid targets")
+# Force of Vigor's "destroy up to two target artifacts and/or enchantments"
+# resolves through the typed counted-removal path (targeted_removal_data
+# count=2, clause_resolver) — its card-name handler was deleted (S5).
 
 
 @EFFECT_REGISTRY.register("Wear // Tear", EffectTiming.SPELL_RESOLVE,
@@ -1342,10 +1236,13 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     opp = game.players[opponent]
     destroyed = 0
     # Wear: destroy best artifact
+    from .target_solver import pick_resolution_target
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
-    if artifacts:
-        target = max(artifacts, key=lambda c: _threat_score(c, game, opp))
+    target = pick_resolution_target(game, controller, card, artifacts,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1354,8 +1251,10 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     enchantments = [c for c in opp.battlefield
                     if CardType.ENCHANTMENT in c.template.card_types
                     and not c.template.is_creature]
-    if enchantments:
-        target = max(enchantments, key=lambda c: _threat_score(c, game, opp))
+    target = pick_resolution_target(game, controller, card, enchantments,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1403,6 +1302,7 @@ def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Meltdown", EffectTiming.SPELL_RESOLVE,
                            description="Destroy all artifacts with MV <= X")
 def meltdown_resolve(game, card, controller, targets=None, item=None):
+    # single-owner-allow: not a target pick — destroys EACH artifact with mana value X or less
     from .cards import CardType
     # X = mana spent beyond R (cmc - 1)
     player = game.players[controller]
@@ -1444,16 +1344,21 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
     opp = game.players[opponent]
 
     # Mode selection: destroy artifact if available, else deal 2 damage
+    from .target_solver import pick_resolution_target
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
-    if artifacts:
-        target = max(artifacts, key=lambda c: _threat_score(c, game, opp))
+    target = pick_resolution_target(game, controller, card, artifacts,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command destroys {target.name}")
     else:
-        # Deal 2 damage to opponent
-        opp.life -= 2
+        # Deal 2 damage to opponent (through the damage owner: prevention,
+        # redirection and life loss live there).
+        from .damage import deal_damage
+        deal_damage(card, opp, 2)
         game.players[controller].damage_dealt_this_turn += 2
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command deals 2 to opponent")
@@ -1547,6 +1452,7 @@ def _resolve_nonland_permanent_removal(
         owner_scope="opponent",
         mv_max_fn=None,
         log_verb="destroys",
+        count=1,
 ):
     """Generic resolver for the destroy/exile-target-permanent cluster
     (see module comment above). Every card in the cluster shares this
@@ -1588,7 +1494,7 @@ def _resolve_nonland_permanent_removal(
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"{card.name} {log_verb} {target.name}")
 
-    if targets:
+    if targets and count <= 1:
         # A target was already chosen (cast time / trigger-target
         # selection) — honor it rather than re-deriving a fresh pick.
         for tid in targets:
@@ -1600,6 +1506,31 @@ def _resolve_nonland_permanent_removal(
             _apply(target)
             return
         return  # every chosen id was illegal at resolution — no effect
+
+    if count > 1:
+        # A counted target (CR 115.1): up to `count` distinct legal
+        # objects through the one chooser; each still-legal one is
+        # affected (CR 608.2b).
+        from . import target_solver
+        req = target_solver.TargetRequirement(
+            zone="battlefield", types=frozenset(types), owner_scope=owner_scope,
+            count_min=0, count_max=count)
+        opp_battlefield = game.players[1 - controller].battlefield
+        chosen = target_solver.choose_targets(
+            game, controller, req, preferred=targets,
+            key=lambda c: _nonland_permanent_threat(c, opp_battlefield))
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            # CR 115.3: one object is not chosen twice for one target word,
+            # and no more objects than the count.
+            _audit_check("115.3/distinct_targets",
+                         len({c.instance_id for c in chosen}) == len(chosen)
+                         and len(chosen) <= count,
+                         f"{card.name} chose {len(chosen)} target(s)", game=game)
+        for target in chosen:
+            if _meets_condition(target):
+                _apply(target)
+        return
 
     # No pre-chosen target (dies-trigger fan-out, blink/reanimation
     # re-entry via zone_transfer._fire_etb_triggers, or a synthetic
@@ -1742,9 +1673,7 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
     if sac_targets:
         # Sacrifice the least valuable
         target = min(sac_targets, key=lambda c: (c.template.cmc, c.power or 0))
-        opp.battlefield.remove(target)
-        target.zone = "graveyard"
-        game.players[target.owner].graveyard.append(target)
+        game.zone_mgr.move_card(game, target, "battlefield", "graveyard")
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Archon of Cruelty: P{opponent+1} sacrifices {target.name}")
 
@@ -1783,6 +1712,7 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Arboreal Grazer", EffectTiming.ETB,
                            description="Put a land from hand onto the battlefield tapped")
 def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
+    # single-owner-allow: not a target pick — puts a land from its controller's own hand
     """Arboreal Grazer: ETB put a land from hand onto battlefield tapped."""
     player = game.players[controller]
     lands_in_hand = [c for c in player.hand if c.template.is_land]
@@ -1817,6 +1747,7 @@ def primeval_titan_etb(game, card, controller, targets=None, item=None):
 
 
 def _primeval_titan_search(game, controller):
+    # single-owner-allow: not a target pick — searches its controller's own library
     """Shared logic for Primeval Titan ETB and attack trigger."""
     player = game.players[controller]
     lands_in_library = [c for c in player.library if c.template.is_land]
@@ -1948,7 +1879,7 @@ def sanctifier_en_vec_etb(game, card, controller, targets=None, item=None):
     exiled = 0
     for p in game.players:
         to_exile = [c for c in p.graveyard
-                    if any(col.value in ('B', 'R') for col in c.template.color_identity)]
+                    if any(col.value in ('B', 'R') for col in c.colors)]
         for c in to_exile:
             p.graveyard.remove(c)
             c.zone = "exile"
@@ -1988,16 +1919,16 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
             if stack_item.source.instance_id != tid:
                 continue
             from engine.game_state import StackItemType
-            tmpl = stack_item.source.template
             is_triggered = stack_item.item_type == StackItemType.TRIGGERED_ABILITY
             # "Counter target triggered ability OR colorless spell": a
             # triggered ability is counterable regardless of its source's
-            # color (the ability is not a spell and has no color identity of
-            # its own); a SPELL must be colorless.
-            if not is_triggered and tmpl.color_identity:
+            # colour (the ability is not a spell); a SPELL must have no
+            # colour (CR 105.2) -- devoid, or an artifact whose abilities
+            # print coloured mana, is colorless.
+            if not is_triggered and stack_item.source.colors:
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
-                    f"Consign to Memory fizzles (spell has color identity)")
+                    f"Consign to Memory fizzles (spell is colored)")
                 continue
             countered = game.stack.items.pop(i)
             if is_triggered:
@@ -2007,9 +1938,13 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
                     f"T{game.display_turn} P{controller+1}: Consign to Memory "
                     f"counters {countered.source.name}'s triggered ability")
             else:
+                # The stack exit's owner: a countered flashback spell is
+                # exiled (CR 702.34a), a copy ceases to exist (CR 707.10a),
+                # a graveyard-to-exile static applies (CR 614.6).
+                from .spell_resolution import ResolutionManager
                 countered_card = countered.source
-                countered_card.zone = "graveyard"
-                game.players[countered_card.owner].graveyard.append(countered_card)
+                ResolutionManager._move_countered_stack_item(
+                    game, countered, countered_card)
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
                     f"Consign to Memory counters {countered_card.name}")
@@ -2017,9 +1952,11 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
 
 
 @EFFECT_REGISTRY.register("Orcish Bowmasters", EffectTiming.ETB,
-                           description="Deal 1 damage to any target, create Orc Army token")
+                           description="Deal 1 damage to any target, then amass Orcs 1")
 def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
-    """Orcish Bowmasters: ETB deal 1 damage + create 1/1 Orc Army token."""
+    """Orcish Bowmasters' enter trigger: deal 1 damage, then amass Orcs 1.
+    Its draw trigger (the same printed ability) resolves through the draw
+    carrier from the card's text."""
     opponent = 1 - controller
     opp = game.players[opponent]
 
@@ -2045,42 +1982,9 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Bowmasters deals 1 damage to opponent (life: {opp.life})")
 
-    # amass Orcs 1 (CR 701.44a): put a +1/+1 counter on an Army you
-    # control; create a new Orc Army token only if you control none.
-    # An existing Army is identified by its "Army" subtype (mechanic-
-    # based, no token-name check), so the Army grows 1/1 -> 2/2 -> 3/3
-    # across repeated amass rather than spawning parallel 1/1 bodies.
-    existing_army = next(
-        (c for c in game.players[controller].creatures
-         if "Army" in (c.template.subtypes or [])),
-        None)
-    if existing_army is not None:
-        existing_army.add_plus_counters(1, game)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: amass Orcs 1 — "
-            f"Orc Army grows to {existing_army.power}/{existing_army.toughness}")
-    else:
-        from .cards import CardTemplate, CardType, ManaCost
-        token_template = CardTemplate(
-            name="Orc Army",
-            card_types=[CardType.CREATURE],
-            mana_cost=ManaCost(0, 0, 0, 0, 0, 0),
-            power=1,
-            toughness=1,
-            subtypes=["Army"],
-            tags={"creature", "token"},
-        )
-        from .cards import CardInstance
-        token = CardInstance(
-            template=token_template, owner=controller,
-            controller=controller, instance_id=game.next_instance_id(),
-        )
-        token.is_token = True
-        token._game_state = game
-        token.enter_battlefield()
-        game.players[controller].battlefield.append(token)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"amass Orcs 1 — creates a 1/1 Orc Army token")
+    # Then amass Orcs 1 (CR 701.47a), through the one owner: a 0/0 Orc
+    # Army token if none is controlled, then a +1/+1 counter on the Army.
+    game.amass(controller, 1, "orc")
 
 
 @EFFECT_REGISTRY.register("Psychic Frog", EffectTiming.ETB,
@@ -2236,7 +2140,7 @@ def summoners_pact_resolve(game, card, controller, targets=None, item=None):
     candidates = [
         c for c in player.library
         if c.template.is_creature
-        and Color.GREEN in c.template.color_identity
+        and Color.GREEN in c.colors
     ]
     if candidates:
         best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
@@ -2487,10 +2391,8 @@ def emry_etb(game, card, controller, targets=None, item=None):
     """Emry ETB: mill 4 cards into graveyard."""
     player = game.players[controller]
     milled = []
-    for _ in range(min(4, len(player.library))):
-        c = player.library.pop(0)
-        c.zone = "graveyard"
-        player.graveyard.append(c)
+    for c in player.library[:4]:
+        game.zone_mgr.move_card(game, c, "library", "graveyard")
         milled.append(c.name)
     if milled:
         game.log.append(
@@ -2612,11 +2514,15 @@ def celestial_purge_resolve(game, card, controller, targets=None, item=None):
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
 
+    # A permanent's colour (CR 105.2), layer 5 included: a land or an
+    # artifact whose abilities print {B} or {R} is colorless.
     red_black = [c for c in opp.battlefield
-                 if not c.template.is_land
-                 and any(col.value in ('R', 'B') for col in c.template.color_identity)]
-    if red_black:
-        target = max(red_black, key=lambda c: _threat_score(c, game, opp))
+                 if any(col.value in ('R', 'B') for col in c.colors)]
+    from .target_solver import pick_resolution_target
+    target = pick_resolution_target(game, controller, card, red_black,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._exile_permanent(target)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
@@ -2785,22 +2691,28 @@ def phelia_attack(game, card, controller, targets=None, item=None):
         target = max(own_etb, key=lambda c: _threat_score(c))
         target_owner = controller
     elif opp_nonlands:
-        # Tempo: exile opponent's best nonland (it returns at end step)
-        target = max(opp_nonlands,
-                     key=lambda c: _threat_score(c, game, opp))
-        target_owner = opp_idx
+        # Tempo: exile the opponent's nonland whose exile until the end
+        # step removes the most (ai.temporary_exile: a planeswalker returns
+        # at printed loyalty and the attack on it is lost). "Up to one":
+        # a target whose exile removes nothing (share 0) is never chosen.
+        from ai.temporary_exile import temporary_exile_share
+        shared = [(c, temporary_exile_share(c, game, controller))
+                  for c in opp_nonlands]
+        shared = [cs for cs in shared if cs[1] > 0]
+        if shared:
+            target = max(shared,
+                         key=lambda cs: _threat_score(cs[0], game, opp) * cs[1])[0]
+            target_owner = opp_idx
 
     if target is None:
         return
 
-    # Exile the target
+    # Exile the target through the zone funnel (CR 400.7: it leaves as
+    # this object — counters, damage and attachments do not come back).
     owner_player = game.players[target_owner]
     if target in owner_player.battlefield:
-        owner_player.battlefield.remove(target)
-        if target.template.is_creature and target in owner_player.creatures:
-            owner_player.creatures.remove(target)
-        target.zone = "exile"
-        owner_player.exile.append(target)
+        game.zone_mgr.move_card(game, target, "battlefield", "exile",
+                                cause="exiled until the next end step")
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
             f"Phelia exiles {target.name} (P{target_owner+1}'s)")
@@ -2839,12 +2751,10 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
     for exiled_card, owner_idx, phelia_controller, source in mine:
         owner = game.players[owner_idx]
         if exiled_card in owner.exile:
-            owner.exile.remove(exiled_card)
-            exiled_card.zone = "battlefield"
-            owner.battlefield.append(exiled_card)
-            if exiled_card.template.is_creature:
-                exiled_card.enter_battlefield()
-                owner.creatures.append(exiled_card)
+            # CR 400.7 / 306.5b: it returns as a new object under its
+            # owner's control (a planeswalker at printed loyalty).
+            game.zone_mgr.move_card(game, exiled_card, "exile", "battlefield",
+                                    controller_override=owner_idx)
             game.log.append(
                 f"T{game.display_turn}: "
                 f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
@@ -3147,6 +3057,7 @@ def doorkeeper_thrull_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Scapeshift", EffectTiming.SPELL_RESOLVE,
                            description="Sacrifice any number of lands, search for that many")
 def scapeshift_resolve(game, card, controller, targets=None, item=None):
+    # single-owner-allow: not a target pick — sacrifices and searches its controller's own lands
     """Scapeshift: sacrifice N lands → search library for N lands → battlefield tapped.
 
     With Amulet of Vigor: all enter untapped → massive mana.
@@ -3181,9 +3092,7 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     # Sacrifice all lands
     sac_count = len(my_lands)
     for land in list(my_lands):
-        player.battlefield.remove(land)
-        land.zone = "graveyard"
-        player.graveyard.append(land)
+        game.zone_mgr.move_card(game, land, "battlefield", "graveyard")
 
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Scapeshift sacrifices {sac_count} lands")

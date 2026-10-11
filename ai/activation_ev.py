@@ -173,13 +173,29 @@ def choose_tutor_delivery(game, player_idx, eligible, source=None):
     # the X priced for it is the X that delivers it.
     per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
+    # Three-tier delivery order (payoff sequencing §2.8 reader 1): a
+    # candidate that leaves a lethal line at the mana left after the
+    # tutor is paid, then one that makes the engine live, then plain value
+    # — the engine-completion credit (whole / draw-discounted / zero when
+    # the loop already exists) in clock units plus the body's own worth.
+    from ai.assembly_state import (assemble, delivered_line_is_lethal,
+                                   engine_completion_credit)
+    state = assemble(game, player_idx, snap)
+
     def _worth(c):
-        if ActivationManager.would_complete_unbounded_engine(
-                game, player_idx, c.template):
-            return LOOP_SHORTCUT_MANA * per_mana
+        lethal = delivered_line_is_lethal(game, player_idx, snap, source, c,
+                                          state)
+        completes = (not state.engine_live
+                     and ActivationManager.would_complete_unbounded_engine(
+                         game, player_idx, c.template))
+        value = engine_completion_credit(
+            game, player_idx, state, c.template, snap,
+            spending=source) * per_mana
         if c.template.is_creature:
-            return creature_threat_value(c, snap)
-        return float(c.template.cmc or 0)
+            value += creature_threat_value(c, snap)
+        else:
+            value += float(c.template.cmc or 0)
+        return (lethal, completes, value)
 
     return max(eligible, key=_worth)
 
@@ -442,7 +458,8 @@ def graveyard_hate_plan(game, player_idx, ability):
     return len(chosen), [c.instance_id for c in chosen]
 
 
-def activation_candidates(game, player_idx, snap, excluded=None):
+def activation_candidates(game, player_idx, snap, excluded=None,
+                          assembly=None):
     """Enumerate generic activated abilities worth activating right now.
 
     Returns ``[(permanent, ability_index, targets, ev, reason), ...]`` — a
@@ -472,6 +489,15 @@ def activation_candidates(game, player_idx, snap, excluded=None):
     me = game.players[player_idx]
     out = []
     base = position_value(snap)
+    # The main phase's assembly state (engine / sink / lethal-line facts),
+    # threaded in by the EV player; built on demand for direct callers.
+    from ai.assembly_state import STEP_ACTIVATE as _STEP_ACTIVATE, assemble
+    _state_box = [assembly]
+
+    def _state():
+        if _state_box[0] is None:
+            _state_box[0] = assemble(game, player_idx, snap)
+        return _state_box[0]
 
     for perm in list(me.battlefield):
         abilities = getattr(perm.template, 'activated_abilities', None) or []
@@ -512,6 +538,21 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                                                 ability.cost))
                 if sacrificed is None:
                     continue  # can_activate should have refused; defensive
+            # A sacrifice (or exile) cost whose victim is a member of a LIVE
+            # unbounded mana engine is not activated: feeding an assembled
+            # loop (CR 726.4 shortcut material) to a mid-game ability is a
+            # strictly worse board than keeping the loop live, and
+            # `position_value` under-prices the loss (a 0-power mana-creature
+            # like Devoted Druid reads as ~free to sacrifice, so a valuable
+            # fetch swamps the projected cost). The rule is the engine-side
+            # membership query — the same one `ai.clock._creature_static_value`
+            # prices — applied once here for every sacrifice-a-creature
+            # ability × every unbounded engine, no card names.
+            if sacrificed is not None:
+                from engine.activation import ActivationManager as _AM
+                if _AM.engines_lost_if_removed(
+                        game, player_idx, sacrificed) > 0:
+                    continue
             if sacrificed is not None:
                 if sacrificed.template.is_land:
                     cost_updates["my_mana"] = max(0, snap.my_mana - 1)
@@ -566,6 +607,7 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             # Merge effect deltas ON TOP of the cost terms — a discard-cost
             # draw must net the two hand-size changes, not overwrite one.
             updates = dict(cost_updates)
+            declared: list = []     # the targets a kind declares (CR 602.2b)
             kind = ability.effect_kind
             if kind is _K.DRAW_N:
                 updates["my_hand_size"] = (
@@ -587,9 +629,57 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                           + (f" ({ability.delayed_timing.value})"
                              if ability.delayed_timing is not None else ""))
             elif kind is _K.DAMAGE_ANY_TARGET:
+                # CR 602.2b: the target is declared on activation, chosen
+                # by the one owner of where damage goes (ai/damage_targets).
+                _line = _state().best_line
+                _first_of_line = _line is not None and _line.first_step == (
+                    _STEP_ACTIVATE, perm.instance_id, ability.index)
+                aim = _aim_activated_damage(game, player_idx, perm, ability,
+                                            line_to_face=_first_of_line)
+                if ability.target_requirements and aim is None:
+                    continue    # the slot admits nothing worth declaring
+                if aim is not None and aim.permanent is not None:
+                    # Damage that destroys an opposing permanent is worth
+                    # what its controller loses with it (`permanent_threat`,
+                    # the removal scorer's currency), net of the cost terms.
+                    after = snap.fast_replace(**updates)
+                    ev = (position_value(after) - base) + aim.value
+                    if ev <= 0.0:
+                        continue
+                    out.append((perm, ability.index, [aim.target_id], ev,
+                                f"activate: {ability.amount} damage to "
+                                f"{aim.permanent.name} (destroys it)"))
+                    continue
+                declared = [aim.target_id] if aim is not None else []
                 updates["opp_life"] = snap.opp_life - ability.amount
                 after = snap.fast_replace(**updates)
                 reason = f"activate: {ability.amount} damage"
+                if _first_of_line:
+                    # The first ping of a lethal counter-stack line is
+                    # credited the line, not one point of damage.
+                    ev = (position_value(after) - base) + _line.swing
+                    out.append((perm, ability.index, declared, ev,
+                                reason + " — first step of a lethal line"))
+                    continue
+            elif kind is _K.PUT_COUNTER_TEAM:
+                # A mana-scaled team-counter activation is enumerated ONLY
+                # as the first step of the assembly state's best lethal
+                # line (payoff sequencing §2.8 reader 2): scored as the
+                # line it starts, at the line's resolution weight. Any
+                # other team-counter activation stays withheld with the
+                # SELF/TARGET scopes below — the snapshot still has no
+                # honest price for one counter on each body.
+                _line = _state().best_line
+                if _line is None or _line.first_step != (
+                        _STEP_ACTIVATE, perm.instance_id, ability.index):
+                    continue
+                after = snap.fast_replace(**updates)
+                ev = (position_value(after) - base) + _line.swing
+                out.append((perm, ability.index, [], ev,
+                            f"activate: team counters — first step of a "
+                            f"lethal line ({_line.access.damage} projected "
+                            f"vs {snap.opp_life} life)"))
+                continue
             elif kind is _K.PUMP_SELF_UEOT:
                 # GATED, not merely scored. `position_value` has no
                 # until-end-of-turn term, so a temporary pump reads as a
@@ -685,7 +775,8 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                              f"{my_clock_without:.0f}→{my_clock_with:.0f} "
                              f"vs opp {opp_clock:.0f})")))
                 continue
-            elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET):
+            elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET,
+                          _K.PUT_COUNTER_TEAM):
                 # WITHHELD DELIBERATELY — the engine class is complete and
                 # correct (148 abilities classify, resolve, and are legal);
                 # what is missing is a valuation honest enough to drive it.
@@ -857,12 +948,15 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     # (CR 726.4 shortcut material, an engine-side rules
                     # query), the engine's shortcut allowance: that is
                     # the mana the piece actually delivers next turn.
-                    from engine.activation import ActivationManager
-                    from engine.constants import LOOP_SHORTCUT_MANA
-                    delivered_value = delivered_cmc
-                    if ActivationManager.would_complete_unbounded_engine(
-                            game, player_idx, target.template):
-                        delivered_value = LOOP_SHORTCUT_MANA
+                    from ai.assembly_state import engine_completion_credit
+                    # The loop's shortcut mana is credited only as far as
+                    # a sink can convert it: whole with a sink in hand / on
+                    # the battlefield / behind another access, draw-
+                    # discounted when this tutor is the only access, zero
+                    # when the engine is already live (§2.7).
+                    delivered_value = delivered_cmc + engine_completion_credit(
+                        game, player_idx, _state(), target.template, snap,
+                        spending=perm)
                     if (ability.tutor_data or {}).get('mv_bound_is_x'):
                         from engine.cast_manager import (
                             creature_tutor_x_net_value)
@@ -878,10 +972,34 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     reason = (f"activate: tutor {target.name} to "
                               f"battlefield"
                               + (f" (X={best_x})" if best_x else ""))
+                    _line = _state().best_line
+                    if _line is not None and _line.first_step == (
+                            _STEP_ACTIVATE, perm.instance_id, ability.index):
+                        ev += _line.swing
+                        reason += " — first step of a lethal line"
                 if ev <= 0.0:
                     continue
                 out.append((perm, ability.index, [], ev, reason))
                 continue
+            elif kind is _K.UNCLASSIFIED:
+                # An ability the legacy classifier does not read resolves
+                # from its typed text when the dispatcher can take it
+                # (`effect_carrier.activation_family`). An impulse draw is
+                # projected as the cards it lets the player play past this
+                # turn (`ai.predicates.impulse_cards_held`): the hand those
+                # cards would have been as a draw.
+                from engine.effect_carrier import activation_family
+                from ai.predicates import impulse_cards_held
+                _host = perm.template.effects.activated(ability.index)
+                if activation_family(ability, _host) is None:
+                    continue
+                held = impulse_cards_held(_host)
+                if not held:
+                    continue
+                updates["my_hand_size"] = (
+                    updates.get("my_hand_size", snap.my_hand_size) + held)
+                after = snap.fast_replace(**updates)
+                reason = f"activate: exile the top {held} to play next turn"
             else:
                 continue
 
@@ -889,5 +1007,98 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             if ev <= 0.0:
                 continue  # an activation that does not improve position is
                           # not made; principled, not a tuned threshold
-            out.append((perm, ability.index, [], ev, reason))
+            out.append((perm, ability.index, declared, ev, reason))
     return out
+
+
+def _pays_only_victim_and_mana(cost) -> bool:
+    """A cost whose only items are one sacrificed permanent of a type,
+    mana and at most {T}: what `lethal_damage_outlet_plan` can count."""
+    return (cost.sacrifice_type is not None and not cost.unpayable
+            and not (cost.life or cost.sacrifice_self or cost.exile_self
+                     or cost.untap_self or cost.discard_cards
+                     or cost.exile_from_graveyard_cards or cost.x_count
+                     or cost.remove_counter_kind or cost.put_counter_kind))
+
+
+def lethal_damage_outlet_plan(game, player_idx):
+    """The activations, in order, by which this player's sacrifice-outlet
+    damage abilities ("Sacrifice a creature: ~ deals N damage to any
+    target") deal the opponent lethal damage now, as ``[(permanent,
+    ability), ...]`` -- or ``[]`` when what they can deal falls short of the
+    opponent's life total. Short of lethal nothing is planned: the main
+    phase's EV owns every non-lethal activation, aimed by
+    `ai.damage_targets`.
+
+    Feasibility is counted from the costs without touching the game: each
+    activation spends one victim its cost admits (`legal_sacrifice_victims`,
+    taken in the order the sacrifice callback takes them,
+    `choose_sacrifice_victim`), its mana out of `available_mana_estimate`,
+    and a {T} or once-each-turn outlet once; a victim that is itself an
+    outlet activates no more. An outlet whose cost has any other item is
+    not planned. Outlets dealing the most damage per activation go first:
+    lethal with the fewest permanents spent."""
+    from engine.activation import ActivationManager
+    from engine.cards import ActivationEffectKind as _K
+
+    me = game.players[player_idx]
+    life = game.players[1 - player_idx].life
+    outlets = [(perm, ab) for perm in list(me.battlefield)
+               for ab in (perm.template.activated_abilities or ())
+               if ab.effect_kind is _K.DAMAGE_ANY_TARGET and ab.amount > 0
+               and _pays_only_victim_and_mana(ab.cost)
+               and ActivationManager.can_activate(game, player_idx, perm, ab)]
+    outlets.sort(key=lambda pa: -pa[1].amount)
+    mana = me.available_mana_estimate
+    spent, used_once, plan, dealt = set(), set(), [], 0
+    while outlets and dealt < life:
+        step = None
+        for perm, ab in outlets:
+            once = ab.cost.tap_self or ab.once_each_turn
+            if perm.instance_id in spent or ab.cost.mana.cmc > mana \
+                    or (once and (perm.instance_id, ab.index) in used_once):
+                continue
+            victim = choose_sacrifice_victim(game, player_idx, [
+                v for v in ActivationManager.legal_sacrifice_victims(
+                    game, player_idx, perm, ab.cost)
+                if v.instance_id not in spent])
+            if victim is not None:
+                step = (perm, ab, victim, once)
+                break
+        if step is None:
+            return []
+        perm, ab, victim, once = step
+        spent.add(victim.instance_id)
+        if once:
+            used_once.add((perm.instance_id, ab.index))
+        mana -= ab.cost.mana.cmc
+        plan.append((perm, ab))
+        dealt += ab.amount
+    return plan if dealt >= life else []
+
+
+def _aim_activated_damage(game, player_idx, perm, ability, *,
+                          line_to_face=False):
+    """The target an activated "deals N damage to any target" declares
+    (CR 602.2b), as a `DamageAim`, or None when it declares none: an
+    ability parsed with no target slot (nothing to declare -- the owner
+    sends its damage to the face), or a slot that admits nothing worth
+    declaring. The first step of a lethal line (`line_to_face`) declares
+    the face: the line is credited its damage there. Otherwise the one
+    owner chooses (`ai.damage_targets.choose_damage_recipient`), with the
+    ability's own mana as what is spent before any ward is paid."""
+    if not ability.target_requirements:
+        return None
+    from ai.damage_targets import (DamageAim, choose_damage_recipient,
+                                   face_damage_value)
+    req = ability.target_requirements[0]
+    if line_to_face:
+        from engine.constants import PLAYER_TARGET_OPPONENT
+        from engine.target_solver import slot_admits_player
+        if not slot_admits_player(req, 1 - player_idx, player_idx):
+            return None
+        return DamageAim(PLAYER_TARGET_OPPONENT, None,
+                         face_damage_value(game, 1 - player_idx,
+                                           ability.amount))
+    return choose_damage_recipient(game, player_idx, perm, ability.amount,
+                                   req, mana_committed=ability.cost.mana.cmc)

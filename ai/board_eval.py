@@ -315,11 +315,24 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
             return -BOARD_EVAL_HARD_VETO  # ETB fizzles → pitch cost is wasted
 
     # Battlefield-targeting ETBs (e.g. "target creature" — no "spell"):
-    # if the opponent has no creatures, the ETB fizzles.
-    elif getattr(card.template, 'requires_creature_target', False) and 'removal' not in tags:
+    # if the opponent has no creatures, the ETB fizzles — removal or not.
+    # The engine does not refuse such an evoke: the targets are the enter
+    # trigger's, chosen after the creature enters (CR 603.3d), so whether
+    # the evoke buys anything is this decision's. An opposing creature
+    # spell still on the stack is no target: the evoked creature's
+    # trigger resolves first.
+    elif getattr(card.template, 'requires_creature_target', False):
         if not opp.creatures:
             return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     
+    # Graveyard-hate ETBs ("up to one target player puts all the cards
+    # from their graveyard on the bottom of their library"): with nothing
+    # but lands in the opposing graveyard the trigger acts on nothing, and
+    # the evoke spends two cards for it.
+    if 'graveyard_hate' in tags and not any(
+            not c.template.is_land for c in opp.graveyard):
+        return -BOARD_EVAL_HARD_VETO
+
     # Removal ETBs (Solitude, Fury): check if opponent has creatures
     if 'removal' in tags and card.template.is_creature:
         if not opp.creatures and not opp.battlefield:

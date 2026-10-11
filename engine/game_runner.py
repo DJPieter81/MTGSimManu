@@ -64,20 +64,6 @@ def _saga_iii_eligible_targets(
     return eligible
 
 
-def _sorcery_speed_only_active(player: PlayerState) -> bool:
-    """True if the player controls a "cast at sorcery speed only" effect.
-
-    Generic oracle-pattern match — handles Teferi, Time Raveler and any
-    future card with the same static. Used to shut down opponent instant-
-    speed response windows (counterspells, removal, evoke) during this
-    player's turn.
-    """
-    for c in player.battlefield:
-        if getattr(c.template, 'limits_opponent_spell_timing', False):
-            return True
-    return False
-
-
 class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions.
 
@@ -252,6 +238,15 @@ class AICallbacks(GameCallbacks):
             game, player_idx, Action(ActionType.EVOKE, {'card': card})
         ) > 0
 
+    def choose_exile_from_hand(self, game, player_idx, spell, candidates):
+        from ai.discard_advisor import choose_card_to_exile_from_hand
+        return choose_card_to_exile_from_hand(game, player_idx, candidates)
+
+    def should_exile_instead_of_paying(self, game, player_idx, card,
+                                       can_pay_mana):
+        from ai.discard_advisor import exile_instead_of_paying
+        return exile_instead_of_paying(game, player_idx, card, can_pay_mana)
+
     def should_kick(self, game, player_idx, card):
         # CR 702.33: how many times to kick. v1 policy in ai/board_eval
         # (_eval_kick) returns the kick count (0 unless the kicked payoff
@@ -286,6 +281,22 @@ class AICallbacks(GameCallbacks):
     def choose_tutor_target(self, game, player_idx, source, eligible):
         from ai.activation_ev import choose_tutor_delivery
         return choose_tutor_delivery(game, player_idx, eligible, source=source)
+
+    def choose_trigger_targets(self, game, player_idx, source, spec, req,
+                               players, permanents):
+        from ai.resolution_choices import pick_trigger_targets
+        return pick_trigger_targets(game, player_idx, source, spec, req,
+                                    players, permanents)
+
+    # Resolution-time choices (A35): the dispatcher's "you may" and its
+    # executors' card picks, answered by the AI (ai/resolution_choices).
+    def choose_optional_effect(self, ctx, spec) -> bool:
+        from ai.resolution_choices import perform_optional_effect
+        return perform_optional_effect(ctx.game, ctx, spec)
+
+    def choose_cards(self, ctx, spec, pool, n):
+        from ai.resolution_choices import pick_cards
+        return pick_cards(ctx.game, ctx, spec, pool, n)
 
     def choose_mana_color(self, game, player_idx, source, options):
         """Pick an entry-choice colour from the deck's actual mana needs.
@@ -764,6 +775,10 @@ class GameRunner:
                     break
                 if game_budget.expired(game):
                     break
+                # CR 723.1d: after "end the turn" every remaining step is
+                # skipped except cleanup.
+                if game.end_turn_requested and step != TurnStep.CLEANUP:
+                    continue
 
                 def _board_summary():
                     """Emit full board state summary."""
@@ -831,8 +846,8 @@ class GameRunner:
                     # "at the beginning of your next upkeep"). Drained
                     # FIRST, before rebound/saga/upkeep activations, so a
                     # delayed draw is in hand for every decision this turn.
-                    from engine.delayed_triggers import DelayedTriggerStep
-                    game.fire_delayed_triggers(DelayedTriggerStep.UPKEEP)
+                    from engine.turn_clock import Clock, ClockEvent, emit
+                    emit(game, ClockEvent(Clock.UPKEEP, active))
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
@@ -885,6 +900,8 @@ class GameRunner:
                         break
                     new_lands = len(game.players[active].lands) - prev_lands
                     stats["lands_played"][active] += max(0, new_lands)
+                    if game.end_turn_requested:
+                        continue
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
@@ -920,7 +937,15 @@ class GameRunner:
                               pidx=active,
                               actor=game.players[active].deck_name,
                               attackers=atk_details)
-                        combat_mgr.declare_attackers(game, attackers, active)
+                        # CR 508.1b: the attacking player (AI) chooses each
+                        # attacker's defender — the player or a planeswalker.
+                        _choose = getattr(ai, 'decide_attack_targets', None)
+                        attack_targets = _choose(game, attackers) if _choose else {}
+                        for _aid, _pw in attack_targets.items():
+                            _vlog(f'  [Attack Target] {game.get_card_by_id(_aid).name}'
+                                  f' attacks {_pw.name}')
+                        combat_mgr.declare_attackers(game, attackers, active,
+                                                     attack_targets)
                     else:
                         _vlog(f'  [Declare Attackers] P{active+1} does not attack')
                         _emit(KIND_COMBAT, sub="no_attack",
@@ -1008,6 +1033,8 @@ class GameRunner:
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
                         break
+                    if game.end_turn_requested:
+                        continue
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
@@ -1024,8 +1051,8 @@ class GameRunner:
                     game.current_phase = Phase.END_STEP
                     _vlog(f'  [End Step]')
                     _emit(KIND_PHASE, phase="EndStep", pidx=active)
-                    # Goblin Bombardment: sacrifice tokens/small creatures to deal damage
-                    self._activate_goblin_bombardment(game, active)
+                    # Sacrifice outlets convert creatures into lethal damage.
+                    self._activate_lethal_damage_outlets(game, active)
                     if game.game_over:
                         break
                     # Activated artifacts: Expedition Map, Ratchet Bomb
@@ -1043,6 +1070,11 @@ class GameRunner:
 
                 elif step == TurnStep.CLEANUP:
                     game.current_phase = Phase.CLEANUP
+                    if game.end_turn_requested:
+                        # The end step (which runs the "until end of turn"
+                        # expiry) was skipped by CR 723; cleanup does it.
+                        game.end_of_turn_cleanup()
+                        game.end_turn_requested = False
                     game.cleanup_step()
                     # Discard to hand size
                     p = game.players[active]
@@ -1113,11 +1145,13 @@ class GameRunner:
         # unmodelled keywords is recorded once per process).
         from .rules_audit import enabled as _audit_on, drain as _audit_drain
         if _audit_on():
-            from .rules_audit_census import census_template_keywords
+            from .rules_audit_census import (census_template_keywords,
+                                             census_unhandled_effects)
             for p in game.players:
                 for zone in (p.library, p.hand, p.battlefield, p.graveyard, p.exile):
                     for c in zone:
                         census_template_keywords(c.template, game=game)
+            census_unhandled_effects(game=game)
             result.audit_findings = _audit_drain()
 
         # Structured GAME_END — terminator for the replayer's
@@ -1205,11 +1239,13 @@ class GameRunner:
         begin-combat or end-step could ever be countered, however many
         counters the active player held with mana open (2026-09-08).
 
-        Teferi gate: a "cast at sorcery speed only" effect controlled by
-        the CASTER's side denies the responder instant-speed casting.
+        A responder a rule effect restricts to sorcery timing (CR 101.2,
+        307.1; `rules_query.sorcery_speed_only`) has no window here.
         """
-        caster_player = game.players[caster_ai.player_idx]
-        if _sorcery_speed_only_active(caster_player):
+        # The one read path: a responder restricted to sorcery timing has
+        # no window while a spell is on the stack.
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, responder_ai.player_idx):
             return
         if game.stack.is_empty:
             return
@@ -1256,12 +1292,13 @@ class GameRunner:
         so a pump could only be cast in a main phase, where it is worth
         nothing (2026-09-08, Prowess replays).
 
-        Teferi gate: a "cast at sorcery speed only" effect on the DEFENDING
-        side denies the active player instant-speed casting in combat.
+        An active player a rule effect restricts to sorcery timing (CR
+        101.2, 307.1) casts nothing in combat.
         """
         if game.game_over or not combat_mgr.attackers:
             return
-        if _sorcery_speed_only_active(game.players[opponent_ai.player_idx]):
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, active_ai.player_idx):
             return
         decide = getattr(active_ai, 'decide_combat_trick', None)
         if decide is None:
@@ -1321,17 +1358,17 @@ class GameRunner:
         creatures as threats to remove. Lowered thresholds so removal fires
         more aggressively against value engines and early threats.
 
-        Teferi gate: if the ACTIVE player controls a "cast at sorcery speed
-        only" permanent (Teferi, Time Raveler et al.), opponents cannot
-        cast anything at instant speed during this window. Detect via oracle
-        pattern and bail out early.
+        A player a rule effect restricts to sorcery timing (CR 101.2,
+        307.1) casts nothing in this window; every other restriction is
+        `can_cast`'s, through the same read path (`rules_query`).
         """
         from ai.evaluator import _permanent_value
 
         opponent_idx = opponent_ai.player_idx
         opponent = game.players[opponent_idx]  # the player holding removal
         active_player = game.players[active_ai.player_idx]  # the player whose turn it is
-        if _sorcery_speed_only_active(active_player):
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, opponent_idx):
             return
 
         cast_count = 0
@@ -1358,12 +1395,9 @@ class GameRunner:
                         flash_creatures.append(card)
                 elif card.template.is_creature and card.template.has_flash:
                     flash_creatures.append(card)
-            # Evoke creatures (Solitude, Endurance, Subtlety) can be cast at instant speed
-            elif card.template.is_creature and "evoke" in card.template.tags:
-                if "removal" in card.template.tags:
-                    instant_removal.append(card)
-                else:
-                    flash_creatures.append(card)
+            # Evoke grants no flash (CR 702.74a): an evoke creature that
+            # prints Flash is listed above, one that does not is no
+            # instant-speed play.
 
         # Assess threat level of the ACTIVE player's board (the one we want to remove)
         if active_player.creatures:
@@ -1485,6 +1519,8 @@ class GameRunner:
         while actions < max_actions and not game.game_over:
             if game_budget.expired(game):
                 return
+            if game.end_turn_requested:
+                return  # CR 723: the turn has ended
             decision = ai.decide_main_phase(
                 game, excluded_cards=_excluded,
                 excluded_activations=_excluded_activations)
@@ -1514,7 +1550,15 @@ class GameRunner:
                 )
 
             if action == "play_land":
+                played_from = card.zone
                 game.play_land(ai.player_idx, card)
+                if card.zone == played_from:
+                    # The land play was refused (no land play left, or the
+                    # permission to play it from exile is gone): exclude it
+                    # and re-plan, as a refused cast is.
+                    _excluded.add(card.instance_id)
+                    actions += 1
+                    continue
             elif action == "cycle":
                 game.activate_cycling(ai.player_idx, card)
             elif action == "suspend":
@@ -1624,29 +1668,29 @@ class GameRunner:
                 continue
 
             pw_name = pw.template.name
-            from .game_state import _parse_planeswalker_abilities
-            # Use back face oracle for transformed cards (e.g., Ral creature → PW)
-            oracle = pw.template.oracle_text
-            loyalty = pw.template.loyalty
-            if getattr(pw, 'is_transformed', False) and pw.template.back_face_oracle:
-                oracle = pw.template.back_face_oracle
-                loyalty = pw.template.back_face_loyalty
-            pw_data = _parse_planeswalker_abilities(oracle, loyalty)
             # Engine legality first, AI choice second: an ability whose
             # printed effect the resolver cannot execute is refused
             # before any loyalty is paid, so it must not be OFFERED
             # either — otherwise the AI spends the walker's one
-            # activation per turn on a line that will be refused.
+            # activation per turn on a line that will be refused. The
+            # lines are the typed ones of the face currently up.
             from .planeswalker_manager import PlaneswalkerManager
             resolvable = PlaneswalkerManager.resolvable_ability_slots(pw)
-            pw_data = {k: v for k, v in pw_data.items()
-                       if k in resolvable or k == "starting_loyalty"}
-            if not any(k in pw_data
-                       for k in ("plus", "zero", "minus", "ult")):
+            pw_data = {k: v for k, v in PlaneswalkerManager.loyalty_abilities(pw).items()
+                       if k in resolvable}
+            if not pw_data:
                 continue  # nothing this engine can execute
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
+
+            # CR 606.3 — activation is optional. The AI declines (holds the
+            # walker) rather than spend loyalty on a whiff by returning the
+            # PW_DECLINE sentinel; it is never a resolvable slot, so the guard
+            # below also catches it, but check it explicitly for clarity.
+            from ai.pw_ability import PW_DECLINE
+            if ability_type == PW_DECLINE:
+                continue
 
             # The chooser falls back to a fixed slot name when nothing it
             # was offered is currently AFFORDABLE (a minus below its
@@ -1672,7 +1716,7 @@ class GameRunner:
         choose_pw_ability`.  The engine only delegates here and then
         enforces loyalty legality in `game.activate_planeswalker`.
         `pw_name` is retained in the signature for call-site
-        compatibility; the chooser is description-driven and does not
+        compatibility; the chooser values the typed lines and does not
         consume it.
         """
         from ai.pw_ability import choose_pw_ability
@@ -1822,6 +1866,13 @@ class GameRunner:
                         f"T{game.display_turn} P{active+1}: "
                         f"Rebound {rc.name} declined (CR 702.88b)")
                     continue
+            from .cast_manager import CastManager
+            if not CastManager.free_cast_allowed(game, active, rc.template):
+                # CR 702.88a: a rebound card not cast stays exiled.
+                game.log.append(
+                    f"T{game.display_turn} P{active+1}: Rebound {rc.name} "
+                    f"cannot be cast now; it stays exiled")
+                continue
             if rc in player.exile:
                 player.exile.remove(rc)
             rc._free_cast_opportunity = True  # rebound: free cast
@@ -1934,7 +1985,8 @@ class GameRunner:
                                     f"{card.name} Ch.III: transforming into "
                                     f"Reflection of Kiki-Jiki")
                     from engine.oracle_resolver import _transform_permanent
-                    _transform_permanent(game, card, active)
+                    _transform_permanent(game, card, active,
+                                         returns_as_new_object=True)
 
             # --- Transform sagas (Legend of Roku pattern) ---
             elif 'transform' in card_oracle or 'return it to the battlefield transformed' in card_oracle:
@@ -1950,12 +2002,9 @@ class GameRunner:
 
         for saga in sagas_to_sacrifice:
             if saga in player.battlefield:
-                player.battlefield.remove(saga)
-                if saga in player.lands:
-                    player.lands.remove(saga)
-                saga.zone = "graveyard"
                 saga.granted_abilities.clear()  # grants end with the permanent
-                player.graveyard.append(saga)
+                game.zone_mgr.move_card(game, saga, "battlefield",
+                                        "graveyard")
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Sacrifice {saga.name} (final chapter)")
 
@@ -2056,6 +2105,12 @@ class GameRunner:
                     game, active, requirements):
                 continue
 
+            # A copy its controller may not cast now (a cast prohibition or a
+            # printed timing restriction, CR 101.2) is not paid for.
+            from .cast_manager import CastManager
+            if not CastManager.free_cast_allowed(game, active, template):
+                continue
+
             # Pay {2} through the real solver — no blind land taps.
             if not game.tap_lands_for_mana(
                     active, ManaCost(generic=2),
@@ -2080,83 +2135,32 @@ class GameRunner:
             if game.game_over:
                 return
 
-    def _activate_goblin_bombardment(self, game: GameState, active: int):
-        """Activate Goblin Bombardment: sacrifice tokens/small creatures to deal 1 damage each."""
-        player = game.players[active]
-        opponent_idx = 1 - active
-        opponent = game.players[opponent_idx]
-
-        # Check if player has Goblin Bombardment on the battlefield
-        # Generic: any permanent with "sacrifice a creature: deal 1 damage"
-        has_bombardment = any(
-            'sacrifice a creature' in (c.template.oracle_text or '').lower()
-            and 'damage' in (c.template.oracle_text or '').lower()
-            for c in player.battlefield if not c.template.is_creature
-        )
-        if not has_bombardment:
-            return
-
-        # Sacrifice tokens and low-value creatures to deal damage
-        # Priority: tokens first, then creatures with power <= 1
-        sacrificeable = []
-        for c in player.creatures:
-            if "token" in c.template.tags:
-                sacrificeable.append((0, c))  # tokens are free to sacrifice
-            elif c.template.cmc <= 1 and c.template.power <= 1:
-                sacrificeable.append((1, c))  # small creatures are ok to sacrifice
-
-        # Sort: tokens first, then by value (lowest first)
-        sacrificeable.sort(key=lambda x: x[0])
-
-        # Only sacrifice if it would deal meaningful damage or if we have excess tokens
-        # Keep at least 2 creatures for blocking/attacking
-        real_creatures = [c for c in player.creatures if "token" not in c.template.tags]
-        token_count = len([c for c in player.creatures if "token" in c.template.tags])
-
-        # Sacrifice all tokens if opponent is at low life (lethal range)
-        if opponent.life <= token_count:
-            # Go for lethal!
-            for _, creature in sacrificeable:
-                if game.game_over:
-                    return
-                if creature in player.battlefield:
-                    player.battlefield.remove(creature)
-                    creature.zone = "graveyard"
-                    player.graveyard.append(creature)
-                    opponent.life -= 1
-                    player.damage_dealt_this_turn += 1
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: Goblin Bombardment "
-                        f"sacrifice {creature.name} -> 1 damage to P{opponent_idx+1} "
-                        f"(life: {opponent.life})"
-                    )
-                    if opponent.life <= 0:
-                        game.game_over = True
-                        game.winner = active
-                        return
-        else:
-            # Not lethal: sacrifice tokens when they provide race value.
-            # Keep 1 blocker; sacrifice the rest if we can deal meaningful damage
-            # or if opponent is in reach (life <= 8).
-            real_blocker_count = len(real_creatures)
-            min_keep = 1  # always keep at least 1 non-token creature for blocking
-            tokens_to_sac = token_count  # all tokens by default
-            if real_blocker_count < min_keep:
-                # Keep one token as a blocker
-                tokens_to_sac = max(0, token_count - 1)
-            # Sacrifice tokens when they contribute to the race.
-            # If opponent is out of reach AND we have few tokens, hold them for blocking.
-            # But if we are racing (opponent life <= our total power * 2), sacrifice freely.
-            my_total_pwr = sum(c.power or 0 for c in player.creatures)
-            is_racing_now = my_total_pwr > 0 and opponent.life <= my_total_pwr * 3
-            if not is_racing_now and opponent.life > 15 and tokens_to_sac < 2:
-                tokens_to_sac = 0
-            sacced = 0
-            for priority_val, creature in sacrificeable:
-                if sacced >= tokens_to_sac:
-                    break
+    def _activate_lethal_damage_outlets(self, game: GameState, active: int):
+        """End step: when the sacrifice-outlet damage abilities this player
+        controls can, between them, deal the opponent lethal damage, the AI
+        activates them at the opponent (`lethal_damage_outlet_plan`), one at
+        a time through the activation owner -- costs paid through the zone
+        funnel (dies triggers fire), damage dealt through the damage owner,
+        the game ended by state-based actions (CR 704.5a). The plan is made
+        again before every activation, so nothing more is sacrificed once
+        lethal is out of reach; each activation spends a victim, which
+        bounds the loop."""
+        from ai.activation_ev import lethal_damage_outlet_plan
+        from .activation import ActivationManager
+        from .constants import PLAYER_TARGET_OPPONENT
+        plan = lethal_damage_outlet_plan(game, active)
+        for _ in range(len(plan)):
+            if game.game_over or not plan:
+                return
+            perm, ability = plan[0]
+            if not ActivationManager.activate(game, active, perm, ability,
+                                              [PLAYER_TARGET_OPPONENT]):
+                return
+            self._resolve_stack_loop(game)
+            plan = lethal_damage_outlet_plan(game, active)
 
     def _activate_utility_artifacts(self, game: GameState, active: int):
+        # single-owner-allow: not a target pick — library searches and the controller's own lands
         """Activate utility artifacts: Expedition Map (find Tron piece), Ratchet Bomb."""
         player = game.players[active]
 
@@ -2202,9 +2206,8 @@ class GameRunner:
                             land.tapped = True
                             tapped += 1
                         # Sacrifice Map
-                        player.battlefield.remove(perm)
-                        perm.zone = "graveyard"
-                        player.graveyard.append(perm)
+                        game.zone_mgr.move_card(game, perm, "battlefield",
+                                                "graveyard")
                         # Find the land in library
                         target = None
                         for c in player.library:
@@ -2237,9 +2240,8 @@ class GameRunner:
                         'Equipment' in getattr(c.template, 'subtypes', [])
                         for c in targets_at_cmc)):
                     # Pop it
-                    player.battlefield.remove(perm)
-                    perm.zone = "graveyard"
-                    player.graveyard.append(perm)
+                    game.zone_mgr.move_card(game, perm, "battlefield",
+                                            "graveyard")
                     from engine.cards import Keyword
                     for c in list(targets_at_cmc):
                         if Keyword.INDESTRUCTIBLE not in c.keywords:
@@ -2306,17 +2308,18 @@ class GameRunner:
         return False
 
     def _activate_tap_abilities(self, game: GameState, active: int):
+        # single-owner-allow: not a target pick among the opponent's permanents — its own permanents' {T} abilities and a card in its own graveyard
         """Generic {T}: ability dispatch for non-planeswalker permanents.
 
-        Oracle-driven — no card names. Covers patterns like Endbringer's
-        {T}: ping / {C}{C}{T}: draw and Emry's {T}: cast-artifact-from-GY.
-        Skips tapped or summoning-sick creatures. One activation per
-        permanent per turn (the tap state itself enforces this)."""
-        import re
+        Oracle-driven — no card names. Covers patterns like {C}{C}{T}: draw
+        and Emry's {T}: cast-artifact-from-GY. A "{T}: deals N damage to
+        any target" ability is not fired here: it is a parsed activated
+        ability the AI activates through `ActivationManager`, aimed by
+        `ai.damage_targets`. Skips tapped or summoning-sick creatures. One
+        activation per permanent per turn (the tap state itself enforces
+        this)."""
         from engine.cards import CardType
-        from engine.oracle_resolver import _pick_damage_target
         player = game.players[active]
-        opponent_idx = 1 - active
 
         for perm in list(player.battlefield):
             if perm.tapped:
@@ -2332,34 +2335,6 @@ class GameRunner:
             oracle = (perm.template.oracle_text or '').lower()
             if '{t}' not in oracle:
                 continue
-
-            # ── {T}: This creature deals N damage to any target. ──
-            m_ping = re.search(
-                r'\{t\}\s*:\s*this creature deals\s+(\d+)\s+damage to any target',
-                oracle)
-            if m_ping:
-                amount = int(m_ping.group(1))
-                target = _pick_damage_target(game, active, amount)
-                perm.tapped = True
-                if target is not None:
-                    target.damage_marked = getattr(target, 'damage_marked', 0) + amount
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: "
-                        f"{perm.name} pings {target.name} for {amount}")
-                    game.check_state_based_actions()
-                else:
-                    opp = game.players[opponent_idx]
-                    opp.life -= amount
-                    player.damage_dealt_this_turn += amount
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: "
-                        f"{perm.name} pings opponent for {amount} "
-                        f"(life: {opp.life})")
-                    if opp.life <= 0:
-                        game.game_over = True
-                        game.winner = active
-                        return
-                continue  # one activation per permanent per turn
 
             # ── {C}{C}, {T}: Draw a card. ──
             # Generic colourless-only card-draw activation. Gated on hand
@@ -2420,7 +2395,7 @@ class GameRunner:
                     # Revert
                     player.hand.remove(target_card)
                     target_card.zone = 'graveyard'
-                    player.graveyard.append(target_card)
+                    player.graveyard.append(target_card)  # graveyard-revert: undoes the provisional move above; the card never left
                     continue
                 perm.tapped = True
                 game.log.append(
@@ -2577,6 +2552,7 @@ class GameRunner:
 
     def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed,
                             effect_text: str, charge: Optional[int] = None):
+        # single-owner-allow: not a target pick — destroys EACH permanent of a mana value; searches the own library
         """Execute sacrifice ability effect, parsed from oracle text.
         `charge` is the sacrificed permanent's charge count as last-known
         information (CR 608.2h); when omitted it is read off the card."""

@@ -1,0 +1,3149 @@
+{
+ "doc": "Registered-deck witness cards of the clause grammar (design doc 2026-09-29, section 18.1). Each row names a card, a face, a host selector and the expected spec chain as the design doc states it, in the shape language of tests/test_effect_grammar_pool_invariants.py (_match_host). A row with known_gap names the earlier-layer refusal (a leaf or L1-L4 refusal) that keeps the card from its expected chain today: the test pins it as a strict xfail, so the row flips to a pass, and must lose its known_gap, the day the refusal is fixed. Card names live only here.",
+ "rows": [
+  {
+   "card": "Misty Rainforest",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "cost_items": {
+     "sacrifice_self": true
+    },
+    "specs": [
+     {
+      "verb": "SEARCH"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "battlefield"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Flooded Strand",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "cost_items": {
+     "sacrifice_self": true
+    },
+    "specs": [
+     {
+      "verb": "SEARCH"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "battlefield"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Path to Exile",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     },
+     {
+      "verb": "SEARCH",
+      "optional": true,
+      "actor": "CONTROLLER_OF(TARGET:0:lki)",
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1",
+        "flags": [
+         "may_scope"
+        ],
+        "dest": {
+         "zone": "battlefield",
+         "tapped": true
+        }
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "may_scope"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Erode",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0
+     },
+     {
+      "verb": "SEARCH",
+      "optional": true,
+      "actor": "CONTROLLER_OF(TARGET:0:lki)",
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1",
+        "flags": [
+         "may_scope"
+        ],
+        "dest": {
+         "zone": "battlefield",
+         "tapped": true
+        }
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "may_scope"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Cleansing Wildfire",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0
+     },
+     {
+      "verb": "SEARCH",
+      "optional": true,
+      "actor": "CONTROLLER_OF(TARGET:0:lki)",
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1",
+        "flags": [
+         "may_scope"
+        ],
+        "dest": {
+         "zone": "battlefield",
+         "tapped": true
+        }
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "may_scope"
+        ]
+       }
+      ]
+     },
+     {
+      "verb": "DRAW"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Price of Freedom",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0
+     },
+     {
+      "verb": "SEARCH",
+      "optional": true,
+      "actor": "CONTROLLER_OF(TARGET:0:lki)",
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1",
+        "flags": [
+         "may_scope"
+        ],
+        "dest": {
+         "zone": "battlefield",
+         "tapped": true
+        }
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "may_scope"
+        ]
+       }
+      ]
+     },
+     {
+      "verb": "DRAW"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Summoner's Pact",
+   "class": "A13 serial and gapped clauses; A5 delay paragraph on a spell",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "SEARCH",
+      "flags": [
+       "reveal"
+      ]
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "hand"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     },
+     {
+      "verb": "CREATE_TRIGGER",
+      "sub": {
+       "kind": "DELAYED",
+       "timing": "YOUR_NEXT_UPKEEP",
+       "host": {
+        "targets": 0,
+        "specs": [
+         {
+          "verb": "PAY",
+          "otherwise": [
+           {
+            "verb": "UNMODELLED",
+            "stage": "RECOGNIZED_UNSUPPORTED"
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Scapeshift",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "SACRIFICE"
+     },
+     {
+      "verb": "SEARCH",
+      "amount": {
+       "kind": "UP_TO",
+       "inner": {
+        "kind": "THAT_MUCH",
+        "ref": "RESULT:0"
+       }
+      }
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:1",
+      "dest": {
+       "zone": "battlefield",
+       "tapped": true
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Expedition Map",
+   "class": "A13 serial and gapped clauses; A7 printed-text cost",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "cost_items": {
+     "sacrifice_self": true
+    },
+    "specs": [
+     {
+      "verb": "SEARCH",
+      "flags": [
+       "reveal"
+      ]
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "hand"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Expressive Iteration",
+   "class": "A13 serial and gapped clauses; A26 the exiled card",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:ONE"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:ONE"
+     },
+     {
+      "verb": "EXILE",
+      "ref": "RESULT:0:ONE"
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "PERMIT",
+      "ref": "RESULT:3"
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top N cards is participant.library_position; 'you may play the exiled card this turn' is payload.modification_unknown"
+  },
+  {
+   "card": "Archon of Cruelty",
+   "class": "A13 serial and gapped clauses; A11 disjunctive head",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_ENTERS",
+     "SELF_ATTACKS"
+    ],
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "SACRIFICE",
+      "actor": "TARGET:0"
+     },
+     {
+      "verb": "DISCARD",
+      "actor": "TARGET:0"
+     },
+     {
+      "verb": "LOSE_LIFE",
+      "actor": "TARGET:0"
+     },
+     {
+      "verb": "DRAW",
+      "actor": "SELECTOR:PLAYER"
+     },
+     {
+      "verb": "GAIN_LIFE",
+      "actor": "SELECTOR:PLAYER"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Faithful Mending",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "GAIN_LIFE"
+     },
+     {
+      "verb": "DRAW"
+     },
+     {
+      "verb": "DISCARD"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Green Sun's Zenith",
+   "class": "A13 serial and gapped clauses; A18 shuffle into",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "SEARCH"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "battlefield"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "SELF",
+      "dest": {
+       "zone": "library",
+       "position": "shuffle"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Nature's Rhythm",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "SEARCH"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "battlefield"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Primeval Titan",
+   "class": "A13 serial and gapped clauses; A11 disjunctive head",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_ENTERS",
+     "SELF_ATTACKS"
+    ],
+    "specs": [
+     {
+      "verb": "SEARCH",
+      "optional": true,
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:0",
+        "flags": [
+         "may_scope"
+        ]
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "may_scope"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Stock Up",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "MOVE",
+      "dest": {
+       "zone": "hand"
+      }
+     },
+     {
+      "verb": "MOVE",
+      "flags": [
+       "gapped"
+      ],
+      "ref": "RESULT:0:REST",
+      "group_with": 1,
+      "dest": {
+       "zone": "library",
+       "position": "bottom"
+      }
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top N cards is participant.library_position"
+  },
+  {
+   "card": "Waker of Waves",
+   "class": "A13 serial and gapped clauses",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "MOVE",
+      "dest": {
+       "zone": "hand"
+      }
+     },
+     {
+      "verb": "MOVE",
+      "flags": [
+       "gapped"
+      ],
+      "ref": "RESULT:0:OTHER",
+      "group_with": 1,
+      "dest": {
+       "zone": "graveyard"
+      }
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top N cards is participant.library_position"
+  },
+  {
+   "card": "Lava Dart",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "flashback"
+   },
+   "expect": {
+    "keywords": [
+     "flashback"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Lava Dart",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "DAMAGE"
+    ]
+   }
+  },
+  {
+   "card": "Cling to Dust",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "escape"
+   },
+   "expect": {
+    "keywords": [
+     "escape"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Cling to Dust",
+   "class": "A1/M3 keyword lines; A14 otherwise",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     },
+     {
+      "verb": "GAIN_LIFE",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "RESULT:0"
+      },
+      "otherwise": [
+       {
+        "verb": "DRAW"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Desperate Ritual",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "splice"
+   },
+   "expect": {
+    "keywords": [
+     "splice"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Desperate Ritual",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "ADD_MANA"
+    ]
+   }
+  },
+  {
+   "card": "Goryo's Vengeance",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "splice"
+   },
+   "expect": {
+    "keywords": [
+     "splice"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Into the Flood Maw",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "gift"
+   },
+   "expect": {
+    "keywords": [
+     "gift"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Unburial Rites",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "flashback"
+   },
+   "expect": {
+    "keywords": [
+     "flashback"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Unburial Rites",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "MOVE"
+    ]
+   }
+  },
+  {
+   "card": "Faithless Looting",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "flashback"
+   },
+   "expect": {
+    "keywords": [
+     "flashback"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Faithless Looting",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "DRAW",
+     "DISCARD"
+    ]
+   }
+  },
+  {
+   "card": "Past in Flames",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "flashback"
+   },
+   "expect": {
+    "keywords": [
+     "flashback"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Past in Flames",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "CONTINUOUS"
+    ]
+   }
+  },
+  {
+   "card": "Ephemerate",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "rebound"
+   },
+   "expect": {
+    "keywords": [
+     "rebound"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Ephemerate",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "battlefield",
+       "controller": "owner"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Consult the Star Charts",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "kicker"
+   },
+   "expect": {
+    "keywords": [
+     "kicker"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Orim's Chant",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "kicker"
+   },
+   "expect": {
+    "keywords": [
+     "kicker"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Orim's Chant",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "CONTINUOUS",
+     "CONTINUOUS"
+    ]
+   }
+  },
+  {
+   "card": "Consign to Memory",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "replicate"
+   },
+   "expect": {
+    "keywords": [
+     "replicate"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Consign to Memory",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "COUNTER"
+    ]
+   },
+   "known_gap": "'target triggered ability' is target.no_requirement (stack-ability targets are a T-solver feature)"
+  },
+  {
+   "card": "Vandalblast",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "overload"
+   },
+   "expect": {
+    "keywords": [
+     "overload"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Vandalblast",
+   "class": "A1/M3 keyword lines (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "DESTROY"
+    ]
+   }
+  },
+  {
+   "card": "Solitude",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "evoke"
+   },
+   "expect": {
+    "keywords": [
+     "evoke"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Subtlety",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "evoke"
+   },
+   "expect": {
+    "keywords": [
+     "evoke"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Street Wraith",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "cycling"
+   },
+   "expect": {
+    "keywords": [
+     "cycling"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Endurance",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "evoke"
+   },
+   "expect": {
+    "keywords": [
+     "evoke"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Detective's Phoenix",
+   "class": "A1/M3 keyword lines",
+   "face": 0,
+   "host": {
+    "kind": "KEYWORD",
+    "keyword": "bestow"
+   },
+   "expect": {
+    "keywords": [
+     "bestow"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Force of Negation",
+   "class": "A2 alternative costs",
+   "face": 0,
+   "host": {
+    "kind": "ALTERNATIVE_COST",
+    "nth": 0
+   },
+   "expect": {
+    "cost_condition": true,
+    "specs": []
+   }
+  },
+  {
+   "card": "Force of Vigor",
+   "class": "A2 alternative costs",
+   "face": 0,
+   "host": {
+    "kind": "ALTERNATIVE_COST",
+    "nth": 0
+   },
+   "expect": {
+    "cost_condition": true,
+    "specs": []
+   }
+  },
+  {
+   "card": "Force of Negation",
+   "class": "A15 instead-of destination override",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "flags": [
+       "dest_override"
+      ],
+      "dest": {
+       "zone": "exile",
+       "instead_of": "graveyard"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Force of Vigor",
+   "class": "A2 alternative costs (resolution host)",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "DESTROY"
+    ]
+   }
+  },
+  {
+   "card": "Emrakul, the Promised End",
+   "class": "A3 spell statics",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "stack",
+    "cost_modifiers": 1,
+    "specs": []
+   }
+  },
+  {
+   "card": "Scion of Draco",
+   "class": "A3 spell statics",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "stack",
+    "cost_modifiers": 1,
+    "specs": []
+   }
+  },
+  {
+   "card": "Leyline Binding",
+   "class": "A3 spell statics",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "stack",
+    "cost_modifiers": 1,
+    "specs": []
+   }
+  },
+  {
+   "card": "Hollow One",
+   "class": "A3 spell statics",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "stack",
+    "cost_modifiers": 1,
+    "specs": []
+   }
+  },
+  {
+   "card": "Obsidian Charmaw",
+   "class": "A3 spell statics",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "stack",
+    "cost_modifiers": 1,
+    "specs": []
+   }
+  },
+  {
+   "card": "Chandra, Awakened Inferno",
+   "class": "A3 spell statics",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "stack",
+    "flags": [
+     "uncounterable"
+    ],
+    "specs": []
+   }
+  },
+  {
+   "card": "Fire Magic",
+   "class": "A4 modal in reminder text",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "modes": [
+     {
+      "mode_cost": "{0}",
+      "verbs": [
+       "DAMAGE"
+      ]
+     },
+     {
+      "mode_cost": "{2}",
+      "verbs": [
+       "DAMAGE"
+      ]
+     },
+     {
+      "mode_cost": "{5}",
+      "verbs": [
+       "DAMAGE"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Territorial Kavu",
+   "class": "A4 modal trigger head",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_ATTACKS"
+    ],
+    "modes": [
+     {
+      "specs": [
+       {
+        "verb": "DISCARD",
+        "then": [
+         {
+          "verb": "DRAW",
+          "flags": [
+           "if_you_do"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "verbs": [
+       "EXILE"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Shivan Reef",
+   "class": "A6 mana abilities",
+   "face": 0,
+   "host": {
+    "kind": "MANA_ABILITY",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "ADD_MANA"
+     },
+     {
+      "verb": "DAMAGE",
+      "other": "SELF"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Talisman of Resilience",
+   "class": "A6 mana abilities",
+   "face": 0,
+   "host": {
+    "kind": "MANA_ABILITY",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "ADD_MANA"
+     },
+     {
+      "verb": "DAMAGE",
+      "other": "SELF"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Arena of Glory",
+   "class": "A6 mana abilities",
+   "face": 0,
+   "host": {
+    "kind": "MANA_ABILITY",
+    "nth": 1
+   },
+   "expect": {
+    "verbs": [
+     "ADD_MANA",
+     "CONTINUOUS"
+    ]
+   },
+   "known_gap": "'if any of that mana is spent on a creature spell' is condition.unparsed"
+  },
+  {
+   "card": "Gemstone Caverns",
+   "class": "A6 mana abilities; A15 leading instead",
+   "face": 0,
+   "host": {
+    "kind": "MANA_ABILITY",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "ADD_MANA"
+     },
+     {
+      "verb": "ADD_MANA",
+      "replaces": [
+       0
+      ],
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "SELF"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Utopia Sprawl",
+   "class": "A6 mana abilities",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "contains": "mana"
+   },
+   "expect": {
+    "flags": [
+     "mana_ability"
+    ],
+    "event_hints": [
+     "TAPPED_FOR_MANA"
+    ],
+    "verbs": [
+     "ADD_MANA"
+    ]
+   }
+  },
+  {
+   "card": "Badgermole Cub",
+   "class": "A6 mana abilities",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "contains": "mana"
+   },
+   "expect": {
+    "flags": [
+     "mana_ability"
+    ],
+    "event_hints": [
+     "TAPPED_FOR_MANA"
+    ],
+    "verbs": [
+     "ADD_MANA"
+    ]
+   }
+  },
+  {
+   "card": "Leyline of Abundance",
+   "class": "A6 mana abilities",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "contains": "mana"
+   },
+   "expect": {
+    "flags": [
+     "mana_ability"
+    ],
+    "event_hints": [
+     "TAPPED_FOR_MANA"
+    ],
+    "verbs": [
+     "ADD_MANA"
+    ]
+   }
+  },
+  {
+   "card": "Mishra's Bauble",
+   "class": "A7 printed-text costs",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "cost_items": {
+     "sacrifice_self": true,
+     "tap_self": true
+    }
+   }
+  },
+  {
+   "card": "Boseiju, Who Endures",
+   "class": "A8 cost modifiers",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "hand",
+    "cost_modifiers": 1,
+    "no_verbs": [
+     "COST_DELTA"
+    ],
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0,
+      "residue": [
+       "target.scope:opponent",
+       "target.union:enchantment",
+       "target.union:land"
+      ]
+     },
+     {
+      "verb": "SEARCH",
+      "optional": true,
+      "actor": "CONTROLLER_OF(TARGET:0:lki)",
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1",
+        "flags": [
+         "may_scope"
+        ],
+        "dest": {
+         "zone": "battlefield",
+         "tapped": true
+        }
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "may_scope"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "known_gap": "'a land card with a basic land type' is filter.unparsed"
+  },
+  {
+   "card": "Otawara, Soaring City",
+   "class": "A8 cost modifiers",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "from_zone": "hand",
+    "cost_modifiers": 1,
+    "specs": [
+     {
+      "verb": "MOVE",
+      "target_slot": 0,
+      "dest": {
+       "zone": "hand"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Past in Flames",
+   "class": "A8 flashback cost rule",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "CONTINUOUS",
+      "cost_rule": "mana_cost"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Snapcaster Mage",
+   "class": "A8 flashback cost rule",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "CONTINUOUS",
+      "target_slot": 0,
+      "cost_rule": "mana_cost"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Tamiyo, Inquisitive Student",
+   "class": "A9 pronoun case",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "ref": "SELF"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "SELF",
+      "dest": {
+       "zone": "battlefield",
+       "transformed": true,
+       "controller": "owner"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Ajani, Nacatl Pariah",
+   "class": "A9 pronoun case",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "ref": "SELF",
+      "optional": true,
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "SELF",
+        "dest": {
+         "zone": "battlefield",
+         "transformed": true,
+         "controller": "owner"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Ral, Monsoon Mage",
+   "class": "A9 pronoun case",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "UNMODELLED"
+     },
+     {
+      "verb": "DAMAGE"
+     },
+     {
+      "verb": "EXILE",
+      "ref": "SELF",
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "SELF",
+        "dest": {
+         "transformed": true,
+         "controller": "owner"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "known_gap": "'flip a coin' is recognised-unsupported and 'if you lose/win the flip' is condition.coin_flip"
+  },
+  {
+   "card": "Kaito, Bane of Nightmares",
+   "class": "A9 pronoun case",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 0
+   },
+   "expect": {
+    "verbs": [
+     "CONTINUOUS",
+     "CONTINUOUS"
+    ]
+   }
+  },
+  {
+   "card": "Urza's Saga",
+   "class": "A10 nested quotes",
+   "face": 0,
+   "host": {
+    "kind": "CHAPTER",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "CONTINUOUS",
+      "ref": "SELF",
+      "mod_kind": "GRANT_ABILITY",
+      "granted": [
+       {
+        "kind": "ACTIVATED",
+        "specs": [
+         {
+          "verb": "CREATE_TOKEN",
+          "granted": [
+           {
+            "kind": "STATIC",
+            "specs": [
+             {
+              "verb": "CONTINUOUS",
+              "mod_kind": "MODIFY_PT",
+              "ref": "SELF",
+              "amount": {
+               "kind": "FOR_EACH",
+               "quantity": {
+                "kind": "COUNT"
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ],
+        "cost_items": {
+         "tap_self": true,
+         "sacrifice_self": false
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Basking Broodscale",
+   "class": "A7 granted cost read from print",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "CREATE_TOKEN",
+      "granted": [
+       {
+        "kind": "MANA_ABILITY",
+        "cost_items": {
+         "sacrifice_self": true
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Orcish Bowmasters",
+   "class": "A11 disjunctive heads",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_ENTERS",
+     "DRAW"
+    ]
+   }
+  },
+  {
+   "card": "Cityscape Leveler",
+   "class": "A11 disjunctive heads",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_CAST",
+     "SELF_ATTACKS"
+    ],
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0
+     },
+     {
+      "verb": "CREATE_TOKEN",
+      "actor": "CONTROLLER_OF(TARGET:0:lki)"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Ajani, Nacatl Pariah",
+   "class": "A12 faces and loyalty; A30 reflexive sub-ability",
+   "face": 1,
+   "host": {
+    "kind": "LOYALTY",
+    "slot": "zero"
+   },
+   "expect": {
+    "loyalty_cost": {
+     "kind": "LITERAL",
+     "n": 0
+    },
+    "targets": 0,
+    "specs": [
+     {
+      "verb": "CREATE_TOKEN",
+      "then": [
+       {
+        "verb": "CREATE_TRIGGER",
+        "flags": [
+         "reflexive"
+        ],
+        "sub": {
+         "kind": "REFLEXIVE",
+         "host": {
+          "targets": 1,
+          "intervening_if": true,
+          "specs": [
+           {
+            "verb": "DAMAGE",
+            "target_slot": 0,
+            "other": "SELF",
+            "amount": {
+             "kind": "EQUAL_TO"
+            }
+           }
+          ]
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Ral, Monsoon Mage",
+   "class": "A12 faces and loyalty; A35/A19 resolution choices",
+   "face": 1,
+   "host": {
+    "kind": "LOYALTY",
+    "slot": "minus"
+   },
+   "expect": {
+    "loyalty_cost": {
+     "kind": "LITERAL",
+     "n": -2
+    },
+    "specs": [
+     {
+      "verb": "UNMODELLED",
+      "stage": "TARGET"
+     },
+     {
+      "verb": "DRAW"
+     }
+    ]
+   },
+   "note": "the doc's expected parse: DIVIDED damage is UNMODELLED(TARGET) until the 'one or two targets' solver feature",
+   "known_gap": "the divided-damage clause refuses at patterns.no_recipient (AMOUNT/CLAUSE) before the target leaf sees it"
+  },
+  {
+   "card": "Tamiyo, Inquisitive Student",
+   "class": "A12 faces and loyalty",
+   "face": 1,
+   "host": {
+    "kind": "LOYALTY",
+    "slot": "minus"
+   },
+   "expect": {
+    "loyalty_cost": {
+     "kind": "LITERAL",
+     "n": -3
+    },
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "MOVE",
+      "target_slot": 0,
+      "dest": {
+       "zone": "hand"
+      }
+     },
+     {
+      "verb": "ADD_MANA",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "RESULT:0"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Chandra, Awakened Inferno",
+   "class": "A12 faces and loyalty",
+   "face": 0,
+   "host": {
+    "kind": "LOYALTY",
+    "nth": 2
+   },
+   "expect": {
+    "loyalty_cost": {
+     "kind": "X",
+     "n": -1
+    },
+    "loyalty_slot": "",
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "DAMAGE",
+      "target_slot": 0,
+      "other": "SELF"
+     },
+     {
+      "verb": "UNMODELLED",
+      "stage": "REPLACEMENT"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Grist, the Hunger Tide",
+   "class": "A12 faces and loyalty; A30 reflexive sub-ability",
+   "face": 0,
+   "host": {
+    "kind": "LOYALTY",
+    "slot": "minus"
+   },
+   "expect": {
+    "targets": 0,
+    "specs": [
+     {
+      "verb": "SACRIFICE",
+      "optional": true,
+      "then": [
+       {
+        "verb": "CREATE_TRIGGER",
+        "sub": {
+         "kind": "REFLEXIVE",
+         "host": {
+          "targets": 1,
+          "specs": [
+           {
+            "verb": "DESTROY",
+            "target_slot": 0
+           }
+          ]
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Fatal Push",
+   "class": "A23 rule 0; A15 instead",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0,
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "TARGET:0"
+      }
+     },
+     {
+      "verb": "DESTROY",
+      "ref": "TARGET:0",
+      "replaces": [
+       0
+      ],
+      "condition": {
+       "kind": "ALL_OF"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Prismatic Ending",
+   "class": "A23 rule 0",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0,
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "TARGET:0"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Spell Pierce",
+   "class": "A23 rule 0",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "condition": {
+       "kind": "UNLESS",
+       "ref": "CONTROLLER_OF(TARGET:0)"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Mana Tithe",
+   "class": "A23 rule 0",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "condition": {
+       "kind": "UNLESS",
+       "ref": "CONTROLLER_OF(TARGET:0)"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Mystical Dispute",
+   "class": "A23 rule 0",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "condition": {
+       "kind": "UNLESS",
+       "ref": "CONTROLLER_OF(TARGET:0)"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Metallic Rebuke",
+   "class": "A23 rule 0",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "condition": {
+       "kind": "UNLESS",
+       "ref": "CONTROLLER_OF(TARGET:0)"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Flusterstorm",
+   "class": "A23 rule 0",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "condition": {
+       "kind": "UNLESS",
+       "ref": "CONTROLLER_OF(TARGET:0)"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Stubborn Denial",
+   "class": "A23 rule 0; A15 instead",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "COUNTER",
+      "target_slot": 0,
+      "condition": {
+       "kind": "UNLESS",
+       "ref": "CONTROLLER_OF(TARGET:0)"
+      }
+     },
+     {
+      "verb": "COUNTER",
+      "ref": "TARGET:0",
+      "replaces": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Drown in the Loch",
+   "class": "A23 rule 0; modal targets share one mode group",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "modes": [
+     {
+      "targets": 1,
+      "mode_groups": [
+       1
+      ],
+      "specs": [
+       {
+        "verb": "COUNTER",
+        "target_slot": 0
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "mode_groups": [
+       1
+      ],
+      "specs": [
+       {
+        "verb": "DESTROY",
+        "target_slot": 0
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Scion of Draco",
+   "class": "A23 member conditions",
+   "face": 0,
+   "host": {
+    "kind": "STATIC",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "ADD_KEYWORDS",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "MEMBER"
+      }
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "ADD_KEYWORDS",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "MEMBER"
+      }
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "ADD_KEYWORDS",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "MEMBER"
+      }
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "ADD_KEYWORDS",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "MEMBER"
+      }
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "ADD_KEYWORDS",
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "MEMBER"
+      }
+     }
+    ]
+   },
+   "known_gap": "'has vigilance if it's white, hexproof if it's blue, ...' is amount.scaler:if (the payload leaf has no per-keyword condition list)"
+  },
+  {
+   "card": "Guide of Souls",
+   "class": "A30 reflexive sub-ability",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 1
+   },
+   "expect": {
+    "targets": 0,
+    "specs": [
+     {
+      "verb": "PAY",
+      "optional": true,
+      "then": [
+       {
+        "verb": "CREATE_TRIGGER",
+        "sub": {
+         "kind": "REFLEXIVE",
+         "host": {
+          "targets": 1,
+          "specs": [
+           {
+            "verb": "PUT_COUNTERS",
+            "target_slot": 0
+           },
+           {
+            "verb": "CONTINUOUS",
+            "mod_kind": "ADD_TYPES",
+            "ref": "TARGET:0"
+           }
+          ]
+         }
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "known_gap": "'target attacking creature' is target.no_requirement:attacking (a T-solver state feature)"
+  },
+  {
+   "card": "Kappa Cannoneer",
+   "class": "A24/M2 mentions",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_ENTERS",
+     "OTHER_ENTERS"
+    ],
+    "specs": [
+     {
+      "verb": "PUT_COUNTERS",
+      "ref": "SELF"
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "PROHIBIT",
+      "ref": "SELF"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Blade of the Bloodchief",
+   "class": "A24/M2 mentions",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "PUT_COUNTERS",
+      "ref": "ATTACHED"
+     },
+     {
+      "verb": "PUT_COUNTERS",
+      "ref": "ATTACHED",
+      "replaces": [
+       0
+      ],
+      "condition": {
+       "kind": "OBJECT",
+       "ref": "ATTACHED"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Phelia, Exuberant Shepherd",
+   "class": "A25/A30/A34 delay scope",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     },
+     {
+      "verb": "CREATE_TRIGGER",
+      "sub": {
+       "kind": "DELAYED",
+       "timing": "NEXT_END_STEP",
+       "host": {
+        "targets": 0,
+        "specs": [
+         {
+          "verb": "MOVE",
+          "ref": "RESULT:0"
+         },
+         {
+          "verb": "PUT_COUNTERS",
+          "ref": "SELF",
+          "condition": {
+           "kind": "OBJECT",
+           "ref": "RESULT:2"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   },
+   "known_gap": "'if it entered under your control' is condition.unparsed:it"
+  },
+  {
+   "card": "Goryo's Vengeance",
+   "class": "A25/A30/A34 delay scope",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "MOVE",
+      "target_slot": 0,
+      "dest": {
+       "zone": "battlefield"
+      }
+     },
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "ADD_KEYWORDS",
+      "ref": "RESULT:0"
+     },
+     {
+      "verb": "CREATE_TRIGGER",
+      "sub": {
+       "kind": "DELAYED",
+       "timing": "NEXT_END_STEP",
+       "host": {
+        "targets": 0,
+        "specs": [
+         {
+          "verb": "EXILE",
+          "ref": "RESULT:0"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Engineered Explosives",
+   "class": "A27 last-known information",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "contains": "destroy each"
+   },
+   "expect": {
+    "cost_items": {
+     "sacrifice_self": true
+    },
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "filter_stat_ref": "SELF:lki"
+     }
+    ]
+   },
+   "known_gap": "'with mana value equal to the number of ... counters on ~' is filter.stat; a printed-name sacrifice ('Sacrifice <name>') is read by the cost owner as unpayable, not sacrifice_self"
+  },
+  {
+   "card": "The Filigree Sylex",
+   "class": "A27 last-known information",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "contains": "destroy each"
+   },
+   "expect": {
+    "cost_items": {
+     "sacrifice_self": true
+    },
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "filter_stat_ref": "SELF:lki"
+     }
+    ]
+   },
+   "known_gap": "'with mana value equal to the number of ... counters on ~' is filter.stat; a printed-name sacrifice ('Sacrifice <name>') is read by the cost owner as unpayable, not sacrifice_self"
+  },
+  {
+   "card": "Ugin, Eye of the Storms",
+   "class": "A21 target residue",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0,
+      "residue": [
+       "target.colored"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Devourer of Destiny",
+   "class": "A21 target residue",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0,
+      "residue": [
+       "target.colored"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Sink into Stupor",
+   "class": "A21 target residue",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 0,
+    "specs": [
+     {
+      "verb": "UNMODELLED",
+      "stage": "TARGET",
+      "detail": "target.zone_union"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Ulamog, the Ceaseless Hunger",
+   "class": "A41 cast-trigger carriers",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_CAST"
+    ],
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "card": "Sowing Mycospawn",
+   "class": "A41 cast-trigger carriers",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_CAST"
+    ],
+    "specs": [
+     {
+      "verb": "SEARCH"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0",
+      "dest": {
+       "zone": "battlefield"
+      }
+     },
+     {
+      "verb": "SHUFFLE"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Sowing Mycospawn",
+   "class": "A41 cast-trigger carriers (kicked intervening-if)",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 1
+   },
+   "expect": {
+    "event_hints": [
+     "SELF_CAST"
+    ],
+    "intervening_if": true,
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "card": "Into the Flood Maw",
+   "class": "A15 instead with a restated target",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 2,
+    "target_alts": [
+     [
+      0,
+      1
+     ]
+    ],
+    "specs": [
+     {
+      "verb": "MOVE",
+      "target_slot": 0,
+      "dest": {
+       "zone": "hand"
+      }
+     },
+     {
+      "verb": "MOVE",
+      "target_slot": 1,
+      "replaces": [
+       0
+      ],
+      "condition": {
+       "kind": "CAST_FACT"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Consult the Star Charts",
+   "class": "A15/A28 kicked REST",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:ONE"
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:ONE",
+      "replaces": [
+       1
+      ]
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:REST"
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top N cards is participant.library_position"
+  },
+  {
+   "card": "Seasoned Pyromancer",
+   "class": "A16 for-each amounts",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "DISCARD"
+     },
+     {
+      "verb": "DRAW"
+     },
+     {
+      "verb": "CREATE_TOKEN",
+      "amount": {
+       "kind": "FOR_EACH",
+       "quantity": {
+        "kind": "RESULT_SIZE",
+        "ref": "RESULT:0"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "card": "Omnath, Locus of Creation",
+   "class": "A17 recipient unions",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 1
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "GAIN_LIFE"
+     },
+     {
+      "verb": "ADD_MANA"
+     },
+     {
+      "verb": "DAMAGE",
+      "other": "SELF"
+     },
+     {
+      "verb": "DAMAGE",
+      "other": "SELF",
+      "group_with": 2
+     }
+    ]
+   }
+  },
+  {
+   "card": "Risen Reef",
+   "class": "A14 connectives",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "MOVE",
+      "optional": true,
+      "ref": "RESULT:0",
+      "otherwise": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:0",
+        "dest": {
+         "zone": "hand"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top card is participant.library_position"
+  },
+  {
+   "card": "Formidable Speaker",
+   "class": "A14 connectives",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "DISCARD",
+      "optional": true,
+      "then": [
+       {
+        "verb": "SEARCH",
+        "flags": [
+         "if_you_do"
+        ]
+       },
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1",
+        "flags": [
+         "if_you_do"
+        ]
+       },
+       {
+        "verb": "SHUFFLE",
+        "flags": [
+         "if_you_do"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Galvanic Discharge",
+   "class": "A35/A19 resolution choices",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "CHOOSE",
+      "target_slot": 0
+     },
+     {
+      "verb": "PLAYER_COUNTERS"
+     },
+     {
+      "verb": "PAY",
+      "optional": true
+     },
+     {
+      "verb": "DAMAGE",
+      "ref": "TARGET:0",
+      "amount": {
+       "kind": "THAT_MUCH",
+       "ref": "RESULT:2"
+      }
+     }
+    ]
+   },
+   "note": "the doc's PAY ANY_NUMBER is carried by the PAY payload; the chain pins the THAT_MUCH binding"
+  },
+  {
+   "card": "Day's Undoing",
+   "class": "A18 shuffle into",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "MOVE",
+      "actor": "SELECTOR:ALL_PLAYERS",
+      "dest": {
+       "zone": "library",
+       "position": "shuffle"
+      }
+     },
+     {
+      "verb": "DRAW"
+     },
+     {
+      "verb": "END_TURN"
+     }
+    ]
+   },
+   "known_gap": "'their hand and graveyard' is participant.reference:their"
+  },
+  {
+   "card": "Monumental Henge",
+   "class": "A19 filter classes",
+   "face": 0,
+   "host": {
+    "kind": "ACTIVATED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "REVEAL",
+      "optional": true,
+      "filter_classes": [
+       "historic"
+      ],
+      "then": [
+       {
+        "verb": "MOVE",
+        "ref": "RESULT:1"
+       }
+      ]
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:REST"
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top N cards is participant.library_position"
+  },
+  {
+   "card": "Practiced Offense",
+   "class": "A20/A36 printed target order",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 2,
+    "specs": [
+     {
+      "verb": "PUT_COUNTERS"
+     },
+     {
+      "verb": "CONTINUOUS",
+      "target_slot": 1
+     }
+    ]
+   },
+   "known_gap": "'each creature target player controls' is patterns.possessive_object; 'your choice of double strike or lifelink' is payload.modification_unknown"
+  },
+  {
+   "card": "Kozilek's Command",
+   "class": "A20/A36 printed target order",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "modes": [
+     {
+      "targets": 1,
+      "specs": [
+       {
+        "verb": "CREATE_TOKEN",
+        "actor": "TARGET:0"
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "specs": [
+       {
+        "verb": "SCRY",
+        "actor": "TARGET:0"
+       },
+       {
+        "verb": "DRAW",
+        "actor": "TARGET:0"
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "specs": [
+       {
+        "verb": "EXILE",
+        "target_slot": 0
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "specs": [
+       {
+        "verb": "EXILE",
+        "target_slot": 0
+       }
+      ]
+     }
+    ]
+   },
+   "known_gap": "'target player scries X' is amount.x_unbound; 'up to X target cards' is target.no_requirement:cards"
+  },
+  {
+   "card": "Warping Wail",
+   "class": "A20/A36 printed target order",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "modes": [
+     {
+      "targets": 1,
+      "mode_groups": [
+       1
+      ],
+      "specs": [
+       {
+        "verb": "EXILE",
+        "target_slot": 0
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "mode_groups": [
+       1
+      ],
+      "specs": [
+       {
+        "verb": "COUNTER",
+        "target_slot": 0
+       }
+      ]
+     },
+     {
+      "targets": 0,
+      "specs": [
+       {
+        "verb": "CREATE_TOKEN"
+       },
+       {
+        "verb": "CONTINUOUS",
+        "ref": "RESULT:0",
+        "mod_kind": "GRANT_ABILITY"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Untimely Malfunction",
+   "class": "A20/A36 printed target order",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "modes": [
+     {
+      "targets": 1,
+      "specs": [
+       {
+        "verb": "DESTROY",
+        "target_slot": 0
+       }
+      ]
+     },
+     {
+      "targets": 2,
+      "specs": [
+       {
+        "verb": "CHANGE_TARGETS"
+       }
+      ]
+     },
+     {
+      "targets": 1,
+      "specs": [
+       {
+        "verb": "CONTINUOUS",
+        "target_slot": 0
+       }
+      ]
+     }
+    ]
+   },
+   "known_gap": "'change the target of target spell or ability' is patterns.no_row:change_targets"
+  },
+  {
+   "card": "Zimone's Experiment",
+   "class": "A29 may-scope",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "LOOK"
+     },
+     {
+      "verb": "REVEAL",
+      "optional": true,
+      "then": []
+     },
+     {
+      "verb": "MOVE",
+      "ref": "RESULT:0:REST"
+     },
+     {
+      "verb": "MOVE",
+      "dest": {
+       "zone": "battlefield",
+       "tapped": true
+      }
+     },
+     {
+      "verb": "MOVE",
+      "dest": {
+       "zone": "hand"
+      }
+     }
+    ]
+   },
+   "known_gap": "LOOK at the top N cards is participant.library_position"
+  },
+  {
+   "card": "Living End",
+   "class": "A33 simultaneous actors",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "actor": "SELECTOR:ALL_PLAYERS"
+     },
+     {
+      "verb": "SACRIFICE",
+      "actor": "SELECTOR:ALL_PLAYERS"
+     },
+     {
+      "verb": "MOVE",
+      "actor": "SELECTOR:ALL_PLAYERS",
+      "ref": "RESULT:0:per_actor",
+      "dest": {
+       "zone": "battlefield"
+      }
+     }
+    ]
+   },
+   "known_gap": "'all cards they exiled this way' is filter.unparsed:they"
+  },
+  {
+   "card": "Wistfulness",
+   "class": "A39 domain masks",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "intervening_if": true,
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "card": "Leyline Binding",
+   "class": "A39 domain masks",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "EXILE",
+      "target_slot": 0,
+      "duration": "UNTIL_LEAVES"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Violent Outburst",
+   "class": "A22 value-typed filters",
+   "face": 0,
+   "host": {
+    "kind": "SPELL",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "CONTINUOUS",
+      "mod_kind": "MODIFY_PT",
+      "subject_controller": "you"
+     }
+    ]
+   }
+  },
+  {
+   "card": "Witch Enchanter",
+   "class": "A36 owner pickers",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "targets": 1,
+    "specs": [
+     {
+      "verb": "DESTROY",
+      "target_slot": 0
+     }
+    ]
+   }
+  }
+ ]
+}

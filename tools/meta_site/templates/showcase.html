@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MTGSimManu Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650;12..96,750&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/*@TOKENS*/
+.page > *, section > * { min-width: 0; }
+.page { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: var(--s-6) var(--s-7); display: grid; gap: var(--s-7); }
+section { display: grid; gap: var(--s-4); }
+.sh { display: grid; gap: .4rem; max-width: 68ch; }
+.sh h2 { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); }
+.sh p { margin: 0; color: var(--ink-2); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: var(--s-6); align-items: center; }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.hero h1 { font-size: clamp(2.3rem, 1.4rem + 4vw, 4.4rem); line-height: .98; font-weight: 750; letter-spacing: -.025em; }
+.hero p { color: var(--ink-2); font-size: var(--s-3); max-width: 52ch; margin: 0; }
+.hero .cta { display: flex; flex-wrap: wrap; gap: .6rem; }
+.btn { display: inline-flex; align-items: center; gap: .4rem; font: 600 var(--s-2)/1 var(--f-body); padding: .7rem 1rem; border-radius: 4px; text-decoration: none; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+.mosaic { display: grid; gap: 2px; aspect-ratio: 1; width: 100%; max-width: 520px; justify-self: center; padding: 10px; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: var(--shadow); }
+.mosaic i { display: block; border-radius: 1px; }
+.mosaic i.self { background: var(--paper); }
+.figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+@media (max-width: 700px) { .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.fig { padding: var(--s-3) var(--s-3) var(--s-3) 0; display: grid; gap: .2rem; }
+.fig + .fig { padding-left: var(--s-3); border-left: 1px solid var(--rule); }
+@media (max-width: 700px) { .fig:nth-child(3) { border-left: 0; padding-left: 0; } .fig:nth-child(n+3) { border-top: 1px solid var(--rule); } }
+.fig .v { font: 600 clamp(1.5rem, 1.2rem + 1vw, 2.1rem)/1.1 var(--f-data); }
+.fig .k { color: var(--ink-3); font-size: var(--s-1); }
+
+/* Field vs bands */
+.field { display: grid; gap: 2px; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--s-3); overflow-x: auto; }
+.frow { display: grid; grid-template-columns: minmax(10rem, 14rem) minmax(260px, 1fr) 4rem 6.5rem; gap: .8rem; align-items: center; min-width: 620px; padding: .2rem 0; }
+.frow .nm { font-weight: 600; }
+.frow .nm small { display: block; font-weight: 400; color: var(--ink-3); text-transform: capitalize; }
+.track { position: relative; height: 18px; border-radius: 2px; background: var(--paper); }
+.track .band { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--win) 18%, transparent); border-left: 1px solid color-mix(in srgb, var(--win) 55%, transparent); border-right: 1px solid color-mix(in srgb, var(--win) 55%, transparent); }
+.track .mid { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--rule); }
+.track .dot { position: absolute; top: 3px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--ink); }
+.track .dot.out { background: var(--lose); }
+.axis { display: grid; grid-template-columns: minmax(10rem, 14rem) minmax(260px, 1fr) 4rem 6.5rem; gap: .8rem; min-width: 620px; color: var(--ink-3); font: 500 var(--s-1)/1 var(--f-data); }
+.axis span:nth-child(2) { display: flex; justify-content: space-between; }
+
+/* Timeline */
+.tl { display: grid; gap: 0; border-left: 2px solid var(--rule); margin-left: .4rem; }
+.tl details { position: relative; padding: 0 0 var(--s-4) var(--s-4); }
+.tl details::before { content: ""; position: absolute; left: -7px; top: .45rem; width: 12px; height: 12px; border-radius: 50%; background: var(--sheet); border: 2px solid var(--win); }
+.tl details.p1::before { border-color: var(--lose); }
+.tl summary { cursor: pointer; list-style: none; display: grid; gap: .25rem; max-width: 76ch; }
+.tl summary::-webkit-details-marker { display: none; }
+.tl summary h3 { font-size: var(--s-4); }
+.tl summary p { margin: 0; color: var(--ink-2); }
+.tl ul { margin: .6rem 0 0; padding-left: 1.1rem; color: var(--ink-2); font-size: var(--s-1); display: grid; gap: .25rem; max-width: 80ch; }
+.more { font: 600 var(--s-1)/1 var(--f-body); color: var(--accent); }
+
+/* Pipeline */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-3); counter-reset: st; }
+@media (max-width: 860px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.step { counter-increment: st; display: grid; gap: .45rem; padding: var(--s-3); background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); align-content: start; }
+.step h3 { font-size: var(--s-3); }
+.step h3::before { content: counter(st) " "; font-family: var(--f-data); color: var(--accent); }
+.step p { margin: 0; color: var(--ink-2); font-size: var(--s-2); }
+.step code { font: 500 var(--s-1)/1.45 var(--f-data); color: var(--ink-2); background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; padding: .4rem .5rem; display: block; overflow-x: auto; white-space: pre-wrap; }
+
+/* Layers */
+.layers { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.layers details { border-bottom: 1px solid var(--rule); padding: var(--s-3) 0; }
+.layers summary { cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: baseline; }
+.layers summary h3 { font-size: var(--s-4); }
+.layers summary span { color: var(--ink-3); font-size: var(--s-1); }
+.layers p { color: var(--ink-2); max-width: 76ch; }
+.files { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: .5rem; }
+.file { font-size: var(--s-1); color: var(--ink-2); padding: .5rem .6rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--sheet); }
+.file b { display: block; font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink); }
+
+/* Replays + roadmap */
+.reps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: .5rem; }
+.rep { display: grid; gap: .2rem; padding: .7rem .8rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--sheet); text-decoration: none; color: var(--ink); }
+.rep:hover { border-color: var(--accent); }
+.rep small { color: var(--ink-3); font-family: var(--f-data); }
+.road { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--s-3); }
+.ri { display: grid; gap: .4rem; padding: var(--s-3); border: 1px solid var(--rule); border-radius: var(--radius); background: var(--sheet); align-content: start; }
+.ri p { margin: 0; color: var(--ink-2); }
+.state { justify-self: start; }
+.state.next { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.state.blocked { color: var(--lose); border-color: color-mix(in srgb, var(--lose) 45%, transparent); }
+footer span { overflow-wrap: anywhere; }
+footer { border-top: 1px solid var(--rule); padding-top: var(--s-4); color: var(--ink-3); font-size: var(--s-1); display: grid; gap: .4rem; }
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="hero" aria-labelledby="h1">
+    <div style="display:grid;gap:var(--s-4)">
+      <span class="label" id="eyebrow"></span>
+      <h1 id="h1">Every Modern matchup, played to the end.</h1>
+      <p id="lede"></p>
+      <div class="cta"><a class="btn" id="to-matrix" href="#">Open the matrix</a><a class="btn ghost" id="to-repo" href="#">Source on GitHub</a></div>
+    </div>
+    <div class="mosaic" id="mosaic" role="img" aria-label="Win-rate matrix of every registered deck against every other"></div>
+  </section>
+
+  <div class="figs" id="figs"></div>
+
+  <section aria-labelledby="f-h">
+    <div class="sh"><span class="label">Calibration</span><h2 id="f-h">Where each deck lands against its expected band</h2>
+      <p id="f-p"></p></div>
+    <div class="field" id="field"></div>
+  </section>
+
+  <section aria-labelledby="t-h">
+    <div class="sh"><span class="label">Engine changelog</span><h2 id="t-h">What changed, and what it moved</h2>
+      <p>Each entry is a class of rules or AI behaviour, fixed once for every card it covers, with the measurement that judged it.</p></div>
+    <div class="tl" id="tl"></div>
+  </section>
+
+  <section aria-labelledby="p-h">
+    <div class="sh"><span class="label">The AI</span><h2 id="p-h">How a play is chosen</h2>
+      <p>Six steps run on every priority the AI holds. Every number is in the same unit, turns of clock and life, so a burn spell and a creature compete on one scale.</p></div>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <section aria-labelledby="l-h">
+    <div class="sh"><span class="label">Architecture</span><h2 id="l-h">The layers, and the files that own them</h2></div>
+    <div class="layers" id="layers"></div>
+  </section>
+
+  <section aria-labelledby="r-h">
+    <div class="sh"><span class="label">Replays</span><h2 id="r-h">Watch a match turn by turn</h2>
+      <p>Best-of-three logs rendered with board states, combat breakdowns and the AI's reasoning for each play.</p></div>
+    <div class="reps" id="reps"></div>
+  </section>
+
+  <section aria-labelledby="rd-h">
+    <div class="sh"><span class="label">Roadmap</span><h2 id="rd-h">What comes next</h2></div>
+    <div class="road" id="road"></div>
+  </section>
+
+  <section aria-labelledby="lg-h">
+    <div class="sh"><span class="label">Sister project</span><h2 id="lg-h"></h2><p id="lg-p"></p>
+      <p><a id="lg-a" href="#">Open the Legacy showcase</a></p></div>
+  </section>
+
+  <footer id="foot"></footer>
+</main>
+
+<!--@DATA-->
+<script>
+const S = JSON.parse(document.getElementById('site-data').textContent);
+const D = S.decks, N = D.length, P = S.prov, C = S.content, proj = C.project || {};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n).toLocaleString('en-US');
+const css = getComputedStyle(document.documentElement);
+function heat(v) {
+  const p = k => css.getPropertyValue(k).trim().split(/\s+/).map(parseFloat);
+  const lo = p('--heat-lo'), mid = p('--heat-mid'), hi = p('--heat-hi');
+  const [a, b, t] = v <= 50 ? [lo, mid, v / 50] : [mid, hi, (v - 50) / 50];
+  const m = a.map((x, k) => x + (b[k] - x) * t);
+  return `hsl(${m[0]} ${m[1]}% ${m[2]}%)`;
+}
+const links = proj.links || {};
+const order = [...D.keys()].sort((a, b) => D[b].weighted_wr - D[a].weighted_wr);
+
+function hero() {
+  document.getElementById('eyebrow').textContent = `${proj.name || 'MTGSimManu'} · Modern · run of ${P.generated.slice(0, 10)}`;
+  document.getElementById('lede').textContent =
+    `${N} competitive Modern decks, each paired against every other ${P.n_per_pair} times in best-of-three with sideboards. ` +
+    `${fmt(P.total_matches)} matches, played by an AI that scores every play in turns of clock, on an engine that records every rule it breaks.`;
+  document.getElementById('to-matrix').href = links.matrix || 'modern_meta_matrix_full.html';
+  document.getElementById('to-repo').href = links.repo || '#';
+  const mo = document.getElementById('mosaic');
+  mo.style.gridTemplateColumns = `repeat(${N}, minmax(0, 1fr))`;
+  let h = '';
+  order.forEach(i => order.forEach(j => {
+    if (i === j) { h += '<i class="self"></i>'; return; }
+    const v = S.m[i][j];
+    h += `<i style="background:${heat(v)}" title="${esc(D[i].name)} ${v.toFixed(0)}% vs ${esc(D[j].name)}"></i>`;
+  }));
+  mo.innerHTML = h;
+  const cb = proj.codebase || {};
+  const figs = [[fmt(P.total_matches), `best-of-three matches at ${P.n_per_pair} per pairing`],
+    [`${S.cal.decks_in_band}/${S.cal.decks_total}`, 'decks inside their calibration band'],
+    [P.rules_audit_violations == null ? '—' : fmt(P.rules_audit_violations), 'rule violations recorded by the runtime auditor'],
+    [fmt((cb.engine_lines || 0) + (cb.ai_lines || 0)), `lines across ${fmt((cb.engine_modules || 0) + (cb.ai_modules || 0))} engine and AI modules`]];
+  document.getElementById('figs').innerHTML = figs.map(([v, k]) => `<div class="fig"><span class="v">${esc(v)}</span><span class="k">${esc(k)}</span></div>`).join('');
+}
+
+function field() {
+  document.getElementById('f-p').textContent =
+    `Each band is the field win rate a deck should reach in real Modern (tools/calibration_bands.json). The dot is the deck's flat win rate in this run; red dots fall outside. ${S.cal.decks_in_band} of ${S.cal.decks_total} are in band.`;
+  let h = '<div class="axis"><span></span><span><span>0%</span><span>50%</span><span>100%</span></span><span style="text-align:right">flat</span><span>verdict</span></div>';
+  order.forEach(i => {
+    const d = D[i], out = d.band_verdict !== 'in';
+    h += `<div class="frow"><div class="nm">${esc(d.name)}<small>${esc(d.archetype)} · ${d.meta_share.toFixed(1)}% of field</small></div>
+      <div class="track" title="Expected ${d.band[0]}–${d.band[1]}%"><span class="band" style="left:${d.band[0]}%;width:${d.band[1] - d.band[0]}%"></span><span class="mid"></span><span class="dot ${out ? 'out' : ''}" style="left:${Math.max(0, Math.min(100, d.flat_wr))}%"></span></div>
+      <div class="num" style="text-align:right">${d.flat_wr.toFixed(1)}</div>
+      <div><span class="chip verdict-${d.band_verdict}">${d.band_verdict === 'in' ? 'in band' : d.band_verdict + ' band'}</span></div></div>`;
+  });
+  document.getElementById('field').innerHTML = h;
+}
+
+function timeline() {
+  const es = (C.timeline && C.timeline.entries) || [];
+  document.getElementById('tl').innerHTML = es.map((e, k) => `<details class="${e.status === 'p1' ? 'p1' : ''}" ${k < 3 ? 'open' : ''}>
+    <summary><span class="label">${esc(e.label)}</span><h3>${esc(e.title)}</h3><p>${esc(e.summary)}</p>${k < 3 ? '' : '<span class="more">Details</span>'}</summary>
+    <ul>${(e.details || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>`).join('');
+}
+
+function pipeline() {
+  const st = (C.architecture && C.architecture.pipeline) || [];
+  document.getElementById('steps').innerHTML = st.map(s => `<div class="step"><h3>${esc(s.title)}</h3><p>${esc(s.body)}</p><code>${esc(s.formula)}</code></div>`).join('');
+  const ly = (C.architecture && C.architecture.layers) || [];
+  document.getElementById('layers').innerHTML = ly.map(l => `<details><summary><h3>${esc(l.title)}</h3><span>${(l.files || []).length} files</span></summary>
+    <p>${esc(l.body)}</p><div class="files">${(l.files || []).map(f => `<div class="file"><b>${esc(f.name)}</b>${esc(f.note)}</div>`).join('')}</div></details>`).join('');
+}
+
+function replays() {
+  const base = links.replays_base || '';
+  const rs = [...(S.replays || [])].sort((a, b) => b.seed - a.seed).slice(0, 12);
+  document.getElementById('reps').innerHTML = rs.length ? rs.map(r => `<a class="rep" href="${esc(base + r.path)}"><span>${esc(r.title)}</span><small>seed ${r.seed}</small></a>`).join('')
+    : '<p class="note">No rendered replays are committed yet.</p>';
+}
+
+function roadmap() {
+  const it = (C.roadmap && C.roadmap.items) || [];
+  document.getElementById('road').innerHTML = it.map(r => `<div class="ri"><span class="chip state ${esc(r.state)}">${esc(r.state)}</span><h3>${esc(r.title)}</h3><p>${esc(r.body)}</p></div>`).join('');
+  const lg = proj.legacy || {};
+  document.getElementById('lg-h').textContent = lg.title || 'Legacy';
+  document.getElementById('lg-p').textContent = lg.body || '';
+  document.getElementById('lg-a').href = links.legacy || '#';
+  document.getElementById('foot').innerHTML = `<span>${esc(proj.credits || '')}</span>
+    <span>Data: data/meta_site.json · run ${esc(P.generated.slice(0, 16).replace('T', ' '))} · commit ${esc(P.commit || '—')} · ${P.n_per_pair} matches per pairing · seeds ${P.seed_start} + ${P.seed_step}·k · draws ${P.draws} · aborted ${P.aborted}</span>`;
+}
+
+function all() { hero(); field(); timeline(); pipeline(); replays(); roadmap(); }
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', hero);
+all();
+</script>
+</body>
+</html>

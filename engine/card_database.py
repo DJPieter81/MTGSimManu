@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 import re
 import os
-from typing import Dict, List, Optional, Set, Any
+from typing import Dict, List, Optional, Set, Tuple, Any
 from dataclasses import dataclass
 from .mana import ManaCost, Color
 from .cards import (
@@ -1195,6 +1195,37 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
     return cost
 
 
+# The printed evoke line (CR 702.74a): "Evoke {2}{U}" -- a mana cost -- or
+# "Evoke—Exile a white card from your hand." -- a card of that colour to
+# exile. Anything else is no cost this engine can pay.
+_EVOKE_LINE_RE = re.compile(r"^Evoke(?:—|-|\s)\s*(?P<cost>.+?)\s*(?:\(|$)",
+                            re.MULTILINE)
+_EVOKE_MANA_RE = re.compile(r"(?:\{[^}]+\})+")
+_EVOKE_EXILE_RE = re.compile(
+    r"exile an? (?P<color>white|blue|black|red|green) card from your hand\.?",
+    re.IGNORECASE)
+_COLOR_WORDS = {"white": Color.WHITE, "blue": Color.BLUE,
+                "black": Color.BLACK, "red": Color.RED, "green": Color.GREEN}
+
+
+def parse_evoke_cost(oracle_text: str) -> Optional[Tuple[ManaCost,
+                                                         Optional[Color]]]:
+    """The printed evoke cost as (mana, colour of the card to exile): a
+    mana evoke cost exiles nothing (colour None); an exile evoke cost
+    costs no mana (an empty ManaCost). None when the card prints no evoke
+    line this table reads."""
+    m = _EVOKE_LINE_RE.search(oracle_text or "")
+    if m is None:
+        return None
+    cost = m.group("cost").strip()
+    if _EVOKE_MANA_RE.fullmatch(cost):
+        return parse_mana_cost_mtgjson(cost), None
+    exile = _EVOKE_EXILE_RE.fullmatch(cost)
+    if exile is not None:
+        return ManaCost(), _COLOR_WORDS[exile.group("color").lower()]
+    return None
+
+
 # Patch ManaCost to support add_color
 def _add_color(self, color: str):
     if color == "W": self.white += 1
@@ -1318,15 +1349,16 @@ class CardDatabase:
                     # _effective_printed_power in engine/cards.py.
                     if isinstance(card_entries, list) and len(card_entries) >= 2:
                         back = card_entries[1]
+                        # A modal double-faced card's land back face is a
+                        # whole card face a player may play (CR 712): build
+                        # it as its own template from its own data.
+                        if (back.get('layout') == 'modal_dfc'
+                                and 'Land' in (back.get('types') or [])
+                                and 'Land' not in (entry.get('types') or [])):
+                            template.back_face_template = self._build_template(
+                                back.get('faceName') or card_name, back)
                         template.back_face_oracle = back.get('text', '')
                         template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
-                        # The back face's own printed loyalty lines — a
-                        # transformed DFC activates these, not the front's.
-                        from .oracle_parser import (
-                            parse_loyalty_abilities as _parse_loyalty)
-                        template.back_face_loyalty_abilities = _parse_loyalty(
-                            template.back_face_oracle,
-                            template.back_face_loyalty)
                         template.back_face_types = [
                             TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
                         ]
@@ -1343,6 +1375,26 @@ class CardDatabase:
                             KEYWORD_MAP[k] for k in back.get('keywords', []) or []
                             if k in KEYWORD_MAP
                         }
+                        # The back face's own static spell-cost reductions
+                        # (a transformed permanent has only its back face's
+                        # abilities, CR 712.8e).
+                        from .oracle_parser import (
+                            parse_static_cost_reductions as _pscr)
+                        template.back_face_cost_reduction_rules = _pscr(
+                            template.back_face_oracle)
+                        # The back face's own printed loyalty lines — a
+                        # transformed DFC activates these, not the front's.
+                        # Typed LAST (A12): their clause templates slice the
+                        # face-1 parse, whose facts (the back face's types
+                        # and subtypes) must be complete by then.
+                        from .oracle_parser import (
+                            parse_loyalty_abilities as _parse_loyalty)
+                        template.back_face_loyalty_abilities = (
+                            self._type_loyalty_clauses(
+                                template.name, _parse_loyalty(
+                                    template.back_face_oracle,
+                                    template.back_face_loyalty),
+                                walker=template, face=1))
                     self.cards[card_name] = template
                     self._raw_data[card_name] = entry
                     count += 1
@@ -1385,6 +1437,59 @@ class CardDatabase:
         import os
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(project_root, 'ModernAtomic.json')
+
+    def _type_loyalty_clauses(self, walker_name: str, abilities: dict,
+                              walker=None, face: int = 0) -> dict:
+        """Type each UNCLASSIFIED loyalty line as a clause (CR 606.1).
+
+        The line's own text is built into a template by this same pipeline
+        (every typed-field parser runs on the clause), and the line becomes
+        `LoyaltyEffectKind.CLAUSE` when the shared clause owner can run it
+        (`clause_resolver.clause_is_executable`). Lines no handler accepts
+        stay UNCLASSIFIED and are refused before their loyalty is paid.
+        The clause template carries a name distinct from the card's, so the
+        whole card's classifier tags never leak into the clause.
+
+        Each clause template's `effects` is the LOYALTY host of `walker`'s
+        face `face` for that slot -- the face the engine activates these
+        lines from -- sliced lazily from the walker's own parse; the
+        clause's synthetic text is never parsed (A12, design step 13).
+        Without a `walker` the clause has no face to slice and its effects
+        are empty.
+        """
+        if not abilities:
+            return abilities
+        import dataclasses
+        from .cards import CardInstance, LoyaltyEffectKind
+        from .clause_resolver import clause_is_executable
+        typed = dict(abilities)
+        for slot, ability in abilities.items():
+            # Every line carries its typed clause (the AI values a line by
+            # it); only UNCLASSIFIED lines change their dispatch kind.
+            clause_name = f"{walker_name} ({slot})"
+            # A quoted ability is one the line GRANTS (to an emblem, a
+            # token, a permanent), never the line's own effect (CR 113.1a,
+            # 114.4): the clause is typed from the line without it.
+            clause_text = re.sub(r'"[^"]*"', '', ability.text or '')
+            clause = self._build_template(clause_name, {
+                'name': clause_name, 'text': clause_text,
+                'type': 'Sorcery', 'types': ['Sorcery'], 'supertypes': [],
+                'subtypes': [], 'manaCost': '', 'manaValue': 0, 'colors': [],
+                'colorIdentity': [], 'legalities': {'modern': 'Legal'}})
+            if clause is None:
+                continue
+            clause._effects_slice = (walker, face, slot)
+            if ability.effect_kind is not LoyaltyEffectKind.UNCLASSIFIED:
+                typed[slot] = dataclasses.replace(ability, clause=clause)
+                continue
+            probe = CardInstance(template=clause, owner=0, controller=0,
+                                 instance_id=0, zone="stack")
+            if clause_is_executable(probe):
+                typed[slot] = dataclasses.replace(
+                    ability, effect_kind=LoyaltyEffectKind.CLAUSE, clause=clause)
+            else:
+                typed[slot] = dataclasses.replace(ability, clause=clause)
+        return typed
 
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
         """Build a CardTemplate from MTGJSON card data."""
@@ -1583,14 +1688,12 @@ class CardDatabase:
         # Build abilities from effects
         abilities = self._build_abilities(effects, oracle_text, name, data)
 
-        # Parse evoke cost
-        evoke_cost = None
+        # Evoke cost (CR 702.74a): the printed cost, mana or a card to exile.
+        evoke_cost, evoke_exile_color = None, None
         if Keyword.EVOKE in keywords:
-            evoke_match = re.search(r'[Ee]voke[—\-]\s*(.+?)(?:\s*\(|$)', oracle_text)
-            if evoke_match:
-                evoke_str = evoke_match.group(1).strip()
-                # Try to parse evoke cost
-                evoke_cost = parse_mana_cost_mtgjson(evoke_str)
+            parsed = parse_evoke_cost(oracle_text)
+            if parsed is not None:
+                evoke_cost, evoke_exile_color = parsed
 
         template = CardTemplate(
             name=name,
@@ -1602,6 +1705,8 @@ class CardDatabase:
             toughness=toughness,
             loyalty=loyalty,
             keywords=keywords,
+            printed_keywords=tuple(data.get("keywords") or ()),
+            layout=data.get("layout") or "",
             abilities=abilities,
             color_identity=color_identity,
             colors=colors,
@@ -1615,6 +1720,7 @@ class CardDatabase:
             oracle_text=oracle_text,
             tags=tags,
             evoke_cost=evoke_cost,
+            evoke_exile_color=evoke_exile_color,
             conditional_mana=conditional_mana,
         )
 
@@ -1814,7 +1920,7 @@ class CardDatabase:
             parse_ritual_mana, parse_cycling_cost, parse_cycling_variant,
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
-            parse_counter_tax, parse_protection_from, parse_ward_cost,
+            parse_counter_tax, parse_protection_from, parse_ward,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
             parse_modal_spell,
             parse_targeted_removal,
@@ -1823,7 +1929,7 @@ class CardDatabase:
             parse_self_cost_reduction,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
-            parse_has_scaling_token_finisher,
+            parse_has_scaling_token_finisher, parse_saga_chapter_one_material,
             parse_has_attack_trigger, parse_has_combat_damage_trigger,
             parse_sacrifice_mana_units,
             parse_aura_enchant_restriction, parse_aura_mana_units,
@@ -1876,13 +1982,13 @@ class CardDatabase:
             parse_has_x_damage, parse_has_artifact_pump_equipment,
             parse_has_artifact_or_enchantment_scaling,
             parse_channel_clause,
-            parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
+            parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_prevents_graveyard_casting,
             parse_reanimates_from_graveyard,
             parse_exiles_cards_bound_for_graveyard,
             parse_requires_creature_target,
-            parse_has_alternate_exile_cost,
+            parse_alternate_exile_cost,
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
             parse_cast_trigger_token, parse_enters_type_counter,
@@ -1936,15 +2042,15 @@ class CardDatabase:
             and ("until this creature leaves the battlefield" in _ol
                  or "return the exiled card" in _ol))
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
-        # Modal "Choose one/two —" spells: store the mode clauses and the
-        # choose-count so resolution picks the chosen mode(s) rather than
-        # running every mode. The per-mode synthesized ability
+        # Modal "Choose one/two —" spells: store the mode clauses so
+        # resolution performs the chosen mode(s) rather than every mode
+        # (the choose range is the typed spell host's, `engine.
+        # modal_spell.choose_range`). The per-mode synthesized ability
         # description is lossy (drops a mode's mana-value cap), so the
         # verbatim clause is kept for correct resolution.
-        _is_modal, _modal_count, _modes = parse_modal_spell(oracle)
+        _is_modal, _modes = parse_modal_spell(oracle)
         if _is_modal:
             template.is_modal = True
-            template.modal_choose_count = _modal_count
             # Each mode carries its own typed removal classification
             # (`parse_targeted_removal` over the mode clause) so an
             # X-bound "exile target creature with mana value X or less"
@@ -1957,8 +2063,9 @@ class CardDatabase:
         # Printed loyalty abilities (CR 606), classified once here so
         # `PlaneswalkerManager` can dispatch off a typed field and refuse
         # what it cannot execute before charging loyalty.
-        template.loyalty_abilities = parse_loyalty_abilities(
-            oracle, template.loyalty)
+        template.loyalty_abilities = self._type_loyalty_clauses(
+            template.name, parse_loyalty_abilities(oracle, template.loyalty),
+            walker=template, face=0)
         # Overrun-shape team pump. The 'spell' form is an instant/sorcery's
         # own resolution; on any other card type the same paragraph would
         # be a static/other ability this resolver does not own.
@@ -1969,7 +2076,7 @@ class CardDatabase:
             team_pump = None
         template.team_pump_data = team_pump
         template.protection_from_colors = parse_protection_from(oracle)
-        template.ward_cost = parse_ward_cost(oracle)
+        template.ward_cost, template.ward_life_cost = parse_ward(oracle)
         template.can_target_player = parse_can_target_player(oracle)
         template.can_target_planeswalker = parse_can_target_planeswalker(oracle)
         template.has_attack_trigger = parse_has_attack_trigger(oracle, name)
@@ -2020,6 +2127,8 @@ class CardDatabase:
         template.has_draw_effect = parse_has_draw_effect(oracle)
         template.deals_targeted_damage = parse_deals_targeted_damage(oracle)
         template.has_scaling_token_finisher = parse_has_scaling_token_finisher(oracle)
+        template.saga_chapter_one_material = parse_saga_chapter_one_material(
+            oracle, template.subtypes)
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
         template.exile_hits_noncreature = parse_exile_hits_noncreature(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
@@ -2041,9 +2150,17 @@ class CardDatabase:
         template.has_each_opponent_effect = parse_has_each_opponent_effect(oracle)
         template.has_pump_grant = parse_has_pump_grant(oracle)
         _pp, _pt, _pk = parse_pump_spell(oracle)
+        _is_spell = template.is_instant or template.is_sorcery
+        if not (_pp or _pt) and not _is_spell:
+            _pk = ""   # a keyword-only grant is a spell shape (see below)
         template.pump_spell_power = _pp
         template.pump_spell_toughness = _pt
         template.pump_spell_keyword = _pk
+        from .oracle_parser import parse_pump_spell_keywords
+        _kws = parse_pump_spell_keywords(oracle)
+        # A keyword-only grant is typed on instants/sorceries only: on a
+        # permanent that text is an activated ability (activation path).
+        template.pump_spell_keywords = _kws if (_pp or _pt or _is_spell) else ()
         from .oracle_parser import parse_loot_effect
         template.loot_data = parse_loot_effect(oracle)
         _eqp, _eqt = parse_equip_pt_grant(oracle)
@@ -2097,7 +2214,6 @@ class CardDatabase:
         template.has_artifact_pump_equipment = parse_has_artifact_pump_equipment(oracle)
         template.has_artifact_or_enchantment_scaling = parse_has_artifact_or_enchantment_scaling(oracle)
         template.channel_clause = parse_channel_clause(oracle)
-        template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)
         template.has_sacrifice_for_damage = parse_has_sacrifice_for_damage(oracle)
@@ -2106,7 +2222,10 @@ class CardDatabase:
         template.reanimates_from_graveyard = parse_reanimates_from_graveyard(oracle)
         template.exiles_cards_bound_for_graveyard = parse_exiles_cards_bound_for_graveyard(oracle)
         template.requires_creature_target = parse_requires_creature_target(oracle)
-        template.has_alternate_exile_cost = parse_has_alternate_exile_cost(oracle)
+        alt_exile = parse_alternate_exile_cost(oracle)
+        if alt_exile is not None:
+            (template.alternate_exile_color,
+             template.alternate_exile_not_your_turn) = alt_exile
         template.has_discard_effect = parse_has_discard_effect(oracle)
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
@@ -2142,6 +2261,27 @@ class CardDatabase:
         # Turn-scoped opponent restriction (silence / no-attacks / fog).
         from .oracle_parser import parse_turn_scoped_restriction
         template.turn_scoped_restriction = parse_turn_scoped_restriction(oracle)
+        from .oracle_parser import parse_cast_prohibition
+        template.cast_prohibition = parse_cast_prohibition(oracle)
+        from .oracle_parser import parse_hand_refill, parse_draw_limit
+        template.hand_refill = parse_hand_refill(oracle)
+        template.draw_limit = parse_draw_limit(oracle)
+        from .oracle_parser import parse_until_next_turn
+        template.next_turn_effect = parse_until_next_turn(oracle)
+        from .oracle_parser import parse_object_restriction
+        template.object_restriction = parse_object_restriction(oracle)
+        from .oracle_parser import parse_group_restriction
+        template.group_restriction = parse_group_restriction(oracle)
+        from .oracle_parser import parse_attack_observer
+        template.attack_observer = parse_attack_observer(oracle)
+        from .oracle_parser import parse_bounce_target
+        template.bounce_target = parse_bounce_target(oracle)
+        from .oracle_parser import parse_static_cost_reductions
+        template.cost_reduction_rules = parse_static_cost_reductions(oracle)
+        template.back_face_cost_reduction_rules = ()
+        from .oracle_parser import parse_graveyard_exile_replacements
+        template.graveyard_exile_replacements = \
+            parse_graveyard_exile_replacements(oracle)
         # Targeted forced discard, classified by who chooses the card
         # (caster-chosen Thoughtseize shape vs victim-chosen / random).
         from .oracle_parser import parse_hand_attack
@@ -2370,7 +2510,7 @@ class CardDatabase:
                 if kwargs["card_type"] not in card.card_types:
                     match = False
             if "color" in kwargs:
-                if kwargs["color"] not in card.color_identity:
+                if kwargs["color"] not in card.colors:
                     match = False
             if "max_cmc" in kwargs:
                 if card.cmc > kwargs["max_cmc"]:

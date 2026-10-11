@@ -51,6 +51,15 @@ def _add(game, card_db, name, controller, zone):
     return card
 
 
+def _walker_from(card_db, game, pw_data, loyalty):
+    """The same printed lines as a typed walker (what a loaded card carries)."""
+    from tests.conftest import typed_walker
+    text = "\n".join(
+        f"[{'+' if cost > 0 else ('−' if cost < 0 else '')}{abs(cost)}]: {desc}"
+        for cost, desc in pw_data.values())
+    return typed_walker(card_db, game, 0, text, loyalty=loyalty)
+
+
 class _FakeWalker:
     """Duck-typed planeswalker instance — the chooser only reads
     loyalty_counters (loyalty legality itself is enforced by the
@@ -100,8 +109,9 @@ def test_defensive_minus_preferred_when_attacker_would_panic_controller(
         "minus": (-2, "Return target creature to its owner's hand."),
     }
 
-    choice = choose_pw_ability(pw, pw_data, game.players[0],
-                               game.players[1], game, player_idx=0)
+    pw = _walker_from(card_db, game, pw_data, pw.loyalty_counters)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
     assert choice == "minus", (
         f"at a failing race, the attacker-neutralizing minus must be "
         f"preferred over no-board-impact card selection, got {choice!r}"
@@ -132,6 +142,10 @@ def test_never_suicides_walker_for_no_impact_bounce_when_race_not_failing(
     # or the controller.
     _add(game, card_db, "Isochron Scepter", 1, "battlefield")
     _add(game, card_db, "Nettlecyst", 1, "battlefield")
+    # A turn-6 opponent has its mana: a bounced permanent is replayed out of
+    # it (S4 prices a bounce by the replay tempo it costs).
+    for _ in range(5):
+        _add(game, card_db, "Island", 1, "battlefield")
 
     snap = snapshot_from_game(game, 0)
     assert life_phase(snap) not in (LifePhase.PANIC, LifePhase.LETHAL), (
@@ -146,8 +160,9 @@ def test_never_suicides_walker_for_no_impact_bounce_when_race_not_failing(
                       "enchantment to its owner's hand. Draw a card."),
     }
 
-    choice = choose_pw_ability(pw, pw_data, game.players[0],
-                               game.players[1], game, player_idx=0)
+    pw = _walker_from(card_db, game, pw_data, pw.loyalty_counters)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
     assert choice == "plus", (
         f"a minus that kills the walker for a replayable noncreature "
         f"bounce (no attacker neutralized, race not failing) must lose "

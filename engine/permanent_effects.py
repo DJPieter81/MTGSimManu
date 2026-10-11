@@ -21,7 +21,7 @@ matching the manager pattern used across engine/*.py.
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Set
 
 from .cards import (COUNTER_KIND_MINUS,
     CardInstance, CardTemplate, CardType, Keyword, Supertype, Color,
@@ -303,7 +303,9 @@ class PermanentEffects:
     def create_token(game: "GameState", controller: int, token_type: str,
                      count: int = 1, power: int = None, toughness: int = None,
                      extra_keywords: Set[Keyword] = None,
-                     source_oracle: str = None) -> List[CardInstance]:
+                     source_oracle: str = None,
+                     subtypes: List[str] = None,
+                     colors: Set[Color] = None) -> List[CardInstance]:
         """Create token creatures on the battlefield.
 
         Generic-first design (post-Phase-1C-followup): when
@@ -369,6 +371,8 @@ class PermanentEffects:
             t_toughness = toughness
         if extra_keywords:
             kw_set |= extra_keywords
+        if colors:
+            t_colors = set(colors)
 
         # Oracle text on the generated template — when source_oracle
         # carries a "with 'gets +N/+N for each artifact ...'" clause,
@@ -402,6 +406,7 @@ class PermanentEffects:
                 colors=set(t_colors),
                 tags={"token", "creature"},
                 oracle_text=token_oracle,
+                subtypes=list(subtypes or ()),
             )
             template.has_artifact_count_scaling = _art_scale
             # A token created "with '<ability>'" carries that ability. When it
@@ -439,18 +444,55 @@ class PermanentEffects:
                             f"Create {count}x {t_name} token(s)")
         return tokens
 
+    @staticmethod
+    def amass(game: "GameState", controller: int, n: int,
+              subtype: str) -> CardInstance:
+        """CR 701.47a, "Amass [subtype] N": if `controller` controls no
+        Army creature, create a 0/0 black [subtype] Army creature token
+        (through `create_token`, the token owner: it enters like any
+        permanent); then put N +1/+1 counters on an Army creature they
+        control (through `add_plus_counters`, the counter funnel). The one
+        owner of amass. Its "becomes a [subtype] in addition" clause for an
+        Army of another subtype is not modelled. Returns the Army."""
+        kind = subtype.title()
+        army = next((c for c in game.players[controller].battlefield
+                     if c.effective_is_creature
+                     and "Army" in (c.effective_subtypes or ())), None)
+        if army is None:
+            army = PermanentEffects.create_token(
+                game, controller, f"{kind} Army", power=0, toughness=0,
+                subtypes=[kind, "Army"], colors={Color.BLACK})[0]
+        army.add_plus_counters(n, game)
+        game.log.append(f"T{game.display_turn} P{controller+1}: amass "
+                        f"{kind}s {n} -- {army.name} is "
+                        f"{army.power}/{army.toughness}")
+        return army
+
     # ─── PLANESWALKER ABILITIES ──────────────────────────────────
 
 
     @staticmethod
-    def _creature_dies(game: "GameState", creature: CardInstance):
-        """Handle a creature dying."""
+    def _creature_dies(game: "GameState", creature: CardInstance,
+                       cause: str = ""):
+        """Handle a creature dying: put into a graveyard from the
+        battlefield by any means (CR 700.4). The zone funnel hands every
+        such move here; the move itself goes back through the funnel as
+        the death (`dying=True`)."""
         owner = creature.owner
         controller = creature.controller
 
+        # CR 614.6 / 700.4: a static "would die / would be put into a
+        # graveyard, exile it instead" (asked of the zone funnel's one
+        # matcher) replaces the death: the creature is exiled and did not
+        # die, so undying, persist and modular -- dies triggers -- and
+        # every death count, trigger and observer below stay silent.
+        exiled_instead = game.zone_mgr.graveyard_exile_source(
+            game, creature, "battlefield") is not None
+
         # Replacement effects: counters must be readable BEFORE any cleanup.
         # Undying (CR 702.94): return to battlefield with +1/+1 counter if no +1/+1 counter.
-        if Keyword.UNDYING in creature.keywords and creature.plus_counters == 0:
+        if (not exiled_instead and Keyword.UNDYING in creature.keywords
+                and creature.plus_counters == 0):
             if creature in game.players[controller].battlefield:
                 game.players[controller].battlefield.remove(creature)
             creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
@@ -467,7 +509,8 @@ class PermanentEffects:
             return
 
         # Persist (CR 702.78): return to battlefield with -1/-1 counter if no -1/-1 counter.
-        if Keyword.PERSIST in creature.keywords and creature.minus_counters == 0:
+        if (not exiled_instead and Keyword.PERSIST in creature.keywords
+                and creature.minus_counters == 0):
             if creature in game.players[controller].battlefield:
                 game.players[controller].battlefield.remove(creature)
             creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
@@ -516,7 +559,10 @@ class PermanentEffects:
 
         # Route zone mutation through the funnel: single owner of battlefield→graveyard
         # list mutation, zone attribute, and leaving-battlefield cleanup.
-        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")
+        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard",
+                                cause=cause, dying=True)
+        if exiled_instead:
+            return                       # it did not die (CR 700.4)
         game.players[controller].creatures_died_this_turn += 1
 
         # Modular death trigger: transfer captured counters to best artifact creature.
@@ -598,9 +644,10 @@ class PermanentEffects:
                         f"T{game.display_turn} P{p_idx+1}: {perm.name} — "
                         f"{creature.name} died → +{amount}/+{amount} counter(s) on {target.name}")
                 elif kind == "drain":
-                    for o_idx, opp in enumerate(game.players):
+                    from .damage import lose_life
+                    for o_idx in range(len(game.players)):
                         if o_idx != p_idx:
-                            opp.life -= spec["amount"]
+                            lose_life(game, o_idx, spec["amount"])
                     if spec["gain"]:
                         PermanentEffects.gain_life(game, p_idx, spec["gain"])
                     game.log.append(
@@ -614,7 +661,8 @@ class PermanentEffects:
                 elif kind == "draw":
                     game.draw_cards(p_idx, spec["draw"])
                     if spec["lose_life"]:
-                        player.life -= spec["lose_life"]
+                        from .damage import lose_life
+                        lose_life(game, p_idx, spec["lose_life"])
                         game.check_state_based_actions()
                 if game.game_over:
                     return

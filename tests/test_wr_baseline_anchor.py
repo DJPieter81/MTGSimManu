@@ -46,7 +46,8 @@ FIXTURE_PATH = Path(__file__).parent / "fixtures" / "wr_baseline_anchor.json"
 # than any legitimate seeded match (the longest committed entry runs ~4s on a
 # developer machine) so that the recorded outcome is a function of the SEED
 # alone. See `_replay` for why the production value cannot be used here.
-_ANCHOR_TIMEOUT_SECONDS = 600.0
+from ai.scoring_constants import SEEDED_REPLAY_TIMEOUT_SECONDS
+_ANCHOR_TIMEOUT_SECONDS = SEEDED_REPLAY_TIMEOUT_SECONDS
 
 # Entries whose outcome is RARELY nondeterministic per process, keyed by
 # content (indices shift as the fixture grows). Measured behaviour of the one

@@ -756,6 +756,20 @@ def loyalty_pool_value(activations: float, snap: "EVSnapshot") -> float:
 # Position value — the unified board evaluation
 # ─────────────────────────────────────────────────────────────
 
+WIN_POSITION = 100.0
+"""The position value of a won game — the sentinel `position_value`
+returns once the opponent's life is 0 (and its negation for a lost one).
+Every "what is a projected kill worth" credit measures against it through
+`win_swing`, so no scorer carries its own copy of the number."""
+
+
+def win_swing(snap: "EVSnapshot") -> float:
+    """What converting this position into a win is worth: the distance from
+    the current `position_value` to the won sentinel. One owner for every
+    lethal-line credit (the Storm chain, the assembly-state line search)."""
+    return max(0.0, WIN_POSITION - position_value(snap))
+
+
 def position_value(snap: "EVSnapshot") -> float:
     """Unified board evaluation. Replaces 4 archetype-specific evaluators.
 
@@ -774,9 +788,9 @@ def position_value(snap: "EVSnapshot") -> float:
     """
     # Dead check
     if snap.my_life <= 0:
-        return -100.0
+        return -WIN_POSITION
     if snap.opp_life <= 0:
-        return 100.0
+        return WIN_POSITION
 
     # Combat clocks — use on-board power only. Persistent (recurring-
     # trigger) tokens are credited further below as an additive
@@ -830,6 +844,11 @@ def position_value(snap: "EVSnapshot") -> float:
 
     mana_diff = snap.my_mana - snap.opp_mana
     mana_value = mana_clock_impact(snap) * max(0, mana_diff)
+    # Mana engines (ai/mana_engine): next turn's extra mana, at the same
+    # per-mana rate, discounted by the share of future turns we get.
+    engine_diff = snap.my_engine_mana - snap.opp_engine_mana
+    mana_value += (mana_clock_impact(snap) * max(0.0, engine_diff)
+                   * snap.urgency_factor)
 
     # Survival margin: how comfortable is my life total?
     survival = life_as_resource(snap.my_life, snap.opp_power)

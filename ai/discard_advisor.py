@@ -273,6 +273,63 @@ def choose_discard(game: "GameState", player_idx: int,
     return max(eligible, key=discard_score)
 
 
+def choose_card_to_exile_from_hand(game: "GameState", player_idx: int,
+                                   candidates: List["CardInstance"]
+                                   ) -> Optional["CardInstance"]:
+    """The card a cost that exiles a card from the caster's hand takes
+    (an evoke cost, CR 702.74a): the candidate worth least to its owner.
+
+    A card the owner's gameplan declares a keystone (`_declared_keystones`:
+    critical pieces, mulligan keys, always-early -- the set the
+    self-discard ranking keeps) goes only when nothing else can. Among the
+    rest, worth is the per-card value a discard spell strips by
+    (`ai.ev_evaluator.score_card_for_opponent_strip`), read from the
+    opponent's side with the owner's own gameplan -- exactly how a
+    Thoughtseize aimed at this hand would rank it; it prices a creature by
+    its body alone, which is why keystones rank first. Ties go to the
+    cheaper card. The last reachable copy of a role the live plan needs
+    is never taken (`_plan_role_protected_ids`; an exiled card is gone,
+    not relocated). None when every candidate is so protected: the cost
+    is not worth a plan piece, and the caster declines it.
+
+    Lifted from `engine/cast_manager.py`, which ranked the cards by tag
+    and keyword thresholds and vetoed the cast after the controller had
+    chosen to evoke ("engine never scores")."""
+    if not candidates:
+        return None
+    from ai.ev_evaluator import (score_card_for_opponent_strip,
+                                 snapshot_from_game)
+    player = game.players[player_idx]
+    protected = _plan_role_protected_ids(
+        game, player_idx, list(player.hand),
+        _graveyard_is_safe(game, player_idx), relocates=False)
+    eligible = [c for c in candidates if id(c) not in protected]
+    if not eligible:
+        return None
+    gameplan = None
+    deck_name = getattr(player, 'deck_name', '') or ''
+    if deck_name:
+        from ai.gameplan import get_gameplan
+        gameplan = get_gameplan(deck_name)
+    keystones = _declared_keystones(game, player_idx)
+    opp_snap = snapshot_from_game(game, 1 - player_idx)
+    return min(eligible, key=lambda c: (
+        c.name in keystones,
+        score_card_for_opponent_strip(c, opp_snap, gameplan),
+        c.template.cmc or 0))
+
+
+def exile_instead_of_paying(game: "GameState", player_idx: int,
+                            card: "CardInstance", can_pay_mana: bool) -> bool:
+    """Pay a spell's alternative cost that exiles a card from hand (CR
+    118.9) rather than its mana cost? Only when the mana cost cannot be
+    paid: a card in hand outlasts the turn, while mana spent on the
+    opponent's turn -- where the Forces' "if it's not your turn" cost
+    lives -- untaps on the next. Which card goes, when one must, is
+    `choose_card_to_exile_from_hand`'s."""
+    return not can_pay_mana
+
+
 # Role buckets whose last reachable copy strands the declared plan.
 # These are gameplan card_roles KEYS (role vocabulary), not card names:
 # payoffs/enablers are the execution conjunction, protection keeps the
@@ -355,6 +412,17 @@ def _plan_role_map(game: "GameState", player_idx: int):
     return roles
 
 
+def serves_plan_from_graveyard(game: "GameState", player_idx: int,
+                               card: "CardInstance") -> bool:
+    """Does `card`, in `player_idx`'s graveyard, still serve its plan role
+    there (`_usable_from_graveyard`: the reanimation resource, a
+    self-recurring spell) while that graveyard is safe? The discard advisor
+    pitches such a card without losing it; a regrowth leaves it where it
+    already works (`ai.resolution_choices.pick_cards`)."""
+    return _usable_from_graveyard(card, _graveyard_is_safe(game, player_idx),
+                                  _reanimation_fuel_min_cmc(game, player_idx))
+
+
 def _usable_from_graveyard(card: "CardInstance", gy_safe: bool,
                             reanimation_min_cmc) -> bool:
     """Would this card still serve its plan role FROM the graveyard?
@@ -376,9 +444,14 @@ def _usable_from_graveyard(card: "CardInstance", gy_safe: bool,
 
 def _plan_role_protected_ids(game: "GameState", player_idx: int,
                               hand: List["CardInstance"],
-                              gy_safe: bool) -> set:
+                              gy_safe: bool, relocates: bool = True) -> set:
     """ids of hand cards that are the LAST accessible copy of a
     required plan role while the plan is still live.
+
+    ``relocates``: the card leaves the hand for the graveyard (a
+    discard), where a role-usable card stays within the plan's reach;
+    False for a card that leaves for exile (a cost that exiles it),
+    which no role reaches.
 
     Accessible pool per role = hand + own library (the pilot knows
     their decklist) + graveyard copies that are still role-usable from
@@ -443,7 +516,8 @@ def _plan_role_protected_ids(game: "GameState", player_idx: int,
         card_roles = per_card_roles.get(id(card))
         if not card_roles:
             continue
-        if _usable_from_graveyard(card, gy_safe, reanimation_min_cmc):
+        if relocates and _usable_from_graveyard(card, gy_safe,
+                                                reanimation_min_cmc):
             # Discarding relocates it within the plan's reach.
             continue
         for r in card_roles:

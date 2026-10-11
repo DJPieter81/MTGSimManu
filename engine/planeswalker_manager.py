@@ -53,6 +53,7 @@ EXECUTABLE_LOYALTY_KINDS = frozenset({
     LoyaltyEffectKind.DRAW_AND_UNTAP_LANDS,
     LoyaltyEffectKind.TUCK_TARGET_INTO_LIBRARY,
     LoyaltyEffectKind.EMBLEM_EXILE_PERMANENT,
+    LoyaltyEffectKind.CLAUSE,
 })
 
 # CR 606: the tuck line puts the permanent into its owner's library
@@ -124,6 +125,16 @@ class PlaneswalkerManager:
 
         # Rule 9b (activation parity): refuse BEFORE charging the cost.
         if ability.effect_kind not in EXECUTABLE_LOYALTY_KINDS:
+            # Audit (observation-only): record the refused kind so a matrix
+            # run ranks how many printed loyalty abilities are inert (the
+            # planeswalker-loyalty no-op class). Reads the enum name, not
+            # oracle text; no-op unless MTG_RULES_AUDIT is set.
+            from .rules_audit import enabled as _audit_on, census as _audit_census
+            if _audit_on():
+                _audit_census("606/loyalty_unexecutable_kind",
+                              getattr(ability.effect_kind, "name",
+                                      str(ability.effect_kind)),
+                              game=game)
             return False
 
         pw_card.loyalty_counters = new_loyalty
@@ -162,6 +173,28 @@ class PlaneswalkerManager:
             PlaneswalkerManager._resolve_tuck(game, controller)
         elif kind is LoyaltyEffectKind.EMBLEM_EXILE_PERMANENT:
             PlaneswalkerManager._resolve_emblem_exile(game, controller)
+        elif kind is LoyaltyEffectKind.CLAUSE:
+            PlaneswalkerManager._resolve_clause(game, controller, pw_card, ability)
+
+    @staticmethod
+    def _resolve_clause(game: "GameState", controller: int,
+                        pw_card: CardInstance, ability: LoyaltyAbility) -> None:
+        """A loyalty line typed as a clause resolves through the shared
+        clause owner, with the walker as its source (CR 606.1 / 608.2)."""
+        from .clause_resolver import resolve_clause
+        source = CardInstance(template=ability.clause, owner=pw_card.owner,
+                              controller=controller,
+                              instance_id=pw_card.instance_id,
+                              zone=pw_card.zone)
+        source._game_state = game
+        resolved = resolve_clause(game, source, controller, [])
+        # Rules audit (CR 606 / 608.2): an activated clause line did
+        # something — its loyalty was not paid for nothing.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            _audit_check("606/loyalty_clause_resolved", bool(resolved),
+                         f"{pw_card.name} [{ability.cost:+d}] resolved no effect",
+                         game=game)
 
     @staticmethod
     def _resolve_return_to_hand(game: "GameState", controller: int,
@@ -182,23 +215,10 @@ class PlaneswalkerManager:
             game, controller, requirement, exclude=pw_card)
 
         if requirement.zone == "battlefield":
-            # A printed "its owner's hand" bounce can legally target any
-            # player's permanent; the controller's own board is never the
-            # play, so the engine offers only the opponent's permanents —
-            # the same restriction the spell-side bounce resolver applies.
-            candidates = [
-                c for c in candidates
-                if (c.controller if c.controller is not None else c.owner)
-                != controller]
-            if candidates:
-                from .card_effects import _nonland_permanent_threat
-                opp_battlefield = game.players[1 - controller].battlefield
-                best = max(candidates,
-                           key=lambda c: _nonland_permanent_threat(
-                               c, opp_battlefield))
-                game._bounce_permanent(best)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"  returns {best.name} to its owner's hand")
+            # The one bounce owner (clause_resolver.resolve_bounce) — the
+            # same resolution spells and channel lines use.
+            from .clause_resolver import resolve_bounce
+            resolve_bounce(game, controller, pw_card, requirement)
         else:  # graveyard → your hand
             if candidates:
                 # Recoup the largest investment — the same convention the
@@ -219,7 +239,16 @@ class PlaneswalkerManager:
                         pw_card: CardInstance,
                         ability: LoyaltyAbility) -> None:
         """Printed "<walker> deals N damage to …" — kill a creature when the
-        damage is lethal to one, otherwise go face."""
+        damage is lethal to one, otherwise go face.
+
+        The line chose no target when it was activated, so its recipient
+        is picked on resolution by the shared picker
+        (`target_solver.pick_resolution_target`: never a creature the
+        walker may not target, ward met) among the killable opposing
+        creatures, highest mana value first; else the opponent. The damage
+        goes through the damage owner (`oracle_resolver.deal_damage_to`):
+        a creature it kills is destroyed by state-based actions (CR
+        704.5g), and damage to the opponent is life lost (CR 120.3a)."""
         effect_desc = ability.text
         dmg_match = re.search(r'(\d+)\s+damage', effect_desc)
         if dmg_match:
@@ -231,23 +260,33 @@ class PlaneswalkerManager:
         else:
             dmg = 1  # printed-but-unparsed amount: the smallest real one
 
+        from . import target_solver
+        from .oracle_resolver import deal_damage_to
         opponent = 1 - controller
-        opp = game.players[opponent]
-        pw_name = pw_card.template.name
-        if opp.creatures:
-            killable = [c for c in opp.creatures
-                        if (c.toughness or 0) - c.damage_marked <= dmg]
-            if killable:
-                target = max(killable,
-                             key=lambda c: (c.template.cmc, c.power or 0))
-                target.damage_marked += dmg
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"{pw_name} deals {dmg} to {target.name}")
-                if target.is_dead:
-                    game._creature_dies(target)
-                return
-        opp.life -= dmg
-        game.players[controller].damage_dealt_this_turn += dmg
+        killable = [c for c in game.players[opponent].creatures
+                    if (c.toughness or 0) - c.damage_marked <= dmg]
+        target = target_solver.pick_resolution_target(
+            game, controller, pw_card, killable,
+            key=lambda c: (c.template.cmc, c.power or 0))
+        PlaneswalkerManager._audit_damage_target(game, controller, pw_card,
+                                                 target)
+        deal_damage_to(game, pw_card, controller, dmg,
+                       target if target is not None else opponent)
+
+    @staticmethod
+    def _audit_damage_target(game: "GameState", controller: int,
+                             pw_card: CardInstance, target) -> None:
+        """Rules audit (CR 115.4 / 702.11b / 702.16b): a creature a
+        loyalty damage line picked on resolution is one its walker may
+        target. Observation only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or target is None:
+            return
+        from .target_solver import can_be_targeted
+        _audit_check("115.4/loyalty_damage_target",
+                     can_be_targeted(target, pw_card, controller),
+                     f"{pw_card.name} damages {target.name}, which it may "
+                     f"not target", game=game)
 
     @staticmethod
     def _resolve_gain_life_and_draw(game: "GameState", controller: int,

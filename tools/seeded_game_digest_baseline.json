@@ -1,0 +1,169 @@
+{
+  "combined": "606cea39c302d1ea829a2d29f0cd3aab8d38274c5a21587acf63a6511ef9e8b1",
+  "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
+  "games": {
+    "bo1|4c Omnath|Ruby Storm|57500": {
+      "lines": 591,
+      "sha256": "a4a57f894d56003a1977af231f4ae709a44f3eca2e91c4be77fff29bcc30740d",
+      "turns": 6,
+      "winner": "Ruby Storm"
+    },
+    "bo1|Amulet Titan|Eldrazi Tron|54500": {
+      "lines": 713,
+      "sha256": "b861d57e0a8875da66af39bb4e47864055a8b87e68cb7af5793f502155b8cd5e",
+      "turns": 11,
+      "winner": "Eldrazi Tron"
+    },
+    "bo1|Azorius Blink|Hollow One|56500": {
+      "lines": 568,
+      "sha256": "0bf53860ffe5d3b82e007ba413398e90c6987b15f83c50fabc5c19fa45c36366",
+      "turns": 8,
+      "winner": "Azorius Blink"
+    },
+    "bo1|Azorius Control (WST v2)|Boros Energy|53500": {
+      "lines": 531,
+      "sha256": "69cdfe3979a23577844d792fd17ee5feb39390afb7d41d1ed4557d54a8522dd8",
+      "turns": 7,
+      "winner": "Boros Energy"
+    },
+    "bo1|Azorius Control|Azorius Control (WST)|53000": {
+      "lines": 1180,
+      "sha256": "7538c6687d0614f5c1059e9b83bfd5dfd70294b2abe8fa930b128665970ff088",
+      "turns": 19,
+      "winner": "Azorius Control"
+    },
+    "bo1|Boros Energy|Affinity|50000": {
+      "lines": 462,
+      "sha256": "5c43c79806c38593c391b68bcabe110c66c748987edc016dc1cec0b84155ec5e",
+      "turns": 6,
+      "winner": "Affinity"
+    },
+    "bo1|Creatures Toolbox|Grixis Reanimator|56000": {
+      "lines": 677,
+      "sha256": "7d42ab0f78328a19eface764e203cf8f14c6a7190ecf1163149440c94e08f027",
+      "turns": 9,
+      "winner": "Grixis Reanimator"
+    },
+    "bo1|Dimir Midrange|Domain Zoo|57000": {
+      "lines": 647,
+      "sha256": "da5511793db3c06a216630171f010c0331fc206aa42cd9b6b2cc8d21c1daf54d",
+      "turns": 10,
+      "winner": "Domain Zoo"
+    },
+    "bo1|Domain Zoo|Eldrazi Tron|51000": {
+      "lines": 546,
+      "sha256": "6166387f2bbb6f3f8cb881364343dd9a42935ecb5c0851aa950f08a830781bba",
+      "turns": 9,
+      "winner": "Eldrazi Tron"
+    },
+    "bo1|Eldrazi Ramp|Broodscale Bloodchief|55500": {
+      "lines": 512,
+      "sha256": "25e94dee631edbdf4a6897f81f70e6b779708be228f48b6d2179480b22fad65c",
+      "turns": 8,
+      "winner": "Eldrazi Ramp"
+    },
+    "bo1|Goryo's Vengeance|Izzet Prowess|52000": {
+      "lines": 388,
+      "sha256": "89650227a0c38a65044c58ae831ca5666a11c9bac670143023e75146f59ad26c",
+      "turns": 5,
+      "winner": "Izzet Prowess"
+    },
+    "bo1|Instant Reanimator|Boros Ponza|55000": {
+      "lines": 473,
+      "sha256": "3647072e934d953a9170169924e08e0425bd16e59c7214115dc04eb4ee3b1fe8",
+      "turns": 7,
+      "winner": "Instant Reanimator"
+    },
+    "bo1|Jeskai Blink|4c Omnath|51500": {
+      "lines": 642,
+      "sha256": "ec8351922bb63f91f06e57bb354de46952139675ca8676d135a5e14f5fa7cb73",
+      "turns": 9,
+      "winner": "4c Omnath"
+    },
+    "bo1|Living End|Jeskai Blink|54000": {
+      "lines": 648,
+      "sha256": "fb61f0031ef98f8ce9114957495a92eefe0129d1d13f610c3760d67a0c955b93",
+      "turns": 10,
+      "winner": "Jeskai Blink"
+    },
+    "bo1|Pinnacle Affinity|4/5c Control|52500": {
+      "lines": 840,
+      "sha256": "ef304331fcb3a9f5f5e327db035f670850f160337b1f69330335a45ad9a0855d",
+      "turns": 11,
+      "winner": "4/5c Control"
+    },
+    "bo1|Ruby Storm|Dimir Midrange|50500": {
+      "lines": 756,
+      "sha256": "859f8359156f8f3e26ed972586c1a2e5cd26b791f48f3f4b79c6ea80cade9c3e",
+      "turns": 9,
+      "winner": "Ruby Storm"
+    },
+    "bo3|Azorius Control|Ruby Storm|58500|g1": {
+      "lines": 550,
+      "sha256": "79b75b8f4023df1b941373b4d03736fcb431e0b0db37a7f8be4f48cc1886fc3b",
+      "turns": 6,
+      "winner": "Ruby Storm"
+    },
+    "bo3|Azorius Control|Ruby Storm|58500|g2": {
+      "lines": 1952,
+      "sha256": "29a38bf0ca142012889f5d3ad2d3394011000d18a36f170892e716b3706fc62b",
+      "turns": 29,
+      "winner": "Azorius Control"
+    },
+    "bo3|Azorius Control|Ruby Storm|58500|g3": {
+      "lines": 723,
+      "sha256": "65065d85166acd16667a338b137ff165d5ec435899f5ab69944fd44066c6640b",
+      "turns": 10,
+      "winner": "Azorius Control"
+    },
+    "bo3|Boros Energy|Domain Zoo|58000|g1": {
+      "lines": 624,
+      "sha256": "0a223618d7f9f952e97bcd908a118ea26dde6e45a8a1fcae2e24940373d45e49",
+      "turns": 8,
+      "winner": "Domain Zoo"
+    },
+    "bo3|Boros Energy|Domain Zoo|58000|g2": {
+      "lines": 402,
+      "sha256": "2ae14089765f94550845aacc65cc848bcbea577738ed2baeed7fb5f9827a18f6",
+      "turns": 6,
+      "winner": "Boros Energy"
+    },
+    "bo3|Boros Energy|Domain Zoo|58000|g3": {
+      "lines": 580,
+      "sha256": "bceb4f6e8ea1f82c2a21ac5b331496f1609465530e90f29c7f72f51049d0c20c",
+      "turns": 8,
+      "winner": "Domain Zoo"
+    },
+    "bo3|Jeskai Blink|Eldrazi Tron|59500|g1": {
+      "lines": 832,
+      "sha256": "e10d8dbba3b9f047f6bbd95986abbc0ebd288797be1837e1824bd6b1efeb892e",
+      "turns": 13,
+      "winner": "Jeskai Blink"
+    },
+    "bo3|Jeskai Blink|Eldrazi Tron|59500|g2": {
+      "lines": 584,
+      "sha256": "eeef4cfec7291dc0362a6ca5e771689377e4c32c2f1d66806696fddbcabaf902",
+      "turns": 9,
+      "winner": "Eldrazi Tron"
+    },
+    "bo3|Jeskai Blink|Eldrazi Tron|59500|g3": {
+      "lines": 989,
+      "sha256": "94e3ef11ac02ab737c6b0acca59e50bdea2048c7b4025602c3ce8813219bbd42",
+      "turns": 15,
+      "winner": "Eldrazi Tron"
+    },
+    "bo3|Living End|Dimir Midrange|59000|g1": {
+      "lines": 717,
+      "sha256": "fdbb5b63c687904907df9a7e9de0774e1e26ff50a58e5ca5eb71fb9531c7b45c",
+      "turns": 11,
+      "winner": "Living End"
+    },
+    "bo3|Living End|Dimir Midrange|59000|g2": {
+      "lines": 652,
+      "sha256": "3cd38b89d31b68ab0ccf801b504a797e76e37f351144d7bfbbfd0c81d1a3af7d",
+      "turns": 11,
+      "winner": "Living End"
+    }
+  },
+  "n_games": 27
+}

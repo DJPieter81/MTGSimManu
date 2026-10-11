@@ -101,6 +101,14 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # cast in this deterministic sweep. Tracked in
     # docs/design/rules-foundation-sweep-tracker.md.
     ("Practiced Offense", "spell"),
+    # ── Sep 2026 metagame refresh — cards new to the registered lists ──
+    # "Exile all the cards from your hand, then draw that many cards. Until
+    # the end of your next turn, you may play cards exiled this way." Only
+    # 2 pool cards share the shape (Hex Magic, Serum Powder), below the
+    # class-size bar, so no dedicated branch; it resolves as a no-op and
+    # Ruby Storm (4 copies) is UNDER-credited until a hand-impulse class
+    # is justified. Recorded in the tracker.
+    ("Hex Magic", "spell"),
     # ── Replacement path (newly observable as of the diagnostic's
     #    coverage of ZoneManager.move_card) ──────────────────────────
     # "If a card would be put into a(n opponent's) graveyard, exile it

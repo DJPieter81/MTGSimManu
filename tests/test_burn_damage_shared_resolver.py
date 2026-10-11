@@ -297,11 +297,12 @@ class TestLavaDartMigratedHandler:
 
 
 class TestUnholyHeatDeliriumConditionalAmount:
-    """Unholy Heat's real per-card quirk: amount is 2, or 6 with
-    delirium (4+ card types in the caster's graveyard). The shared
-    resolver only owns target application — the amount computation
-    stays card-specific, as it must (it is not part of the generic
-    'deal N damage to any target' shape)."""
+    """Unholy Heat: 2 damage, or 6 "instead" with delirium (4+ card types
+    in the caster's graveyard). Its EFFECT_REGISTRY handler is DELETED
+    (E1.b2, design doc 2026-09-29): the spell's parsed host -- a DAMAGE
+    replaced by a conditional DAMAGE -- resolves through the effect
+    dispatcher, whose STATE evaluator reads the graveyard. These pin the
+    amounts the deleted handler owned, through the real path."""
 
     def test_deals_base_2_damage_without_delirium(self, card_db):
         game = GameState(rng=random.Random(0))
@@ -309,12 +310,10 @@ class TestUnholyHeatDeliriumConditionalAmount:
         spell = _make_spell(game, card_db, "Unholy Heat", 0)
         # No graveyard contents — delirium is not active.
 
-        fired = EFFECT_REGISTRY.execute(
-            "Unholy Heat", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=[target.instance_id],
-        )
+        handled = resolve_spell_from_oracle(
+            game, spell, 0, targets=[target.instance_id])
 
-        assert fired
+        assert handled
         assert target.damage_marked == 2
 
     def test_deals_6_damage_with_delirium(self, card_db):
@@ -339,12 +338,10 @@ class TestUnholyHeatDeliriumConditionalAmount:
             c._game_state = game
             game.players[0].graveyard.append(c)
 
-        fired = EFFECT_REGISTRY.execute(
-            "Unholy Heat", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=[target.instance_id],
-        )
+        handled = resolve_spell_from_oracle(
+            game, spell, 0, targets=[target.instance_id])
 
-        assert fired
+        assert handled
         assert target.damage_marked == 6, (
             f"delirium (4+ card types in graveyard) must deal 6, "
             f"got damage_marked={target.damage_marked}"
@@ -355,20 +352,19 @@ class TestGrapeshotRespectsDeclaredTarget:
     """Regression: pre-migration, `grapeshot_resolve` ignored
     `targets` entirely and always mutated `opponent.life` directly —
     a real bug (Grapeshot's oracle is "deals 1 damage to any target",
-    not "deals 1 damage to each opponent"). The shared resolver fixes
-    this: a declared creature target is now actually hit."""
+    not "deals 1 damage to each opponent"). Its EFFECT_REGISTRY handler
+    is now DELETED (E1.b2): the typed direct-damage path resolves it
+    through the effect dispatcher, and a declared creature target is
+    actually hit."""
 
     def test_grapeshot_damages_declared_creature_target(self, card_db):
         game = GameState(rng=random.Random(0))
         target = _put_creature_in_play(game, card_db, "Ornithopter", 1)
         spell = _make_spell(game, card_db, "Grapeshot", 0)
 
-        fired = EFFECT_REGISTRY.execute(
-            "Grapeshot", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=[target.instance_id],
-        )
+        handled = resolve_spell_from_oracle(game, spell, 0, targets=[target.instance_id])
 
-        assert fired
+        assert handled
         assert target.damage_marked == 1, (
             "Grapeshot must respect a declared creature target instead "
             "of always going face"
@@ -383,12 +379,9 @@ class TestGrapeshotRespectsDeclaredTarget:
         life_before = opp.life
         spell = _make_spell(game, card_db, "Grapeshot", 0)
 
-        fired = EFFECT_REGISTRY.execute(
-            "Grapeshot", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=[-1],
-        )
+        handled = resolve_spell_from_oracle(game, spell, 0, targets=[-1])
 
-        assert fired
+        assert handled
         assert opp.life == life_before - 1
 
     def test_grapeshot_no_declared_targets_defaults_to_face(self, card_db):
@@ -397,13 +390,21 @@ class TestGrapeshotRespectsDeclaredTarget:
         life_before = opp.life
         spell = _make_spell(game, card_db, "Grapeshot", 0)
 
-        fired = EFFECT_REGISTRY.execute(
-            "Grapeshot", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=None,
-        )
+        handled = resolve_spell_from_oracle(game, spell, 0, targets=None)
 
-        assert fired
+        assert handled
         assert opp.life == life_before - 1
+
+
+class TestConditionalAndStormBurnHandlersRetired:
+    """E1.b2: the parsed-effect path owns these shapes, so no card-name
+    handler may come back for them (tools/check_card_name_registry.py
+    may only shrink)."""
+
+    @pytest.mark.parametrize("name", ["Unholy Heat", "Grapeshot",
+                                      "Tribal Flames"])
+    def test_no_spell_resolve_handler_is_registered(self, name):
+        assert not EFFECT_REGISTRY.has_handler(name, EffectTiming.SPELL_RESOLVE)
 
 
 class TestDeadCardRegistrationRemoved:

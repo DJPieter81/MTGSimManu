@@ -53,6 +53,7 @@ class ActivationManager:
         ActivationEffectKind.EXILE_FROM_GRAVEYARD,
         ActivationEffectKind.PUT_COUNTER_SELF,
         ActivationEffectKind.PUT_COUNTER_TARGET,
+        ActivationEffectKind.PUT_COUNTER_TEAM,
         ActivationEffectKind.ADAPT,
     })
 
@@ -96,6 +97,13 @@ class ActivationManager:
         if not ability.from_battlefield or perm.zone != "battlefield":
             return False
 
+        # 8b. CR 101.2 / 602.5: a rule effect prohibits this player from
+        # activating this permanent's abilities ("your opponents can't ...
+        # activate abilities of artifacts, creatures, or enchantments").
+        from . import rules_query
+        if rules_query.activation_prohibited(game, player_idx, perm):
+            return False
+
         # 9. A free, repeatable ability has no resource that depletes, so
         # nothing terminates the loop. Cost exhaustion is the real bound.
         # Sacrifice-self is inherently self-limiting (the source leaves), a
@@ -109,16 +117,24 @@ class ActivationManager:
         # 9b. An effect kind the resolver cannot execute must be refused
         # BEFORE any cost is charged — paying a cost for a recorded-unhandled
         # no-op is strictly worse than refusing. ANIMATE_SELF_UEOT is owned by
-        # the land-animation path and must not be double-executed here.
+        # the land-animation path and must not be double-executed here. An
+        # UNCLASSIFIED ability resolves when the dispatcher takes its typed
+        # host (`effect_carrier.activation_family`, unit A).
         if ability.effect_kind not in ActivationManager.RESOLVABLE_EFFECT_KINDS:
-            return False
+            from .cards import ActivationEffectKind as _AEK
+            from .effect_carrier import activation_family
+            if ability.effect_kind is not _AEK.UNCLASSIFIED or \
+                    activation_family(ability, perm.template.effects.activated(
+                        ability.index)) is None:
+                return False
 
         # 9b-pc. A put-counter line whose shape did not parse is schema
         # incoherence — the resolver reads `kind`/`amount` off
         # `put_counter_data` and has nothing to dispatch on without it.
         is_put_counter = ability.effect_kind in (
             ActivationEffectKind.PUT_COUNTER_SELF,
-            ActivationEffectKind.PUT_COUNTER_TARGET)
+            ActivationEffectKind.PUT_COUNTER_TARGET,
+            ActivationEffectKind.PUT_COUNTER_TEAM)
         if is_put_counter and ability.put_counter_data is None:
             return False
 
@@ -468,6 +484,10 @@ class ActivationManager:
         """
         cost = ability.cost
         data = ability.put_counter_data or {}
+        if data.get('other'):
+            # "each OTHER creature": the source is excluded from its own
+            # effect, so the counter it spent is never handed back.
+            return False
         other_finite = (cost.mana.cmc > 0 or cost.tap_self or cost.life > 0
                         or cost.sacrifice_self or cost.exile_self
                         or cost.sacrifice_type is not None
@@ -532,6 +552,26 @@ class ActivationManager:
         guessing and projection cannot disagree with payment.
         """
         return list(game.players[player_idx].graveyard)[:max(0, count)]
+
+    @staticmethod
+    def _audit_activation_targets(game: "GameState", player_idx: int,
+                                  perm: "CardInstance",
+                                  targets: Optional[List[int]]) -> None:
+        """CR 602.2b / 601.2c, restated at activation (the counterpart of
+        `601.2c/cast_target`): every permanent declared as a target of an
+        activated ability is one its source may target. Observation only."""
+        from . import rules_audit
+        if not targets or not rules_audit.enabled():
+            return
+        from .target_solver import can_be_targeted
+        for tid in targets:
+            tgt = game.get_card_by_id(tid) if isinstance(tid, int) else None
+            if tgt is not None and tgt.zone == "battlefield":
+                rules_audit.check(
+                    "602.2b/activation_target",
+                    can_be_targeted(tgt, perm, player_idx),
+                    f"{perm.name} activated at {tgt.name}, which it may "
+                    f"not target", game=game)
 
     @staticmethod
     def activate(game: "GameState", player_idx: int, perm: "CardInstance",
@@ -636,15 +676,13 @@ class ActivationManager:
             game._activations_this_game = (
                 getattr(game, '_activations_this_game', 0) + 1)
 
-            # `target_zones` must be populated exactly as the cast path does,
-            # or the CR 608.2b fizzle check reads a missing snapshot and is
-            # silently inert.
-            target_zones = {}
-            for tid in (targets or []):
-                found = game.find_card_by_id(tid) if hasattr(
-                    game, 'find_card_by_id') else None
-                if found is not None:
-                    target_zones[tid] = found.zone
+            # The targets' snapshot is the one the cast path records
+            # (`stack.snapshot_targets`), so the CR 608.2b / 400.7
+            # re-check on resolution reads the same thing for an ability.
+            from .stack import snapshot_targets
+            target_zones, target_entry_seqs = snapshot_targets(game, targets)
+            ActivationManager._audit_activation_targets(game, player_idx,
+                                                        perm, targets)
 
             # `ability=None` is MANDATORY: StackItem.ability is typed as the
             # legacy Ability dataclass and resolution tests `item.ability.effect`
@@ -704,6 +742,7 @@ class ActivationManager:
                                          x_value=chosen_x),
                 ability=None,
                 target_zones=target_zones,
+                target_entry_seqs=target_entry_seqs,
                 x_value=chosen_x,
             ))
             game.log.append(

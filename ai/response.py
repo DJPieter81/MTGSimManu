@@ -397,6 +397,11 @@ class ResponseDecider:
 
             v_responses = []
             for inst in instants:
+                # A counter whose printed target restriction refuses this
+                # stack item is no response (the legacy path's own check).
+                if ("counterspell" in inst.template.tags
+                        and not self._counter_can_target(inst, stack_item)):
+                    continue
                 # Triage: drop redundant counters when a post-resolution
                 # creature-exile is available.
                 if (skip_counter_for_this_creature
@@ -484,13 +489,7 @@ class ResponseDecider:
         for instant in instants:
             if "counterspell" not in instant.template.tags:
                 continue
-            # CR 701.5: a counterspell counters a SPELL. `template.is_spell`
-            # describes the SOURCE CARD (it is merely `not is_land`), not the
-            # stack object, so it admitted triggered/activated abilities whose
-            # source happens to be a non-land permanent. The stack item's own
-            # type is the correct discriminator.
-            from engine.stack import StackItemType as _SIT
-            if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            if not self._counter_can_target(instant, stack_item):
                 continue
             # Triage: skip redundant counters when a post-resolution
             # creature-exile in hand can answer the same threat.  Free
@@ -499,20 +498,6 @@ class ResponseDecider:
             cost = self._effective_counter_cost(game, instant)
             if (skip_counter_for_this_creature
                     and cost > PITCH_COUNTER_FREE_COST):
-                continue
-            # Targeting restrictions from typed field (counter_target_kind).
-            target_spell = stack_item.source.template
-            if (instant.template.counter_target_kind == 'noncreature_spell'
-                    and target_spell.is_creature):
-                continue
-            if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
-                    and not (target_spell.is_instant or target_spell.is_sorcery)):
-                continue
-            # "Counter target ... colorless spell" (Consign to Memory)
-            # can never counter a colored spell — CR 105 colour, not
-            # colour identity.
-            if (getattr(instant.template, 'counters_colorless_only', False)
-                    and (target_spell.colors or set())):
                 continue
             # Symmetric EV of the 1a counter-tax framework: a "counter
             # unless its controller pays {N}" candidate is DEAD when the
@@ -904,8 +889,8 @@ class ResponseDecider:
                 0, effective - template.domain_reduction * domain)
 
         # Generic cost reducers (Medallions, Goblin Electromancer, etc.)
-        from engine.oracle_resolver import count_cost_reducers
-        generic_reduction = count_cost_reducers(game, controller, template)
+        from engine import rules_query
+        generic_reduction = rules_query.cost_delta(game, controller, template)
         if generic_reduction > 0:
             effective = max(0, effective - generic_reduction)
 
@@ -915,22 +900,62 @@ class ResponseDecider:
         """True iff this counter is castable via the mana-free PITCH
         alternative cost right now.
 
-        Mirrors the engine's `can_cast` alternative-cost path for "exile a
-        {color} card from your hand rather than pay this spell's mana cost"
-        (game_state.py:880-903): the pitch path is live only on the
-        opponent's turn.  Classification is by MECHANIC (oracle
-        alternative-cost clause), not by printed cost — a 1-CMC
-        hard-paid counter is NOT a pitch counter even though its mana
-        cost matches the pitch card-cost representation.
+        Reads the engine's own check for "exile a {color} card from your
+        hand rather than pay this spell's mana cost" (CR 118.9;
+        `CastManager.alternative_exile_candidates`): a card of the colour
+        in hand, under the cost's printed condition ("if it's not your
+        turn").  Classification is by MECHANIC (the typed alternative
+        cost), not by printed cost — a 1-CMC hard-paid counter is NOT a
+        pitch counter even though its mana cost matches the pitch
+        card-cost representation.
 
         Single classification site: `_effective_counter_cost` (cost
         ranking) and the chain-fuel hold exemption in
         `decide_response` (M2 Wave-2) both consult this predicate.
         """
-        return (
-            getattr(instant.template, 'has_alternate_exile_cost', False)
-            and getattr(game, 'active_player', None) != self.player_idx
-        )
+        from engine.cast_manager import CastManager
+        return bool(CastManager.alternative_exile_candidates(
+            game, self.player_idx, instant))
+
+    @staticmethod
+    def _counter_can_target(instant: "CardInstance", stack_item) -> bool:
+        """The counterspell's printed target admits this stack item (CR
+        115.1, 701.5) -- the one check both response paths read:
+
+        * a counterspell counters a SPELL: the stack item's own type, not
+          `template.is_spell` (which describes the source card, and so
+          admitted triggered and activated abilities of a nonland
+          permanent);
+        * the typed restriction (`counter_target_kind`): a noncreature
+          spell, an instant or sorcery spell;
+        * "counter target ... colorless spell" (`counters_colorless_only`)
+          never counters a colored spell -- CR 105 colour, not colour
+          identity;
+        * a modal spell counters only through a counter mode whose typed
+          target admits the spell (`modal_spell.counter_mode_targets`)."""
+        from engine.stack import StackItemType as _SIT
+        if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            return False
+        # A modal spell counters only through a counter mode whose typed
+        # target admits the spell; its other modes are no counter (CR
+        # 700.2a: a mode with no legal target can't be chosen).
+        from engine import modal_spell
+        from engine.target_solver import spell_matches
+        modal_counters = modal_spell.counter_mode_targets(instant.template)
+        if modal_counters is not None and not any(
+                spell_matches(r, stack_item.source) for r in modal_counters):
+            return False
+        target_spell = stack_item.source.template
+        kind = instant.template.counter_target_kind
+        if kind == 'noncreature_spell' and target_spell.is_creature:
+            return False
+        if kind == 'instant_or_sorcery_spell' and not (
+                target_spell.is_instant or target_spell.is_sorcery):
+            return False
+        if (getattr(instant.template, 'counters_colorless_only', False)
+                and (target_spell.colors or set())):
+            return False
+        return True
 
     def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
         """Cost paid to actually fire this counter, after alternative-cost paths.

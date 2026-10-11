@@ -262,6 +262,18 @@ def deal_damage(source: Any, target: Any, amount: int,
 # ─── Helpers ─────────────────────────────────────────────────────────
 
 
+def lose_life(game: Any, player_idx: int, amount: int) -> None:
+    """`player` loses `amount` life (CR 119.3). Loss of life is not damage:
+    no prevention, no lifelink, no damage triggers — but it counts toward
+    "life lost this turn" and can end the game (CR 704.5a)."""
+    if amount <= 0:
+        return
+    player = game.players[player_idx]
+    player.life -= amount
+    player.life_lost_this_turn += amount
+    _request_sba_check(game)
+
+
 def _find_game_state(obj: Any) -> Any:
     """Return the GameState an object lives in, or None.
 

@@ -248,6 +248,51 @@ def pick_converge_x_value(
     return best_x, best_target
 
 
+def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
+    """Rules audit (CR 101.2, 307.1), restated from the battlefield's
+    printed statics -- each permanent's parsed specs on the face it shows,
+    not the rule-effect read path: no spell is cast while a printed
+    restriction on when players may cast covers its caster. Observes only."""
+    from .effect_model import ModKind, SelectorKind
+    from .effect_spec import ConditionKind, HostKind, Verb, iter_specs
+    from .game_state import Phase
+    from .rules_audit import check
+    sorcery_timing = (game.active_player == player_idx and game.stack.is_empty
+                      and game.current_phase in (Phase.MAIN1, Phase.MAIN2))
+    for owner in game.players:
+        for perm in owner.battlefield:
+            faces = perm.template.effects.faces
+            face = 1 if perm.is_transformed and len(faces) > 1 else 0
+            for host in (faces[face] if faces else ()):
+                if host.kind is not HostKind.STATIC:
+                    continue
+                for s in iter_specs(host.specs):
+                    mod = s.payload
+                    if s.verb is not Verb.CONTINUOUS or \
+                            getattr(mod, "kind", None) is not ModKind.PROHIBIT:
+                        continue
+                    who = getattr(s.subject, "kind", None)
+                    if not (who is SelectorKind.ALL_PLAYERS or (
+                            who is SelectorKind.OPPONENTS
+                            and player_idx != perm.controller)):
+                        continue
+                    cond = s.condition
+                    if cond is not None and (
+                            cond.kind is not ConditionKind.TURN
+                            or (cond.pred == "your_turn")
+                            != (game.active_player == perm.controller)):
+                        continue
+                    acts = set(mod.get("actions") or (mod.action,))
+                    broken = (("cast" in acts and mod.get("filter") == "spells")
+                              or ("cast_outside_sorcery_timing" in acts
+                                  and not sorcery_timing)
+                              or ("cast_outside_own_turn" in acts
+                                  and game.active_player != player_idx))
+                    check("101.2/cast_timing", not broken,
+                          f"{card.name} cast by P{player_idx+1} against "
+                          f"{perm.name}'s printed restriction", game=game)
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
@@ -289,7 +334,14 @@ class CastManager:
         # `silenced_this_turn` from the oracle clause on resolution;
         # the cast gate enforces it here for the rest of the turn.
         # Applies to every cast route (hand, flashback, escape).
-        if getattr(player, 'silenced_this_turn', False):
+        from . import rules_query
+        if rules_query.cast_prohibited(game, player_idx, template):
+            return False
+        # CR 101.2 / 307.1: a printed timing restriction binds every cast
+        # route below, the ones that skip the normal timing check included
+        # (madness, warp, escape). Playing a land is not casting.
+        if not template.is_land and \
+                rules_query.cast_time_restricted(game, player_idx):
             return False
 
         # Madness (CR 702.35b): a card just discarded into exile may be
@@ -305,6 +357,9 @@ class CastManager:
                 from .target_solver import (has_legal_target_for_spell,
                                             parse as _parse_targets)
                 requirements = _parse_targets(template.oracle_text or "")
+                from . import modal_spell
+                requirements = modal_spell.required_targets(template,
+                                                            requirements)
                 if not has_legal_target_for_spell(
                         game, player_idx, requirements, exclude=card,
                         source=card):
@@ -317,25 +372,16 @@ class CastManager:
                         game, player_idx, player.untapped_mana_sources,
                         template.madness_cost))
 
-        # Warp: previously warped permanents may be cast again from exile.
-        if card.zone == "exile" and getattr(card, '_warped', False):
-            has_artifact = any(
-                CardType.ARTIFACT in c.template.card_types
-                for c in player.battlefield
-            )
-            if (template.warp_cost is not None
-                    and has_artifact):
-                total_mana = (player.untapped_mana_capacity()
-                              + player.mana_pool.total()
-                              + player._tron_mana_bonus())
-                if (total_mana >= template.warp_cost.cmc
-                        and CastManager._can_pay_colored_pips(
-                            game, player_idx, player.untapped_lands,
-                            template.warp_cost)):
-                    return True
-            return False  # in exile but not a re-castable warp card
-
-        if card.zone != "hand" and card.zone != "graveyard":
+        # A permission to play or cast this object from exile (CR 601.2a:
+        # "you may play those cards"; a warped card's owner may cast it
+        # from exile on a later turn, CR 702.185a): the cast then meets
+        # every normal check below -- timing, cost, targets.
+        exile_permitted = (card.zone == "exile"
+                           and card in game.players[card.owner].exile
+                           and rules_query.play_permitted(game, player_idx,
+                                                          card))
+        if card.zone != "hand" and card.zone != "graveyard" \
+                and not exile_permitted:
             return False
 
         # Grafdigger's Cage (and functional reprints): "Players can't
@@ -408,15 +454,18 @@ class CastManager:
         is_main_phase = game.current_phase in (Phase.MAIN1, Phase.MAIN2)
         is_active = game.active_player == player_idx
 
-        # R4: sorcery-speed-lockout static abilities (Teferi, Time
-        # Raveler; Grand Abolisher; Conqueror's Flail; ...) collapse
-        # the instant/flash exemption for opponents who are in the
-        # per-game lockout registry. Registry is rebuilt on demand
-        # from ``Tag.SORCERY_SPEED_LOCKOUT``-tagged permanents — no
-        # card-name branches, no oracle-text parse at runtime.
-        sorcery_locked = player_idx in game._sorcery_speed_lockout_set()
+        # A printed "can cast spells only any time they could cast a
+        # sorcery" (CR 101.2, 307.1) collapses the instant/flash exemption
+        # for the players it covers; the rule effect is derived from the
+        # permanent's parsed text (continuous_effects._printed_prohibitions).
+        from . import rules_query
+        sorcery_locked = rules_query.sorcery_speed_only(game, player_idx)
 
-        if (template.is_instant or template.has_flash) and not sorcery_locked:
+        # "You may cast <type> spells as though they had flash" (CR 702.8d),
+        # granted until the player's next turn (player.flash_permission_types).
+        flash_granted = rules_query.cast_as_though_flash(game, player_idx, template)
+        if (template.is_instant or template.has_flash or flash_granted) \
+                and not sorcery_locked:
             pass
         elif template.is_creature or template.is_sorcery or \
                 CardType.ENCHANTMENT in template.card_types or \
@@ -442,6 +491,8 @@ class CastManager:
             from .target_solver import (has_legal_target_for_spell,
                                         parse as _parse_targets)
             requirements = _parse_targets(template.oracle_text or "")
+            from . import modal_spell
+            requirements = modal_spell.required_targets(template, requirements)
             if not has_legal_target_for_spell(
                     game, player_idx, requirements, exclude=card,
                     x_ceiling=CastManager.affordable_x(game, player_idx, template),
@@ -488,7 +539,7 @@ class CastManager:
                 0, effective_cmc - template.domain_reduction * domain)
         # Generic cost reduction from permanents on battlefield
         from .oracle_resolver import count_cost_reducers, self_cost_reduction
-        generic_reduction = count_cost_reducers(game, player_idx, template)
+        generic_reduction = rules_query.cost_delta(game, player_idx, template)
         if generic_reduction > 0:
             effective_cmc = max(0, effective_cmc - generic_reduction)
         # Self-scaling reduction ("this spell costs {N} less for each
@@ -539,56 +590,18 @@ class CastManager:
             sum(phyrexian_pips.values()),
             CastManager._phyrexian_pips_life_can_pay(player.life))
 
-        # Evoke as alternative cost (Solitude, Endurance, Grief, etc.)
-        # Evoke is independent of the hardcast path: it is a *choice*
-        # the caster makes, not a fallback for when mana is short. The
-        # evoke branch is available whenever the evoke cost is payable
-        # (mana portion of evoke_cost + exile fodder + valid target).
-        # `can_cast` returns True if EITHER mode is payable; the AI
-        # layer decides which mode to use at resolution time.
-        #
-        # Bug E3 (pre-fix gate `total_mana < effective_cmc`): with
-        # five untapped Mountains and a white card in hand, Solitude
-        # reported uncastable — total_mana met the CMC, so the evoke
-        # branch was skipped, and the colour check then failed because
-        # no white source was on the battlefield. Jeskai Blink relied
-        # on Solitude as a free evoke removal response in opponent
-        # windows; the gate masked it.
-        can_evoke = False
-        if template.evoke_cost is not None:
-            # Evoke cost may itself include a mana component (most
-            # evoke creatures do not, but the engine permits it).
-            # Verify the caster has enough total mana to cover the
-            # evoke cost; the colour check for the evoke cost itself
-            # is handled at resolution. No magic number: falls back
-            # to zero for the common pitch-evoke pattern.
-            evoke_mana_needed = template.evoke_cost.cmc
-            if total_mana >= evoke_mana_needed:
-                exile_candidates = [
-                    c for c in player.hand
-                    if c != card
-                    and not c.template.is_land
-                    and c.template.color_identity & template.color_identity
-                ]
-                if exile_candidates:
-                    can_evoke = True
-                    # Target validation: don't allow evoke if the card
-                    # needs a target and no valid target exists
-                    from decks.card_knowledge_loader import requires_target as _req_target
-                    needs_target = (
-                        _req_target(template.name)
-                        or getattr(template, 'requires_creature_target', False)
-                    )
-                    if needs_target:
-                        opp_idx = 1 - player_idx
-                        if not game.players[opp_idx].creatures:
-                            can_evoke = False  # No targets for evoke
-                    if can_evoke:
-                        can_evoke = game.callbacks.should_evoke(
-                            game, player_idx, card)
-
-        if can_evoke:
-            return True  # Can cast via evoke
+        # Evoke (CR 702.74a): "You may cast this spell by paying [cost]
+        # rather than paying its mana cost" -- a choice the caster may make
+        # whenever the printed evoke cost can be paid, not a fallback for
+        # short mana (Bug E3: five Mountains and a white card in hand once
+        # left Solitude uncastable). The creature's targets, if any, are
+        # its enter trigger's, chosen as the trigger is put on the stack
+        # (CR 603.3d), not the spell's; whether to evoke is the
+        # controller's call (`should_evoke`).
+        if (template.evoke_cost is not None
+                and CastManager.evoke_payable(game, player_idx, card)
+                and game.callbacks.should_evoke(game, player_idx, card)):
+            return True  # castable for its evoke cost
 
         # Spectacle alternative cost (CR 702.131): may cast for spectacle cost
         # if an opponent lost life this turn — quantity then colour check.
@@ -615,13 +628,11 @@ class CastManager:
         # not just "total_mana >= 1" (the old check caused infinite loops when
         # the warp cost could be quoted as castable but the normal-cost payment
         # path failed for color reasons inside cast_spell).
+        # CR 702.185a: the warp cost is paid instead of the mana cost, for
+        # a cast from the hand; nothing else gates it.
         oracle = (template.oracle_text or "").lower()
-        if template.warp_cost is not None:
-            has_artifact = any(
-                CardType.ARTIFACT in c.template.card_types
-                for c in player.battlefield
-            )
-            if (has_artifact and total_mana >= template.warp_cost.cmc
+        if template.warp_cost is not None and card.zone == "hand":
+            if (total_mana >= template.warp_cost.cmc
                     and CastManager._can_pay_colored_pips(
                         game, player_idx, player.untapped_lands,
                         template.warp_cost)):
@@ -647,32 +658,12 @@ class CastManager:
                 # Improvise reduces generic only (CR 702.125a); coloured pips
                 # still require real coloured sources — fall through to MRV.
 
-        # Force alternate cost: "exile a [color] card from your hand
-        # rather than pay this spell's mana cost" — only on opp's turn
-        oracle_lower = (template.oracle_text or '').lower()
-        if getattr(template, 'has_alternate_exile_cost', False):
-            if game.active_player != player_idx:
-                import re
-                m = re.search(
-                    r'exile an? (\w+) card from your hand', oracle_lower)
-                if m:
-                    color_word = m.group(1)
-                    color_map = {'blue': 'U', 'green': 'G', 'red': 'R',
-                                 'white': 'W', 'black': 'B'}
-                    req_color = color_map.get(color_word, '')
-                    if req_color:
-                        from .cards import Color
-                        color_enum = {'U': Color.BLUE, 'G': Color.GREEN,
-                                      'R': Color.RED,
-                                      'W': Color.WHITE,
-                                      'B': Color.BLACK}.get(req_color)
-                        has_exile_target = any(
-                            c != card
-                            and color_enum in c.template.color_identity
-                            for c in player.hand
-                        )
-                        if has_exile_target:
-                            return True  # Can cast for free
+        # An alternative cost that exiles a card from hand (CR 118.9):
+        # castable whenever a card of its colour is in hand under the
+        # cost's printed condition; whether to pay it that way is the
+        # controller's choice at cast time (`cast_spell`).
+        if CastManager.alternative_exile_candidates(game, player_idx, card):
+            return True
 
         # Quantity floor: the cheapest the cost can get is the printed
         # cost minus every Phyrexian pip life can cover (computed here, after
@@ -1008,6 +999,76 @@ class CastManager:
         return None
 
     @staticmethod
+    def evoke_exile_candidates(player, card) -> list:
+        """The cards an evoke cost that exiles "a <colour> card from your
+        hand" may take (CR 702.74a): every other card in the hand whose
+        colour is that colour (CR 105.2), a land of the colour included.
+        Empty for a mana evoke cost, which exiles nothing."""
+        color = card.template.evoke_exile_color
+        if color is None:
+            return []
+        return [c for c in player.hand
+                if c is not card and color in c.colors]
+
+    @staticmethod
+    def _choose_exile_from_hand(game: "GameState", player_idx: int, spell,
+                                candidates: list):
+        """The card a cost exiles from the caster's hand (CR 601.2h): the
+        controller's pick among `candidates` (`choose_exile_from_hand`;
+        the first candidate when the callbacks offer no such choice).
+        None when there is none, the controller declines, or the pick is
+        not one the cost may take."""
+        if not candidates:
+            return None
+        ask = getattr(game.callbacks, "choose_exile_from_hand", None)
+        pick = (ask(game, player_idx, spell, list(candidates))
+                if ask is not None else candidates[0])
+        return pick if any(pick is c for c in candidates) else None
+
+    @staticmethod
+    def evoke_payable(game: "GameState", player_idx: int, card) -> bool:
+        """The printed evoke cost can be paid now (CR 601.2f-h): its mana,
+        quantity then colour, and for an exile cost a card of its colour
+        to exile. Timing, and the choice to evoke, are the cast's."""
+        t = card.template
+        cost = t.evoke_cost
+        if cost is None:
+            return False
+        player = game.players[player_idx]
+        if (t.evoke_exile_color is not None
+                and not CastManager.evoke_exile_candidates(player, card)):
+            return False
+        return cost.cmc == 0 or CastManager.mana_payable(game, player_idx,
+                                                         cost)
+
+    @staticmethod
+    def mana_payable(game: "GameState", player_idx: int, cost) -> bool:
+        """`cost` can be paid from the player's mana now: quantity, then
+        colour -- the check an alternative cost's mana reads."""
+        player = game.players[player_idx]
+        total = (player.untapped_mana_capacity() + player.mana_pool.total()
+                 + player._tron_mana_bonus())
+        return (total >= cost.cmc and CastManager._can_pay_colored_pips(
+            game, player_idx, player.untapped_mana_sources, cost))
+
+    @staticmethod
+    def alternative_exile_candidates(game: "GameState", player_idx: int,
+                                     card) -> list:
+        """The cards the alternative cost "exile a <colour> card from your
+        hand rather than pay this spell's mana cost" may take now (CR
+        118.9): every other card in the hand whose colour is that colour
+        (CR 105.2), while the cost's printed condition holds ("if it's not
+        your turn"). Empty when the spell prints no such cost."""
+        t = card.template
+        color = t.alternate_exile_color
+        if color is None:
+            return []
+        if t.alternate_exile_not_your_turn and game.active_player == player_idx:
+            return []
+        return [c for c in game.players[player_idx].hand
+                if c is not card and color in c.colors]
+
+    @staticmethod
     def _can_pay_colored_pips(game: "GameState", player_idx: int,
                               untapped_lands, cost: "ManaCost") -> bool:
         """Return True iff lands + mana pool can satisfy cost's coloured pips.
@@ -1230,6 +1291,19 @@ class CastManager:
         return True
 
     @staticmethod
+    def free_cast_allowed(game: "GameState", player_idx: int,
+                          template) -> bool:
+        """May this player cast this spell now by a route that skips the
+        normal timing check -- a free cast (cascade, suspend, rebound, plot,
+        a copy)? A free cast is still a cast (CR 601.2): no cast prohibition
+        covers it (CR 101.2) and no printed timing restriction forbids
+        casting now (CR 307.1). One owner, asked by `cast_spell` and by each
+        route before it moves a card it might not be able to cast."""
+        from . import rules_query
+        return not (rules_query.cast_prohibited(game, player_idx, template)
+                    or rules_query.cast_time_restricted(game, player_idx))
+
+    @staticmethod
     def can_cast_plotted(game: "GameState", player_idx: int,
                          card: "CardInstance") -> bool:
         """A plotted card in exile may be cast (free, as a sorcery) on a turn
@@ -1246,6 +1320,8 @@ class CastManager:
         the standard free-cast path so ETB/storm/cascade triggers fire."""
         if not CastManager.can_cast_plotted(game, player_idx, card):
             return False
+        if not CastManager.free_cast_allowed(game, player_idx, card.template):
+            return False                # it stays plotted in exile
         # Move exile -> hand through the funnel, then cast from hand for free so
         # the standard free-cast path (ETB/storm/cascade wiring) applies.
         game.zone_mgr.move_card(game, card, "exile", "hand", cause="cast plotted")
@@ -1269,8 +1345,17 @@ class CastManager:
             card.suspend_counters = max(0, card.suspend_counters - 1)
             if card.suspend_counters > 0:
                 continue
-            # Last counter removed: cast for free.
+            # Last counter removed: cast for free. A card its owner may not
+            # cast now stays exiled (CR 702.62a: "If you don't [cast it], it
+            # remains exiled") -- checked before it leaves exile.
             card.suspended = False
+            if not CastManager.free_cast_allowed(game, player_idx,
+                                                 card.template):
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Suspend {card.template.name} cannot be cast now; it "
+                    f"stays exiled")
+                continue
             if card in player.exile:
                 player.exile.remove(card)
             # Route through the standard free-cast path so cascade /
@@ -1280,12 +1365,10 @@ class CastManager:
             card._free_cast_opportunity = True
             ok = game.cast_spell(player_idx, card, free_cast=True)
             if not ok:
-                # Graceful fallback: if the free cast can't proceed (no
-                # legal targets, etc.), leave the card in graveyard.
-                if card in player.hand:
-                    player.hand.remove(card)
-                card.zone = "graveyard"
-                player.graveyard.append(card)
+                # The cast did not happen (no legal target, etc.): the
+                # card was not cast, so it remains exiled (CR 702.62a).
+                card._free_cast_opportunity = False
+                game.zone_mgr.move_card(game, card, "hand", "exile")
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Suspend {card.template.name} fizzles (no cast)")
@@ -1336,6 +1419,14 @@ class CastManager:
                 found_card = top
                 break
 
+        if found_card and not CastManager.free_cast_allowed(
+                game, controller, found_card.template):
+            # A hit its caster may not cast now is not cast; it goes to the
+            # bottom with the rest (CR 702.85a).
+            game.log.append(
+                f"T{game.display_turn}: Cascade hits {found_card.name}, "
+                f"which cannot be cast now")
+            found_card = None
         if found_card:
             game.log.append(
                 f"T{game.display_turn}: Cascade hits {found_card.name}")
@@ -1351,10 +1442,8 @@ class CastManager:
             )
             if is_mass_reanimate:
                 game._resolve_living_end(controller)
-                found_card.zone = "graveyard"
-                if found_card in player.exile:
-                    player.exile.remove(found_card)
-                player.graveyard.append(found_card)
+                game.zone_mgr.move_card(game, found_card, "exile",
+                                        "graveyard")
             else:
                 # Cast the found card for free
                 if found_card in player.exile:
@@ -1380,6 +1469,17 @@ class CastManager:
             player.library.append(c)
 
     @staticmethod
+    def cast_is_prohibited(player, template) -> bool:
+        """CR 101.2: a cast prohibition covers this spell — one predicate
+        for every cast route, paid or free (a free cast is still a cast).
+        Delegates to the one read path, engine/rules_query.py."""
+        from . import rules_query
+        game = getattr(player, "_game", None)
+        if game is None:
+            return False
+        return rules_query.cast_prohibited(game, player.player_idx, template)
+
+    @staticmethod
     def cast_spell(game: "GameState", player_idx: int, card: "CardInstance",
                    targets=None, free_cast: bool = False) -> bool:
         """Cast a spell: pay costs and put on stack. free_cast skips mana payment."""
@@ -1391,6 +1491,9 @@ class CastManager:
             return False
 
         if not free_cast and not game.can_cast(player_idx, card):
+            return False
+        if free_cast and not CastManager.free_cast_allowed(
+                game, player_idx, card.template):
             return False
 
         # Pay mana cost (unless free cast)
@@ -1409,20 +1512,16 @@ class CastManager:
                          and card.zone == "exile"
                          and getattr(card, '_madness_pending', False))
 
-            # Warp: cast from hand for cheaper alternative cost; creature exiles
-            # at beginning of the next end step.  Use Warp when we have an
-            # artifact on the battlefield AND cannot afford the normal cost
-            # (or prefer the temporary body).  The warp_cost was parsed at
-            # load time, so no oracle-substring re-parsing here.
+            # Warp (CR 702.185a): cast from hand for the warp cost instead
+            # of the mana cost; the permanent is exiled at the beginning of
+            # the next end step. Used when the mana cost is unaffordable.
+            # The warp_cost was parsed at load time, so no oracle-substring
+            # re-parsing here.
             if (template.warp_cost is not None
                     and card.zone == "hand"
                     and not dashed):
-                has_artifact = any(
-                    CardType.ARTIFACT in c.template.card_types
-                    for c in player.battlefield
-                )
                 can_normal = untapped >= template.mana_cost.cmc
-                can_warp = has_artifact and untapped >= template.warp_cost.cmc
+                can_warp = untapped >= template.warp_cost.cmc
                 if not can_warp and not can_normal:
                     return False
                 # Prefer Warp only when normal cost is unaffordable
@@ -1489,26 +1588,16 @@ class CastManager:
                 else:
                     return False
 
-            # Check if we should evoke instead of paying mana
-            # Unified board evaluation: evoke when the body isn't worth waiting for
+            # Evoke (CR 702.74a): the controller's choice whenever the
+            # printed evoke cost can be paid, whatever the mana cost and
+            # whatever the enter trigger could target (see `can_cast`).
             should_evoke = (
                 not dashed and not escaped and not spectacled
                 and not madnessed
                 and template.evoke_cost is not None
-                and untapped < template.mana_cost.cmc
+                and CastManager.evoke_payable(game, player_idx, card)
                 and game.callbacks.should_evoke(game, player_idx, card)
             )
-            # Target validation: don't evoke if the card needs a target and none exists
-            if should_evoke:
-                from decks.card_knowledge_loader import requires_target as _requires_target
-                needs_target = (
-                    _requires_target(template.name)
-                    or getattr(template, 'requires_creature_target', False)
-                )
-                if needs_target:
-                    opp_idx = 1 - player_idx
-                    if not game.players[opp_idx].creatures:
-                        should_evoke = False  # No targets, skip evoke
 
             # Kicker (CR 702.33): an optional ADDITIONAL cost on a normal
             # cast — never on an alternative-cost cast (dash/escape/evoke/
@@ -1530,79 +1619,30 @@ class CastManager:
                     kick_count = max(0, kick_count)
             card._kick_count = kick_count
             if should_evoke:
-                # Evoke: exile a card from hand that shares a color
-                exile_candidates = [
-                    c for c in player.hand
-                    if c != card 
-                    and not c.template.is_land  # Lands are colorless, can't be exiled for evoke
-                    and c.template.color_identity & template.color_identity
-                ]
-                if exile_candidates:
-                    # Generic evoke exile scoring — no hardcoded card names.
-                    # Uses tag-based heuristics (combo pieces > threats > filler).
-                    # Reanimate decks: big creatures are irreplaceable combo targets
-                    deck_has_reanimate = any(
-                        'reanimate' in (h.template.tags or set())
-                        for h in player.hand
-                    ) or any(
-                        'reanimate' in (h.template.tags or set())
-                        for h in player.graveyard
-                    )
-                    def exile_priority(c):
-                        """Lower score = more willing to exile this card."""
-                        score = c.template.cmc or 0  # prefer exiling cheap cards
-                        tags = c.template.tags or set()
-                        # Planeswalkers are sticky card-advantage engines —
-                        # never pitch them to evoke. Observed: 4c Omnath was
-                        # pitching Wrenn and Six to Endurance.
-                        if CardType.PLANESWALKER in c.template.card_types:
-                            score += 50
-                        # Tag-based protection
-                        if any(t in tags for t in ('combo', 'finisher')):
-                            score += 50  # never exile combo pieces
-                        if Keyword.STORM in c.template.keywords:
-                            score += 50
-                        if Keyword.CASCADE in c.template.keywords:
-                            score += 40  # cascade spells are critical
-                        # Reanimate targets: big creatures in a reanimate deck
-                        if (deck_has_reanimate and c.template.is_creature
-                                and (c.template.power or 0) >= 5):
-                            score += 50  # irreplaceable reanimate target
-                        if any(t in tags for t in ('threat', 'removal', 'board_wipe')):
-                            score += 10
-                        if any(t in tags for t in ('ritual', 'cost_reducer', 'ramp')):
-                            score += 15  # enablers are important
-                        if any(t in tags for t in ('cantrip', 'cycling')):
-                            score += 5  # replaceable card draw
-                        # Duplicate protection: if we have 2+ copies, one is expendable
-                        dupes = sum(1 for h in player.hand
-                                    if h.name == c.name and h != c)
-                        if dupes > 0:
-                            score -= 20  # redundant copy is safe to exile
-                        return score
-
-                    exile_candidates.sort(key=exile_priority)
-                    best_exile = exile_candidates[0]
-                    # Don't exile if the best candidate is a critical piece
-                    if exile_priority(best_exile) >= 40:
-                        return False  # all candidates are too important
-                    # Lethal check: allow exiling important pieces under pressure
-                    if exile_priority(best_exile) >= 20:
-                        opp_idx = 1 - player_idx
-                        opp_power = sum(
-                            (c.power or c.template.power or 0)
-                            for c in game.players[opp_idx].creatures
-                        )
-                        if opp_power < player.life:
-                            return False  # not under pressure, keep synergy piece
-                    player.hand.remove(best_exile)
-                    best_exile.zone = "exile"
-                    player.exile.append(best_exile)
-                    evoked = True
-                    game.log.append(f"T{game.display_turn} P{player_idx+1}: "
-                                   f"Evoke {card.name} (exile {best_exile.name})")
-                else:
+                # Pay the printed evoke cost (CR 601.2f-h): its mana, and
+                # for an exile cost the card the controller picks among
+                # those the cost may take; declining that pick casts
+                # nothing.
+                exiled = None
+                if template.evoke_exile_color is not None:
+                    exiled = CastManager._choose_exile_from_hand(
+                        game, player_idx, card,
+                        CastManager.evoke_exile_candidates(player, card))
+                    if exiled is None:
+                        return False
+                if (template.evoke_cost.cmc > 0
+                        and not game.tap_lands_for_mana(
+                            player_idx, template.evoke_cost,
+                            card_name=template.name)):
                     return False
+                if exiled is not None:
+                    game.zone_mgr.move_card(game, exiled, "hand", "exile",
+                                            cause=f"evoke {template.name}")
+                evoked = True
+                paid = (f"exile {exiled.name}" if exiled is not None
+                        else f"pays {template.evoke_cost}")
+                game.log.append(f"T{game.display_turn} P{player_idx+1}: "
+                                f"Evoke {card.name} ({paid})")
 
             # Delve: exile cards from graveyard to reduce generic mana cost
             delve_exiled = 0
@@ -1666,37 +1706,33 @@ class CastManager:
                                                  card_name=template.name):
                     return False
             elif not evoked:
-                # Force alternate cost: exile a card from hand instead of mana
-                oracle_lower = (template.oracle_text or '').lower()
+                # An alternative cost that exiles a card from hand (CR
+                # 118.9), paid instead of the mana cost when the controller
+                # chooses it (`should_exile_instead_of_paying`, told whether
+                # the mana cost can be paid) with the card they pick; with
+                # no payable mana cost, declining the pick casts nothing.
                 force_cast = False
-                if (getattr(template, 'has_alternate_exile_cost', False)
-                        and game.active_player != player_idx):
-                    import re
-                    m = re.search(r'exile an? (\w+) card from your hand', oracle_lower)
-                    if m:
-                        color_word = m.group(1)
-                        color_map = {'blue': 'U', 'green': 'G', 'red': 'R',
-                                     'white': 'W', 'black': 'B'}
-                        req_color = color_map.get(color_word, '')
-                        if req_color:
-                            from .cards import Color
-                            color_enum = {'U': Color.BLUE, 'G': Color.GREEN, 'R': Color.RED,
-                                          'W': Color.WHITE, 'B': Color.BLACK}.get(req_color)
-                            exile_candidates = [
-                                c for c in player.hand
-                                if c != card and color_enum in c.template.color_identity
-                            ]
-                            if exile_candidates:
-                                # Exile the least valuable card
-                                exile_candidates.sort(key=lambda c: c.template.cmc or 0)
-                                exiled = exile_candidates[0]
-                                player.hand.remove(exiled)
-                                exiled.zone = "exile"
-                                player.exile.append(exiled)
-                                force_cast = True
-                                game.log.append(
-                                    f"T{game.display_turn} P{player_idx+1}: "
-                                    f"Pay alternate cost: exile {exiled.name} for {template.name}")
+                alt_candidates = CastManager.alternative_exile_candidates(
+                    game, player_idx, card)
+                if alt_candidates:
+                    can_pay_mana = CastManager.mana_payable(
+                        game, player_idx, template.mana_cost)
+                    ask = getattr(game.callbacks,
+                                  "should_exile_instead_of_paying", None)
+                    if (ask(game, player_idx, card, can_pay_mana)
+                            if ask is not None else not can_pay_mana):
+                        exiled = CastManager._choose_exile_from_hand(
+                            game, player_idx, card, alt_candidates)
+                        if exiled is not None:
+                            game.zone_mgr.move_card(
+                                game, exiled, "hand", "exile",
+                                cause=f"alternative cost of {template.name}")
+                            force_cast = True
+                            game.log.append(
+                                f"T{game.display_turn} P{player_idx+1}: "
+                                f"Pay alternate cost: exile {exiled.name} for {template.name}")
+                        elif not can_pay_mana:
+                            return False
 
                 if not force_cast:
                     # Delve: pay reduced cost if we exiled cards
@@ -1772,8 +1808,14 @@ class CastManager:
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
-        if card in player.exile:
-            player.exile.remove(card)
+        owner_exile = game.players[card.owner].exile
+        if card in owner_exile:
+            # An exiled card is in its owner's exile (CR 400.3), whoever
+            # casts it under a permission.
+            owner_exile.remove(card)
+            # CR 400.7: the spell is a new object; a permission that named
+            # the exiled card no longer names it.
+            game.continuous_effects.forget_object(card.instance_id)
         elif card in player.hand:
             player.hand.remove(card)
         elif card in player.graveyard:
@@ -1793,10 +1835,8 @@ class CastManager:
                         or needed in (l.template.name or '').lower()
                     ), None)
                     if sac is not None:
-                        if sac in player.battlefield:
-                            player.battlefield.remove(sac)
-                        sac.zone = 'graveyard'
-                        player.graveyard.append(sac)
+                        game.zone_mgr.move_card(game, sac, "battlefield",
+                                                "graveyard")
                         game.log.append(
                             f"T{game.display_turn} P{player_idx+1}: "
                             f"Flashback {template.name} — sacrifice {sac.name}")
@@ -1981,17 +2021,14 @@ class CastManager:
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
 
-        # CR 608.2b support: snapshot each card-target's zone at cast
-        # time. ResolutionManager re-checks target legality on
-        # resolution against this snapshot — battlefield for removal,
-        # stack for counterspells, graveyard for reanimation. Player-
-        # target markers (negative ids) have no zone to snapshot.
-        target_zones = {}
-        for _tid in (targets or []):
-            if isinstance(_tid, int) and _tid > 0:
-                _tc = game.get_card_by_id(_tid)
-                if _tc is not None:
-                    target_zones[_tid] = _tc.zone
+        # CR 608.2b / 400.7 support: snapshot what each card target is
+        # at cast time -- its zone (battlefield for removal, stack for
+        # counterspells, graveyard for reanimation) and a permanent's
+        # battlefield entry. ResolutionManager re-checks target legality
+        # on resolution against this snapshot. Player-target markers
+        # (negative ids) have nothing to snapshot.
+        from .stack import snapshot_targets
+        target_zones, target_entry_seqs = snapshot_targets(game, targets)
 
         stack_item = StackItem(
             item_type=StackItemType.SPELL,
@@ -1999,6 +2036,7 @@ class CastManager:
             controller=player_idx,
             targets=targets or [],
             target_zones=target_zones,
+            target_entry_seqs=target_entry_seqs,
             x_value=x_value,
             # Propagate the evoke flag so StackItem.evoked mirrors
             # card._evoked — replay logging and any future code that
@@ -2016,6 +2054,26 @@ class CastManager:
         # Rules audit (CR 601.2c / 702.11d / 702.16b): every battlefield
         # target chosen at cast is one this spell may target. Observes only.
         from .rules_audit import enabled as _audit_on
+        if _audit_on():
+            # CR 101.2: a player under a turn-scoped cast prohibition cast
+            # no spell it covers (restated from the player's flags, not the
+            # can_cast gate).
+            from .rules_audit import check as _audit_check
+            _caster = game.players[player_idx]
+            _ptypes = getattr(_caster, 'spell_types_prohibited_this_turn', ())
+            _covered = (getattr(_caster, 'silenced_this_turn', False)
+                        or ('noncreature' in _ptypes and CardType.CREATURE not in template.card_types)
+                        or ('creature' in _ptypes and CardType.CREATURE in template.card_types))
+            _audit_check("101.2/cast_prohibition", not _covered,
+                         f"{card.name} cast by P{player_idx+1} under a cast prohibition",
+                         game=game)
+            # CR 723.1: once the turn has been ended nothing more is cast.
+            _audit_check("723.1/cast_after_turn_end",
+                         not getattr(game, 'end_turn_requested', False),
+                         f"{card.name} cast after the turn was ended", game=game)
+            # CR 101.2 / 307.1: no printed restriction on when players may
+            # cast covers this cast.
+            _audit_cast_timing(game, player_idx, card)
         if _audit_on() and targets:
             from .rules_audit import check as _audit_check
             from .target_solver import can_be_targeted as _cbt
@@ -2025,12 +2083,28 @@ class CastManager:
                     _audit_check("601.2c/cast_target", _cbt(_tgt, card, player_idx),
                                  f"{card.name} cast at {_tgt.name}, which it may not target",
                                  game=game)
+            # CR 601.2c, restated from the card's other parse (the effect
+            # grammar's typed slot): a spell whose one target slot is an
+            # object on the battlefield (or "any target") is never cast at
+            # a card in a graveyard.
+            _host = (template.effects.spell(0)
+                     if template.is_instant or template.is_sorcery else None)
+            if _host is not None and len(_host.targets) == 1 \
+                    and _host.targets[0].zone in ("battlefield", "any"):
+                for _tid in targets:
+                    _tgt = (game.get_card_by_id(_tid)
+                            if isinstance(_tid, int) and _tid > 0 else None)
+                    if _tgt is not None:
+                        _audit_check("601.2c/target_zone",
+                                     _tgt.zone != "graveyard",
+                                     f"{card.name} cast at {_tgt.name} in a "
+                                     f"graveyard; its target is a permanent",
+                                     game=game)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,
         # spliced card stays in hand. ──
         if 'Arcane' in template.subtypes and not free_cast:
-            from .oracle_resolver import count_cost_reducers
             for sc in list(player.hand):
                 if sc.instance_id == card.instance_id:
                     continue
@@ -2038,8 +2112,8 @@ class CastManager:
                 if not splice:
                     continue
                 # splice is a ManaCost — apply cost reduction to generic portion
-                reduction = count_cost_reducers(game, player_idx, sc.template)
-                reduction += player.temp_cost_reduction
+                from . import rules_query
+                reduction = rules_query.cost_delta(game, player_idx, sc.template)
                 from .mana import ManaCost as MC
                 effective_splice = MC(
                     generic=max(0, splice.generic - reduction),
@@ -2054,6 +2128,13 @@ class CastManager:
                     stack_item.spliced.append(sc.template)
                     game.log.append(f"T{game.display_turn} P{player_idx+1}: "
                                    f"  Splice {sc.name} onto {card.name}")
+
+        # CR 601.2b / 700.2a: a modal spell's modes are chosen as it is
+        # cast, among those its chosen targets allow.
+        from . import modal_spell
+        if modal_spell.in_scope(template):
+            stack_item.modes_chosen = modal_spell.choose_modes(
+                game, card, player_idx, stack_item.targets, x_value)
 
         game.stack.push(stack_item)
         player.spells_cast_this_turn += 1

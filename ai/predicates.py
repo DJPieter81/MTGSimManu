@@ -91,6 +91,68 @@ def is_draw_engine(card: "CardInstance") -> bool:
     return bool(DRAW_ENGINE_TAGS & getattr(card.template, 'tags', set()))
 
 
+def spell_draws(template) -> bool:
+    """Casting the spell makes its controller draw (CR 121.1): a DRAW in
+    the spell's typed effects with no other drawer printed, whatever the
+    count's wording ("draw four cards", "draw that many cards"). Read from
+    the parsed spell, never a substring list. An impulse draw is no draw
+    (CR 121.1c; `is_impulse_draw`), and a permanent's later ability is not
+    what casting it draws."""
+    from engine.effect_spec import Verb, iter_specs
+    effects = getattr(template, 'effects', None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    return any(s.verb is Verb.DRAW and s.actor is None
+               for s in iter_specs(host.specs))
+
+
+def is_impulse_draw(template) -> bool:
+    """The spell exiles the top of its controller's library (an impulse
+    draw: "exile the top N cards of your library ... you may play those
+    cards"). Its cards go to exile, never into the hand, so it is no draw
+    (CR 121.1c) and no on-draw trigger counts it. Read from the parsed
+    spell (the effect grammar's library-position exile), never a tag."""
+    from engine.effect_spec import Verb, iter_specs
+    effects = getattr(template, 'effects', None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    return any(s.verb is Verb.EXILE
+               and (getattr(s.filter, 'zone', None),
+                    getattr(s.filter, 'owner', None),
+                    getattr(s.filter, 'position', None))
+               == ('library', 'you', 'top')
+               for s in iter_specs(host.specs))
+
+
+def impulse_cards_held(host) -> int:
+    """The cards an impulse-draw host -- an EXILE of the top N cards of its
+    controller's own library and a permission to play them -- lets the
+    controller play past this turn: N when the permission outlasts the
+    turn ("until the end of your next turn"), 0 when it ends this turn
+    (cards that expire at cleanup are not held, `ai.playable_cards`) or
+    the host is no impulse draw with a printed count. Read from the typed
+    host, never a tag."""
+    from engine.effect_model import DurationKind
+    from engine.effect_spec import AmountKind, Verb, iter_specs
+    if host is None:
+        return 0
+    specs = list(iter_specs(host.specs))
+    exiles = [s for s in specs if s.verb is Verb.EXILE
+              and (getattr(s.filter, 'zone', None),
+                   getattr(s.filter, 'owner', None),
+                   getattr(s.filter, 'position', None))
+              == ('library', 'you', 'top')]
+    if len(exiles) != 1 or exiles[0].amount is None \
+            or exiles[0].amount.kind is not AmountKind.LITERAL:
+        return 0
+    lasting = any(s.verb is Verb.CONTINUOUS and s.duration is not None
+                  and s.duration.kind is DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN
+                  for s in specs)
+    return int(exiles[0].amount.n or 0) if lasting else 0
+
+
 def is_storm_payoff(card: "CardInstance") -> bool:
     """Card is a chain-payoff finisher — its effect scales with the
     storm count or its damage/token output ends the chain.
@@ -296,3 +358,13 @@ def hand_first_turn_value(cards: "Iterable[CardInstance]") -> int:
     """Sum of ``first_turn_value`` across a hand slice — used by
     the mulligan land-slack predicate."""
     return sum(first_turn_value(c) for c in cards)
+
+
+def is_land_option(card) -> bool:
+    """Can this card be played as a land: a land, or a modal double-faced
+    card with a land face (CR 712, 305.1)? The keep and the land drop both
+    count it."""
+    t = card.template
+    if getattr(t, "playable_land_face", None) is not None:
+        return True
+    return bool(getattr(t, "is_land", False))

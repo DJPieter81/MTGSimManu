@@ -1395,6 +1395,14 @@ def save_results(result: Dict, path: str = RESULTS_FILE):
         'seed_geometry': result.get('seed_geometry'),
         'timestamp': data['timestamp'],
     }
+    # An audited run records its own findings count, so a reader never
+    # has to guess which audit JSONL (gitignored, per-machine) belongs
+    # to these numbers.
+    if os.environ.get('MTG_RULES_AUDIT'):
+        data['rules_audit'] = {
+            'violations': sum(1 for r in _AUDIT_SINK if r.get('kind') == 'violation'),
+            'findings': len(_AUDIT_SINK),
+        }
 
     with open(path, 'w') as f:
         json.dump(data, f, indent=2)

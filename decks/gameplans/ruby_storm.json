@@ -10,8 +10,7 @@
         "Ral, Monsoon Mage // Ral, Leyline Prodigy": 20.0,
         "Manamorphose": 15.0,
         "Reckless Impulse": 16.0,
-        "Wrenn's Resolve": 16.0,
-        "Glimpse the Impossible": 14.0
+        "Wrenn's Resolve": 16.0
       },
       "card_roles": {
         "engines": [
@@ -22,7 +21,6 @@
           "Manamorphose",
           "Reckless Impulse",
           "Wrenn's Resolve",
-          "Glimpse the Impossible",
           "Valakut Awakening // Valakut Stoneforge"
         ]
       }
@@ -36,11 +34,9 @@
         "Manamorphose": 28.0,
         "Reckless Impulse": 26.0,
         "Wrenn's Resolve": 26.0,
-        "Glimpse the Impossible": 26.0,
         "Past in Flames": 24.0,
         "Wish": 22.0,
         "Valakut Awakening // Valakut Stoneforge": 20.0,
-        "March of Reckless Joy": 20.0,
         "Grapeshot": 18.0,
         "Empty the Warrens": 17.0
       },
@@ -55,11 +51,9 @@
           "Manamorphose",
           "Reckless Impulse",
           "Wrenn's Resolve",
-          "Glimpse the Impossible",
           "Past in Flames",
           "Wish",
-          "Valakut Awakening // Valakut Stoneforge",
-          "March of Reckless Joy"
+          "Valakut Awakening // Valakut Stoneforge"
         ],
         "rituals": [
           "Desperate Ritual",
@@ -94,7 +88,6 @@
     [
       "Reckless Impulse",
       "Wrenn's Resolve",
-      "Glimpse the Impossible",
       "Past in Flames",
       "Wish"
     ]
@@ -106,8 +99,7 @@
     "Mountain": 2.0,
     "Elegant Parlor": 3.0,
     "Sacred Foundry": 2.0,
-    "Gemstone Caverns": 4.0,
-    "Thundering Falls": 2.0
+    "Gemstone Caverns": 4.0
   },
   "always_early": [
     "Ruby Medallion"
