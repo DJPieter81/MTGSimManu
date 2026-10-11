@@ -8325,3 +8325,40 @@ Hundreds of pool cards sacrifice creatures.
 - **Phyrexian mana's life payment** in `cast_manager` still writes life directly, not through `damage.lose_life`.
 - **Delve's choice of cards** is made inline in the engine, not through the payer's choice.
 - **`test_zoo_vs_dimir_balanced`** uses an unseeded runner RNG.
+
+## Unit DK: an unblocked double striker deals its power twice in every survival and lethal read (2026-10-11)
+
+**Rule (CR 702.4b, 510.4; AI):** a creature with double strike deals combat damage in the first-strike and in the regular combat damage step. Unblocked, it deals the player it attacks its power twice. Every AI read of what unblocked attackers deal must count that.
+
+**Defect:** every such read summed each attacker's power once. Found in MV's replay (Grixis Reanimator vs Domain Zoo s50000 game 3):
+- Grixis, at 7 life with an untapped 6/6 and 5/5, did not block a 4/4 Scion of Draco that Practiced Offense had given double strike.
+- The defender judged 4 incoming against its 7 life, and its own 11 untapped power against Zoo's 10 life. It took its "winning state, don't block" exit and died to 8.
+
+**Class:** every attacker with double strike, printed or granted (about 320 pool cards print double strike or grant it).
+
+**Steps (`e178621`; arm request `df7c574`):**
+- **One owner.** `ai.clock.unblocked_combat_damage` gives a creature's power per damage step it deals damage in, reading granted keywords and a simulated creature's keyword names. `unblocked_reach` sums it.
+- **Its readers:**
+  - the defender's survival test and attack-back power (`decide_blockers`);
+  - its two-turn and race checks;
+  - the coverage pass that picks forced blocks (`ai.block_assignment`);
+  - the turn planner's prediction of the opponent's blocks;
+  - the attacker's unblocked-lethal test, with its send-what-is-needed rule and its check of the planner's picks.
+
+**Tests (4 of 5 red first; the primitive's own test failed at import):** `tests/test_an_unblocked_double_striker_deals_its_power_twice.py`.
+- The replay's shape.
+- The decision and the prediction agreeing on a chump that only lethal damage justifies.
+- The coverage pass.
+- The attacker keeping a mana creature home when the double striker alone is lethal.
+
+**Digest / anchor / suites:**
+- Digest byte-identical; anchor 29 passed.
+- Suites at `e178621` (pinned worktree): chunk A 4784 passed, chunk B 2712 passed. CI green.
+  - Chunk A also had one failure: the grammar leaf-budget timing test, which ran while another suite loaded the machine. It passes alone.
+
+**Measured (same-seed n=20 Bo3, `dk-post` `df7c574`, pre = `ac-post`):** 21 of 600 cells change; every deck moves by at most 0.7. 0 aborts, 0 violations; audit findings 329 → 328.
+- The replayed cell moves: Domain Zoo vs Grixis Reanimator, 70 → 60.
+
+**Leads (not built):**
+- **The snapshot's board power.** `my_power` / `opp_power`, which every clock estimate reads, counts power once and reads only printed keywords for evasion and lifelink.
+- **Through-blocks projections.** The assembly-state line projector (`attack_reach(..., through_blocks=True)`) and the per-block scoring do not model double strike: a first-strike kill of the blocker, then trample over.
