@@ -172,12 +172,14 @@ def test_a_countered_spell_is_exiled_instead(card_db):
 
 
 def test_a_milled_card_is_exiled_instead(card_db):
-    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
+    # "When ~ enters, mill four cards" through the enter-trigger carrier
+    # and the mill owner (unit ML retired the card-name handler).
+    from engine.oracle_resolver import resolve_etb_from_oracle
     game = _game()
     _put(game, card_db, "Rest in Peace", "battlefield", 1)
     lib = [_put(game, card_db, "Lightning Bolt", "library") for _ in range(5)]
     emry = _put(game, card_db, "Emry, Lurker of the Loch", "battlefield")
-    EFFECT_REGISTRY.execute(emry.template.name, EffectTiming.ETB, game, emry, 0)
+    assert resolve_etb_from_oracle(game, emry, 0)
     assert [c.zone for c in lib] == ["exile"] * 4 + ["library"]
     assert not game.players[0].graveyard
 

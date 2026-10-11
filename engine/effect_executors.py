@@ -1161,12 +1161,14 @@ def execute_mill(ctx: Resolution, s: EffectSpec,
     if n <= 0 or not actors:
         return Outcome(False, {})
     cause = getattr(_source_object(ctx), "name", "")
-    milled = {}
-    for p in actors:
+
+    def _mill(p):
         before = len(ctx.game.players[p].library)
         cards = ctx.game.mill(p, n, cause=cause)
         _audit_mill(ctx, p, before, n)
-        milled[p] = tuple(handle_of(c) for c in cards)
+        return tuple(handle_of(c) for c in cards)
+
+    milled = {p: _mill(p) for p in actors}
     return Outcome(any(milled.values()), milled)
 
 
