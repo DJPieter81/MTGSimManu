@@ -7796,3 +7796,43 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **Edict triggers:** 33 triggered edicts (enter and attack) need their carriers.
 - **Edicts with a keyword or stat filter**, for example "a creature with flying" (Pick Your Poison's third mode).
+
+## Unit MH: a modal spell aimed at nothing is cast only for modes worth something, in every cast path (2026-10-11)
+
+**Rule (AI, from CR 700.2a):** a modal spell cast with no target performs only its modes that need none. Every cast path casts it then only when those modes are worth something to its caster.
+
+**Defect:** the main-phase decision already held such a cast (unit MS), but the response decision did not.
+- Its planner picked a modal spell as removal, found no legal target, and cast it anyway.
+- The engine then chose the only legal mode, which did nothing.
+- Thraben Charm's graveyard mode was chosen this way: `unhandled/mode` in 16 rows of the mr-post arm.
+
+**Class:** 111 pool modal spells mix targeted and untargeted modes.
+
+**Steps (`b30c53e`):**
+- `ai.modal.worth_casting_without_targets`: the one answer every cast path asks.
+  - It is true for a spell outside the modal owner's scope, or one with no targeted mode.
+  - Otherwise it is true only when the modes chosen with no target are worth more than nothing (`chosen_modes_value`).
+- `ai/ev_player.py` (main phase) and `ai/response.py` (the planner's response) both read it. Before, the main phase checked inline and the response path did not check.
+- No auditor: this is an AI decision rule, not a rules change.
+
+**Tests (red first, 1 of 3):** `tests/test_a_modal_spell_aimed_at_nothing_is_cast_only_for_modes_worth_something.py`.
+
+**Digest / anchor / suites:**
+- Digest and anchor unchanged.
+- Suites: 4682 + 2712 passed, from the worktree pinned at `b30c53e`. CI green on `958cdd3`.
+
+**Measured (same-seed n=20 Bo3, `mh-post` `958cdd3`, pre = `ed-post`):** 56 of 600 cells change.
+- Eldrazi Tron +1.4 (48.5 → 49.9). Kozilek's Command is an instant, and its response casts with no target are now held.
+- Every other deck moves by at most ±0.4.
+- Violations 0; 0 aborts. No deck moves more than 5 pp.
+- Findings 427 → 412: Thraben Charm's `unhandled/mode` rows go from 16 to 0.
+- The modes still unperformed:
+
+| Card | Rows |
+|---|---|
+| Kozilek's Command (unit TK next: its token mode) | 25 |
+| Lorehold Charm | 23 |
+| Untimely Malfunction | 9 |
+
+**Leads (not built):**
+- Kozilek's Command's token mode needs a printed token (a 0/1 Eldrazi Spawn with a sacrifice-for-mana ability) created by a target player, with the player chosen as the spell is cast. That is unit TK.
