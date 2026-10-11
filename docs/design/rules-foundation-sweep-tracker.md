@@ -7343,3 +7343,121 @@ Remaining patterns at the head:
 - Scapeshift is cast 27 times. In the traced games it sacrifices and refetches lands with no payoff in hand.
 
 The deck assembles Titan about two turns later than the real list's turn-2/3 Amulet starts. The lever is the mana sequencing of Amulet of Vigor with bounce lands (an AI planning unit), not a rules gap found so far. No unit is built from this; the next units come from the rules-audit ranking, which the matrix shards now print (`484d86e`).
+
+## Unit GH: a graveyard-bound object is exiled instead while a static replacement covers it (2026-10-11)
+
+**Rule (CR 614.1a, 614.6, 700.4):** a permanent's static replacement exiles an object that would be put into a graveyard, and the object never reaches the graveyard:
+- "if a card or token would be put into a graveyard from anywhere, exile it instead" (Rest in Peace);
+- "...into an opponent's graveyard..." (Leyline of the Void);
+- "if a black or red permanent, spell, or card not on the battlefield would be put into a graveyard..." (Sanctifier en-Vec);
+- "if a creature an opponent controls would die, exile it instead".
+
+A creature exiled instead of dying did not die.
+
+**Defect:** the zone funnel recorded the miss as an unhandled replacement and put the card in the graveyard. Rest in Peace, Leyline of the Void and Sanctifier en-Vec (23 registered copies in 7 decks; the Bo3 answers to Living End, Goryo's Vengeance and the reanimator decks) did nothing but their other abilities.
+
+**Class:** 17 pool cards typed:
+- Rest in Peace, Leyline of the Void, Sanctifier en-Vec, Dryad Militant, Samurai of the Pale Curtain, Necrodominance, Festival of Embers;
+- the death family: Vren, Liesa, Garruk Veiled Butcher, Gisa, Head of the Hunt, Misery's Shadow, Nemata, Stone of Erech, Valentin.
+
+Refused (recorded, not half-applied): Dauthi Voidwalker ("with a void counter on it"), The Darkness Crystal ("and you gain 2 life"), Kumano ("dealt damage by ~ this turn").
+
+**Steps (`7700164`, audit fix `a657e7d`):**
+- `oracle_parser.parse_graveyard_exile_replacements` produces the typed `CardTemplate.graveyard_exile_replacements`: {scope, whose, colors, types, tokens, nontoken, controlled_by} per sentence.
+- One matcher, `ZoneManager.graveyard_exile_source`, is asked by both funnel exits and by the death owner.
+  - It is decided before the card leaves its zone, so a destroyed Rest in Peace exiles itself (CR 614.12).
+  - A replaced death skips undying, persist, modular, the death count, dies triggers and observers.
+  - A discard into exile is still a discard (CR 701.8).
+- Every graveyard arrival is asked. Twelve direct `graveyard.append` writes now go through the funnel:
+  - Unmarked Grave, Gifts, Archon's sacrifice, Emry's mill, Scapeshift's sacrifice, the cascade Living End;
+  - flashback's land sacrifice;
+  - the saga, Map and charge-bomb sacrifices;
+  - the AI's pump discard.
+- Consign to Memory's counter uses the stack-exit owner (a countered flashback spell is exiled, CR 702.34a).
+- A suspended card whose last-counter cast fails stays exiled (CR 702.62a).
+- A test pins that no engine or AI code appends to a graveyard outside the funnel. The zone-mutation baseline drops 57 → 45.
+- **Auditor:** `614.6/graveyard_exile_replacement`, restated from the unfiltered "from anywhere" rules.
+- **Audit fix (`a657e7d`):** the SZ auditor `608.2n/resolved_spell_destination` now accepts a spell exiled instead. The gh-post arm showed 943 false violations of it in the Sanctifier, Rest in Peace and Leyline decks.
+
+**Tests (red first):** `tests/test_a_graveyard_bound_object_is_exiled_instead.py` (18). They cover the typed shapes, the refusals, and each family on the engine path:
+- a discard; a death (no death count); a resolved spell; a countered spell; a mill;
+- Leyline's opponents-only scope, Sanctifier's colours, the death family's controller;
+- the replacement ending with its permanent;
+- the funnel pin;
+- the auditors both ways.
+
+Also: `tests/test_free_casts_honour_cast_timing_restrictions.py` (the suspend fallback).
+
+**Digest / anchor / suites:**
+- Digest: 3 games change, log lines only (Consign's counter logs the stack exit; the pump discard logs its cause).
+- Anchor: 29 passed.
+- Suites: 4603 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `gh-post` `ca9a19b`, pre = `sz-post`):** 51 of 600 cells change.
+- Azorius Control (WST) +1.9 (45.8 → 47.7): Sanctifier ×3 main deck, Rest in Peace in the sideboard. Its cells against Living End (+15) and Grixis Reanimator (+15) carry it.
+- Every other deck moves by at most ±0.6.
+- Non-violation findings 419 → 383: the unhandled Rest in Peace and Sanctifier census rows are gone.
+- 0 aborts; no deck moves more than 5 pp.
+
+**Leads (not built):**
+- **Spell-scoped replacement.** "If that creature would die this turn, exile it instead" (Lava Coil, Magma Spray, Scorching Dragonfire and about 60 pool spells) is a per-object replacement created on resolution, a different shape.
+- **Linked follow-ups.** The exile applies but the follow-up does not: Valentin's and Head of the Hunt's "when you do" reflexive triggers, and Gisa's "exiled with Gisa" return.
+- **Simultaneous destruction.** The engine destroys one by one, so a wrath that destroys Rest in Peace with creatures exiles only the creatures processed before Rest in Peace leaves (CR 614.12 exiles all).
+- **Living End.** It exiles the battlefield's creatures. The card sacrifices them into the graveyards, where they die and stay as fuel.
+
+## Unit TF: a permanent that exiles itself and returns transformed is a new object showing its back face (2026-10-11)
+
+**Rule:** "Exile ~, then return ~ to the battlefield transformed under its owner's control" (CR 400.7, 712, 306.5b).
+- The permanent leaves the battlefield, and a new object enters with its back face up: summoning sick, untapped, with none of the old object's counters or damage.
+- A planeswalker back face enters with the loyalty that face prints.
+- The return finds only the card its own exile moved (CR 400.7).
+- Off the battlefield a double-faced card has only its front face (CR 712.8a). On it, a transformed permanent has only its back face's characteristics and abilities (CR 712.8e).
+
+**Defects:**
+- Tamiyo's "when you draw your third card in a turn" flip never happened: `603.2/draw_trigger_unresolved` in 22 of 25 rows of the rank-1 arm.
+- The legacy flips moved the card around the zone funnel:
+  - A flipped Fable kept its lore counters, so chapter III re-fired every turn and the Reflection was always summoning sick.
+  - A flipped Ral bounced to hand stayed a back face. It was recast as a 0-loyalty planeswalker and died at once.
+  - A flipped Reflection attacking resolved the front face's chapter I text, so its quoted token trigger made a 2/2 creature token.
+
+**Class:** 53 pool cards print the exile-and-return-transformed shape. Registered (16 copies): Ajani ×4, Fable ×4, Ral ×4, Tamiyo ×3, Roku ×1.
+
+**Steps (`8e48d74`):**
+- **Executors.** `effect_executors.self_exile` ("exile ~", the source still the object the ability came from) and `self_return_transformed` ("return ~ … transformed under its owner's / your control", only the card this resolution's exile moved). EXILE and MOVE run them, and the draw carrier's strict shape takes the pair.
+- **One return owner.** `oracle_resolver.return_transformed` puts the card back through the zone funnel (`move_card(..., transformed=True)`). The legacy exile-and-return flips (Ajani, Fable, Roku) route through it.
+- **Zone funnel.**
+  - A battlefield entry under a player's control sits on that player's battlefield (CR 108.4).
+  - Leaving the battlefield restores the front face.
+  - `CardInstance.enter_battlefield` reads entry loyalty from the face shown.
+- **Face-shown reads** in the three places the replays exposed: the attack-trigger resolver, the saga check (a flipped Saga is a creature, not a Saga), and Living End's creature sweep (a flipped planeswalker is not a creature).
+- **Auditors:** `306.5b/entry_loyalty`, now face-aware and restated from the raw face fields, and `712.8a/front_face_off_battlefield`.
+- **Detectors.** Both runtime-oracle detectors recognise the face-shown text method as an oracle read, so the moved reads still count (b stays 101).
+
+**Tests (red first):** `tests/test_a_permanent_returned_transformed_is_a_new_back_face_object.py` (12):
+- the shape is executable;
+- the third draw returns a new back-face object at its back face's loyalty, under its owner's control;
+- a permanent that already left is neither exiled nor returned;
+- the funnel route (revolt counts the flip; counters are gone);
+- the front face off the battlefield;
+- back-face attack triggers, a flipped Saga, the creature sweep;
+- both auditors both ways.
+
+**Digest / anchor / suites:** 3 matches change, each replayed:
+- **Azorius Control vs Ruby Storm s58500:** the bounced Ral is recast as a creature, and Storm wins on T6, not T8. g2 and g3 follow through the match RNG.
+- **Jeskai Blink vs Eldrazi Tron s59500 g1, winner flip to Jeskai:** chapter III fires once and the Reflection attacks from T8.
+- **Living End vs Dimir s59000:** Tamiyo flips and survives Living End; same winner and turns.
+
+Anchor 29 passed. Suites 4615 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `tf-post` `ef1c074`, pre = `gh-post`):** 47 of 600 cells change.
+- Jeskai Blink +3.1 (51.5 → 54.6): the Reflection is one object that attacks and copies.
+- Ruby Storm +1.0 (28.9 → 29.9): the bounced Ral fix.
+- Every other deck moves by at most ±0.9.
+- Violations 943 → 0: the 608.2n audit fix. Findings 358.
+- The Tamiyo finding is gone. No deck moves more than 5 pp.
+
+**Leads (not built):**
+- **Goblin Shaman.** The Fable token's own attack trigger (create a Treasure) is not modelled.
+- **Quoted abilities.** A quoted token ability inside a card's text is matched as the card's own by the legacy attack resolver. It is harmless on a Saga front face, but a creature printing such a token would misfire.
+- **Front-face reads on permanents.** 49 engine and 55 AI sites read `template.is_creature`. The ones that concern a permanent should read the face shown (`effective_is_creature`); a sweep is its own unit.
+- **Living End** exiles the battlefield's creatures instead of sacrificing them (see unit GH).
