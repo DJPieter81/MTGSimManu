@@ -86,8 +86,15 @@ class ResolutionManager:
                         and s.dest.zone in ("library", "hand"):
                     printed = s.dest.zone
                     break
+        # A static "would be put into a graveyard, exile it instead" (CR
+        # 614.6) puts a graveyard-bound spell into exile: the zone funnel's
+        # one matcher says whether one covers it.
+        replaced = (printed == "graveyard" and card.zone == "exile"
+                    and game.zone_mgr.graveyard_exile_source(
+                        game, card, "stack") is not None)
         rules_audit.check(
-            "608.2n/resolved_spell_destination", card.zone == printed,
+            "608.2n/resolved_spell_destination",
+            card.zone == printed or replaced,
             f"{card.name} resolved into {card.zone}, its text puts it in "
             f"{printed}", game=game)
 

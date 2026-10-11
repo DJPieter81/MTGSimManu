@@ -220,6 +220,26 @@ def test_the_audit_records_a_card_reaching_a_graveyard_under_the_replacement(
         f["rule"] for f in rules_audit.drain()]
 
 
+def test_a_resolved_spell_exiled_instead_is_where_the_rules_put_it(
+        card_db, monkeypatch):
+    """The CR 608.2n audit reads the replacement too: a resolved spell
+    whose text leaves it for the graveyard, exiled instead by a static
+    (CR 614.6), is where the rules put it."""
+    from engine import rules_audit
+    from engine.constants import PLAYER_TARGET_OPPONENT
+    monkeypatch.setenv("MTG_RULES_AUDIT", "1")
+    rules_audit.reset()
+    game = _game()
+    _put(game, card_db, "Rest in Peace", "battlefield", 1)
+    _put(game, card_db, "Mountain", "battlefield")
+    bolt = _put(game, card_db, "Lightning Bolt", "hand")
+    assert game.cast_spell(0, bolt, targets=[PLAYER_TARGET_OPPONENT])
+    game.resolve_stack()
+    assert bolt.zone == "exile"
+    assert "608.2n/resolved_spell_destination" not in [
+        f["rule"] for f in rules_audit.drain()]
+
+
 def test_the_audit_is_silent_when_the_replacement_applies(card_db,
                                                          monkeypatch):
     from engine import rules_audit
