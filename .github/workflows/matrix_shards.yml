@@ -107,10 +107,14 @@ jobs:
           cells = [json.loads(line) for line in open('row-${{ matrix.row.slug }}.jsonl')]
           # The row's findings ranked by (rule, key) -- the auditor ranking
           # units are chosen from -- printed above the CELL rows, so the
-          # cell excerpt (the log's last lines) keeps its shape.
+          # cell excerpt (the log's last lines) keeps its shape. Keyword
+          # census rows record a word's presence once per process, not how
+          # often it is played: they rank in tools/keyword_coverage.py, so
+          # they are left out here to keep per-event findings visible.
           ranked = Counter((f.get('rule'), f.get('key') or '')
-                           for cell in cells for f in cell.get('audit') or [])
-          for (rule, key), n in ranked.most_common(15):
+                           for cell in cells for f in cell.get('audit') or []
+                           if not str(f.get('rule')).startswith('keyword/'))
+          for (rule, key), n in ranked.most_common(25):
               print('FINDING', n, '|', rule, '|', key)
           findings = violations = 0
           for cell in cells:
