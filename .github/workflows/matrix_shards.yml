@@ -103,9 +103,17 @@ jobs:
         run: |
           python3 -c "
           import json, sys
+          from collections import Counter
+          cells = [json.loads(line) for line in open('row-${{ matrix.row.slug }}.jsonl')]
+          # The row's findings ranked by (rule, key) -- the auditor ranking
+          # units are chosen from -- printed above the CELL rows, so the
+          # cell excerpt (the log's last lines) keeps its shape.
+          ranked = Counter((f.get('rule'), f.get('key') or '')
+                           for cell in cells for f in cell.get('audit') or [])
+          for (rule, key), n in ranked.most_common(15):
+              print('FINDING', n, '|', rule, '|', key)
           findings = violations = 0
-          for line in open('row-${{ matrix.row.slug }}.jsonl'):
-              cell = json.loads(line)
+          for cell in cells:
               print('CELL', cell['d1'], '|', cell['d2'], '|', cell['wr'], '|', cell.get('draws'), '|', cell.get('aborted'))
               for f in cell.get('audit') or []:
                   findings += 1
