@@ -2392,6 +2392,14 @@
     "SPELL:0:0"
    ],
    "reason": "Exile your hand, draw that many (unit HX): every card in the controller's hand goes to exile through the zone funnel, the controller draws as many cards as were exiled (CR 608.2c: the earlier instruction's result), and may play the cards exiled this way until the end of their next turn (CR 406, 601.2a); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Exile ~, then return ~ transformed (unit TF): on the third card its controller draws in a turn, the permanent leaves the battlefield through the zone funnel and the card its own exile moved returns under its owner's control with its back face up, a new object entering with its back face's loyalty (CR 400.7, 712, 306.5b); legacy resolved nothing for this draw trigger."
   }
  ],
  "pairs": [

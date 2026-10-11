@@ -406,10 +406,44 @@ def execute_move_to_hand(ctx: Resolution, s: EffectSpec,
     return Outcome(bool(moved), {ctx.controller: tuple(moved)})
 
 
-execute_move_to_hand.supports = _move_to_hand_supported
+def _exiled_by_this_resolution(ctx: Resolution, card: Any) -> bool:
+    """Did an earlier instruction of this resolution move `card` into
+    exile? Only that object is the one "return it" names (CR 400.7)."""
+    return any(isinstance(h, Handle) and h.zone == "exile"
+               and h.instance_id == card.instance_id
+               for per in ctx.results.values() for hs in per.values()
+               for h in hs)
+
+
+def _return_self_transformed(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """"Return ~ to the battlefield transformed under its owner's / your
+    control": the card this resolution's own exile moved enters with its
+    back face up as a new object, through the one return owner
+    (`oracle_resolver.return_transformed`)."""
+    from .oracle_resolver import return_transformed
+    card = _source_object(ctx)
+    if card is None or card.zone != "exile" \
+            or not _exiled_by_this_resolution(ctx, card):
+        return Outcome(False, {})
+    controller = card.owner if s.dest.controller == "owner" \
+        else ctx.controller
+    if not return_transformed(ctx.game, card, controller):
+        return Outcome(False, {})
+    return Outcome(True, {controller: (handle_of(card),)})
+
+
+def execute_move(ctx: Resolution, s: EffectSpec,
+                 actors: Tuple[int, ...]) -> Outcome:
+    if self_return_transformed(s):
+        return _return_self_transformed(ctx, s)
+    return execute_move_to_hand(ctx, s, actors)
+
+
+execute_move.supports = (lambda s: _move_to_hand_supported(s)
+                         or self_return_transformed(s))
 # An unbound slot is the controller's choice through `choose_cards`, so a
 # carrier with no targets to bind (the enter-trigger carrier) may take it.
-execute_move_to_hand.picks_unbound_slots = True
+execute_move.picks_unbound_slots = True
 
 
 # ── EXILE the top N cards of your library; PERMIT to play them
@@ -496,10 +530,71 @@ def _exile_hand_supported(s: EffectSpec) -> bool:
             and _plain_exile(s) and _whole_hand(s))
 
 
+# "Exile ~, then return ~ to the battlefield transformed [under its owner's
+# / your control]" (CR 400.7, 712): the ability's own permanent leaves and
+# a new object enters with its back face up. The two specs' shapes, read
+# by the executors that run them and by the carriers that take them.
+_RETURN_CONTROLLERS = ("owner", "you")
+
+
+def _self_object(r: Any) -> bool:
+    """"~": the ability's own object, whole and as it is now."""
+    return (isinstance(r, Ref) and r.kind is RefKind.SELF and r.index is None
+            and r.part is RefPart.ALL and r.n is None and r.of is None
+            and not r.lki and not r.per_actor)
+
+
+def _names_only_its_ref(s: Any) -> bool:
+    """The spec names its object only through `ref`: no target, filter,
+    subject, amount, payload, duration, condition, branch or choice, and
+    the controller acts."""
+    return (s.target is None and s.target_slot is None and s.filter is None
+            and s.subject is None and s.other is None and s.amount is None
+            and s.payload is None and s.duration is None
+            and s.condition is None and not s.replaces and not s.flags
+            and not s.optional and not s.alternatives and s.group is None
+            and not s.then and not s.otherwise and not s.residue
+            and s.chooser is Chooser.CONTROLLER and s.actor is None)
+
+
+def self_exile(s: Any) -> bool:
+    """"Exile ~": the ability's own permanent moves to exile."""
+    return (s.verb is Verb.EXILE and _self_object(s.ref) and s.dest is None
+            and _names_only_its_ref(s))
+
+
+def self_return_transformed(s: Any) -> bool:
+    """"Return ~ to the battlefield transformed under its owner's / your
+    control": the card the ability's own exile moved enters with its back
+    face up."""
+    d = s.dest
+    return (s.verb is Verb.MOVE and _self_object(s.ref)
+            and _names_only_its_ref(s) and isinstance(d, Destination)
+            and d.controller in _RETURN_CONTROLLERS
+            and d == Destination(zone="battlefield", transformed=True,
+                                 controller=d.controller))
+
+
 def _exile_supported(s: EffectSpec) -> bool:
-    """The top N of a library, or the controller's whole hand. Any other
-    exile is refused."""
-    return _exile_top_supported(s) or _exile_hand_supported(s)
+    """The top N of a library, the controller's whole hand, or the
+    ability's own permanent ("exile ~"). Any other exile is refused."""
+    return (_exile_top_supported(s) or _exile_hand_supported(s)
+            or self_exile(s))
+
+
+def _exile_self(ctx: Resolution) -> Outcome:
+    """"Exile ~" (CR 400.7): the source, still on the battlefield as the
+    object the ability came from -- not one that has since left and come
+    back -- moves to exile through the zone funnel."""
+    card, src = _source_object(ctx), ctx.source
+    if card is None or card.zone != "battlefield" or src is None \
+            or src.zone != "battlefield" \
+            or card.battlefield_entry_seq != src.entry_seq:
+        return Outcome(False, {})
+    if not ctx.game.zone_mgr.move_card(ctx.game, card, "battlefield",
+                                       "exile", cause=card.name):
+        return Outcome(False, {})
+    return Outcome(True, {ctx.controller: (handle_of(card),)})
 
 
 def _audit_hand_exiled(ctx: Resolution, player: Any) -> None:
@@ -528,6 +623,8 @@ def _exile_hand(ctx: Resolution) -> Outcome:
 
 def execute_exile(ctx: Resolution, s: EffectSpec,
                   actors: Tuple[int, ...]) -> Outcome:
+    if self_exile(s):
+        return _exile_self(ctx)
     if _is_your_hand(s.filter):
         return _exile_hand(ctx)
     n = _amount(ctx, s)
@@ -733,7 +830,7 @@ EXECUTORS[Verb.DAMAGE] = execute_damage
 EXECUTORS[Verb.LOSE_LIFE] = execute_lose_life
 EXECUTORS[Verb.GAIN_LIFE] = execute_gain_life
 EXECUTORS[Verb.SURVEIL] = execute_surveil
-EXECUTORS[Verb.MOVE] = execute_move_to_hand
+EXECUTORS[Verb.MOVE] = execute_move
 EXECUTORS[Verb.KEYWORD_ACTION] = execute_keyword_action
 EXECUTORS[Verb.EXILE] = execute_exile
 EXECUTORS[Verb.CONTINUOUS] = execute_permit

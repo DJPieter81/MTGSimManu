@@ -1061,24 +1061,33 @@
     "part": "mainboard",
     "step": "E4",
     "strict": true
+   },
+   {
+    "card": "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "host": "TRIGGERED:0:2",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
    }
   ],
-  "executable": 19,
+  "executable": 20,
   "family": "draw_trigger",
   "hosts": {
-   "mainboard": 1,
+   "mainboard": 2,
    "pool": 18,
    "sideboard": 0
   },
   "steps": {
    "E1": 17,
+   "E2": 1,
    "E4": 2
   },
-  "strict": 19,
+  "strict": 20,
   "sub_kinds": {},
   "verb_sets": {
    "DAMAGE": 7,
    "DAMAGE,KEYWORD_ACTION": 1,
+   "EXILE,MOVE": 1,
    "GAIN_LIFE": 2,
    "GAIN_LIFE,LOSE_LIFE": 5,
    "KEYWORD_ACTION": 1,

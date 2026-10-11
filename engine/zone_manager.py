@@ -38,6 +38,7 @@ class ZoneManager:
         to_zone: str,
         cause: str = "",
         controller_override: Optional[int] = None,
+        transformed: bool = False,
     ) -> bool:
         """Move a card from one zone to another.
 
@@ -50,6 +51,9 @@ class ZoneManager:
             to_zone: The destination zone.
             cause: Human-readable reason for the move (for logging).
             controller_override: If set, change the card's controller on ETB.
+            transformed: Put a double-faced card onto the battlefield with
+                its back face up ("return it to the battlefield
+                transformed", CR 712).
 
         Returns:
             True if the move was performed, False if prevented.
@@ -118,8 +122,12 @@ class ZoneManager:
             game.players[owner].cards_discarded_or_cycled_this_turn += 1
 
         # ── Add to destination zone ─────────────────────────────────
+        # A permanent sits on its controller's battlefield (CR 108.4): one
+        # put onto the battlefield under a player's control goes there.
         card.zone = actual_to
-        dest_list = self._get_zone_list(game, owner, actual_to)
+        dest_owner = (controller_override if actual_to == "battlefield"
+                      and controller_override is not None else owner)
+        dest_list = self._get_zone_list(game, dest_owner, actual_to)
         dest_list.append(card)
 
         self._after_graveyard_bound_move(game, card, actual_to, replaced_by)
@@ -128,15 +136,13 @@ class ZoneManager:
         if actual_to == "battlefield":
             if controller_override is not None:
                 card.controller = controller_override
+            if transformed:
+                card.is_transformed = True     # back face up (CR 712)
             card.enter_battlefield()
             card._game_state = game
-            from .rules_audit import enabled as _audit_on, check as _audit_check
-            if _audit_on() and any(getattr(t, "name", "") == "PLANESWALKER"
-                                   for t in card.template.card_types):
-                printed = card.template.loyalty or 0
-                _audit_check("306.5b/entry_loyalty", card.loyalty_counters == printed,
-                             f"{card.name} entered with {card.loyalty_counters} loyalty "
-                             f"(printed {printed})", game=game)
+            self._audit_entry_loyalty(game, card)
+        else:
+            self._audit_front_face(game, card)
 
         # Log the move
         if cause:
@@ -355,6 +361,37 @@ class ZoneManager:
                      f"{getattr(source, 'name', '')} exiles it instead",
                      game=game)
 
+    @staticmethod
+    def _audit_entry_loyalty(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 306.5b): a planeswalker enters with the loyalty
+        printed on the face it shows -- its back face when it entered
+        transformed. Restated from the raw face fields. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        t = card.template
+        back = bool(card.is_transformed and t.back_face_types)
+        types = t.back_face_types if back else t.card_types
+        if not any(getattr(ct, "name", "") == "PLANESWALKER" for ct in types):
+            return
+        printed = (t.back_face_loyalty if back else t.loyalty) or 0
+        _audit_check("306.5b/entry_loyalty", card.loyalty_counters == printed,
+                     f"{card.name} entered with {card.loyalty_counters} loyalty "
+                     f"(printed {printed})", game=game)
+
+    @staticmethod
+    def _audit_front_face(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 712.8a): a double-faced card that arrives in a
+        zone other than the battlefield has only its front face. Observes
+        only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("712.8a/front_face_off_battlefield",
+                     not getattr(card, "is_transformed", False),
+                     f"{card.name} arrived in {card.zone} showing its back "
+                     f"face", game=game)
+
     def _blink_zone_transition(
         self,
         game: "GameState",
@@ -489,6 +526,10 @@ class ZoneManager:
         card.minus_counters = 0
         card.loyalty_counters = 0
         card.other_counters.clear()
+
+        # Off the battlefield a double-faced card has only its front face
+        # (CR 712.8a); a later entry shows the face that entry names.
+        card.is_transformed = False
 
         # Clear game state reference
         card._game_state = None

@@ -1143,11 +1143,13 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
 def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
                             controller: int):
-    """Resolve attack triggers by parsing the attacker's oracle text.
+    """Resolve attack triggers by parsing the attacker's oracle text --
+    the text of the face it shows: a transformed permanent has only its
+    back face's abilities (CR 712.8e).
 
     Called when a creature is declared as an attacker.
     """
-    oracle = (attacker.template.oracle_text or '').lower()
+    oracle = attacker._effective_oracle_text().lower()
     if not oracle:
         return
 
@@ -1478,21 +1480,45 @@ def _transform_permanent(game: "GameState", perm: "CardInstance",
     just executes the state transition consistently.
     """
     player = game.players[controller]
+    if returns_as_new_object:
+        # The permanent leaves the battlefield and a new object enters with
+        # its back face up, through the zone funnel (CR 400.7, 712). One
+        # that has already left is a new object the effect cannot find.
+        if perm.zone != "battlefield" or not game.zone_mgr.move_card(
+                game, perm, "battlefield", "exile"):
+            return
+        return_transformed(game, perm, controller, extra_loyalty)
+        return
     if perm in player.battlefield:
         player.battlefield.remove(perm)
-
     perm.is_transformed = True
     perm.damage_marked = 0
-    if returns_as_new_object:
-        perm.tapped = False
-        perm.enter_battlefield()
+    perm.zone = "battlefield"
+    player.battlefield.append(perm)
+    _announce_transform(game, perm, controller, extra_loyalty)
 
+
+def return_transformed(game: "GameState", card: "CardInstance",
+                       controller: int, extra_loyalty: int = 0) -> bool:
+    """Put an exiled double-faced card onto the battlefield with its back
+    face up under `controller`'s control: a new object (CR 400.7, 712),
+    summoning sick and untapped, entering with the loyalty its back face
+    prints (CR 306.5b) plus `extra_loyalty` (a printed "enters with an
+    additional loyalty counter" rider); its enter triggers fire. The one
+    owner of the return half of "exile ~, then return ~ transformed"."""
+    if card.zone != "exile" or not game.zone_mgr.move_card(
+            game, card, "exile", "battlefield",
+            controller_override=controller, transformed=True):
+        return False
+    _announce_transform(game, card, controller, extra_loyalty)
+    return True
+
+
+def _announce_transform(game: "GameState", perm: "CardInstance",
+                        controller: int, extra_loyalty: int) -> None:
     back_loyalty = getattr(perm.template, 'back_face_loyalty', 0) or 0
     if back_loyalty > 0:
         perm.loyalty_counters = back_loyalty + extra_loyalty
-
-    perm.zone = "battlefield"
-    player.battlefield.append(perm)
 
     loy_str = (f" (loyalty: {perm.loyalty_counters})"
                if back_loyalty > 0 else "")

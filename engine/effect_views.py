@@ -409,15 +409,26 @@ _DRAW_TRIGGER_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
 _TRIGGER_TARGET_ZONES = frozenset({"any", "battlefield"})
 
 
+# The self exile-and-return-transformed pair (`effect_executors.
+# self_exile`, `self_return_transformed`, CR 400.7, 712).
+_SELF_FLIP_VERBS = frozenset({Verb.EXILE, Verb.MOVE})
+
+
 def strict_draw_trigger(h: AbilityEffects) -> bool:
     """A draw-triggered host the draw carrier takes (A38): the trigger
     family's strict shape with a typed draw head (`TriggerHead.draw`),
-    every spec one of `_DRAW_TRIGGER_VERBS` with no residue or
-    sub-ability, and every target slot one the carrier picks as the
-    trigger is put on the stack (any target, or a battlefield object)."""
+    every spec one of `_DRAW_TRIGGER_VERBS` -- or the self exile-and-
+    return-transformed pair -- with no residue or sub-ability, and every
+    target slot one the carrier picks as the trigger is put on the stack
+    (any target, or a battlefield object)."""
+    from .effect_executors import self_exile, self_return_transformed
     return (strict_trigger(h) and h.trigger.draw is not None
             and all(r.zone in _TRIGGER_TARGET_ZONES for r in h.targets)
-            and _strict_host(h, _DRAW_TRIGGER_VERBS, conditions=True))
+            and _strict_host(h, _DRAW_TRIGGER_VERBS | _SELF_FLIP_VERBS,
+                             conditions=True)
+            and all(s.verb not in _SELF_FLIP_VERBS or self_exile(s)
+                    or self_return_transformed(s)
+                    for s in iter_specs(h.specs)))
 
 
 # The combat-damage carrier (R2, `effect_carrier.

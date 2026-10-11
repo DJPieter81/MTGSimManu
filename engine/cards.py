@@ -2620,10 +2620,13 @@ class CardInstance:
         self.activations_this_turn.clear()
         # CR 306.5b: a planeswalker enters with loyalty counters equal to its
         # printed loyalty, by whatever path it enters (cast, blink return,
-        # put onto the battlefield). A transform sets its back-face loyalty
-        # after this call.
-        if CardType.PLANESWALKER in self.template.card_types:
-            self.loyalty_counters = self.template.loyalty or 0
+        # put onto the battlefield) -- the loyalty of the face it shows: a
+        # card put onto the battlefield transformed enters with its back face
+        # up (CR 712) and the loyalty that face prints.
+        if CardType.PLANESWALKER in self.effective_card_types:
+            back = self.is_transformed and self.template.back_face_types
+            self.loyalty_counters = (self.template.back_face_loyalty if back
+                                     else self.template.loyalty) or 0
 
     def __hash__(self):
         return self.instance_id

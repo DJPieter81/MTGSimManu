@@ -725,10 +725,13 @@ class ResolutionManager:
         # like legal targets. The old per-player exile/return/fire-ETB loop
         # fired P0's ETBs while P1's originals were still on the battlefield.
 
-        # Phase 1: exile every creature on both battlefields.
+        # Phase 1: exile every creature on both battlefields -- a creature on
+        # the face it shows (CR 712.8e): a back face that is no creature
+        # stays.
         for p_idx in range(2):
             player = game.players[p_idx]
-            for creature in [c for c in player.battlefield if c.template.is_creature]:
+            for creature in [c for c in player.battlefield
+                             if c.effective_is_creature]:
                 game.zone_mgr.move_card(
                     game, creature, "battlefield", "exile", cause="living end")
 

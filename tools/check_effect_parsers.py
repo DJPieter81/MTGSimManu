@@ -161,8 +161,11 @@ def count_e(db_src: str, parsers: Iterable[str],
 
 # `text` is a LoyaltyAbility / ActivatedAbility's printed oracle span
 # (planeswalker_manager resolves loyalty abilities by reading it).
+# `_effective_oracle_text` is the text of the face a permanent shows
+# (CardInstance, CR 712.8e): a method whose value is oracle text.
 _READ_ATTRS = frozenset({"oracle_text", "oracle", "description",
-                         "back_face_oracle", "text"})
+                         "back_face_oracle", "text",
+                         "_effective_oracle_text"})
 _READ_PARAMS = frozenset({"oracle", "oracle_text", "oracle_lower",
                           "oracle_l", "desc", "description"})
 _SUBSTR = frozenset({"count", "find", "index", "rfind", "rindex",
@@ -177,6 +180,8 @@ def _is_text(node: ast.AST, tainted: Set[str]) -> bool:
     if isinstance(node, ast.Attribute) and node.attr in _READ_ATTRS:
         return True
     if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+        if node.func.attr in _READ_ATTRS:
+            return True
         return _is_text(node.func.value, tainted)
     if isinstance(node, ast.BoolOp):
         return any(_is_text(v, tainted) for v in node.values)
