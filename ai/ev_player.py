@@ -1845,9 +1845,14 @@ class EVPlayer:
         if ('removal' in tags and not 'board_wipe' in tags
                 and not t.is_creature and opp.creatures):
             from ai.card_classes import burn_damage
+            from ai.removal_reach import removal_candidates
             burn_dmg = burn_damage(t)
             reachable = []
-            for c in opp.creatures:
+            # Only creatures the spell can take (`ai.removal_reach`, the
+            # target picker's set): a creature beyond its reach earns it
+            # no premium.
+            for c in removal_candidates(game, self.player_idx, card,
+                                        opp.creatures):
                 if burn_dmg > 0:
                     rem = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                     if rem > burn_dmg:
@@ -4461,56 +4466,18 @@ class EVPlayer:
             can_hit_noncreature = (t.can_destroy_nonland_permanent
                                    or getattr(t, 'exile_hits_noncreature', False)
                                    or t.can_destroy_artifact)
-            # An X-bound target ("with mana value X or less") is legal
-            # only up to the X the caster can pay — the same engine formula
-            # cast-time legality uses (CR 601.2b/c). Candidates beyond it
-            # are not targets at all, whatever their threat.
-            _x_ceiling = None
-            _x_bound_mode = any(
-                ((m.get('removal') or {}).get('mv') == 'x')
-                for m in (getattr(t, 'modes', None) or []))
-            _removal = (getattr(t, 'targeted_removal_data', None)
-                        or getattr(t, 'removal_mv_condition', None) or {})
-            if (_removal.get('mv') == 'x' or _x_bound_mode):
-                # The plain shape and a modal MODE of the same shape share
-                # the ceiling: X is chosen before targets (CR 601.2b).
-                from engine.cast_manager import CastManager
-                _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
-            elif isinstance(_removal.get('mv'), int):
-                # A numeric mana-value bound — printed on the target
-                # ("with mana value 3 or less") or checked on resolution
-                # ("destroy target creature if it has mana value 2 or
-                # less", raised when a permanent left the battlefield this
-                # turn). Aiming above it is legal but resolves to nothing:
-                # a wasted card, never a play.
-                _x_ceiling = _removal['mv']
-                _raised = _removal.get('mv_if_permanent_left')
-                if (_raised is not None and
-                        game.players[self.player_idx].permanents_left_battlefield_this_turn > 0):
-                    _x_ceiling = _raised
-            if getattr(t, 'has_converge', False):
-                # Converge reaches the colours this manabase can spend —
-                # the same picker cast-time X selection uses; aiming above
-                # it is a guaranteed whiff (two four-mana Endings resolved
-                # to nothing, Broodscale vs WST s50000).
-                from engine.card_effects import converge_reachable_max_mv
-                _cm = converge_reachable_max_mv(game, self.player_idx)
-                _x_ceiling = _cm if _x_ceiling is None else min(_x_ceiling, _cm)
-
-            from engine.target_solver import can_be_targeted as _targetable
-
-            from ai.ward_targeting import ward_rules_out_target
+            # What the spell can remove (`ai.removal_reach`): the X its
+            # caster can pay (CR 601.2b/c), a printed or resolution-checked
+            # mana-value bound, converge's reachable colours, the
+            # permanent's targeting restrictions and ward (CR 702.16b,
+            # 702.21a), and the spell's requirement admitting it (CR
+            # 601.2c). One candidate set, read by the spell's projection
+            # and threat premium too.
+            from ai.removal_reach import can_remove, removal_ceiling
+            _ceiling = removal_ceiling(game, self.player_idx, spell)
 
             def _reachable(c):
-                # The X bound, the permanent's own targeting restrictions
-                # (hexproof / protection, CR 702.16b), a ward this spell's
-                # caster would not get past (CR 702.21a), and the spell's
-                # requirement admitting it (CR 601.2c: the engine's cast
-                # check, so the AI aims only where the engine accepts).
-                return ((_x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling)
-                        and _targetable(c, spell, self.player_idx)
-                        and not ward_rules_out_target(game, self.player_idx, spell, c)
-                        and self._admits(game, spell, c))
+                return can_remove(game, self.player_idx, spell, c, _ceiling)
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat

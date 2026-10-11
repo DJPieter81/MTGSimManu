@@ -34,7 +34,7 @@
       "deck2": "4c Omnath",
       "seed": 50000,
       "winner": "4c Omnath",
-      "turns": 12
+      "turns": 14
     },
     {
       "deck1": "Goryo's Vengeance",
@@ -54,8 +54,8 @@
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "Azorius Control",
-      "turns": 28
+      "winner": "Azorius Control (WST)",
+      "turns": 17
     },
     {
       "deck1": "Azorius Control (WST v2)",

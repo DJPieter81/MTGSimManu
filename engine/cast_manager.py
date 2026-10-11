@@ -373,7 +373,12 @@ class CastManager:
         requirements = _parse_targets(template.oracle_text or "")
         if not requirements:
             return True
-        x_ceiling = CastManager.affordable_x(game, player_idx, template)
+        # X is chosen as the spell is cast (CR 601.2b): a spell already on
+        # the stack has its X; one being cast reaches what can be paid.
+        x_ceiling = next((item.x_value for item in game.stack.items
+                          if item.source is card), None)
+        if x_ceiling is None:
+            x_ceiling = CastManager.affordable_x(game, player_idx, template)
         return all(target_admitted(game, player_idx, requirements, t,
                                    exclude=card, x_ceiling=x_ceiling,
                                    source=card)

@@ -2392,8 +2392,15 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             # that could not touch it (Izzet Prowess vs Domain Zoo s50000:
             # the one-damage burn aimed at a 5/5 three times at +8.9).
             from ai.card_classes import burn_damage
+            from ai.removal_reach import removal_candidates
             dmg_cap = burn_damage(t)
-            killable = [c for c in opp.creatures
+            # ... among the creatures the spell can take at all: its
+            # reach, targeting and requirement (`ai.removal_reach`, the
+            # target picker's own set). Projecting a creature it cannot
+            # touch off the board credited a 6/6 kill to a "mana value 2
+            # or less" removal spell, which was then cast at a 0/1 token.
+            reach = removal_candidates(game, player_idx, card, opp.creatures)
+            killable = [c for c in reach
                         if dmg_cap <= 0 or (c.toughness or 0) <= dmg_cap]
             if not killable:
                 best_target = None
