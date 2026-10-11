@@ -44,6 +44,7 @@ import dataclasses
 from typing import Any, Tuple
 
 from . import effect_conditions as conditions
+from .cards import CardType, Keyword
 from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_FILTER_KEYS,
                               EXECUTORS, Handle, Outcome, Resolution,
                               event_player, handle_of, is_event_player)
@@ -815,6 +816,120 @@ def execute_keyword_action(ctx: Resolution, s: EffectSpec,
 execute_keyword_action.supports = _amass_supported
 
 
+# ── CONTINUOUS characteristic changes on a chosen object (layers 4, 6,
+#    7c): "target creature becomes a <type> in addition to its other
+#    types / gains <keywords> / gets +N/+M until end of turn" ────────────
+
+_CHARACTERISTIC_KINDS = frozenset({ModKind.ADD_TYPES, ModKind.ADD_KEYWORDS,
+                                   ModKind.MODIFY_PT})
+_CARD_TYPE_NAMES = frozenset(t.value for t in CardType)
+_KEYWORD_NAMES = frozenset(k.value for k in Keyword)
+
+
+def _literal_n(a: Any):
+    return (a.n if isinstance(a, Amount) and a.kind is AmountKind.LITERAL
+            and a.quantity is None and a.ref is None and a.inner is None
+            else None)
+
+
+def _characteristic_data(m: Modification) -> bool:
+    d = dict(m.data)
+    if m.kind is ModKind.ADD_TYPES:
+        types, subs = d.get("types", ()), d.get("subtypes", ())
+        return (not set(d) - {"types", "subtypes"} and bool(types or subs)
+                and all(t in _CARD_TYPE_NAMES for t in types)
+                and all(isinstance(st, str) and st for st in subs))
+    if m.kind is ModKind.ADD_KEYWORDS:
+        kws = d.get("keywords", ())
+        return (not set(d) - {"keywords"} and bool(kws)
+                and all(param is None and kw in _KEYWORD_NAMES
+                        for kw, param in kws))
+    return (not set(d) - {"power", "toughness"}
+            and all(_literal_n(d.get(k)) is not None
+                    for k in ("power", "toughness") if k in d)
+            and bool(d))
+
+
+def _characteristic_supported(s: EffectSpec) -> bool:
+    """A type, keyword or P/T change on the object one target slot names,
+    until end of turn (CR 611.2a/c, 613.1d/f, 613.4c): the chosen object
+    only, through the layer system's one-shot effects."""
+    m = s.payload
+    if s.verb is not Verb.CONTINUOUS or not isinstance(m, Modification) \
+            or m.kind not in _CHARACTERISTIC_KINDS \
+            or not _characteristic_data(m):
+        return False
+    if s.duration is None or s.duration.kind is not DurationKind.THIS_TURN:
+        return False
+    req = s.target
+    if s.target_slot is None or req is None or req.zone != "battlefield" \
+            or req.count_max != 1 or req.mode_group is not None:
+        return False
+    return (not s.optional and not s.alternatives and s.filter is None
+            and s.group is None and s.dest is None and s.amount is None
+            and s.subject is None and s.other is None and s.ref is None
+            and not s.flags and s.chooser is Chooser.CONTROLLER
+            and _acts_as_controller(s.actor))
+
+
+def _characteristic_effects(ctx: Resolution, m: Modification, source: Any,
+                            card: Any) -> list:
+    from .continuous_effects import (create_pump_spell_effect,
+                                     create_type_adding_effect)
+    sid = getattr(source, "instance_id", 0) or 0
+    name = getattr(source, "name", "") or ""
+    d = dict(m.data)
+    seq = card.battlefield_entry_seq
+    if m.kind is ModKind.ADD_TYPES:
+        return create_type_adding_effect(
+            sid, name, card.instance_id, seq,
+            types={CardType(t) for t in d.get("types", ())},
+            subtypes={st[:1].upper() + st[1:] for st in d.get("subtypes", ())})
+    if m.kind is ModKind.ADD_KEYWORDS:
+        return create_pump_spell_effect(
+            sid, name, card.instance_id,
+            keyword_grants={Keyword(kw) for kw, _ in d["keywords"]},
+            controller=ctx.controller, target_seq=seq)
+    return create_pump_spell_effect(
+        sid, name, card.instance_id,
+        power_bonus=_literal_n(d.get("power")) or 0,
+        toughness_bonus=_literal_n(d.get("toughness")) or 0,
+        controller=ctx.controller, target_seq=seq)
+
+
+def _characteristic(ctx: Resolution, s: EffectSpec) -> Outcome:
+    source = _source_object(ctx)
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    changed = []
+    for value in slot:
+        card = _bind_recipient(ctx, s.target, source, value)
+        if card is None or isinstance(card, int):
+            continue                       # CR 608.2b: not affected
+        for effect in _characteristic_effects(ctx, s.payload, source, card):
+            ctx.game.continuous_effects.register(effect)
+        changed.append(handle_of(card))
+    if changed:
+        ctx.game.continuous_effects.recalculate(ctx.game)
+    return Outcome(bool(changed), {ctx.controller: tuple(changed)})
+
+
+def execute_continuous(ctx: Resolution, s: EffectSpec,
+                       actors: Tuple[int, ...]) -> Outcome:
+    if _characteristic_supported(s):
+        return _characteristic(ctx, s)
+    return execute_permit(ctx, s, actors)
+
+
+execute_continuous.supports = (lambda s: _permit_supported(s)
+                               or _characteristic_supported(s))
+# A characteristic change runs only in the type-change family (unit AT):
+# the pump family's keyword and P/T hosts stay on their legacy appliers
+# until that family's switch is proven host by host.
+execute_continuous.allowed_families = (
+    lambda s: frozenset({"type_change"}) if _characteristic_supported(s)
+    else None)
+
+
 # ── Conditions ────────────────────────────────────────────────────────
 
 def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
@@ -833,7 +948,7 @@ EXECUTORS[Verb.SURVEIL] = execute_surveil
 EXECUTORS[Verb.MOVE] = execute_move
 EXECUTORS[Verb.KEYWORD_ACTION] = execute_keyword_action
 EXECUTORS[Verb.EXILE] = execute_exile
-EXECUTORS[Verb.CONTINUOUS] = execute_permit
+EXECUTORS[Verb.CONTINUOUS] = execute_continuous
 EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {

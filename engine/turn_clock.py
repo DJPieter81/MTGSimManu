@@ -136,4 +136,8 @@ def _expire_rule_effects_at_cleanup(game, ev):
 
 @subscribe(Clock.CLEANUP, "end_of_turn_effects_expiry")
 def _expire_end_of_turn(game, ev):
+    # CR 514.2: "until end of turn" effects end simultaneously; the layer
+    # system recomputes every object's characteristics at once, so no
+    # pump, keyword or added type outlives the cleanup step.
     game.continuous_effects.cleanup_end_of_turn()
+    game.continuous_effects.recalculate(game)

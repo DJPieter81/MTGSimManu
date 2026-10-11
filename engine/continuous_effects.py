@@ -259,6 +259,9 @@ class ContinuousEffectsManager:
                 card.cem_land_type_set = None
                 # Layer-4 land-type ADD: types on top of the printed ones
                 card.cem_land_types_added = set()
+                # Layer-4 type ADD ("in addition to its other types")
+                card.cem_types_added = set()
+                card.cem_subtypes_added = set()
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects + derived, key=lambda e: (
@@ -464,6 +467,43 @@ def create_forced_land_type_effect(source_id: int, source_name: str,
         apply=apply_type,
         description=f"{source_name}: nonbasic lands are {basic_type}s",
         timestamp=timestamp,
+    )]
+
+
+def create_type_adding_effect(source_id: int, source_name: str,
+                              target_id: int, target_seq: Optional[int],
+                              types=(), subtypes=(),
+                              duration: str = "end_of_turn",
+                              timestamp: int = 0) -> List[ContinuousEffect]:
+    """Layer-4 type ADD on one chosen object: it "becomes a <type> /
+    <subtype> in addition to its other types" while the effect lasts
+    (CR 205.1b, 613.1d). The object, not the card: one that left and
+    returned is a new object the effect does not name (CR 400.7, 611.2c).
+    `types` are CardType members; `subtypes` subtype names."""
+    types = frozenset(types)
+    subtypes = frozenset(subtypes)
+    target_obj = (target_id, target_seq) if target_seq is not None else None
+
+    def is_target(game, card):
+        return (card.instance_id == target_id
+                and (target_seq is None
+                     or card.battlefield_entry_seq == target_seq))
+
+    def apply_types(game, card):
+        card.cem_types_added |= types
+        card.cem_subtypes_added |= subtypes
+
+    names = sorted(t.value for t in types) + sorted(subtypes)
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.TYPE,
+        affected=is_target,
+        apply=apply_types,
+        description=f"{source_name}: becomes {', '.join(names)}",
+        timestamp=timestamp,
+        duration=duration,
+        target_obj=target_obj,
     )]
 
 

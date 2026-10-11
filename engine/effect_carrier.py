@@ -54,8 +54,11 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
 # The families whose spell hosts the family-generic clause handler
 # ("dispatched") takes. A family joins when its spell carriers switch: card
 # flow joined with impulse draw (unit I), whose only carrier is this one --
-# the tag-gated impulse handler it replaces moved the cards to hand.
-SPELL_FAMILIES = ("damage", "card_flow")
+# the tag-gated impulse handler it replaces moved the cards to hand. The
+# type-change family joined with unit AT: a host that adds a type to an
+# object, which no legacy handler applies (Enter the Avatar State, Jump
+# Scare).
+SPELL_FAMILIES = ("damage", "card_flow", "type_change")
 
 
 def spell_family(template: Any, effects: Any = None) -> Optional[str]:
@@ -102,8 +105,10 @@ def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
 # not read, so it has no legacy apply and nothing can regress -- resolves
 # in, when its typed host is in the family's strict shape (A38) and the
 # dispatcher can execute it: card flow (unit A, an activated impulse draw:
-# Cori Mountain Monastery).
-UNCLASSIFIED_ACTIVATION_FAMILIES = ("card_flow",)
+# Cori Mountain Monastery) and type change (unit AT, "target permanent
+# becomes an artifact in addition to its other types until end of turn":
+# Liquimetal Coating).
+UNCLASSIFIED_ACTIVATION_FAMILIES = ("card_flow", "type_change")
 
 
 def activation_family(ability: Any, host: Any) -> Optional[str]:

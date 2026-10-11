@@ -268,6 +268,13 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
         supports = getattr(executor, "supports", None)
         if supports is not None and not supports(s):
             return False
+        # A shape an executor runs only in the families whose switch has
+        # been proven says which (`allowed_families`, None = any family).
+        allowed = getattr(executor, "allowed_families", None)
+        if allowed is not None:
+            families = allowed(s)
+            if families is not None and family not in families:
+                return False
     # Defence in depth: every spec a RESULT ref can name (this host's, an
     # outer host's) is itself walked and refused if UNMODELLED, so this
     # never changes the verdict today; it keeps the rule local to the ref.

@@ -900,6 +900,14 @@
   {
    "pair": [
     "dispatched",
+    "Enter the Avatar State",
+    "SPELL:0:0"
+   ],
+   "reason": "A type change on a chosen object (unit AT): the target becomes the printed type or subtype in addition to its other types, and gains the printed keywords / P/T, until end of turn, through the layer system's one-shot effects on that object only (CR 205.1b, 611.2c, 613.1d/f, 514.2); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Explosive Singularity",
     "SPELL:0:2"
    ],
@@ -1012,6 +1020,14 @@
   {
    "pair": [
     "dispatched",
+    "Hex Magic",
+    "SPELL:0:0"
+   ],
+   "reason": "Exile your hand, draw that many (unit HX): every card in the controller's hand goes to exile through the zone funnel, the controller draws as many cards as were exiled (CR 608.2c: the earlier instruction's result), and may play the cards exiled this way until the end of their next turn (CR 406, 601.2a); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Improvised Club",
     "SPELL:0:1"
    ],
@@ -1032,6 +1048,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Jump Scare",
+    "SPELL:0:0"
+   ],
+   "reason": "A type change on a chosen object (unit AT): the target becomes the printed type or subtype in addition to its other types, and gains the printed keywords / P/T, until end of turn, through the layer system's one-shot effects on that object only (CR 205.1b, 611.2c, 613.1d/f, 514.2); legacy resolved nothing for this text."
   },
   {
    "pair": [
@@ -1648,6 +1672,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit D (draw carrier; no legacy draw handler since D.5 retired the tag-gated fan-out, which fired only for the cards in the classifier cache): with the dispatcher off, a draw resolves no draw trigger, so the legacy side changes nothing but the draw itself (verified per board); the dispatcher resolves the printed trigger (CR 603.2) on a draw by the player its typed head names (the harness draws outside a draw step), with the drawer as 'that player', its targets picked as it is put on the stack (CR 603.3d, callbacks.choose_trigger_targets) and its effects through the owners (damage, life, amass CR 701.47a)."
+  },
+  {
+   "pair": [
+    "draw:dispatch",
+    "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Exile ~, then return ~ transformed (unit TF): on the third card its controller draws in a turn, the permanent leaves the battlefield through the zone funnel and the card its own exile moved returns under its owner's control with its back face up, a new object entering with its back face's loyalty (CR 400.7, 712, 306.5b); legacy resolved nothing for this draw trigger."
   },
   {
    "pair": [
@@ -2384,22 +2416,6 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
-  },
-  {
-   "pair": [
-    "dispatched",
-    "Hex Magic",
-    "SPELL:0:0"
-   ],
-   "reason": "Exile your hand, draw that many (unit HX): every card in the controller's hand goes to exile through the zone funnel, the controller draws as many cards as were exiled (CR 608.2c: the earlier instruction's result), and may play the cards exiled this way until the end of their next turn (CR 406, 601.2a); legacy resolved nothing for this text."
-  },
-  {
-   "pair": [
-    "draw:dispatch",
-    "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
-    "TRIGGERED:0:2"
-   ],
-   "reason": "Exile ~, then return ~ transformed (unit TF): on the third card its controller draws in a turn, the permanent leaves the battlefield through the zone funnel and the card its own exile moved returns under its owner's control with its back face up, a new object entering with its back face's loyalty (CR 400.7, 712, 306.5b); legacy resolved nothing for this draw trigger."
   }
  ],
  "pairs": [
@@ -2910,6 +2926,16 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Liquimetal Coating",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Liquimetal Torque",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Marwyn, the Preserver",
    "ACTIVATED:0:1"
   ],
@@ -2920,8 +2946,23 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Myr Landshaper",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Neurok Transmuter",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Skull of Orm",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Stegron the Dinosaur Man",
+   "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",

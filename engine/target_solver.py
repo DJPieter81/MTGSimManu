@@ -802,6 +802,8 @@ def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
             (scope == "you" and card.controller != controller):
         return False
     types = set(req.types)
+    if "permanent" in types:
+        return True                # every object on the battlefield is one
     admitted = ({"creature", "planeswalker"} if "any" in types
                 else types - {"player"})
     return bool({t.value for t in card.effective_card_types} & admitted)

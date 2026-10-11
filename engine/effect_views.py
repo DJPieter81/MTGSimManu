@@ -83,6 +83,10 @@ FAMILY_TOKENS_COUNTERS = "tokens_counters"
 FAMILY_PUMP_RESTRICT = "pump_restrict"
 FAMILY_STACK_MANA = "stack_mana"
 FAMILY_TRIGGER = "trigger"
+# Characteristic changes that add a type ("becomes a <type> in addition to
+# its other types", CR 205.1b) with the keyword and P/T changes printed
+# beside them (unit AT): a shape no legacy handler applies.
+FAMILY_TYPE_CHANGE = "type_change"
 FAMILIES = frozenset({FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                       FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                       FAMILY_STACK_MANA, FAMILY_TRIGGER})
@@ -401,6 +405,20 @@ def strict_stack_mana(h: AbilityEffects) -> bool:
     return _strict_host(h, _STACK_MANA_VERBS, conditions=True)
 
 
+_CHARACTERISTIC_KINDS = frozenset({ModKind.ADD_TYPES, ModKind.ADD_KEYWORDS,
+                                   ModKind.MODIFY_PT})
+
+
+def strict_type_change(h: AbilityEffects) -> bool:
+    """Every spec a CONTINUOUS type, keyword or P/T change, at least one
+    of them adding a type or subtype (CR 205.1b, 613.1d)."""
+    if not _strict_host(h, frozenset({Verb.CONTINUOUS}), durations=True):
+        return False
+    kinds = [getattr(_mod(s), "kind", None) for s in iter_specs(h.specs)]
+    return (all(k in _CHARACTERISTIC_KINDS for k in kinds)
+            and ModKind.ADD_TYPES in kinds)
+
+
 # The draw carrier (unit D, `effect_carrier.dispatch_draw_triggers`): the
 # verbs it resolves and the slot zones it picks a trigger's targets in.
 FAMILY_DRAW_TRIGGER = "draw_trigger"
@@ -499,6 +517,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_TRIGGER: strict_trigger,
     FAMILY_DRAW_TRIGGER: strict_draw_trigger,
     FAMILY_COMBAT_DAMAGE_TRIGGER: strict_combat_damage_trigger,
+    FAMILY_TYPE_CHANGE: strict_type_change,
 })
 
 

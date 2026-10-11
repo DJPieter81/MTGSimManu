@@ -158,6 +158,7 @@ class ZoneManager:
             card.enter_battlefield()
             card._game_state = game
             self._audit_entry_loyalty(game, card)
+            self._audit_new_object(game, card)
         else:
             self._audit_front_face(game, card)
 
@@ -411,6 +412,20 @@ class ZoneManager:
                      f"without dying", game=game)
 
     @staticmethod
+    def _audit_new_object(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 400.7, 611.2c): an object entering the
+        battlefield is a new object that no earlier type-adding effect
+        names -- it carries no added type or subtype. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("400.7/new_object_added_types",
+                     not (getattr(card, "cem_types_added", None)
+                          or getattr(card, "cem_subtypes_added", None)),
+                     f"{card.name} entered carrying added types from an "
+                     f"earlier object", game=game)
+
+    @staticmethod
     def _audit_entry_loyalty(game: "GameState", card: "CardInstance") -> None:
         """Rules audit (CR 306.5b): a planeswalker enters with the loyalty
         printed on the face it shows -- its back face when it entered
@@ -579,6 +594,10 @@ class ZoneManager:
         # Off the battlefield a double-faced card has only its front face
         # (CR 712.8a); a later entry shows the face that entry names.
         card.is_transformed = False
+
+        # Types an effect added named the object that left (CR 400.7).
+        card.cem_types_added = set()
+        card.cem_subtypes_added = set()
 
         # Clear game state reference
         card._game_state = None

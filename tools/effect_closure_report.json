@@ -448,23 +448,31 @@
     "part": "mainboard",
     "step": "E5",
     "strict": true
+   },
+   {
+    "card": "Liquimetal Coating",
+    "host": "ACTIVATED:0:0",
+    "part": "sideboard",
+    "step": "E5",
+    "strict": true
    }
   ],
-  "executable": 68,
+  "executable": 73,
   "family": "card_flow",
   "hosts": {
    "mainboard": 2,
-   "pool": 66,
-   "sideboard": 0
+   "pool": 70,
+   "sideboard": 1
   },
   "steps": {
    "E2": 26,
    "E3": 30,
-   "E5": 12
+   "E5": 17
   },
-  "strict": 68,
+  "strict": 73,
   "sub_kinds": {},
   "verb_sets": {
+   "CONTINUOUS": 5,
    "CONTINUOUS,EXILE": 12,
    "EXILE": 4,
    "MOVE": 22,
@@ -974,6 +982,13 @@
  "dispatched": {
   "deck_hosts": [
    {
+    "card": "Enter the Avatar State",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
     "card": "Galvanic Blast",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1030,22 +1045,23 @@
     "strict": true
    }
   ],
-  "executable": 138,
+  "executable": 140,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 8,
-   "pool": 130,
+   "mainboard": 9,
+   "pool": 131,
    "sideboard": 0
   },
   "steps": {
    "E1": 102,
    "E2": 26,
    "E3": 3,
-   "E5": 7
+   "E5": 9
   },
-  "strict": 138,
+  "strict": 140,
   "sub_kinds": {},
   "verb_sets": {
+   "CONTINUOUS": 2,
    "CONTINUOUS,DRAW,EXILE": 1,
    "CONTINUOUS,EXILE": 6,
    "DAMAGE": 102,

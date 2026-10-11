@@ -1781,6 +1781,14 @@ class CardInstance:
     # `current_basic_land_types` — the ONE reader every domain / mana /
     # ability consumer goes through.
     cem_land_types_added: Set[str] = field(default_factory=set)
+    # Types and subtypes an effect adds "in addition to its other types"
+    # (CR 205.1b, layer 4, CR 613.1d), e.g. "becomes an artifact" /
+    # "becomes an Avatar". Written only by ContinuousEffectsManager.
+    # recalculate (cleared each pass and when the object leaves the
+    # battlefield, CR 400.7); read through effective_card_types /
+    # effective_subtypes.
+    cem_types_added: Set[CardType] = field(default_factory=set)
+    cem_subtypes_added: Set[str] = field(default_factory=set)
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -1873,17 +1881,32 @@ class CardInstance:
 
     @property
     def effective_card_types(self) -> List[CardType]:
-        """Card types of whichever face is currently active."""
+        """Card types of whichever face is currently active, plus any an
+        effect adds (CR 205.1b, 613.1d)."""
         if self.is_transformed and self.template.back_face_types:
-            return self.template.back_face_types
-        return self.template.card_types
+            face = self.template.back_face_types
+        else:
+            face = self.template.card_types
+        added = self.cem_types_added
+        if not added:
+            return face
+        return list(face) + [t for t in CardType if t in added
+                             and t not in face]
 
     @property
     def effective_subtypes(self) -> List[str]:
-        """Subtypes of whichever face is currently active."""
+        """Subtypes of whichever face is currently active, plus any an
+        effect adds (CR 205.1b, 613.1d)."""
         if self.is_transformed and self.template.back_face_types:
-            return self.template.back_face_subtypes
-        return self.template.subtypes
+            face = self.template.back_face_subtypes
+        else:
+            face = self.template.subtypes
+        added = self.cem_subtypes_added
+        if not added:
+            return face
+        have = {str(st).lower() for st in face or ()}
+        return list(face or ()) + sorted(st for st in added
+                                         if st.lower() not in have)
 
     @property
     def effective_is_creature(self) -> bool:
