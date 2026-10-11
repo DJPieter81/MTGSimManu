@@ -145,16 +145,25 @@ def test_with_no_event_player_nothing_is_exiled(card_db):
     assert theirs in game.players[1].library
 
 
-def test_a_new_executor_switches_no_other_carriers_host(card_db):
-    """A38: DRAW has an executor for the combat-damage carrier; a spell
-    that only draws stays outside the card-flow carriers' shape until a
-    unit switches them and the harness proves it."""
+def test_a_new_executor_switches_a_host_only_with_the_harness_proving_it(
+        card_db):
+    """A38: DRAW gained its executor for the combat-damage carrier (R2); a
+    spell that only draws stayed outside the card-flow carriers' shape
+    until unit DW switched them, and the per-host harness proves or
+    records every host that switch put on the new path."""
+    import json
+    from pathlib import Path
     from engine import effect_resolver as er
     from engine.effect_views import STRICT
     spell = next(h for h in card_db.get_card("Divination").effects.walk(
         include_sub=False) if h.kind is HostKind.SPELL)
     assert er.can_execute(spell, "card_flow")
-    assert not STRICT["card_flow"](spell)
+    assert STRICT["card_flow"](spell)
+    record = json.loads((Path(__file__).resolve().parents[1] / "tools"
+                         / "host_harness_switched.json").read_text())
+    pairs = {tuple(p) for p in record["pairs"]} | {
+        tuple(e["pair"]) for e in record["intended"]}
+    assert ("dispatched", "Divination", "SPELL:0:0") in pairs
 
 
 # ── The carrier (R2.3) ────────────────────────────────────────────────
