@@ -402,6 +402,24 @@ class GameState:
             )
         return binned
 
+    def mill(self, player_idx: int, n: int, cause: str = "") -> List[CardInstance]:
+        """CR 701.17a — Mill N: the player puts that many cards from the
+        top of their library into their graveyard; with fewer, all of them
+        (CR 701.17b). Through the zone funnel, so a replacement effect that
+        sends a graveyard-bound card elsewhere applies (CR 614.1a). The one
+        mill owner. Returns the cards milled, top first."""
+        player = self.players[player_idx]
+        milled = list(player.library[:max(0, n)])
+        for card in milled:
+            self.zone_mgr.move_card(self, card, "library", "graveyard",
+                                    cause=cause)
+        if milled:
+            names = ", ".join(c.name for c in milled)
+            self.log.append(
+                f"T{self.display_turn} P{player_idx+1}: "
+                f"mills {len(milled)} ({names})")
+        return milled
+
     def scry(self, player_idx: int, n: int) -> List[CardInstance]:
         """CR 701.18 — Scry N.
 

@@ -364,12 +364,13 @@ def _permission_over(s, exiled) -> bool:
 
 
 # The card-flow verbs whose carriers have switched to the dispatcher:
-# surveil (unit E.1) and the regrowth MOVE (E.2), with the impulse pair
-# (unit I). A card-flow verb gains an executor for another carrier first --
-# DRAW for the combat-damage carrier (R2) -- and joins this shape only when
-# a unit switches the card-flow carriers to it and the per-host harness
-# proves them (A38: a new executor never silently switches a host).
-_CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE})
+# surveil (unit E.1), the regrowth MOVE (E.2) and the mill (unit ML), with
+# the impulse pair (unit I). A card-flow verb gains an executor for another
+# carrier first -- DRAW for the combat-damage carrier (R2) -- and joins this
+# shape only when a unit switches the card-flow carriers to it and the
+# per-host harness proves them (A38: a new executor never silently switches
+# a host).
+_CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE, Verb.MILL})
 
 
 def strict_card_flow(h: AbilityEffects) -> bool:

@@ -2311,22 +2311,9 @@ def fable_etb(game, card, controller, targets=None, item=None):
 # (not fully simulated; the ETB counter covers the base modular 1 case).
 
 
-# ═══════════════════════════════════════════════════════════════════
-# Emry, Lurker of the Loch — ETB: mill 4
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Emry, Lurker of the Loch", EffectTiming.ETB,
-                           description="Emry ETB: mill 4 cards")
-def emry_etb(game, card, controller, targets=None, item=None):
-    """Emry ETB: mill 4 cards into graveyard."""
-    player = game.players[controller]
-    milled = []
-    for c in player.library[:4]:
-        game.zone_mgr.move_card(game, c, "library", "graveyard")
-        milled.append(c.name)
-    if milled:
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Emry mills {len(milled)}: {', '.join(milled)}")
+# Emry, Lurker of the Loch's "When ~ enters, mill four cards" resolves
+# through the enter-trigger carrier and the MILL executor (unit ML, CR
+# 701.17a); its card-name handler was retired.
 
 
 # ═══════════════════════════════════════════════════════════════════

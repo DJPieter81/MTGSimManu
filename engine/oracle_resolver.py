@@ -625,13 +625,7 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             mill_n = _WORD_TO_NUM.get(tok, 0)
         if mill_n <= 0:
             return False
-        player = game.players[controller]
-        milled = []
-        for _ in range(min(mill_n, len(player.library))):
-            top = player.library[0]
-            game.zone_mgr.move_card(game, top, "library", "graveyard",
-                                    cause=f"{card.name} mill")
-            milled.append(top)
+        milled = game.mill(controller, mill_n, cause=f"{card.name} mill")
         # Optional select rider: recover one card of the allowed type.
         sel = re.search(
             r'put a ([a-z, ]*?)card from among the cards milled', ability)
@@ -651,10 +645,6 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 best = max(cands, key=lambda c: c.template.cmc or 0)
                 game.zone_mgr.move_card(game, best, "graveyard", "hand",
                                         cause=f"{card.name} recover")
-        if milled:
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: {card.name} ETB: "
-                f"mill {len(milled)}")
         return True
 
     return False

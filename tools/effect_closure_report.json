@@ -457,24 +457,25 @@
     "strict": true
    }
   ],
-  "executable": 73,
+  "executable": 113,
   "family": "card_flow",
   "hosts": {
    "mainboard": 2,
-   "pool": 70,
+   "pool": 110,
    "sideboard": 1
   },
   "steps": {
    "E2": 26,
-   "E3": 30,
+   "E3": 70,
    "E5": 17
   },
-  "strict": 73,
+  "strict": 113,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
    "CONTINUOUS,EXILE": 12,
    "EXILE": 4,
+   "MILL": 40,
    "MOVE": 22,
    "SURVEIL": 30
   }
@@ -714,7 +715,7 @@
     "strict": false
    }
   ],
-  "executable": 157,
+  "executable": 166,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -898,7 +899,7 @@
     "strict": false
    }
   ],
-  "executable": 161,
+  "executable": 162,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1101,21 +1102,21 @@
     "strict": true
    }
   ],
-  "executable": 355,
+  "executable": 370,
   "family": "damage",
   "hosts": {
    "mainboard": 15,
-   "pool": 338,
+   "pool": 353,
    "sideboard": 2
   },
   "steps": {
    "E1": 145,
    "E2": 76,
-   "E3": 3,
+   "E3": 18,
    "E4": 120,
    "E5": 11
   },
-  "strict": 355,
+  "strict": 370,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,
@@ -1123,6 +1124,7 @@
    "CONTINUOUS,EXILE": 7,
    "CREATE_TOKEN": 120,
    "DAMAGE": 145,
+   "MILL": 15,
    "MOVE": 51,
    "SACRIFICE": 25,
    "SURVEIL": 3
@@ -1198,6 +1200,13 @@
  "etb:dispatch": {
   "deck_hosts": [
    {
+    "card": "Aftermath Analyst",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Commercial District",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -1206,6 +1215,13 @@
    },
    {
     "card": "Elegant Parlor",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Emry, Lurker of the Loch",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
     "step": "E3",
@@ -1275,23 +1291,24 @@
     "strict": true
    }
   ],
-  "executable": 90,
+  "executable": 127,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 11,
-   "pool": 79,
+   "mainboard": 13,
+   "pool": 114,
    "sideboard": 0
   },
   "steps": {
    "E2": 33,
-   "E3": 47,
+   "E3": 84,
    "E5": 10
   },
-  "strict": 90,
+  "strict": 127,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 10,
    "EXILE": 1,
+   "MILL": 37,
    "MOVE": 32,
    "SURVEIL": 47
   }

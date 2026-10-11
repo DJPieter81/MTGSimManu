@@ -1,5 +1,5 @@
 {
-  "combined": "7f75fc1ed17c1c4410022c97839805f06c3acb2983a7427b1ba6e7288a7b1b9d",
+  "combined": "cecfa40aa6176be0cdddb3096289e1268d1cd7cea3e25e51bf440676f7820639",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -10,7 +10,7 @@
     },
     "bo1|Amulet Titan|Eldrazi Tron|54500": {
       "lines": 710,
-      "sha256": "3b19d9fa965ad6cf78d3a4588a18331ec4ab182d36cdeba55253a2ad29adb0cc",
+      "sha256": "baf9aa29690cb1161d85cb73690132127866211906f166d09bbd422d91d5df3f",
       "turns": 11,
       "winner": "Eldrazi Tron"
     },
@@ -33,8 +33,8 @@
       "winner": "Azorius Control"
     },
     "bo1|Boros Energy|Affinity|50000": {
-      "lines": 462,
-      "sha256": "5c43c79806c38593c391b68bcabe110c66c748987edc016dc1cec0b84155ec5e",
+      "lines": 466,
+      "sha256": "d148578176c720d420b4787f36eb405a325ba70b6a6512373e748ae4252bce96",
       "turns": 6,
       "winner": "Affinity"
     },
@@ -70,7 +70,7 @@
     },
     "bo1|Instant Reanimator|Boros Ponza|55000": {
       "lines": 1523,
-      "sha256": "f461cfd3a3051e601468bcb3038d39888387b769441e5e5479a405b54827067f",
+      "sha256": "0061bd9d2852a2effb425b54c35502405f199954389438b26b3d0bfce6636533",
       "turns": 24,
       "winner": "Instant Reanimator"
     },

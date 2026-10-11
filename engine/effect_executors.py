@@ -66,7 +66,8 @@ FAMILY_EDICT = "edict"
 FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                       Verb.GAIN_LIFE}),
             FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
-                                         Verb.CONTINUOUS, Verb.DRAW}),
+                                         Verb.CONTINUOUS, Verb.DRAW,
+                                         Verb.MILL}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE})}
@@ -747,17 +748,18 @@ execute_draw.supports = _draw_supported
 # The predefined tokens (CR 111.10) the token owner defines: Treasure,
 # Food and Clue (`player_state.TOKEN_DEFS`). Any other is refused.
 _PREDEFINED_TOKENS = frozenset({"treasure", "food", "clue"})
-# The player sets that create tokens (CR 111.2): each opponent, each
-# player, or "you".
-_TOKEN_CREATORS = frozenset({SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS,
-                             SelectorKind.PLAYER})
+# The printed player sets an instruction names as its acting players (CR
+# 111.2 for tokens, CR 701.17a for a mill): each opponent, each player, or
+# "you".
+_PLAYER_SETS = frozenset({SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS,
+                          SelectorKind.PLAYER})
 
 
-def _token_creators_supported(actor: Any) -> bool:
+def _named_players_supported(actor: Any) -> bool:
     """The controller, a printed player set, or the player chosen for a
-    target slot ("target player creates ...")."""
+    target slot ("target player creates ...", "target player mills ...")."""
     return (_acts_as_controller(actor)
-            or (isinstance(actor, Selector) and actor.kind in _TOKEN_CREATORS
+            or (isinstance(actor, Selector) and actor.kind in _PLAYER_SETS
                 and actor.filter is None)
             or (isinstance(actor, Ref) and actor.kind is RefKind.TARGET))
 
@@ -785,7 +787,7 @@ def _create_token_supported(s: EffectSpec) -> bool:
         return False
     if s.subject is not None or s.ref is not None or s.other is not None \
             or s.target is not None or s.target_slot is not None \
-            or not _token_creators_supported(s.actor):
+            or not _named_players_supported(s.actor):
         return False
     return conditions.amount_supported(s.amount)
 
@@ -1123,6 +1125,54 @@ def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
 evaluate_state.supports = conditions.state_condition_supported
 
 
+# ── MILL (family card_flow, unit ML) ──────────────────────────────────
+
+def _mill_supported(s: EffectSpec) -> bool:
+    """"<Players> mill(s) <N> cards": each player the spec names -- the
+    controller, a printed player set, or the player chosen for a target --
+    puts that many cards from the top of their library into their graveyard
+    (CR 701.17a) through the one mill owner, `GameState.mill`."""
+    if s.verb is not Verb.MILL or not _plain_participants(s) or s.flags:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.target is not None or s.target_slot is not None \
+            or not _named_players_supported(s.actor):
+        return False
+    return conditions.amount_supported(s.amount)
+
+
+def _audit_mill(ctx: Resolution, player: int, before: int, n: int) -> None:
+    """CR 701.17a/b, restated from the library's size: a mill of N moves
+    min(N, library size) cards out of that player's library. Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    left = before - len(ctx.game.players[player].library)
+    rules_audit.check(
+        "701.17a/mill", left == min(n, before),
+        f"{getattr(_source_object(ctx), 'name', '?')}: P{player + 1} milled "
+        f"{left} of {n} with {before} in library", game=ctx.game)
+
+
+def execute_mill(ctx: Resolution, s: EffectSpec,
+                 actors: Tuple[int, ...]) -> Outcome:
+    n = _amount(ctx, s)
+    if n <= 0 or not actors:
+        return Outcome(False, {})
+    cause = getattr(_source_object(ctx), "name", "")
+    milled = {}
+    for p in actors:
+        before = len(ctx.game.players[p].library)
+        cards = ctx.game.mill(p, n, cause=cause)
+        _audit_mill(ctx, p, before, n)
+        milled[p] = tuple(handle_of(c) for c in cards)
+    return Outcome(any(milled.values()), milled)
+
+
+execute_mill.supports = _mill_supported
+
+
 # ── Registration ──────────────────────────────────────────────────────
 
 EXECUTORS[Verb.DAMAGE] = execute_damage
@@ -1136,6 +1186,7 @@ EXECUTORS[Verb.CONTINUOUS] = execute_continuous
 EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
+EXECUTORS[Verb.MILL] = execute_mill
 EXECUTOR_FILTER_KEYS[Verb.SACRIFICE] = frozenset(
     ("types", combo) for k in (1, 2, 3)
     for combo in itertools.combinations(sorted(_CARD_TYPE_VALUES), k)) | {

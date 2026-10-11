@@ -12,6 +12,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Autumnal Gloom // Ancient of the Equinox",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Blood Fountain",
     "ACTIVATED:0:1"
    ],
@@ -92,6 +100,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Devourer of Memory",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Diversion Specialist",
     "ACTIVATED:0:1"
    ],
@@ -124,6 +140,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Excavated Wall",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Fields of Strife",
     "ACTIVATED:0:2"
    ],
@@ -152,6 +176,14 @@
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Ghoulcaller's Bell",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -244,6 +276,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Molt Tender",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Mystic Forge",
     "ACTIVATED:0:2"
    ],
@@ -272,6 +312,14 @@
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Perpetual Timepiece",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -348,6 +396,22 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Skola Grovedancer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Skull Prophet",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Snowslope Hunter",
     "ACTIVATED:0:0"
    ],
@@ -404,10 +468,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Syr Konrad, the Grim",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "The Underworld Cookbook",
     "ACTIVATED:0:1"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Throne of the Grim Captain // The Grim Captain",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -464,6 +544,30 @@
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Vantress Gargoyle",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Wand of Vertebrae",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Waterlogged Hulk // Watertight Gondola",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -1604,6 +1708,14 @@
   {
    "pair": [
     "dispatched",
+    "Archive Trap",
+    "SPELL:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Army of the Damned",
     "SPELL:0:0"
    ],
@@ -1740,6 +1852,14 @@
   {
    "pair": [
     "dispatched",
+    "Breaking // Entering",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Brigid's Command",
     "MODE:0:1:mode1"
    ],
@@ -1868,6 +1988,14 @@
   {
    "pair": [
     "dispatched",
+    "Chill of Foreboding",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Cobra Trap",
     "SPELL:0:1"
    ],
@@ -1896,6 +2024,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Compelling Argument",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -1944,6 +2080,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dampen Thought",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -2032,6 +2176,22 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dreadwaters",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dream Twist",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -2244,6 +2404,14 @@
   {
    "pair": [
     "dispatched",
+    "Fractured Sanity",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Frontline Rush",
     "MODE:0:0:mode0"
    ],
@@ -2280,6 +2448,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Glimpse the Unthinkable",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -2764,6 +2940,14 @@
   {
    "pair": [
     "dispatched",
+    "Memory Sluice",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Midnight Haunting",
     "SPELL:0:0"
    ],
@@ -2776,6 +2960,14 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Mind Sculpt",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -2912,6 +3104,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Paranoid Delusions",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -3596,6 +3796,14 @@
   {
    "pair": [
     "dispatched",
+    "Startled Awake // Persistent Nightmare",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Stingerquill Charm",
     "MODE:0:0:mode0"
    ],
@@ -3692,6 +3900,14 @@
   {
    "pair": [
     "dispatched",
+    "Sweet Oblivion",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Sworn Companions",
     "SPELL:0:0"
    ],
@@ -3768,6 +3984,14 @@
     "MODE:0:2:mode2"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Tome Scour",
+    "SPELL:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -4116,6 +4340,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Aftermath Analyst",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Alania's Pathmaker",
     "TRIGGERED:0:0"
    ],
@@ -4136,6 +4368,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Armored Skaab",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4164,6 +4404,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Billowing Shriekmass",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Broodspinner",
     "TRIGGERED:0:1"
    ],
@@ -4176,6 +4424,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Carrion Grub",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4212,10 +4468,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Crow of Dark Tidings",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Daring Archaeologist",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dark Matter Manipulator",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Deadbridge Chant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Devoted Grafkeeper // Departed Soulkeeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4236,6 +4524,30 @@
   {
    "pair": [
     "etb:dispatch",
+    "Disturbing Conversion",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dreadhound",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Eerie Soultender",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Elegant Parlor",
     "TRIGGERED:0:1"
    ],
@@ -4252,6 +4564,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Emry, Lurker of the Loch",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Equilibrium Adept",
     "TRIGGERED:0:0"
    ],
@@ -4264,6 +4584,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Excavation Mole",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4292,6 +4620,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Fear of Death",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Foraging Wickermaw",
     "TRIGGERED:0:0"
    ],
@@ -4304,6 +4640,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gisa and Geralf",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4428,6 +4772,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Laboratory Brute",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Lazav, the Multifarious",
     "TRIGGERED:0:0"
    ],
@@ -4468,6 +4820,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ludevic, Necrogenius // Olag, Ludevic's Hubris",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Lush Portico",
     "TRIGGERED:0:1"
    ],
@@ -4480,6 +4840,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Manic Scribe",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -4508,10 +4876,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Mindwrack Demon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Naga Oracle",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Necromancer's Assistant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Nezumi Freewheeler // Hideous Fleshwheeler",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the legacy self-mill branch milled only its controller; 'each player mills N cards' mills every player (CR 701.17a)"
   },
   {
    "pair": [
@@ -4548,10 +4940,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Paramecia Coloniex",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Pillardrop Rescuer",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Platypus-Bear",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4596,10 +5004,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Scarblade Scout",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Screeching Skaab",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Search the City",
     "TRIGGERED:0:0"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Seedship Broodtender",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4628,10 +5060,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sibsig Host",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sibsig Muckdraggers",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sidisi, Brood Tyrant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Snooping Newsie",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sphinx Mindbreaker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -4652,10 +5116,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Stitcher's Supplier",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Stoic Builder",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sultai Skullkeeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -4680,6 +5160,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thieves' Guild Enforcer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
   },
   {
    "pair": [
@@ -4740,6 +5228,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Undead Butler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Undercity Sewers",
     "TRIGGERED:0:1"
    ],
@@ -4768,6 +5264,30 @@
     "TRIGGERED:0:2"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Venomized Cat",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Venomous Hierophant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wailing Ghoul",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
   },
   {
    "pair": [
@@ -5311,13 +5831,68 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Ambassador Laquatus",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Auriok Salvagers",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Cathartic Adept",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Codex Shredder",
    "ACTIVATED:0:0"
   ],
   [
    "activated_effects:UNCLASSIFIED",
    "Dowsing Shaman",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Drowner of Secrets",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Duskmantle Guildmage",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Duskmantle, House of Shadow",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Embalmer's Tools",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Enigma Eidolon",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Grinding Station",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Hair-Strung Koto",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Ipnu Rivulet",
+   "ACTIVATED:0:2"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -5336,6 +5911,11 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Lord of the Forsaken",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Marwyn, the Preserver",
    "ACTIVATED:0:1"
   ],
@@ -5346,8 +5926,28 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Merfolk Mesmerist",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Millstone",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Minister of Inquiries",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Myr Landshaper",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Nephalia Drownyard",
+   "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -5356,8 +5956,48 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Pelargir Survivor",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Persistent Petitioners",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Persistent Petitioners",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Relic Golem",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Sands of Delirium",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Seer of the Last Tomorrow",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Shriekhorn",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Skull of Orm",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Soratami Mindsweeper",
+   "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -5366,7 +6006,22 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Tower of Murmurs",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Tragic Poet",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Vedalken Entrancer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Whetwheel",
    "ACTIVATED:0:0"
   ],
   [
