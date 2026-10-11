@@ -8042,3 +8042,60 @@ Hundreds of pool cards sacrifice creatures.
   - Fatal Push 4 of 19, March of Otherworldly Light 2 of 19, Ephemerate 1, Erode 1.
   This is the next unit (RT).
 - **Thought Scour's mill is never performed**, whatever player it is cast at: only its draw resolves.
+
+## Unit RT: every target a spell requires is chosen as it is cast (2026-10-11)
+
+**Rule (CR 601.2c, 115.1):**
+- As a spell is cast, its caster announces a target for each target the spell requires. An "up to N" requirement may take fewer, and a mode's requirement binds only if that mode is chosen (CR 700.2a).
+- One object or player may be chosen for different instances of the word "target"; within one instance the targets are distinct.
+- A spell whose required target is not chosen is not cast. "Target opponent" is not its caster.
+
+**Defect:**
+- The cast check (`CastManager.targets_admitted`) asked only whether each chosen target was admitted, so an empty target list passed.
+- A census of 50 seeded games counted 44 of 260 required-target casts with no target:
+  - Thoughtseize 28 of 31, Inquisition of Kozilek 4 of 8 and Thought Scour 4 of 4, from the main phase (the opponent was assumed at resolution);
+  - Fatal Push 4 of 19, March of Otherworldly Light 2 of 19 and Erode 1 of 7, cast by the response planner at nothing and resolving to nothing;
+  - Ephemerate 1, on rebound.
+- Surgical Extraction was cast at nothing too.
+
+**Class:** every instant and sorcery with a target requirement (2868 pool cards). 100 print two or more required requirements; two of them are registered (Into the Flood Maw, Practiced Offense).
+
+**Steps (`6be57d4`, `e309c39`; arm requests `5f23b76` superseded, `1ecc196`):**
+- **Legality owner.** `target_solver.required_targets_chosen`: each requirement that binds whatever is chosen (`binds_whatever_is_chosen`) admits at least its count of distinct chosen targets. `target_admitted` reads a player marker against the requirement's controller scope.
+- **Cast procedure.** `CastManager.announced_targets`: a required target the casting path left unchosen is asked of the caster (`GameCallbacks.choose_cast_targets`). With none chosen, the spell is not cast, before anything is paid. Every path goes through it: main phase, response, rebound, suspend, free casts.
+  - The default answer reads printed data only (`callbacks.default_cast_targets`).
+  - The runner's callbacks answer with the caster's own picker (`AICallbacks.bind_players`).
+- **AI.** `EVPlayer._choose_targets`:
+  - the picks;
+  - for a spell whose shape no pick knows (`_pick_targets` returns None), the engine's default for the objects it requires (`ai.cast_targets.default_objects`);
+  - a player for each player-only requirement through the one owner of what a player-only slot names (`pick_trigger_targets`: the player its typed instruction is worth most to, else the opponent).
+  - A pick that found nothing worth aiming at still declines.
+  - `worth_casting_without_targets` holds a spell that requires a target, so the response planner no longer casts removal it found no target for.
+- **Auditor:** `601.2c/required_targets_chosen`, restated from the requirements' raw fields, tested both ways.
+
+**Tests (red first):** `tests/test_every_target_a_spell_requires_is_chosen_as_it_is_cast.py`, 18 tests.
+- 9 of the first 11 were red. The later additions were each red against the version before them: the predicate, the response pick, the player owner's two cases, and the default announcement.
+- Two audit tests that force an illegal cast also bypass the new check.
+
+**Digest / anchor / suites:**
+- Digest: 7 games change, with the same winners and turns.
+  - Galvanic Discharge, Fatal Push, Erode and Dismember are no longer cast in response at nothing. Eldrazi Tron's Dismember now kills Ragavan at begin combat instead.
+  - A Lightning Bolt that went face through the resolution default is now aimed there by the main picker.
+  - One Bo3 game 2 follows downstream of game 1.
+- Anchor: 29 passed.
+- CI on `5f23b76` failed `test_cascade_payoff_must_fire`: Living End's Demonic Dread ("Target creature can't block this turn"), a shape no pick knew, was no longer cast. Fixed in `e309c39` by the default announcement; its arm (`rt-post`) was superseded.
+- Suites at `e309c39`: chunk A 4728 passed, chunk B 2712, from a pinned worktree.
+
+**Measured (same-seed n=20 Bo3, `rtf-post` `1ecc196`, pre = `rv-post`):** 182 of 600 cells change.
+- Azorius Control (WST) +3.1, Azorius Blink -1.2; every other deck moves by at most ±0.8. No deck moves more than 5 pp; 0 aborts.
+- Auditor: 0 violations; the new invariant never fired.
+- Findings:
+  - Untimely Malfunction `unhandled/mode`, 9 cells.
+  - Surgical Extraction `unhandled/spell`, 8: now cast at the default target, its search still unperformed (unit SX).
+  - Practiced Offense `unhandled/spell`, 5: newly visible, cast with its player announced, and resolving to nothing.
+
+**Leads (not built):**
+- **A requirement that binds only with a paid cost or option** (kicker, a promised gift, "instead") is not typed as conditional. The count check treats it as required. Into the Flood Maw is safe only because the engine does not model gift.
+- **Practiced Offense resolves to nothing** whatever its targets: the counters on each creature a player controls, and the keyword choice.
+- **The player owner values only tokens and edicts** (`named_player_value`). A mill, draw or counters slot falls back to the opponent: Thought Scour would mill the opponent once its mill is performed.
+- **A spell whose shape no pick knows is announced at the printed default.** That default is legal, not chosen for value.
