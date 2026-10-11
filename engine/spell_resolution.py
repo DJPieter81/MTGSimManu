@@ -864,9 +864,8 @@ class ResolutionManager:
                 chosen = modal_spell.choose_modes(
                     game, card, controller, item.targets, item.x_value)
             modal_spell.audit_chosen(game, card, chosen, item.targets)
-            for idx in chosen:
-                modal_spell.resolve_mode(game, card, controller, item.targets,
-                                         idx, x_value=item.x_value)
+            modal_spell.perform_chosen(game, card, controller, item.targets,
+                                       chosen, x_value=item.x_value)
             return
 
         # Dispatch to card effect registry

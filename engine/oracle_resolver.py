@@ -928,39 +928,36 @@ def _targeted_discard_candidates(hand, choose_restriction: str) -> list:
     return [c for c in hand if _legal(c)]
 
 
-def _mass_scope_players(game, controller: int, clause: str) -> list:
-    """Which players' permanents a mass effect touches, from its clause.
-    Default is symmetric (both) — "each creature", "all artifacts".
-    """
+def _mass_scope_players(game, controller: int, scope: str) -> list:
+    """Which players' permanents a mass effect touches: its typed scope
+    (`oracle_parser._mass_scope`), symmetric by default."""
     opp = 1 - controller
-    if 'you control' in clause and 'opponent' not in clause:
+    if scope == 'you':
         return [game.players[controller]]
-    if ('opponent' in clause or 'defending player' in clause
-            or 'that player' in clause):
+    if scope == 'opponents':
         return [game.players[opp]]
     return [game.players[controller], game.players[opp]]
 
 
-def _resolve_mass_mode_clause(game, card, controller: int, clause: str) -> bool:
-    """Resolve a mass-sweep / typed mass-destroy clause off its REAL
-    text (so the permanent TYPE and any mana-value cap survive).
-
-    Handles two shapes the whole-card resolver never carried a branch
-    for, because non-modal mass wipes are EFFECT_REGISTRY-registered:
+def _resolve_mass_mode_clause(game, card, controller: int, mass: dict) -> bool:
+    """Resolve a mass-sweep / typed mass-destroy mode from its typed shape
+    (`oracle_parser.parse_mass_mode`, parsed at load), so the permanent
+    TYPE, the mana-value cap and the owner scope survive:
       * "deals N damage to each creature [and each planeswalker]"
       * "destroy/exile all <type> [with mana value M or less]"
-    Both honor the owner scope stated in the clause (default symmetric).
-    Returns True iff it resolved the clause.
-    """
+    Returns True iff it resolved the mode."""
     from .cards import CardType, Keyword
     from .damage import deal_damage
 
+    if not mass:
+        return False
+    players = _mass_scope_players(game, controller, mass['scope'])
+
     # ── mass damage sweep ──
-    m_dmg = re.search(r'deals?\s+(\d+)\s+damage\s+to\s+each\s+creature', clause)
-    if m_dmg:
-        amount = int(m_dmg.group(1))
-        also_pw = 'planeswalker' in clause
-        for pl in _mass_scope_players(game, controller, clause):
+    if mass['kind'] == 'damage':
+        amount = mass['amount']
+        also_pw = mass['planeswalkers']
+        for pl in players:
             for perm in list(pl.battlefield):
                 is_creature = CardType.CREATURE in perm.template.card_types
                 is_pw = CardType.PLANESWALKER in perm.template.card_types
@@ -973,42 +970,36 @@ def _resolve_mass_mode_clause(game, card, controller: int, clause: str) -> bool:
         return True
 
     # ── typed mass destroy / exile ──
-    m_all = re.search(r'\b(destroy|exile)\s+all\s+'
-                      r'(artifacts?|creatures?|enchantments?|permanents?)', clause)
-    if m_all:
-        verb, noun = m_all.group(1), m_all.group(2)
-        type_map = {
-            'artifact': CardType.ARTIFACT, 'creature': CardType.CREATURE,
-            'enchantment': CardType.ENCHANTMENT,
-        }
-        want = type_map.get(noun.rstrip('s'))  # None ⇒ "permanents" (any nonland)
-        cap_m = re.search(r'mana value (\d+) or less', clause)
-        max_mv = int(cap_m.group(1)) if cap_m else None
+    verb, noun, max_mv = mass['kind'], mass['type'], mass['max_mv']
+    type_map = {
+        'artifact': CardType.ARTIFACT, 'creature': CardType.CREATURE,
+        'enchantment': CardType.ENCHANTMENT,
+    }
+    want = type_map.get(noun) if noun else None   # None => every nonland permanent
 
-        def _matches(perm) -> bool:
-            if perm.template.is_land:
-                return False
-            if want is not None and want not in perm.template.card_types:
-                return False
-            if max_mv is not None and (perm.template.cmc or 0) > max_mv:
-                return False
-            return True
-
-        for pl in _mass_scope_players(game, controller, clause):
-            for perm in list(pl.battlefield):
-                if not _matches(perm):
-                    continue
-                if verb == 'exile':
-                    game._exile_permanent(perm)
-                elif Keyword.INDESTRUCTIBLE not in perm.keywords:
-                    game._permanent_destroyed(perm)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"{card.name} {verb}s all {noun}"
-            f"{f' with mana value {max_mv} or less' if max_mv is not None else ''}")
+    def _matches(perm) -> bool:
+        if perm.template.is_land:
+            return False
+        if want is not None and want not in perm.template.card_types:
+            return False
+        if max_mv is not None and (perm.template.cmc or 0) > max_mv:
+            return False
         return True
 
-    return False
+    for pl in players:
+        for perm in list(pl.battlefield):
+            if not _matches(perm):
+                continue
+            if verb == 'exile':
+                game._exile_permanent(perm)
+            elif Keyword.INDESTRUCTIBLE not in perm.keywords:
+                game._permanent_destroyed(perm)
+    plural = f"{noun}s" if noun else "permanents"
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"{card.name} {verb}s all {plural}"
+        f"{f' with mana value {max_mv} or less' if max_mv is not None else ''}")
+    return True
 
 
 # Card-type values (CardType.value) that make a card a permanent.

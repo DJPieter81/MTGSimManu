@@ -1922,7 +1922,7 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
-            parse_modal_spell,
+            parse_modal_spell, parse_mass_mode,
             parse_targeted_removal,
             parse_loyalty_abilities,
             parse_team_pump,
@@ -2057,7 +2057,10 @@ class CardDatabase:
             # MODE is bounded exactly like the plain spell shape — at
             # resolution and in the AI's target ceiling.  Parsed once
             # here; nothing re-reads the clause at resolve time.
-            template.modes = [{"text": c, "removal": parse_targeted_removal(c)}
+            # A mass-sweep mode's shape (`parse_mass_mode`) is typed the
+            # same way.
+            template.modes = [{"text": c, "removal": parse_targeted_removal(c),
+                               "mass": parse_mass_mode(c)}
                               for c in _modes]
         template.x_creature_tutor_data = parse_x_creature_tutor(oracle)
         # Printed loyalty abilities (CR 606), classified once here so

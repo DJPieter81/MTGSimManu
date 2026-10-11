@@ -98,6 +98,24 @@ def _controlled_types_filter(f: Optional[CardFilter]) -> bool:
     return _only(f, types=tuple(sorted(f.types)), controller="you")
 
 
+def _controlled_count_filter(f: Optional[CardFilter]) -> bool:
+    """"<types> you control" or "<subtype>s you control" ("Mountains you
+    control"): the permanents a count amount counts."""
+    if _controlled_types_filter(f):
+        return True
+    return (isinstance(f, CardFilter) and len(f.subtypes) == 1
+            and _only(f, subtypes=tuple(sorted(f.subtypes)),
+                      controller="you"))
+
+
+def _counted(perm: Any, f: CardFilter) -> bool:
+    """The permanent is of one of the filter's card types or has its
+    subtype, by its current characteristics (CR 613)."""
+    if f.types:
+        return any(t.value in f.types for t in perm.effective_card_types)
+    return any(st.lower() in f.subtypes for st in perm.effective_subtypes)
+
+
 def state_condition_supported(cond: Condition) -> bool:
     """The STATE conditions evaluated here: a count of permanents of some
     card types you control (metalcraft's shape) and the number of card
@@ -150,25 +168,35 @@ def rule_condition_holds(game: Any, controller: int,
 
 
 def quantity_supported(q: Optional[Quantity]) -> bool:
-    """The quantities evaluated here: domain over lands you control."""
+    """The quantities evaluated here: domain over lands you control, and
+    the number of permanents of some card types (or of a subtype) you
+    control."""
     if not isinstance(q, Quantity) or q.ref is not None or q.stat is not None \
             or q.counter_kind is not None or q.event is not None:
         return False
     if q.kind is QuantityKind.BASIC_LAND_TYPES:
         return q.player in ("any", "you") and _only(
             q.filter, types=("land",), controller="you")
+    if q.kind is QuantityKind.COUNT:
+        return q.player in ("any", "you") and _controlled_count_filter(
+            q.filter)
     return False
 
 
 def quantity_value(game: Any, controller: int, q: Quantity) -> int:
-    """Evaluate a supported quantity for `controller` now."""
+    """Evaluate a supported quantity for `controller` now (CR 608.2h: the
+    number is determined once, as the effect applies)."""
+    if q.kind is QuantityKind.COUNT:
+        return permanents_controlled(game, controller,
+                                     lambda p: _counted(p, q.filter))
     return basic_land_types(game, controller)
 
 
 def amount_supported(a: Optional[Amount]) -> bool:
     """The amounts evaluated here: a printed number, X (the value chosen
-    on casting, CR 107.3), and "X, where X is <quantity>" / "equal to
-    <quantity>" over a supported quantity."""
+    on casting, CR 107.3), "X, where X is <quantity>" / "equal to
+    <quantity>" over a supported quantity, and a printed multiple of a
+    supported amount ("twice the number of ...")."""
     if not isinstance(a, Amount) or a.ref is not None or a.rounding \
             or a.evenly:
         return False
@@ -181,6 +209,10 @@ def amount_supported(a: Optional[Amount]) -> bool:
         return a.quantity is None and amount_supported(a.inner)
     if a.kind is AmountKind.EQUAL_TO:
         return a.inner is None and quantity_supported(a.quantity)
+    if a.kind is AmountKind.MULTIPLY:
+        return (isinstance(a.n, int) and not isinstance(a.n, bool)
+                and a.n >= 0 and a.quantity is None
+                and amount_supported(a.inner))
     return False
 
 
@@ -192,6 +224,8 @@ def amount_value(game: Any, controller: int, a: Amount, x_value: int = 0) -> int
         return max(0, x_value)
     if a.kind is AmountKind.X_DEFINED:
         return amount_value(game, controller, a.inner, x_value)
+    if a.kind is AmountKind.MULTIPLY:
+        return a.n * amount_value(game, controller, a.inner, x_value)
     return quantity_value(game, controller, a.quantity)
 
 

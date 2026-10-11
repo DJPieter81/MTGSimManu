@@ -81,6 +81,58 @@ def spell_family(template: Any, effects: Any = None) -> Optional[str]:
     return None
 
 
+def _as_chosen(spec: Any) -> Any:
+    """A spec of a chosen mode: its target, grouped with the other modes'
+    as the spell was printed (CR 700.2), is its own slot once the mode is
+    chosen (CR 700.2a)."""
+    import dataclasses
+    t = spec.target
+    if t is not None and t.mode_group is not None:
+        spec = dataclasses.replace(
+            spec, target=dataclasses.replace(t, mode_group=None))
+    branches = {branch: tuple(_as_chosen(s) for s in getattr(spec, branch))
+                for branch in er._BRANCH_FIELDS if getattr(spec, branch)}
+    return dataclasses.replace(spec, **branches) if branches else spec
+
+
+def chosen_mode_host(template: Any, index: int,
+                     effects: Any = None) -> Optional[Any]:
+    """A modal spell's chosen mode as a host of its own: the typed mode
+    host (`AbilityEffects.modes[index]` of the spell host) whose grouped
+    target requirements are its slots. None when the spell has no such
+    mode."""
+    import dataclasses
+    effects = template.effects if effects is None else effects
+    modes = effects.modes(0)
+    if not 0 <= index < len(modes):
+        return None
+    host = modes[index]
+    return dataclasses.replace(
+        host, specs=tuple(_as_chosen(s) for s in host.specs),
+        targets=tuple(dataclasses.replace(r, mode_group=None)
+                      for r in host.targets))
+
+
+def mode_family(template: Any, index: int,
+                effects: Any = None) -> Optional[str]:
+    """The landed spell family (`SPELL_FAMILIES`) whose strict shape and
+    executors take a modal spell's chosen mode, its targets placeable from
+    the cast-time list; None when no family does, and for a mode the modal
+    spell owner does not choose (`modal_spell.in_scope`)."""
+    from . import modal_spell
+    if not modal_spell.in_scope(template, effects):
+        return None
+    host = chosen_mode_host(template, index, effects)
+    if host is None or not places_legacy_targets(host, ()):
+        return None
+    from .effect_views import STRICT
+    for family in SPELL_FAMILIES:
+        strict = STRICT.get(family)
+        if strict is not None and strict(host) and er.can_execute(host, family):
+            return family
+    return None
+
+
 def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
                         legacy_targets: Optional[Sequence[Any]], *,
                         x_value: int = 0) -> Optional[bool]:

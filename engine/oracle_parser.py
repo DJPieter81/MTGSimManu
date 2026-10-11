@@ -5551,6 +5551,53 @@ def parse_modal_spell(oracle: str) -> "tuple[bool, list]":
     return True, modes
 
 
+_MASS_DAMAGE_RE = re.compile(r'deals?\s+(\d+)\s+damage\s+to\s+each\s+creature')
+_MASS_DESTROY_RE = re.compile(
+    r'\b(destroy|exile)\s+all\s+(artifacts?|creatures?|enchantments?|permanents?)')
+_MASS_MV_CAP_RE = re.compile(r'mana value (\d+) or less')
+
+
+def _mass_scope(low: str) -> str:
+    """Whose permanents a mass clause touches: "you control" alone is the
+    caster's, an opponent's / defending player's / that player's is the
+    opponent's, and otherwise both (CR 109.4)."""
+    if 'you control' in low and 'opponent' not in low:
+        return 'you'
+    if 'opponent' in low or 'defending player' in low or 'that player' in low:
+        return 'opponents'
+    return 'all'
+
+
+def parse_mass_mode(clause: str) -> "dict | None":
+    """A modal spell's mass-sweep mode, typed at load: "~ deals N damage to
+    each creature [and each planeswalker]" -> {'kind': 'damage', 'amount',
+    'planeswalkers', 'scope'}; "destroy / exile all <artifacts | creatures
+    | enchantments | permanents> [with mana value N or less]" -> {'kind':
+    'destroy'|'exile', 'type' (None: every nonland permanent), 'max_mv',
+    'scope'}. None for any other clause.
+
+    Parsed once into `CardTemplate.modes[i]['mass']` and resolved by
+    `oracle_resolver._resolve_mass_mode_clause`; the AI's mode values read
+    the same shape."""
+    if not clause:
+        return None
+    low = clause.lower()
+    m = _MASS_DAMAGE_RE.search(low)
+    if m:
+        return {'kind': 'damage', 'amount': int(m.group(1)),
+                'planeswalkers': 'planeswalker' in low,
+                'scope': _mass_scope(low)}
+    m = _MASS_DESTROY_RE.search(low)
+    if m:
+        noun = m.group(2).rstrip('s')
+        cap = _MASS_MV_CAP_RE.search(low)
+        return {'kind': m.group(1),
+                'type': None if noun == 'permanent' else noun,
+                'max_mv': int(cap.group(1)) if cap else None,
+                'scope': _mass_scope(low)}
+    return None
+
+
 def parse_has_scry(oracle: str) -> bool:
     """Return True when oracle contains the scry keyword (CR 701.18).
 

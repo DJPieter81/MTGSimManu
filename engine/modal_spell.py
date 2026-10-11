@@ -42,15 +42,18 @@ _FREE_MODE_COSTS = frozenset({"", "{0}"})
 _PLAYER_TARGET_TYPES = frozenset({"player", "any"})
 
 
-def _host(template: "CardTemplate"):
-    effects = getattr(template, "effects", None)
+def _host(template: "CardTemplate", effects=None):
+    """The typed spell host: of `effects` (a parse in hand) or else of
+    the template's own parse."""
+    if effects is None:
+        effects = getattr(template, "effects", None)
     return effects.spell(0) if effects is not None else None
 
 
-def _typed_modes(template: "CardTemplate") -> tuple:
+def _typed_modes(template: "CardTemplate", effects=None) -> tuple:
     """The typed spell host's modes, when they are the template's mode
     clauses (the same bullets, in order); else none."""
-    host = _host(template)
+    host = _host(template, effects)
     clauses = getattr(template, "modes", None) or []
     if host is None or not clauses or len(host.modes) != len(clauses):
         return ()
@@ -67,19 +70,20 @@ def _counters(mode_host) -> bool:
                for s in iter_specs(mode_host.specs))
 
 
-def in_scope(template: "CardTemplate") -> bool:
+def in_scope(template: "CardTemplate", effects=None) -> bool:
     """The modal spells whose modes this owner chooses: an instant or
     sorcery whose controller has a choice to make (fewer modes may be
     chosen than are printed, or a range of counts). A spell with a counter
     mode takes the counterspell path (`ResolutionManager.
-    _execute_spell_effects`), which resolves its targets per ability."""
+    _execute_spell_effects`), which resolves its targets per ability.
+    `effects` is the template's parse when the caller holds it."""
     if not (template.is_instant or template.is_sorcery) \
             or getattr(template, "is_counterspell", False):
         return False
-    modes = _typed_modes(template)
+    modes = _typed_modes(template, effects)
     if not modes or any(_counters(m) for m in modes):
         return False
-    lo, hi = _host(template).choose
+    lo, hi = _host(template, effects).choose
     return lo < len(modes) or hi < len(modes)
 
 
@@ -193,11 +197,89 @@ def choose_modes(game: "GameState", card: "CardInstance", controller: int,
 
 def resolve_mode(game: "GameState", card: "CardInstance", controller: int,
                  targets: Sequence, index: int, x_value: int = 0) -> bool:
-    """Perform one chosen mode: its clause, with its own typed shapes."""
+    """Perform one chosen mode through the clause owner, with its own
+    typed shapes; a mode a landed effect family runs is dispatched there
+    (`clause_resolver`'s dispatched carrier). True when something was
+    performed."""
     from .oracle_resolver import resolve_spell_from_oracle
     return resolve_spell_from_oracle(game, card, controller, list(targets),
                                      x_value=x_value,
                                      mode=card.template.modes[index])
+
+
+def perform_chosen(game: "GameState", card: "CardInstance", controller: int,
+                   targets: Sequence, chosen: Sequence[int],
+                   x_value: int = 0) -> None:
+    """Perform the chosen modes in printed order (CR 700.2, 608.2c). A
+    mode no owner performs is recorded for the unhandled-effect census,
+    as a whole spell's silent miss is."""
+    before = _damage_snapshot(game, controller, targets)
+    for idx in chosen:
+        if not resolve_mode(game, card, controller, targets, idx,
+                            x_value=x_value):
+            from .effect_diagnostics import record_unhandled_effect
+            record_unhandled_effect(card.name, "mode")
+    _audit_mode_damage(game, card, controller, chosen, targets, before)
+
+
+def _damage_snapshot(game: "GameState", controller: int,
+                     targets: Sequence) -> dict:
+    """What each chosen target was before the modes: a permanent's damage,
+    loyalty and battlefield entry; a player's life."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return {}
+    from .target_solver import player_index_for_target
+    out = {}
+    for t in targets or ():
+        p = player_index_for_target(game, controller, t)
+        if p is not None:
+            out[t] = ("player", p, game.players[p].life)
+            continue
+        obj = game.get_card_by_id(t) if isinstance(t, int) else None
+        if obj is not None and obj.zone == "battlefield":
+            out[t] = ("permanent", obj, obj.damage_marked,
+                      obj.loyalty_counters, obj.battlefield_entry_seq)
+    return out
+
+
+def _audit_mode_damage(game: "GameState", card: "CardInstance",
+                       controller: int, chosen: Sequence[int],
+                       targets: Sequence, before: dict) -> None:
+    """CR 120.3, restated from the typed modes' raw specs: a performed
+    mode that deals a printed amount of damage to its target dealt it --
+    the target creature was marked that much more (or left the
+    battlefield, its damage lethal), a planeswalker lost that much
+    loyalty, a player that much life. A target illegal on resolution (CR
+    608.2b) is skipped. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled() or len(before) != 1:
+        return
+    from .effect_spec import AmountKind, Verb, iter_specs
+    from .target_solver import can_be_targeted
+    modes = card.template.effects.modes(0)
+    amounts = [s.amount.n for i in chosen if 0 <= i < len(modes)
+               for s in iter_specs(modes[i].specs)
+               if s.verb is Verb.DAMAGE and s.target_slot == 0
+               and s.amount is not None
+               and s.amount.kind is AmountKind.LITERAL]
+    if len(amounts) != 1:
+        return
+    n = amounts[0]
+    (kind, *rest), = before.values()
+    if kind == "player":
+        p, life = rest
+        dealt = life - game.players[p].life
+    else:
+        obj, marked, loyalty, entry = rest
+        if not can_be_targeted(obj, card, controller):
+            return
+        if obj.zone != "battlefield" or obj.battlefield_entry_seq != entry:
+            return                    # left: lethal, or a replacement
+        dealt = max(obj.damage_marked - marked, loyalty - obj.loyalty_counters)
+    rules_audit.check("120.3/chosen_mode_damage", dealt >= n,
+                      f"{card.name}: a chosen mode dealt {dealt}, not {n}",
+                      game=game)
 
 
 def audit_chosen(game: "GameState", card: "CardInstance",

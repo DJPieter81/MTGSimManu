@@ -47,6 +47,9 @@ class ClauseContext:
     x_value: int = 0
     oracle_override: Optional[str] = None
     removal_data: Optional[dict] = None
+    # A modal spell's chosen mode resolving: its index in the template's
+    # modes (`CardTemplate.modes`, aligned with the typed host's modes).
+    mode_index: Optional[int] = None
     oracle: str = ""
     abilities: List[str] = field(default_factory=list)
     handled: bool = False
@@ -54,6 +57,12 @@ class ClauseContext:
     @property
     def template(self) -> "CardTemplate":
         return self.card.template
+
+    @property
+    def mode(self) -> Optional[dict]:
+        if self.mode_index is None:
+            return None
+        return self.template.modes[self.mode_index]
 
     @property
     def opponent(self) -> int:
@@ -273,14 +282,14 @@ def _a_until_next_turn(ctx):
 
 
 def _g_mass_mode(ctx):
-    return ctx.oracle_override is not None
+    return ctx.mode is not None and ctx.mode.get("mass") is not None
 
 
 def _a_mass_mode(ctx):
-    # A routed single mode clause of a modal wipe ("deals N damage to each
-    # creature …", "destroy all <type> …").
+    # A chosen mode of a modal wipe ("deals N damage to each creature …",
+    # "destroy all <type> …"), from its shape typed at load.
     if _or()._resolve_mass_mode_clause(ctx.game, ctx.card, ctx.controller,
-                                       ctx.oracle):
+                                       ctx.mode["mass"]):
         return True
     return None
 
@@ -437,14 +446,18 @@ def _a_direct_damage(ctx):
 
 
 def _g_dispatched(ctx):
-    # A spell whose whole parsed SPELL host a landed effect family runs
-    # (strict, executable, its targets placeable) and that no handler above
-    # claims: the effect dispatcher is its carrier (design doc 2026-09-29,
-    # section 11). Last in the registry, so it never takes a host from a
-    # legacy handler; reads typed effects only.
+    # A spell whose whole parsed SPELL host -- or a chosen mode whose typed
+    # mode host -- a landed effect family runs (strict, executable, its
+    # targets placeable) and that no handler above claims: the effect
+    # dispatcher is its carrier (design doc 2026-09-29, section 11). Last
+    # in the registry, so it never takes a host from a legacy handler;
+    # reads typed effects only.
+    from engine import effect_carrier
+    if ctx.mode_index is not None:
+        return effect_carrier.mode_family(ctx.template,
+                                          ctx.mode_index) is not None
     if ctx.oracle_override is not None:
         return False
-    from engine import effect_carrier
     return effect_carrier.spell_family(ctx.template) is not None
 
 
@@ -454,6 +467,14 @@ def _a_dispatched(ctx):
     # handler existed (the per-host harness's legacy side).
     from engine import effect_carrier
     if ctx.handled:          # a handler above already applied part of it
+        return None
+    if ctx.mode_index is not None:
+        family = effect_carrier.mode_family(ctx.template, ctx.mode_index)
+        host = effect_carrier.chosen_mode_host(ctx.template, ctx.mode_index)
+        if family is not None and effect_carrier.dispatch(
+                ctx.game, ctx.card, ctx.controller, host, ctx.targets,
+                family=family, x_value=ctx.x_value) is not None:
+            return True
         return None
     family = effect_carrier.spell_family(ctx.template)
     effects = ctx.template.effects
@@ -913,12 +934,16 @@ HANDLERS: List[ClauseHandler] = [
 def _static_context(card, controller, oracle_override, removal_data, game=None,
                     targets=None, x_value=0, mode=None) -> ClauseContext:
     # A typed mode (`CardTemplate.modes[i]`) is its clause with its shapes.
+    mode_index = None
     if mode is not None:
         oracle_override = mode.get("text", "")
         removal_data = mode.get("removal")
+        mode_index = next((i for i, m in enumerate(card.template.modes or ())
+                           if m is mode), None)
     ctx = ClauseContext(card=card, controller=controller, game=game,
                         targets=targets, x_value=x_value,
-                        oracle_override=oracle_override, removal_data=removal_data)
+                        oracle_override=oracle_override, removal_data=removal_data,
+                        mode_index=mode_index)
     ctx.oracle = (oracle_override if oracle_override is not None
                   else (card.template.oracle_text or '')).lower()
     ctx.abilities = _or().split_abilities(ctx.oracle) if ctx.oracle else []

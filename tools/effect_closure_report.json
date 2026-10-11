@@ -714,7 +714,7 @@
     "strict": false
    }
   ],
-  "executable": 151,
+  "executable": 152,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -982,6 +982,13 @@
  "dispatched": {
   "deck_hosts": [
    {
+    "card": "Abrade",
+    "host": "MODE:0:0:mode0",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
     "card": "Enter the Avatar State",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1031,6 +1038,13 @@
     "strict": true
    },
    {
+    "card": "Thraben Charm",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
     "card": "Unholy Heat",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1045,27 +1059,27 @@
     "strict": true
    }
   ],
-  "executable": 140,
-  "family": "card_flow",
+  "executable": 210,
+  "family": "damage",
   "hosts": {
-   "mainboard": 9,
-   "pool": 131,
-   "sideboard": 0
+   "mainboard": 10,
+   "pool": 199,
+   "sideboard": 1
   },
   "steps": {
-   "E1": 102,
-   "E2": 26,
+   "E1": 145,
+   "E2": 51,
    "E3": 3,
-   "E5": 9
+   "E5": 11
   },
-  "strict": 140,
+  "strict": 210,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 2,
+   "CONTINUOUS": 3,
    "CONTINUOUS,DRAW,EXILE": 1,
-   "CONTINUOUS,EXILE": 6,
-   "DAMAGE": 102,
-   "MOVE": 26,
+   "CONTINUOUS,EXILE": 7,
+   "DAMAGE": 145,
+   "MOVE": 51,
    "SURVEIL": 3
   }
  },
@@ -1498,31 +1512,10 @@
  "mass_mode_clause": {
   "deck_hosts": [
    {
-    "card": "Abrade",
-    "host": "MODE:0:0:mode0",
-    "part": "sideboard",
-    "step": "E1",
-    "strict": false
-   },
-   {
-    "card": "Abrade",
-    "host": "MODE:0:1:mode1",
-    "part": "sideboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
     "card": "Avengers Disassembled",
     "host": "MODE:0:0:mode0",
     "part": "mainboard",
     "step": "E1",
-    "strict": false
-   },
-   {
-    "card": "Avengers Disassembled",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E3",
     "strict": false
    },
    {
@@ -1540,27 +1533,6 @@
     "strict": true
    },
    {
-    "card": "Consult the Star Charts",
-    "host": "SPELL:0:1:kicked",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
-   },
-   {
-    "card": "Drown in the Loch",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E6",
-    "strict": false
-   },
-   {
-    "card": "Drown in the Loch",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": false
-   },
-   {
     "card": "Fire Magic",
     "host": "MODE:0:0:mode0",
     "part": "sideboard",
@@ -1579,201 +1551,28 @@
     "host": "MODE:0:2:mode2",
     "part": "sideboard",
     "step": "E1",
-    "strict": false
-   },
-   {
-    "card": "Kozilek's Command",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E4",
-    "strict": false
-   },
-   {
-    "card": "Kozilek's Command",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
-   },
-   {
-    "card": "Kozilek's Command",
-    "host": "MODE:0:2:mode2",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Kozilek's Command",
-    "host": "MODE:0:3:mode3",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
-   },
-   {
-    "card": "Lorehold Charm",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Lorehold Charm",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": false
-   },
-   {
-    "card": "Lorehold Charm",
-    "host": "MODE:0:2:mode2",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": false
-   },
-   {
-    "card": "Orim's Chant",
-    "host": "SPELL:0:1:kicked",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": false
-   },
-   {
-    "card": "Sheoldred's Edict",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Sheoldred's Edict",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Sheoldred's Edict",
-    "host": "MODE:0:2:mode2",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Sowing Mycospawn",
-    "host": "TRIGGERED:0:3:kicked",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": false
-   },
-   {
-    "card": "Territorial Kavu",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": false
-   },
-   {
-    "card": "Territorial Kavu",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Thraben Charm",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E1",
-    "strict": false
-   },
-   {
-    "card": "Thraben Charm",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Thraben Charm",
-    "host": "MODE:0:2:mode2",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
-   },
-   {
-    "card": "Untimely Malfunction",
-    "host": "MODE:0:0:mode0",
-    "part": "sideboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
-    "card": "Untimely Malfunction",
-    "host": "MODE:0:1:mode1",
-    "part": "sideboard",
-    "step": null,
-    "strict": false
-   },
-   {
-    "card": "Untimely Malfunction",
-    "host": "MODE:0:2:mode2",
-    "part": "sideboard",
-    "step": "E5",
-    "strict": false
-   },
-   {
-    "card": "Warping Wail",
-    "host": "MODE:0:0:mode0",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": false
-   },
-   {
-    "card": "Warping Wail",
-    "host": "MODE:0:1:mode1",
-    "part": "mainboard",
-    "step": "E6",
-    "strict": false
-   },
-   {
-    "card": "Warping Wail",
-    "host": "MODE:0:2:mode2",
-    "part": "mainboard",
-    "step": "E5",
     "strict": false
    }
   ],
-  "executable": 100,
+  "executable": 0,
   "family": "removal",
   "hosts": {
-   "mainboard": 25,
-   "pool": 1466,
-   "sideboard": 10
+   "mainboard": 1,
+   "pool": 35,
+   "sideboard": 5
   },
   "steps": {
-   "E1": 155,
-   "E2": 347,
-   "E3": 141,
-   "E4": 155,
-   "E5": 256,
-   "E6": 33,
-   "none": 414
+   "E1": 21,
+   "E2": 17,
+   "none": 3
   },
-  "strict": 251,
-  "sub_kinds": {
-   "DELAYED": 7
-  },
+  "strict": 17,
+  "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 187,
-   "COUNTER": 31,
-   "CREATE_TOKEN": 83,
-   "DAMAGE": 101,
-   "DESTROY": 154,
-   "EXILE": 47,
-   "GAIN_LIFE": 35,
-   "MOVE": 103,
-   "PUT_COUNTERS": 50,
-   "UNMODELLED": 299
+   "DAMAGE": 21,
+   "DESTROY": 10,
+   "EXILE": 7,
+   "UNMODELLED": 3
   }
  },
  "mass_reanimate": {
@@ -1969,7 +1768,7 @@
     "strict": true
    }
   ],
-  "executable": 18,
+  "executable": 20,
   "family": "damage",
   "hosts": {
    "mainboard": 3,
@@ -2052,7 +1851,7 @@
     "strict": false
    }
   ],
-  "executable": 5,
+  "executable": 6,
   "family": "damage",
   "hosts": {
    "mainboard": 1,

@@ -724,10 +724,34 @@
   {
    "pair": [
     "dispatched",
+    "Abrade",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Act on Impulse",
     "SPELL:0:0"
    ],
    "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Aid the Fallen",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Aid the Fallen",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
   },
   {
    "pair": [
@@ -748,6 +772,14 @@
   {
    "pair": [
     "dispatched",
+    "Artistic Process",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Auroral Procession",
     "SPELL:0:0"
    ],
@@ -760,6 +792,14 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Barbed Lightning",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -796,10 +836,58 @@
   {
    "pair": [
     "dispatched",
+    "Brilliance Unleashed",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bumi Bash",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cabaretti Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cathartic Pyre",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Charge of the Mites",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Collateral Damage",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Collective Defiance",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -812,10 +900,34 @@
   {
    "pair": [
     "dispatched",
+    "Coordinated Maneuver",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Crash and Burn",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Cut // Ribbons",
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dawn to Dusk",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
   },
   {
    "pair": [
@@ -908,6 +1020,14 @@
   {
    "pair": [
     "dispatched",
+    "Evolution Charm",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Explosive Singularity",
     "SPELL:0:2"
    ],
@@ -936,6 +1056,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Intervention",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -972,10 +1100,50 @@
   {
    "pair": [
     "dispatched",
+    "Flame of Anor",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fortuitous Find",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fortuitous Find",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fulminous Forte",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Ghostfire Slice",
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ghoulcaller's Chant",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
   },
   {
    "pair": [
@@ -988,10 +1156,42 @@
   {
    "pair": [
     "dispatched",
+    "Gravedig",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Grim Discovery",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Grim Discovery",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Grim Harvest",
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ground Assault",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
   },
   {
    "pair": [
@@ -1052,10 +1252,42 @@
   {
    "pair": [
     "dispatched",
+    "Iroh's Demonstration",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Jump Scare",
     "SPELL:0:0"
    ],
    "reason": "A type change on a chosen object (unit AT): the target becomes the printed type or subtype in addition to its other types, and gains the printed keywords / P/T, until end of turn, through the layer system's one-shot effects on that object only (CR 205.1b, 611.2c, 613.1d/f, 514.2); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Kabira Takedown // Kabira Plateau",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Kolaghan's Command",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Kolaghan's Command",
+    "MODE:0:3:mode3"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1100,6 +1332,14 @@
   {
    "pair": [
     "dispatched",
+    "Maestros Charm",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Magma Rift",
     "SPELL:0:1"
    ],
@@ -1124,10 +1364,34 @@
   {
    "pair": [
     "dispatched",
+    "March of the Drowned",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "March of the Returned",
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Mardu Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Massive Raid",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
   },
   {
    "pair": [
@@ -1148,10 +1412,26 @@
   {
    "pair": [
     "dispatched",
+    "Molten Blast",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Molten Exhale",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Molten Rebuke",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1180,10 +1460,42 @@
   {
    "pair": [
     "dispatched",
+    "Naya Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Outnumber",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Overwhelming Surge",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Photon Blast Barrage",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Prismari Command",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1232,6 +1544,22 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Raise the Draugr",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ready to Rumble",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1292,10 +1620,58 @@
   {
    "pair": [
     "dispatched",
+    "Remember the Fallen",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Remember the Fallen",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Repeating Barrage",
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Return from Extinction",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reviving Melody",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reviving Melody",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rip Apart",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1316,10 +1692,34 @@
   {
    "pair": [
     "dispatched",
+    "Rumbling Rockslide",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rydia's Return",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Sanguine Indulgence",
     "SPELL:0:1"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Savage Alliance",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1332,10 +1732,50 @@
   {
    "pair": [
     "dispatched",
+    "Scour for Scrap",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Sear",
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Season of Renewal",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Season of Renewal",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Seismic Strike",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Seize Opportunity",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
   },
   {
    "pair": [
@@ -1388,10 +1828,26 @@
   {
    "pair": [
     "dispatched",
+    "Spire Barrage",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Spit Flame",
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Spitting Earth",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
   },
   {
    "pair": [
@@ -1404,6 +1860,22 @@
   {
    "pair": [
     "dispatched",
+    "Start from Scratch",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Stingerquill Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Stoke the Flames",
     "SPELL:0:1"
    ],
@@ -1412,10 +1884,34 @@
   {
    "pair": [
     "dispatched",
+    "Stone by Sunlight",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR): the type-change executor applies it to the chosen object (CR 700.2, 613.1d). No clause handler performed the mode."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Stonefury",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Strangle",
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Struggle // Survive",
+    "SPELL:0:0"
+   ],
+   "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
   },
   {
    "pair": [
@@ -1440,6 +1936,38 @@
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thraben Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thunder Magic",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thunder Magic",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thunder Magic",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1476,6 +2004,22 @@
   {
    "pair": [
     "dispatched",
+    "Trystan's Command",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Unbury",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Unholy Heat",
     "SPELL:0:0"
    ],
@@ -1492,6 +2036,14 @@
   {
    "pair": [
     "dispatched",
+    "Wail of War",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Wander in Death",
     "SPELL:0:0"
    ],
@@ -1504,6 +2056,14 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Winterflame",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
   },
   {
    "pair": [

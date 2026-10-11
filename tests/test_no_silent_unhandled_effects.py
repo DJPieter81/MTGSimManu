@@ -120,6 +120,17 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # graveyard-exile replacement mechanic lands.
     ("Dauthi Voidwalker", "replacement"),
     ("Sanctifier en-Vec", "replacement"),
+    # A chosen MODE no owner performs (engine/modal_spell.perform_chosen
+    # records it; before, a chosen mode's silent miss left no trace). Each
+    # mode shape is its own unbuilt class: an edict ("each opponent
+    # sacrifices a <filter> of their choice": Sheoldred's Edict's three
+    # modes, Lorehold Charm's first), tokens for a target player and
+    # scry-and-draw (Kozilek's Command), return to the battlefield and a
+    # team pump (Lorehold Charm). The aimed-damage and regrowth modes the
+    # landed families run are performed through the dispatcher.
+    ("Kozilek's Command", "mode"),
+    ("Lorehold Charm", "mode"),
+    ("Sheoldred's Edict", "mode"),
 }
 
 

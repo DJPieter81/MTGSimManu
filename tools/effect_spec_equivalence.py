@@ -933,10 +933,17 @@ def _clause_contexts(t, ce):
     spell = ce.spell(0)
     if types & {CardType.INSTANT, CardType.SORCERY} and spell is not None:
         yield None, None, spell, _host_label(spell)
+    from engine import modal_spell
+    from engine.effect_carrier import chosen_mode_host
+    chosen = modal_spell.in_scope(t, ce)
     for i, m in enumerate(getattr(t, "modes", None) or ()):
         hosts = ce.modes(0)
         h = hosts[i] if i < len(hosts) else None
         if h is not None and m.get("text"):
+            # a modal spell's chosen mode is a host of its own: its grouped
+            # targets are its slots (`effect_carrier.chosen_mode_host`)
+            if chosen:
+                h = chosen_mode_host(t, i, ce)
             yield m["text"], m, h, _host_label(h, i)
     kc = getattr(t, "kicked_clause", None)
     if kc:
@@ -972,7 +979,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     resolves through that handler (`_spell_reaches_clause_handlers`)."""
     from engine import clause_resolver as CR
     from engine import activated_effects, planeswalker_manager
-    from engine.effect_carrier import places_legacy_targets, spell_family
+    from engine.effect_carrier import (mode_family, places_legacy_targets,
+                                       spell_family)
     from engine.cards import CardInstance, LoyaltyEffectKind
     from engine.effect_spec import EventHint, HostKind
     v = _views()
@@ -1013,9 +1021,13 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                 family = HANDLER_FAMILY.get(hd.name, "?")
                 if hd.name == DISPATCHED_HANDLER:
                     # its gate is the landed family that runs the spell
-                    # host; asked with the parse in hand (no second parse)
-                    family = (spell_family(t, ce) if override is None
-                              else None)
+                    # host, or a chosen mode's host; asked with the parse
+                    # in hand (no second parse)
+                    if ctx.mode_index is not None:
+                        family = mode_family(t, ctx.mode_index, ce)
+                    else:
+                        family = (spell_family(t, ce) if override is None
+                                  else None)
                     ok = family is not None
                 else:
                     try:
