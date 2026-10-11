@@ -930,9 +930,20 @@ class ResponseDecider:
           spell, an instant or sorcery spell;
         * "counter target ... colorless spell" (`counters_colorless_only`)
           never counters a colored spell -- CR 105 colour, not colour
-          identity."""
+          identity;
+        * a modal spell counters only through a counter mode whose typed
+          target admits the spell (`modal_spell.counter_mode_targets`)."""
         from engine.stack import StackItemType as _SIT
         if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            return False
+        # A modal spell counters only through a counter mode whose typed
+        # target admits the spell; its other modes are no counter (CR
+        # 700.2a: a mode with no legal target can't be chosen).
+        from engine import modal_spell
+        from engine.target_solver import spell_matches
+        modal_counters = modal_spell.counter_mode_targets(instant.template)
+        if modal_counters is not None and not any(
+                spell_matches(r, stack_item.source) for r in modal_counters):
             return False
         target_spell = stack_item.source.template
         kind = instant.template.counter_target_kind

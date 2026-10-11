@@ -33,8 +33,10 @@ class StackItem:
     # For spells, the CardInstance itself is the source
     # For abilities, the source is the permanent that has the ability
     ability: Optional[Ability] = None
-    # Modes chosen (for modal spells)
-    modes_chosen: List[int] = field(default_factory=list)
+    # The modes a modal spell's controller chose as it was cast (CR
+    # 601.2b; `engine.modal_spell.choose_modes`), in printed order. None
+    # when no cast recorded a choice; a copy shares it (CR 707.10).
+    modes_chosen: Optional[List[int]] = None
     # X value for X spells
     x_value: int = 0
     # Whether this was evoked

@@ -2940,8 +2940,6 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "has_mana_add_text": _AI,
     # modal containers
     "is_modal": "modal header fact (CR 700.2) of the SPELL host",
-    "modal_choose_count": (
-        "modal choose count (CR 700.2): AbilityEffects.choose"),
     "activated_abilities": _CONTAINER, "loyalty_abilities": _CONTAINER,
     "back_face_loyalty_abilities": _CONTAINER,
     # keyword costs and keyword facts

@@ -763,6 +763,15 @@ class EVPlayer:
             # Spells that need targets but have none = skip
             if self._spell_requires_targets(spell) and not targets:
                 continue
+            # Cast with no target, a modal spell performs only its modes
+            # that need none (CR 700.2a): it is cast for those only when
+            # they are worth something to its caster.
+            from engine import modal_spell as _modal
+            if (not targets and _modal.in_scope(spell.template)
+                    and _modal.has_targeted_mode(spell.template)):
+                from ai.modal import chosen_modes_value
+                if chosen_modes_value(game, spell, self.player_idx, []) <= 0:
+                    continue
 
             _tgt_reason = getattr(self, "_last_target_reason", "")
             self._last_target_reason = ""
@@ -5045,6 +5054,13 @@ class EVPlayer:
         # Planeswalker loyalty abilities are activated after deployment.
         from engine.cards import CardType
         if t.is_creature or CardType.PLANESWALKER in t.card_types:
+            return False
+
+        # A modal spell with a mode that needs no target can be cast
+        # choosing that mode alone (CR 601.2c, 700.2a); whether that is
+        # worth casting is the caller's question (`ai.modal`).
+        from engine import modal_spell
+        if modal_spell.in_scope(t) and modal_spell.has_untargeted_mode(t):
             return False
 
         # Classified land-destruction spells (typed field, parse-once):

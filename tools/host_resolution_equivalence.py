@@ -438,11 +438,9 @@ def legacy_apply(game, template, case: HostCase) -> Any:
             controller=CONTROLLER, targets=list(targets)))
     if case.kind == "MODE":
         from engine.oracle_resolver import resolve_spell_from_oracle
-        mode = template.modes[case.key]
         return resolve_spell_from_oracle(
             game, card, CONTROLLER, list(targets),
-            oracle_override=mode.get("text", ""),
-            removal_data=mode.get("removal"))
+            mode=template.modes[case.key])
     if case.kind == "ACTIVATED":
         from engine.activated_effects import resolve_activated_ability
         return resolve_activated_ability(game, card, CONTROLLER,

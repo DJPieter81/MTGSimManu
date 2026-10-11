@@ -925,9 +925,9 @@ def _pair(handler, family, t, h, label, part, switched) -> Pair:
 
 
 def _clause_contexts(t, ce):
-    """(override, removal_data, host, label) for every way legacy runs
-    `t` through the clause resolver: the whole spell, each mode's clause,
-    the kicked clause."""
+    """(override, mode, host, label) for every way legacy runs `t` through
+    the clause resolver: the whole spell, each mode's clause (with its
+    typed shapes, `CardTemplate.modes[i]`), the kicked clause."""
     from engine.cards import CardType
     types = set(getattr(t, "card_types", ()) or ())
     spell = ce.spell(0)
@@ -937,7 +937,7 @@ def _clause_contexts(t, ce):
         hosts = ce.modes(0)
         h = hosts[i] if i < len(hosts) else None
         if h is not None and m.get("text"):
-            yield m["text"], m.get("removal"), h, _host_label(h, i)
+            yield m["text"], m, h, _host_label(h, i)
     kc = getattr(t, "kicked_clause", None)
     if kc:
         h = _views().host_for_override(t, kc, effects=ce)
@@ -998,8 +998,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         card = CardInstance(template=t, owner=0, controller=0,
                             instance_id=0, zone="stack")
         whole_reached = _spell_reaches_clause_handlers(t)
-        for override, removal, h, label in _clause_contexts(t, ce):
-            ctx = CR._static_context(card, 0, override, removal)
+        for override, mode, h, label in _clause_contexts(t, ce):
+            ctx = CR._static_context(card, 0, override, None, mode=mode)
             reached = override is not None or (
                 whole_reached and places_legacy_targets(h, ce.front()))
             # An unswitched handler that accepts the spell resolves it the

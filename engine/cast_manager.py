@@ -357,6 +357,9 @@ class CastManager:
                 from .target_solver import (has_legal_target_for_spell,
                                             parse as _parse_targets)
                 requirements = _parse_targets(template.oracle_text or "")
+                from . import modal_spell
+                requirements = modal_spell.required_targets(template,
+                                                            requirements)
                 if not has_legal_target_for_spell(
                         game, player_idx, requirements, exclude=card,
                         source=card):
@@ -488,6 +491,8 @@ class CastManager:
             from .target_solver import (has_legal_target_for_spell,
                                         parse as _parse_targets)
             requirements = _parse_targets(template.oracle_text or "")
+            from . import modal_spell
+            requirements = modal_spell.required_targets(template, requirements)
             if not has_legal_target_for_spell(
                     game, player_idx, requirements, exclude=card,
                     x_ceiling=CastManager.affordable_x(game, player_idx, template),
@@ -2123,6 +2128,13 @@ class CastManager:
                     stack_item.spliced.append(sc.template)
                     game.log.append(f"T{game.display_turn} P{player_idx+1}: "
                                    f"  Splice {sc.name} onto {card.name}")
+
+        # CR 601.2b / 700.2a: a modal spell's modes are chosen as it is
+        # cast, among those its chosen targets allow.
+        from . import modal_spell
+        if modal_spell.in_scope(template):
+            stack_item.modes_chosen = modal_spell.choose_modes(
+                game, card, player_idx, stack_item.targets, x_value)
 
         game.stack.push(stack_item)
         player.spells_cast_this_turn += 1

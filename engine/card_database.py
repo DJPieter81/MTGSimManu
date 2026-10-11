@@ -2042,15 +2042,15 @@ class CardDatabase:
             and ("until this creature leaves the battlefield" in _ol
                  or "return the exiled card" in _ol))
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
-        # Modal "Choose one/two —" spells: store the mode clauses and the
-        # choose-count so resolution picks the chosen mode(s) rather than
-        # running every mode. The per-mode synthesized ability
+        # Modal "Choose one/two —" spells: store the mode clauses so
+        # resolution performs the chosen mode(s) rather than every mode
+        # (the choose range is the typed spell host's, `engine.
+        # modal_spell.choose_range`). The per-mode synthesized ability
         # description is lossy (drops a mode's mana-value cap), so the
         # verbatim clause is kept for correct resolution.
-        _is_modal, _modal_count, _modes = parse_modal_spell(oracle)
+        _is_modal, _modes = parse_modal_spell(oracle)
         if _is_modal:
             template.is_modal = True
-            template.modal_choose_count = _modal_count
             # Each mode carries its own typed removal classification
             # (`parse_targeted_removal` over the mode clause) so an
             # X-bound "exile target creature with mana value X or less"

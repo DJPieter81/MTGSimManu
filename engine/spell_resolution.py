@@ -849,43 +849,24 @@ class ResolutionManager:
                                     f"  Spliced {spliced_tmpl.name} adds {sa} {sc} mana")
             return
 
-        # ── Modal "Choose one/two —" spells ──
-        # Resolve exactly the chosen mode(s), not every mode. Scope:
-        # multi-mode, non-counterspell instants/sorceries with no
-        # counter mode (the counterspell path and single-parsed-mode
-        # charms already resolve their one mode correctly and are left
-        # untouched). Each chosen mode resolves off its REAL clause via
-        # resolve_spell_from_oracle(oracle_override=...), so a mode's
-        # type / mana-value restriction survives (the synthesized
-        # per-mode ability description drops it).
-        tmpl = card.template
-        modes = getattr(tmpl, 'modes', None) or []
-        # Gate on the PARSED MODES: a modal spell with more printed modes
-        # than it may choose resolves exactly the chosen ones, each off its
-        # own clause with its own typed removal bound (`mode['removal']`,
-        # parsed once at DB load).  This used to gate on the number of
-        # synthesized abilities instead, which excluded any modal card that
-        # synthesized a single ability (Kozilek's Command, the charms) —
-        # those then resolved ONE mode through the legacy path with the
-        # mode's "mana value X or less" bound dropped (Command at X=0 exiled
-        # a mana-value-1 creature) and the second chosen mode never
-        # resolved at all (2026-09-08).
-        if (getattr(tmpl, 'is_modal', False)
-                and len(modes) > getattr(tmpl, 'modal_choose_count', 1)
-                and not getattr(tmpl, 'is_counterspell', False)
-                and (tmpl.is_instant or tmpl.is_sorcery)
-                and not any('counter target' in m.get('text', '').lower()
-                            for m in modes)):
-            from ai.modal import select_modal_modes
-            from .oracle_resolver import resolve_spell_from_oracle
-            chosen = select_modal_modes(game, card, controller, item.targets,
-                                        x_value=item.x_value)
+        # ── Modal spells (CR 700.2) ──
+        # A spell whose controller chose its modes performs exactly those,
+        # in printed order, each off its own clause with its own typed
+        # shapes (`CardTemplate.modes[i]`; the synthesized per-mode ability
+        # description drops a mode's type and mana-value bounds). The modes
+        # were chosen as the spell was cast (CR 601.2b, `modal_spell.
+        # choose_modes`); an item no cast recorded a choice for is chosen
+        # for now, by the same owner.
+        from . import modal_spell
+        if modal_spell.in_scope(card.template):
+            chosen = item.modes_chosen
+            if chosen is None:
+                chosen = modal_spell.choose_modes(
+                    game, card, controller, item.targets, item.x_value)
+            modal_spell.audit_chosen(game, card, chosen, item.targets)
             for idx in chosen:
-                clause = modes[idx].get('text', '')
-                resolve_spell_from_oracle(game, card, controller, item.targets,
-                                          x_value=item.x_value,
-                                          oracle_override=clause,
-                                          removal_data=modes[idx].get('removal'))
+                modal_spell.resolve_mode(game, card, controller, item.targets,
+                                         idx, x_value=item.x_value)
             return
 
         # Dispatch to card effect registry

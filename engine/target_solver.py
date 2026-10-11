@@ -940,6 +940,12 @@ def _spell_token_matches(item_source: "CardInstance",
     return False
 
 
+def spell_matches(req: TargetRequirement, spell: "CardInstance") -> bool:
+    """A spell on the stack is of a kind a stack-zone requirement names
+    ("target sorcery spell", "target creature spell")."""
+    return req.zone == "stack" and _spell_token_matches(spell, req.types)
+
+
 def has_legal_target(game: "GameState", controller: int,
                      req: TargetRequirement,
                      exclude: Optional["CardInstance"] = None,

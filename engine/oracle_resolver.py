@@ -1116,7 +1116,8 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
                                *, x_value: int = 0,
                                oracle_override: str = None,
-                               removal_data: dict = None) -> bool:
+                               removal_data: dict = None,
+                               mode: dict = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
@@ -1131,6 +1132,9 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     exactly the chosen mode's real clause (the synthesized per-mode
     ability description is lossy). The X-tutor short-circuit is bypassed
     when an override is supplied so it applies to the whole card only.
+
+    ``mode`` is one of the card's typed modes (`CardTemplate.modes[i]`):
+    its clause, resolved with that mode's own typed shapes.
     """
     # Every effect clause resolves through the one clause owner
     # (engine/clause_resolver.py): an ordered registry of gate+apply
@@ -1138,7 +1142,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     from engine.clause_resolver import resolve_clause
     return resolve_clause(game, card, controller, targets, x_value=x_value,
                           oracle_override=oracle_override,
-                          removal_data=removal_data)
+                          removal_data=removal_data, mode=mode)
 
 
 def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",

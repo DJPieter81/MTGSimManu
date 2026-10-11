@@ -911,7 +911,11 @@ HANDLERS: List[ClauseHandler] = [
 
 
 def _static_context(card, controller, oracle_override, removal_data, game=None,
-                    targets=None, x_value=0) -> ClauseContext:
+                    targets=None, x_value=0, mode=None) -> ClauseContext:
+    # A typed mode (`CardTemplate.modes[i]`) is its clause with its shapes.
+    if mode is not None:
+        oracle_override = mode.get("text", "")
+        removal_data = mode.get("removal")
     ctx = ClauseContext(card=card, controller=controller, game=game,
                         targets=targets, x_value=x_value,
                         oracle_override=oracle_override, removal_data=removal_data)
@@ -922,11 +926,12 @@ def _static_context(card, controller, oracle_override, removal_data, game=None,
 
 
 def resolve_clause(game, card, controller, targets=None, *, x_value=0,
-                   oracle_override=None, removal_data=None) -> bool:
+                   oracle_override=None, removal_data=None, mode=None) -> bool:
     """Resolve one clause through the registry. Returns True when an effect
     was applied (the contract `resolve_spell_from_oracle` always had)."""
     ctx = _static_context(card, controller, oracle_override, removal_data,
-                          game=game, targets=targets, x_value=x_value)
+                          game=game, targets=targets, x_value=x_value,
+                          mode=mode)
     for h in PRE_ORACLE_HANDLERS:
         if h.gate(ctx):
             return h.apply(ctx)
@@ -941,10 +946,11 @@ def resolve_clause(game, card, controller, targets=None, *, x_value=0,
 
 
 def clause_is_executable(card, controller=0, *, oracle_override=None,
-                         removal_data=None) -> bool:
+                         removal_data=None, mode=None) -> bool:
     """The one static answer to "can this clause run at all?" — some
     handler's gate accepts it. Reads no game state."""
-    ctx = _static_context(card, controller, oracle_override, removal_data)
+    ctx = _static_context(card, controller, oracle_override, removal_data,
+                          mode=mode)
     if any(h.gate(ctx) for h in PRE_ORACLE_HANDLERS):
         return True
     return bool(ctx.oracle) and any(h.gate(ctx) for h in HANDLERS)
