@@ -7836,3 +7836,90 @@ Hundreds of pool cards sacrifice creatures.
 
 **Leads (not built):**
 - Kozilek's Command's token mode needs a printed token (a 0/1 Eldrazi Spawn with a sacrifice-for-mana ability) created by a target player, with the player chosen as the spell is cast. That is unit TK.
+
+## Unit TK: a token is created by the player its creator names, with the characteristics its creator prints; a chosen mode's player is chosen as the spell is cast (2026-10-11)
+
+**Rule (CR 111.2, 111.3, 111.4, 601.2c):**
+- The effect that creates a token defines its characteristics: types, subtypes, colours, power and toughness, keywords, and the abilities it grants. They are the token's text (CR 111.3).
+- A token its creator does not name is named for its subtypes plus "Token" (CR 111.4).
+- The player who creates a token owns it, and it enters under that player's control (CR 111.2).
+- A modal spell's chosen mode that targets a player has that player chosen as the spell is cast (CR 601.2c).
+
+**Defect:**
+- The legacy token clause read the token off the clause with a regex.
+  - A worded count ("two", "four") failed it, so the token was a colourless "Creature Token" with no subtypes or keywords. Battle Screech's Birds lost flying; Mass Production's Soldiers were not artifacts.
+  - A digit count named the token by its lowercased last subtype ("wurm Token") with no subtypes.
+- The token executor built only Treasure, Food and Clue.
+- "Target player creates X ... tokens" matched nothing. Kozilek's Command's token mode was chosen in 17 of 18 traced casts and created nothing: `unhandled/mode`, 25 rows of the mh-post arm.
+- No cast path chose a mode's player target. The dispatcher's player slot stayed empty.
+
+**Class:**
+- 1851 printed token specs in the pool; the token owner builds 1507 of them.
+  - It refuses the rest: named tokens, keywords with a parameter or not typed, and granted abilities other than sacrifice-for-mana. Those keep their legacy carrier.
+- 220 pool cards create a token with a granted ability; 41 have another player create tokens.
+- 59 modal spells (78 modes) have a mode that targets only a player.
+
+**Steps (`600640d`; executor purity fix `c3b3d77`, behaviour unchanged):**
+- **Token owner.** `permanent_effects.printed_token` builds a token's characteristics from its typed `TokenSpec`, with no text read.
+  - A granted "Sacrifice this token: Add <mana>" ability becomes the token's `sacrifice_mana_units`.
+  - The units come from the derivation that types a card's own, which moves out of the effect views into `engine/mana_units.py`: one owner, read by the views and the token owner.
+  - `create_token(..., token_spec=)` puts such tokens onto the battlefield.
+- **Executor.** `execute_create_token` creates a predefined or printed token for each player the spec names: "you", each opponent, each player, or the player chosen for a target slot.
+- **Carriers.** The token family joins the spell families, and the legacy token clause is switched to it (`clause_resolver._a_token` offers its host to the dispatcher first).
+  - The gate-parity closure now models three more paths: a ritual's pre-path, a loyalty line's clause (which no switched clause carrier dispatches), and a handler that declines a clause an earlier handler resolved (`ClauseHandler.unclaimed_only`).
+  - The per-host harness now records a diverging pair per pair. Before, two handlers that take one host (the token clause and the dispatched carrier) collapsed into one key, and `--record` dropped the twin's intended entry.
+- **Mode players.** `modal_spell.choose_mode_players` chooses, as the spell is cast, the player for each chosen mode's player-only requirement, through the slot-pick seam (`choose_trigger_targets`, now told the X paid). The stack item records it (`StackItem.mode_players`).
+  - On resolution each mode reads its own targets (`mode_targets`).
+  - The spec a slot is chosen for is found by its target or its acting player (`effect_carrier.slot_spec`).
+- **AI.** `ai.modal.named_player_value` gives what an instruction naming its acting player is worth by the player it names. Tokens are a gain to their creator's side; a sacrifice is a loss to theirs.
+  - Token and edict modes are valued by it: X tokens are worth X permanents of mana value 0.
+  - The slot pick aims a token mode at the caster and an edict at the opponent.
+- **Auditors:**
+  - `111.3/token_characteristics`, restated from the spec's raw fields: a created token has its printed power, toughness, types, subtypes and colours, under the control of the player who created it.
+  - `601.2c/mode_player_chosen`: a performed mode that targets a player had one chosen.
+
+**Tests (red first, 13 of 14):** `tests/test_a_token_is_created_by_the_player_named_with_the_characteristics_printed.py`.
+
+**Digest / anchor / suites:**
+- Gate parity: 790 new-path pairs (189 proven, 601 intended; +215: 10 proven, 205 intended).
+  - Each intended pair is backed by evidence: a no-op on the pre-unit engine (checked from the pinned worktree), or a classified token difference (legacy's colourless "Creature Token", wrong name, subtypes, colours, keywords or types).
+  - Decree of Justice: legacy drew a card off its cycling reminder.
+- Ratchet (f), legacy fallback: 3629 → 3537.
+- Harness no-op fixture unchanged (floor 180).
+- Digest: 3 games and 1 match change.
+  - Amulet Titan vs Eldrazi Tron s54500 and Eldrazi Ramp vs Broodscale Bloodchief s55500: same winner and turns.
+  - Jeskai Blink vs Eldrazi Tron s59500: Kozilek's Command makes Spawn in game 1, which runs 13 → 24 turns with the same winner. Game 2 then deals different hands and flips to Jeskai Blink (RNG downstream of game 1), so the match ends 2–0 Jeskai.
+- Anchor: 29 passed.
+- Suites: 4696 + 2712 passed, from the worktree pinned at `c3b3d77`.
+  - At `600640d` one purity pin failed: the token executor built its result map by subscript assignment. Fixed in `c3b3d77`, behaviour unchanged.
+
+**Measured (same-seed n=20 Bo3, `tk-post` `3348e43`, pre = `mh-post`):** 96 of 600 cells change.
+- **Eldrazi Tron +7.7** (49.9 → 57.6). Replayed cell-exact against the MH head: Domain Zoo vs Eldrazi Tron goes 17/20 → 11/20, six matches flipping to Tron.
+  - In s51000 game 2, Tron casts Kozilek's Command for X=5 on turn 3. It creates five Eldrazi Spawn and exiles Psychic Frog.
+  - On turn 4 a Spawn chump-blocks Ragavan, and the rest are mana toward the Eldrazi.
+  - Before, the token mode made nothing.
+- Eldrazi Ramp +4.2 (52.5 → 56.7) and Broodscale Bloodchief +1.6, the other Kozilek's Command decks.
+- Every other deck moves by at most ±1.7.
+- Violations 0; 0 aborts.
+- Findings 412 → 407.
+  - A FINDING line counts the cells where a card was seen at least once, not how often.
+  - Kozilek's Command is still seen in 39 cells (was 42). Those occurrences are now its scry-and-draw mode, UNMODELLED in the grammar, chosen as the second mode when the exile mode's target is beyond X (an illegal cast-time target: unit MT next).
+- The modes still unperformed:
+
+| Card | Cells |
+|---|---|
+| Kozilek's Command (scry-and-draw mode) | 39 |
+| Lorehold Charm (edict mode refused: a stray target; unit MT next) | 24 |
+| Untimely Malfunction | 8 |
+| Surgical Extraction (`unhandled/spell`) | 8 |
+
+**Leads (not built):**
+- **A whole spell's player target is not chosen as it is cast.** Only modal modes are; a non-modal "target player ..." spell keeps the legacy opponent default.
+- **"It has '<ability>'" after a created token** is typed as a separate permanent grant, not the token's text: 43 pool cards, among them Warping Wail's Scion.
+- **Reminder text read as rules text.**
+  - Strike It Rich's Treasure reminder is typed as ritual mana: it adds two red, and makes no Treasure.
+  - Decree of Justice's cycling reminder was read as a draw (fixed here by the switch).
+- Kozilek's Command's scry-and-draw mode is UNMODELLED in the grammar.
+- Token creation in triggers (cast, counter and enter triggers) keeps its legacy carriers.
+- **The AI casts burn at a target worth nothing.** With no creature of its own, the Jeskai AI values face damage near zero, so a 0/1 Spawn token worth 0.00 wins the tie and Galvanic Discharge is spent on it (digest game s59500, turns 4 and 8).
+- **A draw, life-gain or discard mode's player is the default pick, the opponent.** The slot pick values only token and sacrifice instructions by the player they name.
