@@ -863,9 +863,15 @@ class ResolutionManager:
             if chosen is None:
                 chosen = modal_spell.choose_modes(
                     game, card, controller, item.targets, item.x_value)
-            modal_spell.audit_chosen(game, card, chosen, item.targets)
+            players = item.mode_players
+            if players is None:
+                players = modal_spell.choose_mode_players(
+                    game, card, controller, chosen, item.x_value)
+            modal_spell.audit_chosen(game, card, chosen, item.targets,
+                                     players)
             modal_spell.perform_chosen(game, card, controller, item.targets,
-                                       chosen, x_value=item.x_value)
+                                       chosen, x_value=item.x_value,
+                                       mode_players=players)
             return
 
         # Dispatch to card effect registry

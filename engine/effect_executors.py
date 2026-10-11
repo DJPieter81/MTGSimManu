@@ -742,22 +742,42 @@ def execute_draw(ctx: Resolution, s: EffectSpec,
 execute_draw.supports = _draw_supported
 
 
-# ── CREATE_TOKEN: a predefined token (family tokens_counters, R2) ─────
+# ── CREATE_TOKEN (family tokens_counters, R2; printed tokens, unit TK) ─
 
 # The predefined tokens (CR 111.10) the token owner defines: Treasure,
 # Food and Clue (`player_state.TOKEN_DEFS`). Any other is refused.
 _PREDEFINED_TOKENS = frozenset({"treasure", "food", "clue"})
+# The player sets that create tokens (CR 111.2): each opponent, each
+# player, or "you".
+_TOKEN_CREATORS = frozenset({SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS,
+                             SelectorKind.PLAYER})
+
+
+def _token_creators_supported(actor: Any) -> bool:
+    """The controller, a printed player set, or the player chosen for a
+    target slot ("target player creates ...")."""
+    return (_acts_as_controller(actor)
+            or (isinstance(actor, Selector) and actor.kind in _TOKEN_CREATORS
+                and actor.filter is None)
+            or (isinstance(actor, Ref) and actor.kind is RefKind.TARGET))
 
 
 def _create_token_supported(s: EffectSpec) -> bool:
-    """"Create <N> <predefined> tokens" for the controller: through the
-    one token owner, `GameState.create_token`. A token the owner does not
-    define, a token with printed characteristics, or a copy is refused."""
+    """"<Players> create(s) <N> <token>": each player the spec names
+    creates them through the one token owner, `GameState.create_token` (CR
+    111.2: they own and control them). The token is a predefined one the
+    owner defines (CR 111.10), or one whose printed characteristics the
+    owner builds from the typed spec (`permanent_effects.printed_token`,
+    CR 111.3). A copy, or a token the owner does not build, is refused."""
+    from .permanent_effects import printed_token
     p = s.payload
-    if s.verb is not Verb.CREATE_TOKEN or not isinstance(p, TokenSpec) \
-            or p.predefined not in _PREDEFINED_TOKENS:
+    if s.verb is not Verb.CREATE_TOKEN or not isinstance(p, TokenSpec):
         return False
-    if p != TokenSpec(predefined=p.predefined):
+    if p.predefined is not None:
+        if p.predefined not in _PREDEFINED_TOKENS \
+                or p != TokenSpec(predefined=p.predefined):
+            return False
+    elif printed_token(p) is None:
         return False
     if s.flags or s.optional or s.alternatives or s.filter is not None \
             or s.group is not None or s.dest is not None \
@@ -765,7 +785,7 @@ def _create_token_supported(s: EffectSpec) -> bool:
         return False
     if s.subject is not None or s.ref is not None or s.other is not None \
             or s.target is not None or s.target_slot is not None \
-            or not _acts_as_controller(s.actor):
+            or not _token_creators_supported(s.actor):
         return False
     return conditions.amount_supported(s.amount)
 
@@ -775,10 +795,49 @@ def execute_create_token(ctx: Resolution, s: EffectSpec,
     n = _amount(ctx, s)
     if n <= 0:
         return Outcome(False, {})
-    tokens = ctx.game.create_token(ctx.controller, s.payload.predefined,
-                                   count=n)
-    return Outcome(bool(tokens),
-                   {ctx.controller: tuple(handle_of(t) for t in tokens)})
+    p = s.payload
+    made = {}
+    for player in actors:
+        if p.predefined is not None:
+            tokens = ctx.game.create_token(player, p.predefined, count=n)
+        else:
+            tokens = ctx.game.create_token(player, "", count=n, token_spec=p)
+        if tokens:
+            made[player] = tuple(tokens)
+    _audit_tokens(ctx, s, made)
+    return Outcome(bool(made), {player: tuple(handle_of(t) for t in tokens)
+                                for player, tokens in made.items()})
+
+
+def _audit_tokens(ctx: Resolution, s: EffectSpec, made: dict) -> None:
+    """CR 111.2 / 111.3, restated from the spec's raw fields (not from the
+    owner's builder): a token is controlled by the player who created it,
+    and has the power, toughness, card types, subtypes and colours its
+    creator printed. Observation only."""
+    from . import rules_audit
+    p = s.payload
+    if not rules_audit.enabled() or p.predefined is not None:
+        return
+    problems = []
+    for player, tokens in made.items():
+        for t in tokens:
+            tt = t.template
+            if t.controller != player or t.owner != player:
+                problems.append(f"{t.name} controlled by P{t.controller + 1}, "
+                                f"created by P{player + 1}")
+            if p.power is not None and (tt.power, tt.toughness) != \
+                    (p.power.n, p.toughness.n):
+                problems.append(f"{t.name} is {tt.power}/{tt.toughness}")
+            if {c.value for c in tt.card_types} != set(p.types):
+                problems.append(f"{t.name} has types {tt.card_types}")
+            if [x.lower() for x in tt.subtypes] != list(p.subtypes):
+                problems.append(f"{t.name} has subtypes {tt.subtypes}")
+            if {c.value for c in tt.colors} != set(p.colors):
+                problems.append(f"{t.name} has colours {tt.colors}")
+    source = _source_object(ctx)
+    rules_audit.check("111.3/token_characteristics", not problems,
+                      f"{getattr(source, 'name', '?')}: {'; '.join(problems)}",
+                      game=ctx.game)
 
 
 execute_create_token.supports = _create_token_supported

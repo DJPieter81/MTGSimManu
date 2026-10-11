@@ -34,6 +34,94 @@ if TYPE_CHECKING:
     from .game_state import GameState
 
 
+# ─── PRINTED TOKENS (CR 111.3, 111.4) ────────────────────────────────
+
+# The card types, supertypes and colours a token's creator may print that
+# the token owner builds; any other refuses the spec (`printed_token`).
+_TOKEN_CARD_TYPES = {"artifact": CardType.ARTIFACT,
+                     "creature": CardType.CREATURE,
+                     "enchantment": CardType.ENCHANTMENT}
+_TOKEN_SUPERTYPES = {s.value: s for s in Supertype}
+_TOKEN_COLORS = {"W": Color.WHITE, "U": Color.BLUE, "B": Color.BLACK,
+                 "R": Color.RED, "G": Color.GREEN}
+_TOKEN_KEYWORDS = {k.value: k for k in Keyword}
+
+
+def _literal(amount):
+    """The printed integer of a LITERAL amount; None otherwise."""
+    from .effect_spec import AmountKind
+    if amount is None or amount.kind is not AmountKind.LITERAL \
+            or amount.quantity is not None or amount.ref is not None \
+            or amount.inner is not None:
+        return None
+    return amount.n
+
+
+def _granted_mana_units(granted) -> "List[List[str]] | None":
+    """The mana units of a token's granted abilities when every one is a
+    "Sacrifice this <permanent>: Add <mana>" mana ability -- the derivation
+    that types a card's own (`mana_units.sacrifice_units`); [] for none;
+    None for any other ability, which the token owner does not build."""
+    from .effect_spec import HostKind
+    from .mana_units import sacrifice_units
+    if not granted:
+        return []
+    for h in granted:
+        cost = dict(h.cost.items) if h.cost is not None else {}
+        if h.kind is not HostKind.MANA_ABILITY or not cost.get("sacrifice_self"):
+            return None
+    return sacrifice_units(granted) or None
+
+
+def printed_token(spec) -> "dict | None":
+    """The characteristics a token's creator defines (CR 111.3), as the
+    token owner builds them from the typed `TokenSpec`: its card types,
+    supertypes, subtypes, colours, printed power and toughness, keywords
+    and granted "Sacrifice this token: Add <mana>" abilities (as
+    `sacrifice_mana_units`). An unnamed token is named for its subtypes
+    plus "Token" (CR 111.4). None for a predefined token, a copy, a named
+    token, a power or toughness that is not printed, a keyword with a
+    parameter or one the engine does not type, or any other granted
+    ability: the owner builds none of those from the spec."""
+    from .effect_spec import TokenSpec
+    if not isinstance(spec, TokenSpec) or spec.predefined is not None \
+            or spec.copy_of is not None or spec.copy_except \
+            or spec.name is not None or not spec.types \
+            or any(t not in _TOKEN_CARD_TYPES for t in spec.types) \
+            or any(s not in _TOKEN_SUPERTYPES for s in spec.supertypes) \
+            or any(c not in _TOKEN_COLORS for c in spec.colors):
+        return None
+    creature = "creature" in spec.types
+    power, toughness = _literal(spec.power), _literal(spec.toughness)
+    if creature and (power is None or toughness is None):
+        return None
+    if not creature and (spec.power is not None or spec.toughness is not None):
+        return None
+    keywords = set()
+    for name, param in spec.keywords:
+        if param is not None or name not in _TOKEN_KEYWORDS:
+            return None
+        keywords.add(_TOKEN_KEYWORDS[name])
+    units = _granted_mana_units(spec.granted)
+    if units is None:
+        return None
+    subtypes = [w.title() for w in spec.subtypes]
+    return {
+        "name": " ".join(subtypes or [t.title() for t in spec.types]) + " Token",
+        "card_types": [_TOKEN_CARD_TYPES[t] for t in spec.types],
+        "supertypes": [_TOKEN_SUPERTYPES[s] for s in spec.supertypes],
+        "subtypes": subtypes,
+        "colors": {_TOKEN_COLORS[c] for c in spec.colors},
+        "power": power,
+        "toughness": toughness,
+        "keywords": keywords,
+        "sacrifice_mana_units": units,
+        # The token's text is its granted abilities (CR 111.3).
+        "oracle_text": " ".join(h.text.replace("~", "this token")
+                                for h in spec.granted),
+    }
+
+
 class PermanentEffects:
     """Stateless lifecycle + resource helpers for permanents."""
 
@@ -305,8 +393,16 @@ class PermanentEffects:
                      extra_keywords: Set[Keyword] = None,
                      source_oracle: str = None,
                      subtypes: List[str] = None,
-                     colors: Set[Color] = None) -> List[CardInstance]:
+                     colors: Set[Color] = None,
+                     token_spec=None) -> List[CardInstance]:
         """Create token creatures on the battlefield.
+
+        With `token_spec`, a typed `TokenSpec` its creator prints, the
+        token has exactly the characteristics `printed_token` builds from it
+        (CR 111.3, 111.4) -- no text is read; the other arguments are
+        unused.
+        The player who creates a token is its owner and it enters under
+        their control (CR 111.2).
 
         Generic-first design (post-Phase-1C-followup): when
         ``source_oracle`` is provided, the spawning card's oracle
@@ -321,6 +417,11 @@ class PermanentEffects:
         caller. Future cleanup will migrate every caller to pass
         source_oracle so TOKEN_DEFS can be retired.
         """
+        if token_spec is not None:
+            built = printed_token(token_spec)
+            if built is None:
+                raise ValueError(f"the token owner builds no {token_spec!r}")
+            return PermanentEffects._put_tokens(game, controller, count, built)
         tokens = []
         # Generic path: parse from the spawning card's oracle text.
         spec = None
@@ -442,6 +543,47 @@ class PermanentEffects:
         if count > 0:
             game.log.append(f"T{game.display_turn} P{controller+1}: "
                             f"Create {count}x {t_name} token(s)")
+        return tokens
+
+    @staticmethod
+    def _put_tokens(game: "GameState", controller: int, count: int,
+                    built: dict) -> List[CardInstance]:
+        """Put `count` tokens with the characteristics `built`
+        (`printed_token`) onto the battlefield under `controller`'s control
+        (CR 111.2). Each enters like any permanent: its own and every
+        watcher's enter triggers fire (CR 603.6a)."""
+        tokens = []
+        creature = CardType.CREATURE in built["card_types"]
+        for _ in range(count):
+            template = CardTemplate(
+                name=built["name"],
+                card_types=list(built["card_types"]),
+                supertypes=list(built["supertypes"]),
+                subtypes=list(built["subtypes"]),
+                mana_cost=ManaCost(),
+                power=built["power"],
+                toughness=built["toughness"],
+                keywords=set(built["keywords"]),
+                colors=set(built["colors"]),
+                tags={"token", "creature"} if creature else {"token"},
+                oracle_text=built["oracle_text"],
+            )
+            template.sacrifice_mana_units = [
+                list(u) for u in built["sacrifice_mana_units"]]
+            instance = CardInstance(template=template, owner=controller,
+                                    controller=controller,
+                                    instance_id=game.next_instance_id(),
+                                    zone="battlefield")
+            instance.is_token = True
+            instance._game_state = game
+            instance.enter_battlefield()
+            game.players[controller].battlefield.append(instance)
+            game._handle_permanent_etb(instance, controller)
+            tokens.append(instance)
+        if count > 0:
+            kind = built["name"][:-len(" Token")]
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
+                            f"Create {count}x {kind} token(s)")
         return tokens
 
     @staticmethod

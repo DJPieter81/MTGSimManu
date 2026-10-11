@@ -58,8 +58,13 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
 # type-change family joined with unit AT: a host that adds a type to an
 # object, which no legacy handler applies (Enter the Avatar State, Jump
 # Scare). The edict family joined with unit ED: "<players> sacrifice(s)
-# <N> <permanents> of their choice", which no legacy handler applied.
-SPELL_FAMILIES = ("damage", "card_flow", "type_change", "edict")
+# <N> <permanents> of their choice", which no legacy handler applied. The
+# token family joined with unit TK: a token with the characteristics its
+# creator prints (CR 111.3), created by the players it names (CR 111.2);
+# the legacy token clause it shares hosts with is switched to it too
+# (`clause_resolver._a_token`).
+TOKEN_FAMILY = "tokens_counters"
+SPELL_FAMILIES = ("damage", "card_flow", "type_change", "edict", TOKEN_FAMILY)
 
 
 def spell_family(template: Any, effects: Any = None) -> Optional[str]:
@@ -456,10 +461,9 @@ def trigger_targets(game: Any, source: Any, controller: int,
     choice: the ability is removed from the stack."""
     from .callbacks import default_trigger_targets
     from .target_solver import legal_slot_choices
-    specs = list(iter_specs(host.specs))
     chosen = []
     for k, req in enumerate(host.targets):
-        spec = next((s for s in specs if s.target_slot == k), None)
+        spec = slot_spec(host, k)
         players, permanents = legal_slot_choices(game, controller, req,
                                                  source=source)
         n = max(0, int(req.count_max or 0))
@@ -484,6 +488,24 @@ def trigger_targets(game: Any, source: Any, controller: int,
         chosen.append(tuple(v if isinstance(v, int) else er.handle_of(v)
                             for v in picked))
     return tuple(chosen)
+
+
+def names_slot(s: Any, k: int) -> bool:
+    """The spec targets slot `k`, or its acting player is the player
+    chosen for slot `k` ("target player creates ...", "target player
+    sacrifices ...")."""
+    from .effect_spec import Ref, RefKind
+    a = s.actor
+    return s.target_slot == k or (isinstance(a, Ref)
+                                  and a.kind is RefKind.TARGET
+                                  and a.index == k)
+
+
+def slot_spec(host: Any, k: int) -> Optional[Any]:
+    """The first spec of `host` that names slot `k` (`names_slot`): what
+    the target chosen for it is chosen for."""
+    return next((s for s in iter_specs(host.specs) if names_slot(s, k)),
+                None)
 
 
 def _face_hosts(card: Any) -> tuple:
@@ -571,21 +593,11 @@ def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
             and not any(h.targets for h in face_hosts if h is not host))
 
 
-def _names_slot_0(s: Any) -> bool:
-    """The spec targets slot 0, or its acting player is slot 0's chosen
-    player ("target player sacrifices ...")."""
-    from .effect_spec import Ref, RefKind
-    a = s.actor
-    return s.target_slot == 0 or (isinstance(a, Ref)
-                                  and a.kind is RefKind.TARGET
-                                  and a.index == 0)
-
-
 def _slot_span(host: Any) -> Optional[tuple]:
     """The printed span of slot 0's spec, when it lies inside the host's
     text (an empty or out-of-text span places nothing)."""
-    span = next((s.span for s in iter_specs(host.specs)
-                 if _names_slot_0(s)), None)
+    s0 = slot_spec(host, 0)
+    span = s0.span if s0 is not None else None
     if span is None or not 0 <= span[0] < span[1] <= len(host.text or ""):
         return None
     return span

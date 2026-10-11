@@ -625,6 +625,7 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
     pool = BoardPool(db)
     built = {b: build_board(pool, b) for b in boards}
     proven: List[List[str]] = []
+    diverging: List[List[str]] = []
     divergences: List[Divergence] = []
     undispatched: List[List[str]] = []
     no_case: List[List[str]] = []
@@ -652,17 +653,18 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
             divs = compare_host(built, t, case, seeds=seeds,
                                 left=legacy_only_apply, right=legacy_apply)
             divergences += divs
+            if divs:
+                # per pair: two handlers that take one host (a switched
+                # clause and the dispatched carrier) each diverge
+                diverging.append(key)
             if entered[0] == before:
                 undispatched.append(key)
             elif not divs:
                 proven.append(key)
     finally:
         er.resolve_ability = real
-    diverging = sorted({(d.card, d.host) for d in divergences})
-    by_card_host = {(k[1], k[2]): k for k in
-                    [[p.handler, p.card, p.host] for p in pairs]}
     return {"pairs": len(pairs), "proven": sorted(proven),
-            "diverging": sorted(list(by_card_host[k]) for k in diverging),
+            "diverging": sorted(diverging),
             "boards": list(built), "seeds": list(seeds),
             "divergences": [dataclasses.asdict(d) for d in divergences],
             "undispatched": sorted(undispatched), "no_case": sorted(no_case),

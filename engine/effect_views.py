@@ -47,7 +47,6 @@ from __future__ import annotations
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
-from itertools import combinations_with_replacement
 from types import MappingProxyType
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
@@ -1858,13 +1857,14 @@ def _counters_colorless_only(effects, key=None, template=None):
     return any(_legacy_colorless_counter(s) for _, s in _specs(effects))
 
 
-def _mana_specs(h):
-    return [s for s in iter_specs(h.specs)
-            if s.verb is Verb.ADD_MANA and isinstance(s.payload, ManaSpec)]
-
+# The units a typed mana ability produces: one owner (`engine.mana_units`).
+from .mana_units import WUBRG as _WUBRG  # noqa: E402
+from .mana_units import host_units as _host_units  # noqa: E402
+from .mana_units import mana_specs as _mana_specs  # noqa: E402
+from .mana_units import sacrifice_units as _sacrifice_units  # noqa: E402
+from .mana_units import units_of as _units_of  # noqa: E402
 
 _RITUAL_COLORS = ("R", "G", "U", "B", "W", "C")
-_WUBRG = ("W", "U", "B", "R", "G")
 _ANY_MANA_RE = re.compile(r"\badd (\w+) mana\b")
 _MANA_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5}
 
@@ -1913,57 +1913,6 @@ def _legacy_ritual_cost_pips(h: AbilityEffects, color: str) -> int:
     return int(mana.get(_COST_COLOR[color], 0) or 0)
 
 
-_MANA_SYMBOL = re.compile(r"\{([^}]+)\}")
-_UNIT_COLOURS = frozenset(_WUBRG) | {"C"}
-
-
-def _bundle_units(choice) -> Optional[list]:
-    """The units of a choice between mana bundles ("{W}{W}, {W}{U}, or
-    {U}{U}"): one unit per produced mana, each the union of the bundles'
-    colours, when every bundle has the same size and the bundles are
-    exactly the per-mana picks of that union (CR 106.1b: a unit is the
-    colours one mana can be). None when the choice is not independent per
-    mana ({R}{R} or {G}{G} never gives {R}{G}) or names a non-colour."""
-    bundles = [tuple(_MANA_SYMBOL.findall(c)) for c in choice]
-    sizes = {len(b) for b in bundles}
-    if len(sizes) != 1 or 0 in sizes:
-        return None
-    n = sizes.pop()
-    union = sorted({c for b in bundles for c in b})
-    if not set(union) <= _UNIT_COLOURS:
-        return None
-    printed = {tuple(sorted(b)) for b in bundles}
-    picks = set(combinations_with_replacement(union, n))
-    if printed != picks:
-        return None
-    return [list(union) for _ in range(n)]
-
-
-def _units_of(spec) -> Optional[list]:
-    """The units one ADD_MANA spec produces, or None when its choice is
-    not a list of independent units (`_bundle_units`)."""
-    p = spec.payload
-    if p.choice:
-        if all(len(_MANA_SYMBOL.findall(c)) == 1 for c in p.choice):
-            return [list(dict.fromkeys(c.strip("{}") for c in p.choice))]
-        return _bundle_units(p.choice)
-    if p.any_color or "*" in p.symbols:
-        return [sorted(_WUBRG)] * max(1, len(p.symbols))
-    return [[c] for c in p.symbols]
-
-
-def _host_units(h) -> Optional[list]:
-    """Every unit a host's mana specs produce; None when one spec's
-    choice is not a list of units."""
-    units = []
-    for s in _mana_specs(h):
-        got = _units_of(s)
-        if got is None:
-            return None
-        units.extend(got)
-    return units
-
-
 def _mana_units(effects, key=None, template=None):
     units = []
     for h in _face(effects, 0):
@@ -1977,11 +1926,7 @@ def _mana_units(effects, key=None, template=None):
 
 
 def _sacrifice_mana_units(effects, key=None, template=None):
-    for h in _face(effects, 0):
-        if h.kind is HostKind.MANA_ABILITY and h.cost is not None and \
-                dict(h.cost.items).get("sacrifice_self"):
-            return _host_units(h) or []
-    return []
+    return _sacrifice_units(_face(effects, 0))
 
 
 def _colorless_count(spec) -> Optional[int]:

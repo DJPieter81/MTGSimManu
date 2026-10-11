@@ -40,6 +40,10 @@ _FREE_MODE_COSTS = frozenset({"", "{0}"})
 # target"): a player can always be chosen, so it never makes a mode
 # unchoosable.
 _PLAYER_TARGET_TYPES = frozenset({"player", "any"})
+# A target requirement only a player satisfies ("target player", "target
+# opponent"): its player is chosen for the mode as the spell is cast
+# (`choose_mode_players`).
+_PLAYER_ONLY_TYPES = frozenset({"player"})
 
 
 def _host(template: "CardTemplate", effects=None):
@@ -195,6 +199,77 @@ def choose_modes(game: "GameState", card: "CardInstance", controller: int,
     return sorted(chosen)
 
 
+def _player_only(req) -> bool:
+    return bool(req.types) and set(req.types) <= _PLAYER_ONLY_TYPES
+
+
+def choose_mode_players(game: "GameState", card: "CardInstance",
+                        controller: int, chosen: Sequence[int],
+                        x_value: int = 0) -> dict:
+    """The players chosen for each chosen mode's player-only target
+    requirements as the spell is cast (CR 601.2c): mode index -> one tuple
+    of player indices per such requirement, in printed order. Each pick is
+    the controller's (`callbacks.choose_trigger_targets`, the slot-pick
+    seam) out of the players the requirement admits
+    (`target_solver.legal_slot_choices`); only legal, distinct players
+    count, and a required player the answer leaves short is filled by the
+    engine's default (`callbacks.default_trigger_targets`)."""
+    from .callbacks import default_trigger_targets
+    from .effect_carrier import chosen_mode_host, slot_spec
+    from .target_solver import legal_slot_choices
+    out = {}
+    for i in chosen:
+        host = chosen_mode_host(card.template, i)
+        if host is None:
+            continue
+        picks = []
+        for k, req in enumerate(host.targets):
+            if not _player_only(req):
+                continue
+            players, _ = legal_slot_choices(game, controller, req,
+                                            source=card)
+            n = max(0, int(req.count_max or 0))
+            asked = game.callbacks.choose_trigger_targets(
+                game, controller, card, slot_spec(host, k), req,
+                list(players), [], x_value=x_value) if n and players else []
+            got = []
+            for p in asked or ():
+                if isinstance(p, int) and not isinstance(p, bool) \
+                        and p in players and p not in got and len(got) < n:
+                    got.append(p)
+            need = min(int(req.count_min or 0), n, len(players))
+            if len(got) < need:
+                rest = [p for p in players if p not in got]
+                got += default_trigger_targets(controller, req, rest,
+                                               [])[:need - len(got)]
+            picks.append(tuple(got))
+        if picks:
+            out[i] = tuple(picks)
+    return out
+
+
+def mode_targets(game: "GameState", card: "CardInstance", controller: int,
+                 targets: Sequence, index: int,
+                 mode_players: Optional[dict]) -> list:
+    """The cast-time targets one chosen mode reads. A mode whose every
+    requirement only a player satisfies reads the players chosen for it
+    (`choose_mode_players`), as the engine's player markers; any other
+    mode reads the spell's target list, with those players in front when
+    it also has such a requirement."""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    from .effect_carrier import chosen_mode_host
+    host = chosen_mode_host(card.template, index)
+    if host is None or not any(_player_only(r) for r in host.targets):
+        return list(targets)
+    players = [p for slot in (mode_players or {}).get(index, ())
+               for p in slot]
+    markers = [PLAYER_TARGET_SELF if p == controller
+               else PLAYER_TARGET_OPPONENT for p in players]
+    if all(_player_only(r) for r in host.targets):
+        return markers
+    return markers + list(targets)
+
+
 def resolve_mode(game: "GameState", card: "CardInstance", controller: int,
                  targets: Sequence, index: int, x_value: int = 0) -> bool:
     """Perform one chosen mode through the clause owner, with its own
@@ -209,17 +284,48 @@ def resolve_mode(game: "GameState", card: "CardInstance", controller: int,
 
 def perform_chosen(game: "GameState", card: "CardInstance", controller: int,
                    targets: Sequence, chosen: Sequence[int],
-                   x_value: int = 0) -> None:
-    """Perform the chosen modes in printed order (CR 700.2, 608.2c). A
-    mode no owner performs is recorded for the unhandled-effect census,
-    as a whole spell's silent miss is."""
+                   x_value: int = 0, mode_players: Optional[dict] = None
+                   ) -> None:
+    """Perform the chosen modes in printed order (CR 700.2, 608.2c), each
+    with the targets chosen for it (`mode_targets`). A mode no owner
+    performs is recorded for the unhandled-effect census, as a whole
+    spell's silent miss is."""
     before = _damage_snapshot(game, controller, targets)
     for idx in chosen:
-        if not resolve_mode(game, card, controller, targets, idx,
+        if not resolve_mode(game, card, controller,
+                            mode_targets(game, card, controller, targets, idx,
+                                         mode_players), idx,
                             x_value=x_value):
             from .effect_diagnostics import record_unhandled_effect
             record_unhandled_effect(card.name, "mode")
     _audit_mode_damage(game, card, controller, chosen, targets, before)
+
+
+def _audit_mode_players(game: "GameState", card: "CardInstance",
+                        chosen: Sequence[int],
+                        mode_players: Optional[dict]) -> None:
+    """CR 601.2c, restated from the raw requirements: each required
+    target of a chosen mode that only a player satisfies has a player
+    chosen for it as the spell was cast."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    host = _host(card.template)
+    if host is None:
+        return
+    problems = []
+    for i in chosen:
+        if not 0 <= i < len(host.modes):
+            continue
+        required = [r for r in host.modes[i].targets
+                    if r.types and set(r.types) <= {"player"}
+                    and not r.is_optional and r.count_min > 0]
+        picked = list((mode_players or {}).get(i, ()))
+        for k, _ in enumerate(required):
+            if k >= len(picked) or not picked[k]:
+                problems.append(f"mode {i} performed with no player chosen")
+    rules_audit.check("601.2c/mode_player_chosen", not problems,
+                      f"{card.name}: {'; '.join(problems)}", game=game)
 
 
 def _damage_snapshot(game: "GameState", controller: int,
@@ -283,11 +389,15 @@ def _audit_mode_damage(game: "GameState", card: "CardInstance",
 
 
 def audit_chosen(game: "GameState", card: "CardInstance",
-                 chosen: Sequence[int], targets: Sequence) -> None:
-    """CR 700.2 / 700.2a, restated from the typed host's raw fields (not
-    from `legal_modes`): a resolving modal spell performs a number of
-    modes its header allows, and every mode it performs that targets an
-    object had a chosen target in that object's zone. Observation only."""
+                 chosen: Sequence[int], targets: Sequence,
+                 mode_players: Optional[dict] = None) -> None:
+    """CR 700.2 / 700.2a / 601.2c, restated from the typed host's raw
+    fields (not from `legal_modes` or `choose_mode_players`): a resolving
+    modal spell performs a number of modes its header allows, every mode
+    it performs that targets an object had a chosen target in that
+    object's zone, and every mode it performs that targets a player had a
+    player chosen for it. Observation only."""
+    _audit_mode_players(game, card, chosen, mode_players)
     from . import rules_audit
     if not rules_audit.enabled():
         return

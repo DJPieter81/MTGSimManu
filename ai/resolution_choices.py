@@ -35,16 +35,33 @@ def perform_optional_effect(game: Any, ctx: Any, spec: Any) -> bool:
 
 def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
                          req: Any, players: Sequence[int],
-                         permanents: Sequence[Any]) -> List[Any]:
+                         permanents: Sequence[Any],
+                         x_value: int = 0) -> List[Any]:
     """The targets a triggered ability takes for one slot as it is put on
-    the stack (CR 603.3d), out of the legal choices the engine narrowed.
-    A damage spec's recipient is the AI's damage aim
-    (`ai.damage_targets.choose_damage_recipient`: the one owner of where N
-    damage goes -- lethal to the face, else the opposing permanent it
-    destroys that is worth most, else the face); any other spec, or an aim
-    the slot does not admit, keeps the engine's default pick."""
+    the stack (CR 603.3d), or a chosen mode's player as its spell is cast
+    (CR 601.2c), out of the legal choices the engine narrowed.
+    - A damage spec's recipient is the AI's damage aim
+      (`ai.damage_targets.choose_damage_recipient`: the one owner of where
+      N damage goes -- lethal to the face, else the opposing permanent it
+      destroys that is worth most, else the face).
+    - A slot only a player fills, for an instruction that names its acting
+      player, is the player it is worth most to name
+      (`ai.modal.named_player_value`: tokens to the caster's side, a
+      sacrifice to the opponent's); a tie keeps the default.
+    Any other spec, or an aim the slot does not admit, keeps the engine's
+    default pick."""
     from engine.callbacks import default_trigger_targets
     from engine.effect_spec import Verb
+    if players and not permanents and spec is not None \
+            and spec.verb is not Verb.DAMAGE:
+        from ai.modal import named_player_value
+        values = {p: named_player_value(game, player_idx, spec, p, x_value)
+                  for p in players}
+        if all(v is not None for v in values.values()):
+            best = max(values.values())
+            top = [p for p in players if values[p] == best]
+            if len(top) < len(players):
+                return top[:1]
     if getattr(spec, "verb", None) is Verb.DAMAGE:
         from ai.damage_targets import choose_damage_recipient
         from engine.effect_conditions import amount_value

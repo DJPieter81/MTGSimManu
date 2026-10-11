@@ -37,6 +37,12 @@ class StackItem:
     # 601.2b; `engine.modal_spell.choose_modes`), in printed order. None
     # when no cast recorded a choice; a copy shares it (CR 707.10).
     modes_chosen: Optional[List[int]] = None
+    # The players chosen as the spell was cast for each chosen mode's
+    # player target (CR 601.2c; `engine.modal_spell.choose_mode_players`):
+    # mode index -> one tuple of player indices per player-only target
+    # requirement of that mode, in printed order. None when no cast
+    # recorded a choice.
+    mode_players: Optional[Dict[int, Tuple[Tuple[int, ...], ...]]] = None
     # X value for X spells
     x_value: int = 0
     # Whether this was evoked

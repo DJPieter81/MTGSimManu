@@ -74,6 +74,10 @@ class ClauseHandler:
     name: str
     gate: Callable[[ClauseContext], bool]
     apply: Callable[[ClauseContext], Optional[bool]]
+    # The apply declines a clause an earlier handler already resolved
+    # (`ctx.handled`): read by the gate-parity closure, which must not count
+    # such a host on this handler's path.
+    unclaimed_only: bool = False
 
 
 def _or():
@@ -804,10 +808,37 @@ def _g_token(ctx):
             and _token_clause(ctx) is not None)
 
 
+def _dispatch_token_host(ctx) -> bool:
+    """Offer the host the token clause resolves -- a chosen mode's typed
+    host, or the whole spell's -- to the dispatcher in the token family.
+    True when the dispatcher took it."""
+    from engine import effect_carrier
+    if ctx.mode_index is not None:
+        host = effect_carrier.chosen_mode_host(ctx.template, ctx.mode_index)
+        face_hosts = ()
+    elif ctx.oracle_override is None:
+        effects = ctx.template.effects
+        host, face_hosts = effects.spell(0), effects.front()
+    else:
+        return False
+    return effect_carrier.dispatch(
+        ctx.game, ctx.card, ctx.controller, host, ctx.targets,
+        family=effect_carrier.TOKEN_FAMILY, x_value=ctx.x_value,
+        face_hosts=face_hosts) is not None
+
+
 def _a_token(ctx):
     # CR 111: a spell whose own effect creates a creature token. Only when
     # no earlier handler resolved the clause.
     if ctx.handled:
+        return None
+    # The carrier switch (design doc 2026-09-29, section 11): the host this
+    # clause resolves -- a chosen mode's, or the whole spell's -- goes to the
+    # dispatcher when the token family takes it (unit TK: the token has the
+    # characteristics its creator prints, CR 111.3); the legacy apply runs
+    # only when it declines.
+    if _dispatch_token_host(ctx):
+        ctx.handled = True
         return None
     clause, m, count = _token_clause(ctx)
     created = ctx.game.create_token(
@@ -926,8 +957,9 @@ HANDLERS: List[ClauseHandler] = [
     ClauseHandler("bounce", _g_bounce, _a_bounce),
     ClauseHandler("reanimate_target", _g_reanimate, _a_reanimate),
     ClauseHandler("card_flow", _g_card_flow, _a_card_flow),
-    ClauseHandler("create_token", _g_token, _a_token),
-    ClauseHandler("dispatched", _g_dispatched, _a_dispatched),
+    ClauseHandler("create_token", _g_token, _a_token, unclaimed_only=True),
+    ClauseHandler("dispatched", _g_dispatched, _a_dispatched,
+                  unclaimed_only=True),
 ]
 
 

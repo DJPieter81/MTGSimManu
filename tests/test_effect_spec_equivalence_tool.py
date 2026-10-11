@@ -1640,10 +1640,12 @@ def test_a_handler_that_reaches_the_dispatcher_through_a_helper_is_switched():
     assert t._is_switched(_switched_helper, within=anywhere)
     assert t._is_switched(_switched_through_a_helper, within=anywhere)
     assert not t._is_switched(_legacy_apply, within=anywhere)
-    # The clause handlers that reach the dispatcher: the landed families'.
+    # The clause handlers that reach the dispatcher: the landed families'
+    # (the token clause since unit TK).
     from engine import clause_resolver as CR
     assert {h.name for h in list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS)
-            if t._is_switched(h.apply)} == {"direct_damage", "dispatched"}
+            if t._is_switched(h.apply)} == {"direct_damage", "dispatched",
+                                             "create_token"}
 
 
 def test_every_etb_carrier_and_the_self_cast_handler_name_an_apply_that_reads_it():
@@ -1661,6 +1663,7 @@ def test_the_closure_takes_every_pairs_switch_from_its_apply_never_a_constant(ca
     t = _eq_tool()
     monkeypatch.setattr(t, "_is_switched", lambda fn, **kw: True)
     monkeypatch.setattr(t, "_spell_reaches_clause_handlers", lambda tpl: True)
+    monkeypatch.setattr(t, "_loyalty_clause_reaches_carrier", lambda c: True)
     monkeypatch.setattr(effect_carrier, "places_legacy_targets",
                         lambda host, face_hosts=(): True)
     templates = t.deck_templates(card_db)

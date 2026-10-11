@@ -954,13 +954,22 @@ def _clause_contexts(t, ce):
 
 def _spell_reaches_clause_handlers(t) -> bool:
     """Does the whole spell's resolution reach the clause handlers? A
-    card-name SPELL_RESOLVE registry handler runs first and ends it, and a
-    counterspell takes the per-ability path
-    (`ResolutionManager._execute_spell_effects`): for either, a switched
-    clause handler is not the path its host resolves on."""
+    card-name SPELL_RESOLVE registry handler runs first and ends it, a
+    ritual adds its mana and ends it, and a counterspell takes the
+    per-ability path (`ResolutionManager._execute_spell_effects`): for any
+    of them, a switched clause handler is not the path its host resolves
+    on."""
     from engine.card_effects import EFFECT_REGISTRY, EffectTiming
     return not (EFFECT_REGISTRY.has_handler(t.name, EffectTiming.SPELL_RESOLVE)
+                or getattr(t, "ritual_mana", None)
                 or getattr(t, "is_counterspell", False))
+
+
+def _loyalty_clause_reaches_carrier(clause) -> bool:
+    """Does a switched clause carrier dispatch a loyalty line's clause? It
+    dispatches its template's own spell host, and a loyalty line's clause
+    template has none: the line keeps the legacy apply."""
+    return clause.effects.spell(0) is not None
 
 
 def _enter_reaches_resolver(t) -> bool:
@@ -1011,9 +1020,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
             reached = override is not None or (
                 whole_reached and places_legacy_targets(h, ce.front()))
             # An unswitched handler that accepts the spell resolves it the
-            # legacy way and marks it handled, so the dispatched handler
-            # after it declines (`_a_dispatched`): that spell never reaches
-            # the dispatcher through it.
+            # legacy way and marks it handled, so a handler after it that
+            # declines a claimed clause (`ClauseHandler.unclaimed_only`: the
+            # dispatched and token handlers) never reaches the dispatcher.
             legacy_claimed = False
             for hd in handlers:
                 if hd.name in oracle_handlers and not ctx.oracle:
@@ -1036,7 +1045,7 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                         ok = False
                 if ok:
                     on_path = switched[hd.name] and reached and not (
-                        hd.name == DISPATCHED_HANDLER and legacy_claimed)
+                        hd.unclaimed_only and legacy_claimed)
                     out.append(_pair(hd.name, family, t, h, label, part,
                                      on_path))
                     legacy_claimed |= not switched[hd.name]
@@ -1055,6 +1064,7 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                                        controller=0, instance_id=0,
                                        zone="battlefield")
                     ctx = CR._static_context(src, 0, None, None)
+                    reached = _loyalty_clause_reaches_carrier(ab.clause)
                     for hd in handlers:
                         try:
                             ok = hd.gate(ctx)
@@ -1063,7 +1073,7 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                         if ok:
                             out.append(_pair(hd.name, HANDLER_FAMILY.get(
                                 hd.name, "?"), t, h, label, part,
-                                switched[hd.name]))
+                                switched[hd.name] and reached))
                 elif kind in LOYALTY_FAMILY:
                     out.append(_pair(f"planeswalker_manager:{kind}",
                                      LOYALTY_FAMILY[kind], t, h, label,

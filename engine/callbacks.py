@@ -175,18 +175,21 @@ class GameCallbacks(Protocol):
     def choose_trigger_targets(
         self, game: GameState, player_idx: int, source: CardInstance,
         spec: Any, req: Any, players: List[int],
-        permanents: List[CardInstance],
+        permanents: List[CardInstance], x_value: int = 0,
     ) -> List[Any]:
         """Which targets does a triggered ability take for one slot as it
-        is put on the stack (CR 603.3d)?
+        is put on the stack (CR 603.3d), or a chosen mode of a modal spell
+        for a requirement only a player satisfies, as the spell is cast
+        (CR 601.2c, `modal_spell.choose_mode_players`)?
 
         Uniform per KIND: any trigger a carrier puts on the stack with a
         target routes here. The engine has already narrowed the legal
         choices (`target_solver.legal_slot_choices`): `players` (indices)
         and `permanents`. `spec` is the typed EffectSpec the slot belongs
-        to, `req` its requirement. Return up to `req.count_max` of them;
-        the engine keeps only legal, distinct members and fills a required
-        target the answer leaves short (`default_trigger_targets`).
+        to, `req` its requirement, `x_value` the X paid for the spell (0
+        for a trigger). Return up to `req.count_max` of them; the engine
+        keeps only legal, distinct members and fills a required target the
+        answer leaves short (`default_trigger_targets`).
         """
         ...
 
@@ -382,7 +385,7 @@ class DefaultCallbacks:
         return max(eligible, key=default_tutor_rank)
 
     def choose_trigger_targets(self, game, player_idx, source, spec, req,
-                               players, permanents):
+                               players, permanents, x_value=0):
         """Default: `default_trigger_targets`, printed data only."""
         return default_trigger_targets(player_idx, req, players, permanents)
 

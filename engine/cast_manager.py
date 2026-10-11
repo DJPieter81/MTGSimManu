@@ -2130,11 +2130,14 @@ class CastManager:
                                    f"  Splice {sc.name} onto {card.name}")
 
         # CR 601.2b / 700.2a: a modal spell's modes are chosen as it is
-        # cast, among those its chosen targets allow.
+        # cast, among those its chosen targets allow; then the player each
+        # chosen mode targets (CR 601.2c).
         from . import modal_spell
         if modal_spell.in_scope(template):
             stack_item.modes_chosen = modal_spell.choose_modes(
                 game, card, player_idx, stack_item.targets, x_value)
+            stack_item.mode_players = modal_spell.choose_mode_players(
+                game, card, player_idx, stack_item.modes_chosen, x_value)
 
         game.stack.push(stack_item)
         player.spells_cast_this_turn += 1

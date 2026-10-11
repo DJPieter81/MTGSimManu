@@ -714,7 +714,7 @@
     "strict": false
    }
   ],
-  "executable": 152,
+  "executable": 157,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -801,24 +801,24 @@
     "strict": true
    }
   ],
-  "executable": 28,
+  "executable": 31,
   "family": "combat_damage_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 26,
+   "pool": 29,
    "sideboard": 0
   },
   "steps": {
    "E3": 20,
-   "E4": 4,
+   "E4": 7,
    "E5": 4
   },
-  "strict": 28,
+  "strict": 31,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN,EXILE": 1,
    "CONTINUOUS,EXILE": 3,
-   "CREATE_TOKEN": 4,
+   "CREATE_TOKEN": 7,
    "DRAW": 16,
    "DRAW,GAIN_LIFE": 1,
    "DRAW,LOSE_LIFE": 3
@@ -898,7 +898,7 @@
     "strict": false
    }
   ],
-  "executable": 9,
+  "executable": 161,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -989,6 +989,13 @@
     "strict": true
    },
    {
+    "card": "Empty the Warrens",
+    "host": "SPELL:0:0",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Enter the Avatar State",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1014,6 +1021,13 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E5",
+    "strict": true
+   },
+   {
+    "card": "Kozilek's Command",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E4",
     "strict": true
    },
    {
@@ -1087,25 +1101,27 @@
     "strict": true
    }
   ],
-  "executable": 235,
+  "executable": 355,
   "family": "damage",
   "hosts": {
-   "mainboard": 14,
-   "pool": 220,
-   "sideboard": 1
+   "mainboard": 15,
+   "pool": 338,
+   "sideboard": 2
   },
   "steps": {
    "E1": 145,
    "E2": 76,
    "E3": 3,
+   "E4": 120,
    "E5": 11
   },
-  "strict": 235,
+  "strict": 355,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,
    "CONTINUOUS,DRAW,EXILE": 1,
    "CONTINUOUS,EXILE": 7,
+   "CREATE_TOKEN": 120,
    "DAMAGE": 145,
    "MOVE": 51,
    "SACRIFICE": 25,
@@ -1728,7 +1744,7 @@
     "strict": true
    }
   ],
-  "executable": 4,
+  "executable": 9,
   "family": "removal",
   "hosts": {
    "mainboard": 6,

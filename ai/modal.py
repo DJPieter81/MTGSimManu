@@ -12,34 +12,74 @@ Asked by ``engine.modal_spell.choose_modes`` as the spell is cast (CR
 from __future__ import annotations
 
 
+def _worth(mana_value) -> float:
+    """A permanent is worth at least 1 (denying any permanent matters),
+    scaled by mana value (bigger investments hurt more to lose)."""
+    return 1.0 + float(mana_value or 0)
+
+
 def _perm_worth(perm) -> float:
-    """A hit is worth at least 1 (denying any permanent matters), scaled
-    by mana value (bigger investments hurt more to lose)."""
-    return 1.0 + float(perm.template.cmc or 0)
+    return _worth(perm.template.cmc)
 
 
-def _edict_value(game, controller: int, host) -> float:
-    """Net value of an edict mode (`effect_executors.execute_sacrifice`):
-    each named player gives up their least valuable matches -- the
-    opponent's loss a gain, the caster's own a loss. A mode that matches
-    nothing of the opponent's is worth nothing."""
-    from engine.effect_executors import edict_victims
-    from engine.effect_spec import RefKind, SelectorKind, Verb, iter_specs
+def named_player_value(game, ai_player: int, spec, player: int,
+                       x_value: int = 0):
+    """What an instruction that names its acting player is worth to
+    `ai_player` when it names `player`, in this module's currency:
+    - tokens it creates are a gain to their creator's side (CR 111.2),
+      each a permanent of mana value 0 (it has no mana cost, CR 202.3);
+    - permanents it sacrifices are a loss to theirs: the least valuable
+      it matches, since that player chooses (CR 701.21a).
+    None for an instruction this does not value."""
+    from engine.effect_spec import TokenSpec, Verb
+    verb = getattr(spec, "verb", None)
+    if verb is Verb.CREATE_TOKEN and isinstance(spec.payload, TokenSpec):
+        from engine.effect_conditions import amount_value
+        n = amount_value(game, ai_player, spec.amount, x_value) \
+            if spec.amount is not None else 1
+        gained = max(0, n) * _worth(0)
+        return gained if player == ai_player else -gained
+    if verb is Verb.SACRIFICE and spec.filter is not None \
+            and spec.amount is not None:
+        from engine.effect_executors import edict_victims
+        lost = sum(sorted(_perm_worth(c) for c in edict_victims(
+            game, player, spec.filter))[:spec.amount.n])
+        return -lost if player == ai_player else lost
+    return None
+
+
+def _named_players_value(game, card, controller: int, host, verb,
+                         x_value: int = 0) -> float:
+    """Net value of a mode whose `verb` instructions name their acting
+    players (`named_player_value` per player): "you" names the caster,
+    "each opponent" the opponents, "each player" everyone, and a player
+    chosen as a target the legal one worth most to the caster -- whom it
+    chooses (`modal_spell.choose_mode_players`). An instruction that names
+    no player it can value adds nothing."""
+    from engine.effect_spec import RefKind, SelectorKind, iter_specs
+    from engine.target_solver import legal_slot_choices
     value = 0.0
+    me, opp = controller, 1 - controller
     for s in iter_specs(host.specs):
-        if s.verb is not Verb.SACRIFICE:
+        if s.verb is not verb:
             continue
-        kind = getattr(s.actor, 'kind', None)
-        if kind is SelectorKind.ALL_PLAYERS:
-            players = (controller, 1 - controller)
-        elif kind in (SelectorKind.OPPONENTS, RefKind.TARGET):
-            players = (1 - controller,)     # an aimed edict aims at them
+        kind = getattr(s.actor, "kind", None)
+        if s.actor is None or kind is SelectorKind.PLAYER:
+            groups = [(me,)]
+        elif kind is SelectorKind.OPPONENTS:
+            groups = [(opp,)]
+        elif kind is SelectorKind.ALL_PLAYERS:
+            groups = [(me, opp)]
+        elif kind is RefKind.TARGET and s.actor.index is not None \
+                and s.actor.index < len(host.targets):
+            players, _ = legal_slot_choices(
+                game, controller, host.targets[s.actor.index], source=card)
+            groups = [(p,) for p in players]
         else:
             continue
-        for p in players:
-            lost = sorted(_perm_worth(c) for c in
-                          edict_victims(game, p, s.filter))[:s.amount.n]
-            value += sum(lost) if p != controller else -sum(lost)
+        values = [sum(named_player_value(game, controller, s, p, x_value)
+                      or 0.0 for p in g) for g in groups]
+        value += max(values, default=0.0)
     return value
 
 
@@ -124,10 +164,15 @@ def mode_value(game, card, controller: int, index: int, targets=None,
     if mode.get('removal'):
         return _targeted_removal_mode_value(
             game, controller, mode['removal'], targets, x_value)
-    from engine.effect_carrier import chosen_mode_host, mode_family
-    if mode_family(card.template, index) == "edict":
-        return _edict_value(game, controller,
-                            chosen_mode_host(card.template, index))
+    from engine.effect_carrier import (TOKEN_FAMILY, chosen_mode_host,
+                                       mode_family)
+    from engine.effect_spec import Verb
+    family = mode_family(card.template, index)
+    named = {"edict": Verb.SACRIFICE, TOKEN_FAMILY: Verb.CREATE_TOKEN}
+    if family in named:
+        return _named_players_value(game, card, controller,
+                                    chosen_mode_host(card.template, index),
+                                    named[family], x_value)
     return _mode_value(game, controller, mode.get('mass'))
 
 

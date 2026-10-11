@@ -1,5 +1,5 @@
 {
-  "combined": "4f5aa51390367189589fee4f8674ddd7660c557690ce96b08e60e7773f46eb78",
+  "combined": "f07ed36fc35701f31a078d5e314160efdf6406f4f967179fc9f3ea572e4bcf7a",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -9,8 +9,8 @@
       "winner": "Ruby Storm"
     },
     "bo1|Amulet Titan|Eldrazi Tron|54500": {
-      "lines": 713,
-      "sha256": "b861d57e0a8875da66af39bb4e47864055a8b87e68cb7af5793f502155b8cd5e",
+      "lines": 710,
+      "sha256": "3b19d9fa965ad6cf78d3a4588a18331ec4ab182d36cdeba55253a2ad29adb0cc",
       "turns": 11,
       "winner": "Eldrazi Tron"
     },
@@ -57,8 +57,8 @@
       "winner": "Eldrazi Tron"
     },
     "bo1|Eldrazi Ramp|Broodscale Bloodchief|55500": {
-      "lines": 512,
-      "sha256": "25e94dee631edbdf4a6897f81f70e6b779708be228f48b6d2179480b22fad65c",
+      "lines": 513,
+      "sha256": "ae012e75c107aad57804017a6693973c15db1625ed6106a23d82b0907821558a",
       "turns": 8,
       "winner": "Eldrazi Ramp"
     },
@@ -135,22 +135,16 @@
       "winner": "Domain Zoo"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g1": {
-      "lines": 832,
-      "sha256": "e10d8dbba3b9f047f6bbd95986abbc0ebd288797be1837e1824bd6b1efeb892e",
-      "turns": 13,
+      "lines": 1540,
+      "sha256": "af2fc747a4775b913f59e936a6f85f51ef0d5273949f50af0e93a388ef465122",
+      "turns": 24,
       "winner": "Jeskai Blink"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g2": {
-      "lines": 584,
-      "sha256": "eeef4cfec7291dc0362a6ca5e771689377e4c32c2f1d66806696fddbcabaf902",
+      "lines": 642,
+      "sha256": "ca968e53d7ff2c03a36c7e834f5aee56bffc21cd5055c80acb60af8f382e2faf",
       "turns": 9,
-      "winner": "Eldrazi Tron"
-    },
-    "bo3|Jeskai Blink|Eldrazi Tron|59500|g3": {
-      "lines": 989,
-      "sha256": "94e3ef11ac02ab737c6b0acca59e50bdea2048c7b4025602c3ce8813219bbd42",
-      "turns": 15,
-      "winner": "Eldrazi Tron"
+      "winner": "Jeskai Blink"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
       "lines": 717,
@@ -165,5 +159,5 @@
       "winner": "Living End"
     }
   },
-  "n_games": 27
+  "n_games": 26
 }
