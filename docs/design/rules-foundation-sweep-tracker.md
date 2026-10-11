@@ -8362,3 +8362,44 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **The snapshot's board power.** `my_power` / `opp_power`, which every clock estimate reads, counts power once and reads only printed keywords for evasion and lifelink.
 - **Through-blocks projections.** The assembly-state line projector (`attack_reach(..., through_blocks=True)`) and the per-block scoring do not model double strike: a first-strike kill of the blocker, then trample over.
+
+## Unit NB: a target requirement keeps the qualifiers it prints (2026-10-11)
+
+**Rule (CR 115.1, 601.2c):** a target is chosen among the objects its requirement admits, qualifiers included:
+- "target nonbasic land" admits no basic land;
+- "target card in a graveyard other than a basic land card" admits any card there but a basic land;
+- "target <type> you control" and "target <type> an opponent controls" admit only that controller's objects.
+
+**Defect:** the legality owner (`engine.target_solver`) read the type word of a single-type or permanent target and dropped the qualifiers around it.
+- Field of Ruin and Demolition Field's "destroy target nonbasic land an opponent controls" admitted basics and their caster's own lands.
+- Surgical Extraction admitted a basic land card.
+- 127 single-type and 102 permanent targets admitted either controller. Leyline Binding (Domain Zoo and 4c Omnath main deck ×4) could exile its caster's own permanent.
+
+**Class:** about 250 pool cards: 19 "target nonbasic land", 5 "other than a basic land card", 127 single-type and 102 permanent targets with a controller.
+
+**Steps (`9122b20`; pins `dfc92e9`; auditor fix `e63d4f1`; arm request `4d9d1ce`):**
+- **The parse.** The single-type and permanent patterns read a supertype negation ("nonbasic", "nonlegendary") and the controller they name. The graveyard pattern reads "other than a basic land card", and `_matches_supertype` knows "nonbasic". A negation word that is no supertype stays unread (residue).
+- **The auditor.** `601.2c/cast_target_admitted` restates the qualifiers from the requirement's printed phrase, not from the parsed fields: no basic land for "nonbasic" / "other than a basic land", and the named controller for "you control" / "an opponent controls".
+  - That controller is the caster's. A card cast under another player's permission still names its owner, and comparing against the card's own `controller` field read legal casts as violations (fixed in `e63d4f1`).
+
+**Tests (9 of 11 red first, plus the caster pin):** `tests/test_a_single_type_target_keeps_its_qualifiers.py`.
+
+**Pins moved:**
+- The target-parse capture is re-recorded: 469 pool texts change, every one a qualifier now read.
+- Two grammar residue rows whose codes the solver now reads are replaced.
+- The pool census's residue counts fall (`target.scope:opponent` 73 → 15), locked in (`dfc92e9`).
+- Sink into Stupor's recorded view disagreement is re-pinned with the controller in it.
+- The closure report's strict count rises by 7.
+
+**Harness / digest / anchor / suites:**
+- Harness: 1358 pairs, unchanged. Digest byte-identical; anchor 29 passed.
+- Suites at `9122b20` (pinned worktree): chunk A 4796 passed plus the census and view pins (fixed in `dfc92e9`); chunk B 2712 passed.
+
+**Measured (same-seed n=20 Bo3, `nb-post` `4d9d1ce`, pre = `dk-post`):** 0 of 600 cells change.
+- No AI choice reached a target the qualifiers now refuse.
+- The arm reported 89 violations of `601.2c/cast_target_admitted`. Every one was the auditor reading the card's owner as its controller: Jeskai Blink casting Azorius Blink's Ephemerate, exiled by Ragavan, at its own Ragavan.
+- Rerun locally after the fix: 0 violations in a sample of three rows (Domain Zoo, Goryo's Vengeance, Boros Energy).
+
+**Leads (not built):**
+- **Non-supertype negations** of a single type ("target nonartifact land", "target noncreature artifact") are still unread residue.
+- **Field of Ruin's class** (unit LA): its requirement is now right, but the activation is still unclassified. It needs the removal family's destroy executor on the dispatcher.
