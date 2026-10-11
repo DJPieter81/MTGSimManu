@@ -7678,3 +7678,67 @@ Hundreds of pool cards sacrifice creatures.
   - The dispatcher can run 1 pool mode today. Its damage executor refuses any requirement in a mode group, so Abrade's "3 damage to target creature" and Kolaghan's Command's "2 damage to any target" are refused. Thraben Charm's damage needs a multiplied count ("twice the number of creatures you control").
 - **The land-destruction mode** needs the removal family's dispatcher executors (DESTROY, and its controller's SEARCH). Ratchet (f) forbids widening the legacy gate to it.
 - **Tiers and spree:** the engine pays no mode cost, so only free tiers are chosen (Fire Magic deals 1).
+
+## Unit MR: a chosen mode is performed by the owner of its shape; an amount equal to a count is that count (2026-10-11)
+
+**Rule (CR 700.2, 608.2c, 608.2h):** a resolving modal spell performs each chosen mode's instructions.
+- A chosen mode is performed by the owner that performs that shape on a whole spell.
+- An amount "equal to the number of <permanents> you control", or a printed multiple of it, is that number when the effect applies.
+
+**Defect:**
+- The modal path resolved each chosen mode through the clause handlers alone, and none of them performs an aimed-damage mode. In real casts Abrade (Affinity SB) and Thraben Charm (Boros Energy MB ×2) resolved to nothing.
+- The damage executor refused any target requirement in a mode group.
+- No amount owner evaluated a count of permanents, so 15 whole spells that deal damage "equal to the number of lands / creatures / Mountains you control" dealt nothing.
+- The modal path ran before the registry, so Thraben Charm's name-keyed handler never ran.
+- A chosen mode that did nothing left no trace.
+
+**Class:**
+- 60 pool modes and 10 whole spells move onto the dispatcher. Each was a legacy no-op on the pre-unit engine, checked host by host from the pinned worktree.
+- 67 pool cards print a count amount.
+
+**Steps (`e73bd14`):**
+- `effect_carrier.chosen_mode_host` / `mode_family`: a modal spell's chosen mode is a host of its own, and its grouped target requirement is its slot (CR 700.2a). The clause registry's dispatched carrier takes a chosen mode that a landed family runs (strict, executable, targets placeable), for the modal spells `modal_spell` owns.
+- `effect_conditions`: COUNT quantities over "<types> / <subtype>s you control", and MULTIPLY amounts ("twice the number of ..."), evaluated once on resolution (CR 608.2h).
+- A mode's mass-sweep shape is typed at load (`oracle_parser.parse_mass_mode` into `CardTemplate.modes[i]['mass']`).
+  - The mass-mode gate accepts exactly those modes; before, it accepted every mode clause.
+  - Its resolver and the AI's mode values read the typed shape, not the clause.
+- `modal_spell.perform_chosen` performs the chosen modes and records a mode no owner performs (`unhandled/mode`). Kozilek's Command, Lorehold Charm and Sheoldred's Edict are allowlisted; each is a named, unbuilt class.
+- Thraben Charm's name-keyed handler is deleted. It wrote damage and moved graveyards outside their owners.
+  - Registry 82 → 81; single-owner `damage_write` 29 → 28.
+  - Its tests now cast through the real path.
+- **Auditor:** `120.3/chosen_mode_damage`, restated from the typed modes' raw specs: a performed mode that deals a printed amount to its target dealt it.
+
+**Tests (red first, 10 of 12):** `tests/test_a_chosen_mode_is_performed_by_the_owner_of_its_shape.py`.
+
+**Digest / anchor / suites:**
+- Gate parity: 550 new-path pairs (179 proven, 371 intended). The 70 new intended pairs are recorded, each a pre-unit no-op.
+- Ratchet (f), legacy fallback: 5089 → 3629, because the mass-mode gate no longer claims every mode.
+- The closure and equivalence baselines are re-locked.
+- Harness no-op fixture: Abrade's and Thraben Charm's modes leave it (floor 172 → 176).
+- Digest: 1 game changes (Azorius Control (WST v2) vs Boros Energy s53500). Thraben Charm deals 14 to Wan Shi Tong; same winner and turns.
+- Anchor: 29 passed.
+- Suites: 4669 + 2712 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, `mr-post` `c0780fe`, pre = `ms-post`):** 33 of 600 cells change.
+- **Boros Energy +5.8** (63.9 → 69.7, inside its 50–70 band). Replayed against the MS head, cell-exact: Pinnacle Affinity vs Boros Energy goes 10/20 → 4/20.
+  - In s50500 game 1, Thraben Charm deals 2 to Emry, Lurker of the Loch on turn 3 and Emry dies.
+  - Before, the charm did nothing, and Emry recast Memnite under Cranial Plating.
+- Every other deck moves by at most ±0.8.
+- Violations 0; 0 aborts.
+- Findings 339 → 464: the chosen modes no owner performs are now counted (`unhandled/mode`), across rows as follows.
+
+| Card | Rows |
+|---|---|
+| Sheoldred's Edict (unit ED next) | 25 |
+| Kozilek's Command | 25 |
+| Lorehold Charm | 23 |
+| Thraben Charm | 16 (its graveyard mode) |
+| Untimely Malfunction | 9 |
+
+**Leads (not built):**
+- **Modes still unperformed.**
+  - Edicts: Sheoldred's Edict, and Lorehold Charm's first mode.
+  - Tokens for a target player and scry-and-draw: Kozilek's Command, whose second chosen mode is the token mode, ×12 main-deck copies.
+  - Return to the battlefield and a team pump: Lorehold Charm.
+  - Retargeting: Untimely Malfunction.
+- **The AI aims count-damage modes by threat, not by what the count kills** (Thraben Charm).
