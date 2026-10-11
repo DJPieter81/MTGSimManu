@@ -193,6 +193,21 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_cast_targets(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        requirements: List[Any], x_value: int = 0,
+    ) -> List[Any]:
+        """Which targets does a spell take as it is cast (CR 601.2c), when
+        the casting path left a target it requires unchosen? Every cast
+        path routes here through the cast procedure; `requirements` are
+        the spell's target requirements (the legality owner's parse),
+        `x_value` the X its caster can pay. Return the spell's whole
+        target list -- object ids and player markers. The engine refuses
+        the cast, before anything is paid, when the answer still leaves a
+        required target unchosen or names a choice no requirement admits.
+        """
+        ...
+
     # ── Resolution-time choices (design doc 2026-09-29, A35) ──────────
     # One channel per KIND of choice a resolving ability asks of its
     # controller. `ctx` is the resolution context, `spec` the typed
@@ -389,6 +404,12 @@ class DefaultCallbacks:
         """Default: `default_trigger_targets`, printed data only."""
         return default_trigger_targets(player_idx, req, players, permanents)
 
+    def choose_cast_targets(self, game, player_idx, card, requirements,
+                            x_value=0):
+        """Default: `default_cast_targets`, printed data only."""
+        return default_cast_targets(game, player_idx, card, requirements,
+                                    x_value)
+
     # Resolution-time choices (A35).
     def choose_optional_effect(self, ctx, spec) -> bool:
         """Default: perform. The controller takes what the text offers --
@@ -421,6 +442,34 @@ def default_trigger_targets(player_idx: int, req: Any, players: Sequence[int],
         [c for c in permanents if c.controller == player_idx] + \
         [p for p in players if p == player_idx]
     return order[:n]
+
+
+def default_cast_targets(game: Any, player_idx: int, card: Any,
+                         requirements: Sequence[Any],
+                         x_value: Optional[int] = None) -> List[Any]:
+    """The engine's default announcement of a spell's targets (CR 601.2c)
+    for each requirement that binds whatever is chosen: the opponent when
+    it admits a player and admits that one, else the caster; then the
+    legal objects the legality owner enumerates, the opponents' before
+    the caster's own, up to the requirement's count. No scoring: a
+    deterministic reading, never a strategic one."""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    from .target_solver import (binds_whatever_is_chosen,
+                                enumerate_legal_targets, slot_admits_player)
+    chosen: List[Any] = []
+    for req in requirements:
+        if not binds_whatever_is_chosen(req):
+            continue
+        order: List[Any] = [marker for marker, player in (
+            (PLAYER_TARGET_OPPONENT, 1 - player_idx),
+            (PLAYER_TARGET_SELF, player_idx))
+            if slot_admits_player(req, player, player_idx)]
+        objects = enumerate_legal_targets(game, player_idx, req, exclude=card,
+                                          x_ceiling=x_value, source=card)
+        order += [c.instance_id for c in objects if c.controller != player_idx]
+        order += [c.instance_id for c in objects if c.controller == player_idx]
+        chosen += [t for t in order if t not in chosen][:req.count_min]
+    return chosen
 
 
 def default_card_pick(pool: Sequence[Any], n: int) -> List[Any]:

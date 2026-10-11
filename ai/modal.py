@@ -204,11 +204,18 @@ def select_modal_modes(game, card, controller: int, targets=None,
 
 
 def worth_casting_without_targets(game, card, controller: int) -> bool:
-    """Cast with no target, a modal spell with targeted modes performs only
-    its modes that need none (CR 700.2a): it is worth casting then only
-    when those are worth something to its caster. Any other spell is not
-    held by this rule. The one answer every cast path asks."""
+    """A spell that requires a target is not cast without one (CR 601.2c:
+    its caster announces every target it requires). Cast with no target, a
+    modal spell with targeted modes performs only its modes that need none
+    (CR 700.2a): it is worth casting then only when those are worth
+    something to its caster. Any other spell is not held by this rule. The
+    one answer every cast path asks."""
     from engine import modal_spell
+    from engine.cast_manager import CastManager
+    from engine.target_solver import binds_whatever_is_chosen
+    if any(binds_whatever_is_chosen(r)
+           for r in CastManager.spell_requirements(card)):
+        return False
     t = card.template
     if not (modal_spell.in_scope(t) and modal_spell.has_targeted_mode(t)):
         return True

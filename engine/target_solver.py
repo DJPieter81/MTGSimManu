@@ -1148,10 +1148,14 @@ def target_admitted(game: "GameState", controller: int,
     names, a permanent "any target" or a typed battlefield slot admits
     (`slot_admits_permanent`, the source may target it), or a card of the
     requirement's zone it admits (`_admits_card`)? A player marker
-    (a negative id) is not an object: True when some requirement admits a
-    player. None of the spell's own requirements admit it: False."""
+    (a negative id) is not an object: True when some requirement admits
+    the player it names, within its controller scope ("target opponent"
+    is not its caster, CR 115.1). None of the spell's own requirements
+    admit it: False."""
     if isinstance(target, int) and target < 0:
-        return any(set(r.types) & {"any", "player"} for r in requirements)
+        player = player_index_for_target(game, controller, target)
+        return player is not None and any(
+            slot_admits_player(r, player, controller) for r in requirements)
     obj = game.get_card_by_id(target) if isinstance(target, int) else None
     if obj is None:
         return False
@@ -1170,6 +1174,37 @@ def target_admitted(game: "GameState", controller: int,
                 _admits_card(obj, req, controller, exclude, x_ceiling, source):
             return True
     return False
+
+
+def binds_whatever_is_chosen(req: TargetRequirement) -> bool:
+    """A requirement the spell has whatever its caster chooses: not an
+    "up to" or optional one, not a mode's (CR 700.2a: a mode's targets
+    bind only when that mode is chosen), and for at least one target."""
+    return (not req.is_optional and req.mode_group is None
+            and req.count_min > 0)
+
+
+def required_targets_chosen(game: "GameState", controller: int,
+                            requirements: List[TargetRequirement], targets,
+                            exclude: Optional["CardInstance"] = None,
+                            x_ceiling: Optional[int] = None,
+                            source: Optional["CardInstance"] = None) -> bool:
+    """CR 601.2c: the caster announces a target for every target the
+    spell requires. Each requirement that binds whatever is chosen
+    (`binds_whatever_is_chosen`) admits at least its minimum count of
+    distinct chosen targets. One object or player may be chosen for
+    different instances of the word "target"; within one instance the
+    targets are distinct."""
+    for req in requirements:
+        if not binds_whatever_is_chosen(req):
+            continue
+        admitted = {t for t in (targets or ())
+                    if target_admitted(game, controller, [req], t,
+                                       exclude=exclude, x_ceiling=x_ceiling,
+                                       source=source)}
+        if len(admitted) < req.count_min:
+            return False
+    return True
 
 
 def has_legal_target_for_spell(game: "GameState", controller: int,

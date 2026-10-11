@@ -170,6 +170,10 @@ def test_the_audit_records_a_cast_at_a_target_no_requirement_admits(
     from engine.cast_manager import CastManager
     monkeypatch.setattr(CastManager, "targets_admitted",       # the defect
                         staticmethod(lambda *a, **k: True))
+    # Since unit RT the cast also checks that each required target is among
+    # the chosen ones; the inadmissible target answers none.
+    monkeypatch.setattr(CastManager, "announced_targets",
+                        staticmethod(lambda g, p, c, t: list(t or [])))
     game, spell, (archon, _) = _reanimation_board(
         card_db, "Archon of Cruelty", "Abhorrent Oculus")
     assert game.cast_spell(0, spell, [archon.instance_id])

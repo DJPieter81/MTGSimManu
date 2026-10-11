@@ -4355,7 +4355,17 @@ class EVPlayer:
         return candidates
 
     def _choose_targets(self, game, spell) -> List[int]:
-        """Choose targets for a spell."""
+        """Choose targets for a spell: the picks below, and a player for
+        each player-only requirement they leave unchosen (CR 601.2c: its
+        caster announces every target the spell requires;
+        `ai.cast_targets.with_required_players`)."""
+        from ai.cast_targets import with_required_players
+        return with_required_players(game, self.player_idx, spell,
+                                     self._pick_targets(game, spell))
+
+    def _pick_targets(self, game, spell) -> List[int]:
+        """The spell's chosen objects, and a player where the choice of
+        player is the spell's point (face burn, a hand attack's own hand)."""
         from ai.ev_evaluator import snapshot_from_game
         t = spell.template
         tags = getattr(t, 'tags', set())

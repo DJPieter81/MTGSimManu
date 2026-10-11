@@ -293,6 +293,28 @@ def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
                           f"{perm.name}'s printed restriction", game=game)
 
 
+def _raw_fits(obj, req) -> bool:
+    """A requirement's raw fields admit this object: it lies in the
+    requirement's zone, has one of its type words, and is within its
+    printed mana-value bound. The auditors' restatement, independent of
+    the legality owner's predicate."""
+    zone = "battlefield" if req.zone == "any" else req.zone
+    if obj.zone != zone:
+        return False
+    # A permanent's types are those of the face it shows (CR 712.8); a
+    # card in any other zone has its printed front face's.
+    printed = {ct.value for ct in (obj.effective_card_types
+                                   if obj.zone == "battlefield"
+                                   else obj.template.card_types)}
+    words = set(req.types)
+    typed = ("card" in words or "permanent" in words
+             or ("permanent_nonland" in words and "land" not in printed)
+             or ("any" in words and printed & {"creature", "planeswalker"})
+             or bool(printed & words))
+    bound = req.max_mana_value
+    return typed and (bound is None or (obj.template.cmc or 0) <= bound)
+
+
 def _audit_targets_admitted(game: "GameState", card, targets) -> None:
     """Rules audit (CR 601.2c), restated from the requirements' raw fields
     -- zone, type words and printed mana-value bound -- not from the
@@ -307,33 +329,45 @@ def _audit_targets_admitted(game: "GameState", card, targets) -> None:
     reqs = parse(t.oracle_text or "")
     if not reqs:
         return
-
-    def fits(obj, req) -> bool:
-        zone = "battlefield" if req.zone == "any" else req.zone
-        if obj.zone != zone:
-            return False
-        # A permanent's types are those of the face it shows (CR 712.8);
-        # a card in any other zone has its printed front face's.
-        printed = {ct.value for ct in (obj.effective_card_types
-                                       if obj.zone == "battlefield"
-                                       else obj.template.card_types)}
-        words = set(req.types)
-        typed = ("card" in words or "permanent" in words
-                 or ("permanent_nonland" in words and "land" not in printed)
-                 or ("any" in words and printed & {"creature", "planeswalker"})
-                 or bool(printed & words))
-        bound = req.max_mana_value
-        return typed and (bound is None or (obj.template.cmc or 0) <= bound)
-
     for tid in targets or ():
         obj = game.get_card_by_id(tid) if isinstance(tid, int) and tid > 0 \
             else None
         if obj is None or obj.zone == "stack":
             continue
         check("601.2c/cast_target_admitted",
-              any(fits(obj, r) for r in reqs),
+              any(_raw_fits(obj, r) for r in reqs),
               f"{card.name} cast at {obj.name} ({obj.zone}), which no "
               f"requirement of it admits", game=game)
+
+
+def _audit_required_targets_chosen(game: "GameState", card, targets) -> None:
+    """Rules audit (CR 601.2c), restated from the requirements' raw fields,
+    not from the legality owner's predicate: an instant or sorcery is cast
+    with, for each requirement it has whatever is chosen (not "up to" or
+    optional, not a mode's), at least that requirement's count of chosen
+    targets -- objects its raw fields admit, or player markers when it
+    names a player. Observes only."""
+    from .rules_audit import check
+    from .target_solver import parse
+    t = card.template
+    if not (t.is_instant or t.is_sorcery):
+        return
+    chosen = list(targets or ())
+    objects = [game.get_card_by_id(tid) for tid in chosen
+               if isinstance(tid, int) and tid > 0]
+    markers = {tid for tid in chosen if isinstance(tid, int) and tid < 0}
+    for req in parse(t.oracle_text or ""):
+        if req.is_optional or req.mode_group is not None \
+                or req.count_min <= 0:
+            continue
+        named = len({id(o) for o in objects if o is not None and (
+            (req.zone == "stack" and o.zone == "stack")
+            or _raw_fits(o, req))})
+        if set(req.types) & {"any", "player"}:
+            named += len(markers)
+        check("601.2c/required_targets_chosen", named >= req.count_min,
+              f"{card.name} cast with {named} of the {req.count_min} "
+              f"target(s) '{req.raw_phrase}' requires", game=game)
 
 
 class CastManager:
@@ -366,23 +400,77 @@ class CastManager:
         spell the legality owner types no requirement for, and a permanent
         spell (whose targets are its enter trigger's, chosen as it enters),
         keep their targets."""
-        template = card.template
-        if not (template.is_instant or template.is_sorcery):
-            return True
-        from .target_solver import parse as _parse_targets, target_admitted
-        requirements = _parse_targets(template.oracle_text or "")
+        requirements = CastManager.spell_requirements(card)
         if not requirements:
             return True
-        # X is chosen as the spell is cast (CR 601.2b): a spell already on
-        # the stack has its X; one being cast reaches what can be paid.
-        x_ceiling = next((item.x_value for item in game.stack.items
-                          if item.source is card), None)
-        if x_ceiling is None:
-            x_ceiling = CastManager.affordable_x(game, player_idx, template)
+        from .target_solver import target_admitted
+        x_ceiling = CastManager.x_reach(game, player_idx, card)
         return all(target_admitted(game, player_idx, requirements, t,
                                    exclude=card, x_ceiling=x_ceiling,
                                    source=card)
                    for t in targets)
+
+    @staticmethod
+    def spell_requirements(card: "CardInstance") -> list:
+        """The target requirements an instant or sorcery announces as it is
+        cast (the legality owner's parse); none for a permanent spell, whose
+        targets are its enter trigger's, chosen as it enters."""
+        template = card.template
+        if not (template.is_instant or template.is_sorcery):
+            return []
+        from .target_solver import parse as _parse_targets
+        return _parse_targets(template.oracle_text or "")
+
+    @staticmethod
+    def x_reach(game: "GameState", player_idx: int,
+                card: "CardInstance") -> "int | None":
+        """The X a spell's targets are chosen within (CR 601.2b: X is chosen
+        before targets): the X a spell already on the stack was cast with,
+        else the X its caster can pay."""
+        x_ceiling = next((item.x_value for item in game.stack.items
+                          if item.source is card), None)
+        if x_ceiling is None:
+            x_ceiling = CastManager.affordable_x(game, player_idx,
+                                                 card.template)
+        return x_ceiling
+
+    @staticmethod
+    def required_targets_chosen(game: "GameState", player_idx: int,
+                                card: "CardInstance", targets) -> bool:
+        """CR 601.2c: is every target the instant or sorcery requires among
+        the chosen ones (`target_solver.required_targets_chosen`)? A spell
+        the legality owner types no requirement for, and a permanent spell,
+        require none at cast."""
+        requirements = CastManager.spell_requirements(card)
+        if not requirements:
+            return True
+        from .target_solver import required_targets_chosen
+        return required_targets_chosen(
+            game, player_idx, requirements, targets or [], exclude=card,
+            x_ceiling=CastManager.x_reach(game, player_idx, card),
+            source=card)
+
+    @staticmethod
+    def announced_targets(game: "GameState", player_idx: int,
+                          card: "CardInstance", targets) -> "list | None":
+        """The targets a spell is cast with (CR 601.2c). A target the
+        casting path left unchosen is asked of the caster
+        (`GameCallbacks.choose_cast_targets`), whose answer is the whole
+        announcement. None when the announcement leaves a required target
+        unchosen or names a choice no requirement admits: the spell is not
+        cast."""
+        targets = list(targets or [])
+        if CastManager.required_targets_chosen(game, player_idx, card,
+                                               targets):
+            return targets
+        asked = list(game.callbacks.choose_cast_targets(
+            game, player_idx, card, CastManager.spell_requirements(card),
+            CastManager.x_reach(game, player_idx, card)) or [])
+        if CastManager.targets_admitted(game, player_idx, card, asked) and \
+                CastManager.required_targets_chosen(game, player_idx, card,
+                                                    asked):
+            return asked
+        return None
 
     @staticmethod
     def can_cast(game: "GameState", player_idx: int,
@@ -1571,6 +1659,15 @@ class CastManager:
         if targets and not CastManager.targets_admitted(game, player_idx,
                                                         card, targets):
             return False
+        # CR 601.2c: the caster announces a target for every target the
+        # spell requires. One the casting path left unchosen is asked of
+        # the caster; with none chosen the spell is not cast.
+        announced = CastManager.announced_targets(game, player_idx, card,
+                                                  targets)
+        if announced is None:
+            return False
+        if announced != list(targets or []):
+            targets = announced
 
         # Pay mana cost (unless free cast)
         evoked = False
@@ -2150,6 +2247,8 @@ class CastManager:
             # CR 101.2 / 307.1: no printed restriction on when players may
             # cast covers this cast.
             _audit_cast_timing(game, player_idx, card)
+            # CR 601.2c: every target the spell requires was chosen.
+            _audit_required_targets_chosen(game, card, targets)
         if _audit_on() and targets:
             from .rules_audit import check as _audit_check
             from .target_solver import can_be_targeted as _cbt

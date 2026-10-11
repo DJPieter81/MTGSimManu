@@ -288,6 +288,24 @@ class AICallbacks(GameCallbacks):
         return pick_trigger_targets(game, player_idx, source, spec, req,
                                     players, permanents, x_value=x_value)
 
+    def bind_players(self, ais) -> None:
+        """The players' AIs, by seat: a cast's targets are announced by its
+        caster's own picker (`choose_cast_targets`)."""
+        self._players = {ai.player_idx: ai for ai in ais}
+
+    def choose_cast_targets(self, game, player_idx, card, requirements,
+                            x_value=0):
+        """The caster's own target picker -- the one its main phase reads
+        (`EVPlayer._choose_targets`) -- for a cast that left a target the
+        spell requires unchosen (CR 601.2c). With no AI bound to the seat,
+        the engine's printed-data default."""
+        ai = getattr(self, "_players", {}).get(player_idx)
+        if ai is None:
+            from .callbacks import default_cast_targets
+            return default_cast_targets(game, player_idx, card,
+                                        requirements, x_value)
+        return ai._choose_targets(game, card)
+
     # Resolution-time choices (A35): the dispatcher's "you may" and its
     # executors' card picks, answered by the AI (ai/resolution_choices).
     def choose_optional_effect(self, ctx, spec) -> bool:
@@ -590,6 +608,7 @@ class GameRunner:
         ai1 = AIPlayer(0, deck1_name, self.rng)
         ai2 = AIPlayer(1, deck2_name, self.rng)
         ais = [ai1, ai2]
+        game.callbacks.bind_players(ais)
         # Wire structured replay log into the AIs so each main-phase
         # decision emits a DECISION event with the candidate list.
         if replay_log is not None:
