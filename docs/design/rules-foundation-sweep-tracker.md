@@ -8236,3 +8236,41 @@ Hundreds of pool cards sacrifice creatures.
 
 **Leads (not built):**
 - **The creature tapped for harmonize** is the engine default (the greatest power). It is not weighed against attacking with that creature.
+
+## Unit MV: a mill names the player whose graveyard it serves (2026-10-11)
+
+**Rule (AI, from CR 701.17a, 121.4, 704.5b):**
+- To mill N cards, a player puts the top N cards of their library into their graveyard. The library is hidden and its order random, so a mill leaves the milled player's expected draws unchanged.
+- What a mill changes is that player's graveyard: each milled card becomes the resource it is there to its owner (graveyard fuel).
+- A mill that names its player is worth to its caster the fuel it adds to the caster's own graveyard, and costs it the fuel it adds to an opponent's. The caster names the admitted player it is worth most to; a tie keeps the engine's default.
+- A mill that leaves a player's library empty costs that player the game at their next draw, which outweighs any fuel.
+
+**Defect:** the player owner (`ai.modal.named_player_value`) did not value a mill, so every targeted mill took the default, the opponent. Once unit DW performed Thought Scour's mill, Grixis Reanimator milled Domain Zoo (whose Psychic Frogs exile graveyard cards for flying) instead of its own library of reanimation targets.
+
+**Class:** 113 pool cards print "target player mills" (29 spells, 83 permanents); Thought Scour (Grixis Reanimator main deck ×3), Ashiok (three sideboards).
+
+**Steps (`d8cc54e`; arm request `1b12929`):**
+- **Valuation.** `named_player_value` values a mill per named player: the expected fuel its milled cards add to that player's graveyard (`ai.predicates.graveyard_fuel_share`). It is a gain to the caster's side and a cost on an opponent's; a library the mill empties is decisive.
+- **The share.** For the caster's own library it is exact: the pilot knows its decklist, and its consumers are read from every zone it holds. For an opponent's, it is estimated from the cards they have revealed.
+- **The fuel tiers widen.**
+  - A cost that exiles cards from its owner's graveyard consumes graveyard size like delve: an activated ability's (Psychic Frog, 11 pool cards) and an escape's other cards (22).
+  - A harmonize card is castable from the graveyard.
+  - The escape, flashback and unearth CR numbers are corrected.
+
+**Tests (9 of 12 red first):** `tests/test_a_mill_names_the_player_whose_graveyard_it_serves.py`. Pin moved: Kroxa's escape exiles other cards, so the other cards in its graveyard are fuel too (`test_graveyard_hate_activation_ev`).
+
+**Digest / anchor / suites:**
+- Digest: one game changes, with the same winner and turns (Thought Scour mills its caster).
+- Anchor: Creatures Toolbox vs Grixis Reanimator s52000, 7 → 6 turns. Grixis Reanimator vs Azorius Blink s53000 flips to Azorius Blink. Replayed anchor-exact: Thought Scour mills its caster's own Steam Vents, the land it drew before. The choice follows the rule in expectation.
+- Suites at `d8cc54e` (pinned worktree): chunk A 4762 passed, chunk B 2712 passed. CI green.
+
+**Measured (same-seed n=20 Bo3, `mv-post` `1b12929`, pre = `hm-post`):** 47 of 600 cells change, almost all in Grixis Reanimator's row and column.
+- Grixis Reanimator +2.7 (49.9 → 52.6); every other deck moves by at most 0.8. 0 aborts, 0 violations; audit findings 330 → 328.
+- Grixis Reanimator vs Domain Zoo moves only 20 → 25 (70 before unit DW). Replayed s50000 at ML (`a896cd7`) and MV (`d8cc54e`).
+  - Game 3 diverges at Thought Scour, which now mills its caster's Archon of Cruelty. Persist reanimates it on turn 8.
+  - On Zoo's next turn, Practiced Offense gives a 4/4 Scion of Draco double strike. Grixis, at 7 life with an untapped 6/6 and 5/5, does not block and dies to 8.
+  - The block AI sums incoming damage as each attacker's power once. It judges 4 incoming against 7 life, and its untapped 11 power against Zoo's 10 life, and returns no blocks. That is the next unit (DK).
+
+**Leads (not built):**
+- **An activated or loyalty ability's player slot** ("target player mills": 83 permanents, Ashiok's −1 in three sideboards) is not named by the player owner.
+- **Thassa's Oracle-style payoffs** that want an empty library are not read by the decking rule.
