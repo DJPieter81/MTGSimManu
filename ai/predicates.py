@@ -226,50 +226,61 @@ _GRAVEYARD_SIZE_SCALINGS: frozenset[str] = frozenset(
     {'graveyard', 'delirium', 'tarmogoyf'})
 
 
-def _reveals_graveyard_size_consumer(player) -> bool:
-    """Has this player revealed a card that turns graveyard SIZE into
-    value (delve, delirium, a graveyard-scaling body)?
+def _consumes_graveyard_size(template) -> bool:
+    """Does this card turn graveyard SIZE into value? Delve, delirium and
+    a graveyard-scaling body read it; a cost that exiles cards from its
+    owner's graveyard spends it -- an activated ability's (CR 602.2b, the
+    typed `exile_from_graveyard_cards`) and an escape's other cards (CR
+    702.138a)."""
+    if (getattr(template, 'has_delve', False)
+            or getattr(template, 'has_delirium', False)
+            or getattr(template, 'power_scales_with', '')
+            in _GRAVEYARD_SIZE_SCALINGS
+            or getattr(template, 'escape_exile_count', 0)):
+        return True
+    return any(getattr(getattr(a, 'cost', None),
+                       'exile_from_graveyard_cards', 0)
+               for a in getattr(template, 'activated_abilities', None) or ())
 
-    Only PUBLIC zones are consulted — their battlefield and their own
-    graveyard. Their hand is hidden and guessing at it would be a belief
-    model, which is `ai.bhi`'s job, not a predicate's.
+
+def _graveyard_consumers(zones) -> "tuple[bool, bool]":
+    """(size_matters, recursion) over the cards of `zones`: does any turn
+    graveyard size into value (`_consumes_graveyard_size`), and does any
+    put a card from a graveyard onto the battlefield?
+
+    For an opponent the zones are PUBLIC ones -- their battlefield and
+    their own graveyard; a reanimation spell already sitting in their
+    graveyard is evidence the deck plays them. Their hand is hidden, and
+    guessing at it would be a belief model, which is `ai.bhi`'s job, not
+    a predicate's.
     """
-    for zone in (player.battlefield, player.graveyard):
-        for card in zone:
-            t = card.template
-            if (getattr(t, 'has_delve', False)
-                    or getattr(t, 'has_delirium', False)
-                    or getattr(t, 'power_scales_with', '')
-                    in _GRAVEYARD_SIZE_SCALINGS):
-                return True
-    return False
-
-
-def _reveals_reanimation(player) -> bool:
-    """Has this player revealed a way to put a card from a graveyard onto
-    the battlefield? Public zones only, same reason as above — a
-    reanimation spell already sitting in their graveyard is evidence the
-    deck plays them.
-    """
-    for zone in (player.battlefield, player.graveyard):
-        for card in zone:
-            if getattr(card.template, 'reanimates_from_graveyard', False):
-                return True
-    return False
+    cards = [card for zone in zones for card in zone]
+    return (any(_consumes_graveyard_size(c.template) for c in cards),
+            any(getattr(c.template, 'reanimates_from_graveyard', False)
+                for c in cards))
 
 
 def _castable_from_graveyard(template) -> bool:
     """Does this card's own printed permission let it be cast from the
-    graveyard? Flashback (CR 702.33), Escape (CR 702.139) and Unearth
-    (CR 702.83) each need no second card, so a graveyard holding one is
-    live no matter what else its owner has.
+    graveyard? Flashback (CR 702.34), Escape (CR 702.138), Unearth (CR
+    702.84) and Harmonize (CR 702.180) each need no second card, so a
+    graveyard holding one is live no matter what else its owner has.
     """
     from engine.cards import Keyword
 
     return bool(getattr(template, 'flashback_cost', None) is not None
                 or getattr(template, 'escape_cost', None) is not None
+                or getattr(template, 'harmonize_cost', None) is not None
                 or Keyword.UNEARTH in (getattr(template, 'keywords', None)
                                        or set()))
+
+
+def _is_graveyard_fuel(template, size_matters: bool,
+                       recursion: bool) -> bool:
+    """The three tiers of `graveyard_fuel`, for one card."""
+    return bool(size_matters
+                or _castable_from_graveyard(template)
+                or (recursion and template.is_creature))
 
 
 def graveyard_fuel(game, owner_idx: int) -> "list":
@@ -279,27 +290,53 @@ def graveyard_fuel(game, owner_idx: int) -> "list":
     Three tiers, each derived from printed card data:
 
     1. cards castable from the graveyard by their own permission
-       (flashback / escape / unearth) — live unconditionally;
+       (flashback / escape / unearth / harmonize) — live unconditionally;
     2. creature cards, once their owner has revealed a graveyard-to-
        battlefield recursion source (they are reanimation targets);
     3. every card, once their owner has revealed a consumer of graveyard
-       SIZE (delve / delirium / a graveyard-scaling body).
+       SIZE (delve / delirium / a graveyard-scaling body / a cost that
+       exiles cards from their graveyard).
 
     Returned as a list of instances rather than a count so a targeted
     exile can pick WHICH cards to hit. Order follows the graveyard.
     """
     player = game.players[owner_idx]
-    size_matters = _reveals_graveyard_size_consumer(player)
-    recursion = _reveals_reanimation(player)
+    size_matters, recursion = _graveyard_consumers(
+        (player.battlefield, player.graveyard))
+    return [card for card in player.graveyard
+            if _is_graveyard_fuel(card.template, size_matters, recursion)]
 
-    out = []
-    for card in player.graveyard:
-        t = card.template
-        if (size_matters
-                or _castable_from_graveyard(t)
-                or (recursion and t.is_creature)):
-            out.append(card)
-    return out
+
+def graveyard_fuel_share(game, viewer_idx: int, owner_idx: int) -> float:
+    """The expected share of the cards a mill moves from ``owner_idx``'s
+    library to their graveyard that are graveyard fuel to them (the tiers
+    of `graveyard_fuel`), as ``viewer_idx`` knows that library.
+
+    - Its own: the pilot knows its decklist, so the share is exact over
+      the library's cards (their order stays hidden), and its consumers
+      are read from every zone it holds.
+    - An opponent's: estimated from the cards they have revealed (their
+      battlefield and graveyard, tokens aside), the viewer's sample of
+      their deck, with the consumers that sample reveals.
+
+    0.0 when the viewer holds no sample.
+    """
+    player = game.players[owner_idx]
+    if viewer_idx == owner_idx:
+        consumers = (player.hand, player.library, player.battlefield,
+                     player.graveyard)
+        sample = list(player.library)
+    else:
+        consumers = (player.battlefield, player.graveyard)
+        sample = [c for zone in consumers for c in zone
+                  if c.owner == owner_idx
+                  and not getattr(c, 'is_token', False)]
+    if not sample:
+        return 0.0
+    size_matters, recursion = _graveyard_consumers(consumers)
+    fuel = sum(1 for c in sample
+               if _is_graveyard_fuel(c.template, size_matters, recursion))
+    return fuel / len(sample)
 
 
 # ─── First-turn value (mulligan land-slack replacement) ─────────────

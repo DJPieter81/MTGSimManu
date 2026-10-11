@@ -11,6 +11,8 @@ Asked by ``engine.modal_spell.choose_modes`` as the spell is cast (CR
 """
 from __future__ import annotations
 
+import math
+
 
 def _worth(mana_value) -> float:
     """A permanent is worth at least 1 (denying any permanent matters),
@@ -29,10 +31,25 @@ def named_player_value(game, ai_player: int, spec, player: int,
     - tokens it creates are a gain to their creator's side (CR 111.2),
       each a permanent of mana value 0 (it has no mana cost, CR 202.3);
     - permanents it sacrifices are a loss to theirs: the least valuable
-      it matches, since that player chooses (CR 701.21a).
+      it matches, since that player chooses (CR 701.21a);
+    - cards it mills leave a hidden library, where that player's expected
+      draws stay what they were, for their graveyard, where each is a gain
+      to their side when it is fuel to them, one per card (CR 701.17a;
+      `ai.predicates.graveyard_fuel_share`). A mill that empties a library
+      loses its player the game at their next draw (CR 121.4, 704.5b),
+      which outweighs any fuel.
     None for an instruction this does not value."""
     from engine.effect_spec import TokenSpec, Verb
     verb = getattr(spec, "verb", None)
+    if verb is Verb.MILL and spec.amount is not None:
+        from ai.predicates import graveyard_fuel_share
+        from engine.effect_conditions import amount_value
+        n = max(0, amount_value(game, ai_player, spec.amount, x_value))
+        library = len(game.players[player].library)
+        if 0 < library <= n:
+            return -math.inf if player == ai_player else math.inf
+        fuel = min(n, library) * graveyard_fuel_share(game, ai_player, player)
+        return fuel if player == ai_player else -fuel
     if verb is Verb.CREATE_TOKEN and isinstance(spec.payload, TokenSpec):
         from engine.effect_conditions import amount_value
         n = amount_value(game, ai_player, spec.amount, x_value) \

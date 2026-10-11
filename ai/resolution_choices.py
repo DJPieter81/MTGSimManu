@@ -47,7 +47,8 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
     - A slot only a player fills, for an instruction that names its acting
       player, is the player it is worth most to name
       (`ai.modal.named_player_value`: tokens to the caster's side, a
-      sacrifice to the opponent's); a tie keeps the default.
+      sacrifice to the opponent's, a mill to the graveyard it fuels); a
+      tie keeps the default.
     Any other spec, or an aim the slot does not admit, keeps the engine's
     default pick."""
     from engine.callbacks import default_trigger_targets
