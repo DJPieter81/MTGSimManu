@@ -796,14 +796,14 @@ def execute_create_token(ctx: Resolution, s: EffectSpec,
     if n <= 0:
         return Outcome(False, {})
     p = s.payload
-    made = {}
+    created = []
     for player in actors:
         if p.predefined is not None:
             tokens = ctx.game.create_token(player, p.predefined, count=n)
         else:
             tokens = ctx.game.create_token(player, "", count=n, token_spec=p)
-        if tokens:
-            made[player] = tuple(tokens)
+        created.append((player, tuple(tokens)))
+    made = {player: tokens for player, tokens in created if tokens}
     _audit_tokens(ctx, s, made)
     return Outcome(bool(made), {player: tuple(handle_of(t) for t in tokens)
                                 for player, tokens in made.items()})
