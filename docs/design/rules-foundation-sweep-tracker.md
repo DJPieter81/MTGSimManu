@@ -7988,3 +7988,57 @@ Hundreds of pool cards sacrifice creatures.
 - **Kozilek's Command's scry-and-draw mode** is UNMODELLED. X is unbound in a mode, and "then draws" does not link back to "target player".
 - **Removal is spent on 0/1 Eldrazi Spawn tokens.** In 48 Eldrazi Tron games, opponents aimed about 16 targeted removal spells at them (Solitude 7, Prismatic Ending 4, Fatal Push 3).
 - **Same-name exile** (Surgical Extraction and 24 more pool cards): the multi-zone search and "that player shuffles" are UNMODELLED in the grammar.
+
+## Unit RV: a removal spell is valued by the targets it can take (2026-10-11)
+
+**Rule (AI, from CR 601.2b-c, 702.11d, 702.16b, 702.21a):**
+- A removal spell's target is chosen among the permanents its requirement admits, within the mana value it can reach. That reach is the X its caster can pay (X is chosen before targets), a printed or resolution-checked bound ("mana value 2 or less", raised by revolt) and the colours converge can spend. The spell may target the permanent past hexproof and protection, and its caster would pay any ward.
+- A removal spell is valued by a target it can take, never by a creature it cannot touch.
+- A spell on the stack reaches the X it was cast with.
+
+**Defect:**
+- The removal projection (`ev_evaluator._project_spell`) took the opponent's most threatening creature off the board whatever the spell's reach, capped only by burn damage. The target picker aimed at what the spell could take.
+- Beside a mana value 7 creature, a "mana value 2 or less" removal spell scored +13.5 and was cast at a 0/1 Eldrazi Spawn token (Dimir Midrange vs Eldrazi Tron s50000, T16).
+- In 48 Eldrazi Tron games, opponents spent about 16 targeted removal spells on Spawn tokens.
+
+**Class:** every bounded removal spell (a mana-value condition, converge, X) reads the candidate set.
+
+**Steps (`cec8756`; magic-number baseline seed `c7c76cd`):**
+- **One candidate set.** `ai/removal_reach.py`:
+  - `removal_ceiling`: the X the caster can pay, or for a spell on the stack the X it was cast with; the printed or resolution-checked bound and its revolt raise; converge's reach.
+  - `can_remove` and `removal_candidates`: within the ceiling; targetable; past ward; admitted by the engine's own cast check.
+- **Readers.** The same set is read by:
+  - the target picker (`EVPlayer._choose_targets`, a pure refactor there);
+  - the projection (`_project_spell`);
+  - the threat premium and deferral of `_score_spell`.
+- **Cast check.** `CastManager.targets_admitted` reads a spell's paid X once it is on the stack (CR 601.2b), so an opponent weighing an X-bound removal spell sees its real reach.
+
+**Tests (red first, 4 of 5):** `tests/test_a_removal_spell_is_valued_by_the_targets_it_can_take.py`:
+- projection reach (×2);
+- the score of a reachable target against an untouchable one;
+- one candidate set for the picker and the projection;
+- a spell on the stack reaches its paid X. This one was added after the digest caught the regression below.
+
+**Digest / anchor / suites:**
+- The digest caught a regression before the commit: the response AI no longer countered a Kozilek's Command cast for X=12, because the reach was read from the caster's remaining mana. Fixed by reading the stack item's X.
+- Digest: one game changes (Instant Reanimator vs Boros Ponza s55000, same winner). Instant Reanimator no longer pitches Atraxa to Force of Negation to counter a land-destruction spell that its projection had valued as a creature kill.
+- Anchor: one winner flip, replayed and accepted. In the Azorius mirror s50000, March of Otherworldly Light is valued by the X the mana in hand reaches, so the AI fetches its shock land tapped and keeps March. One turn-only drift refreshed.
+- CI on `da16c4c` failed one test: the new module had no magic-numbers baseline entry. It is seeded at 0 in `c7c76cd`; the total stays 13.
+- Suites: chunk A 4709 passed (its one failure is that baseline test, fixed in `c7c76cd`); chunk B 2712 passed (EXIT 0), both from a worktree pinned at `cec8756`.
+
+**Measured (same-seed n=20 Bo3, `rv-post` `da16c4c`, pre = `mt-post`):** 189 of 600 cells change.
+- No deck moves more than 5 pp; 0 aborts.
+- Movers: Dimir Midrange -1.6, Azorius Control (WST) +1.2, Jeskai Blink +1.2, Domain Zoo -1.0, Azorius Control (WST v2) +0.9. Every other deck moves by at most ±0.8.
+- Auditor: 0 violations in any cell. The MT arm's 136 printed-face false positives are gone (`a453def`).
+- Findings left: Surgical Extraction (`unhandled/spell`, 8 cells) and Untimely Malfunction (`unhandled/mode`, 8 cells).
+
+**Leads (not built):**
+- **Removal at a near-zero target still executes.** A play valued slightly below zero is still above the play-value floor (-5), so the AI still casts it.
+- **X reach ignores the turn's land drop.** The ceiling reads the mana available now, not the land still to be played (or a fetch that could enter untapped).
+- **Warping Wail's Scion mode is still legacy.** It creates a "scion Token" with no mana ability; the "It has" fold is not typed.
+- **A targeted instant or sorcery can be cast at nothing.** `CastManager.targets_admitted` checks each chosen target, so an empty list passes. A census of 50 seeded games counted 44 of 260 required-target casts with no target:
+  - Thoughtseize 28 of 31 and Inquisition of Kozilek 4 of 8 (the opponent is assumed at resolution);
+  - Thought Scour 4 of 4;
+  - Fatal Push 4 of 19, March of Otherworldly Light 2 of 19, Ephemerate 1, Erode 1.
+  This is the next unit (RT).
+- **Thought Scour's mill is never performed**, whatever player it is cast at: only its draw resolves.
