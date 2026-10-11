@@ -319,3 +319,14 @@ def test_a_spell_still_lacking_a_required_object_is_not_aimed(card_db):
     mine = _add(game, card_db, "Grizzly Bears", 0, "battlefield")
     aimed = _ai()._choose_targets(game, offense)
     assert mine.instance_id in aimed and len(aimed) == 2
+
+
+def test_a_spell_whose_shape_no_pick_knows_is_announced_at_the_default(
+        card_db):
+    """'Cascade. Target creature can't block this turn': no pick knows the
+    shape, so its caster announces the engine's printed-data default -- a
+    legal creature, an opponent's first -- rather than not casting it."""
+    game = _game(card_db)
+    bears = _add(game, card_db, "Grizzly Bears", 1, "battlefield")
+    dread = _add(game, card_db, "Demonic Dread", 0, "hand")
+    assert _ai()._choose_targets(game, dread) == [bears.instance_id]

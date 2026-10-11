@@ -1,10 +1,12 @@
-"""The players a spell's caster announces as it is cast (CR 601.2c).
+"""What a spell's caster announces as it is cast (CR 601.2c).
 
-A player-only requirement ("target player", "target opponent") is a target
-its caster announces like any other. The picker (`EVPlayer._choose_targets`)
-chooses the spell's objects and, for a hand attack, whether to aim at its
-own hand; a player-only requirement it leaves unchosen is announced here by
-the one owner of what a player-only slot names
+The picker (`EVPlayer._choose_targets`) chooses the spell's objects and, for
+a hand attack, whether to aim at its own hand. For a spell whose shape no
+pick knows, the objects it requires are the engine's printed-data default
+(`default_objects`): a legal announcement where such a spell used to be
+cast at nothing. A player-only requirement ("target player", "target
+opponent") the picks leave unchosen is announced here by the one owner of
+what a player-only slot names
 (`ai.resolution_choices.pick_trigger_targets`, which a triggered ability's
 and a chosen mode's player slots already read): the admitted player the
 slot's typed instruction is worth most to (`ai.modal.named_player_value`),
@@ -24,6 +26,19 @@ def _slot_spec(spell: Any, req: Any) -> Optional[Any]:
         return None
     k = next((i for i, r in enumerate(host.targets) if r == req), None)
     return None if k is None else slot_spec(host, k)
+
+
+def default_objects(game: Any, player_idx: int, spell: Any) -> List[Any]:
+    """For a spell whose shape no pick knows, the engine's printed-data
+    default (`engine.callbacks.default_cast_targets`) for the requirements
+    an object answers; player-only requirements are announced by
+    `with_required_players`."""
+    from engine.callbacks import default_cast_targets
+    from engine.cast_manager import CastManager
+    objects = [r for r in CastManager.spell_requirements(spell)
+               if not set(r.types) <= {"player"}]
+    return default_cast_targets(game, player_idx, spell, objects,
+                                CastManager.x_reach(game, player_idx, spell))
 
 
 def with_required_players(game: Any, player_idx: int, spell: Any,

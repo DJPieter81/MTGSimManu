@@ -4355,17 +4355,23 @@ class EVPlayer:
         return candidates
 
     def _choose_targets(self, game, spell) -> List[int]:
-        """Choose targets for a spell: the picks below, and a player for
-        each player-only requirement they leave unchosen (CR 601.2c: its
-        caster announces every target the spell requires;
-        `ai.cast_targets.with_required_players`)."""
-        from ai.cast_targets import with_required_players
-        return with_required_players(game, self.player_idx, spell,
-                                     self._pick_targets(game, spell))
+        """Choose targets for a spell (CR 601.2c: its caster announces every
+        target the spell requires): the picks below; for a spell whose
+        shape none of them knows, the engine's printed-data default for the
+        objects it requires (`ai.cast_targets.default_objects`); and a
+        player for each player-only requirement they leave unchosen
+        (`ai.cast_targets.with_required_players`). A pick that found
+        nothing worth aiming at stays empty: the spell is not cast."""
+        from ai.cast_targets import default_objects, with_required_players
+        picks = self._pick_targets(game, spell)
+        if picks is None:
+            picks = default_objects(game, self.player_idx, spell)
+        return with_required_players(game, self.player_idx, spell, picks)
 
-    def _pick_targets(self, game, spell) -> List[int]:
+    def _pick_targets(self, game, spell) -> Optional[List[int]]:
         """The spell's chosen objects, and a player where the choice of
-        player is the spell's point (face burn, a hand attack's own hand)."""
+        player is the spell's point (face burn, a hand attack's own hand).
+        None when no pick here knows the spell's shape."""
         from ai.ev_evaluator import snapshot_from_game
         t = spell.template
         tags = getattr(t, 'tags', set())
@@ -4603,7 +4609,9 @@ class EVPlayer:
                 return [best.instance_id]
             return []  # No targets = can't cast
 
-        return []
+        # No pick above knows this spell's shape: its caster announces the
+        # engine's default (`_choose_targets`).
+        return None
 
     def _admits(self, game, spell, obj) -> bool:
         """Is `obj` a legal choice for one of the spell's target
