@@ -287,11 +287,15 @@ def test_target_audit_sees_a_hexproof_creature_chosen_as_a_target(audit, card_db
     shielded = _creature(game, "Shielded", 1, power=2, toughness=2, cmc=2,
                          keywords=(Keyword.HEXPROOF,))
     # A caller that hands the engine an illegal target (the pre-Z3 handler
-    # shape), with the cast-time legality gate broken so the cast goes
-    # through: the auditor records it at cast time and again on resolution.
+    # shape), with the cast-time legality gates broken so the cast goes
+    # through -- castability and, since unit MT, the cast's own check that
+    # each chosen target is admitted (CR 601.2c): the auditor records it at
+    # cast time and again on resolution.
     from engine import target_solver
     monkeypatch.setattr(target_solver, "has_legal_target_for_spell",
                         lambda *a, **k: True)
+    monkeypatch.setattr(CastManager, "targets_admitted",
+                        staticmethod(lambda *a, **k: True))
     assert CastManager.cast_spell(game, 0, push, [shielded.instance_id])
     while not game.stack.is_empty:
         game.resolve_stack()
