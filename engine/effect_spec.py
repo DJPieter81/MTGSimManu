@@ -252,7 +252,7 @@ SPEC_FLAGS: FrozenSet[str] = frozenset({
     "reflexive", "may_scope", "if_you_do", "reveal", "no_regeneration",
     "at_random", "each", "gapped", "dest_override"})
 HOST_FLAGS: FrozenSet[str] = frozenset({
-    "uncounterable", "sorcery_speed", "mana_ability"})
+    "uncounterable", "sorcery_speed", "mana_ability", "optional_cost"})
 
 
 # ── Participants ───────────────────────────────────────────────────────

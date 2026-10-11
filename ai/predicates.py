@@ -275,12 +275,28 @@ def _castable_from_graveyard(template) -> bool:
                                        or set()))
 
 
+def is_graveyard_resource_itself(template, recursion: bool) -> bool:
+    """Is this card, in its owner's graveyard, a resource there by itself
+    (tiers 1 and 2 of `graveyard_fuel`): castable from the graveyard by its
+    own permission, or a creature its owner can reanimate?"""
+    return bool(_castable_from_graveyard(template)
+                or (recursion and template.is_creature))
+
+
 def _is_graveyard_fuel(template, size_matters: bool,
                        recursion: bool) -> bool:
     """The three tiers of `graveyard_fuel`, for one card."""
     return bool(size_matters
-                or _castable_from_graveyard(template)
-                or (recursion and template.is_creature))
+                or is_graveyard_resource_itself(template, recursion))
+
+
+def own_graveyard_consumers(game, owner_idx: int) -> "tuple[bool, bool]":
+    """(size_matters, recursion) as a player knows its own deck: read from
+    every zone it holds (its hand and library included -- the pilot knows
+    its decklist)."""
+    player = game.players[owner_idx]
+    return _graveyard_consumers((player.hand, player.library,
+                                 player.battlefield, player.graveyard))
 
 
 def graveyard_fuel(game, owner_idx: int) -> "list":
@@ -323,17 +339,17 @@ def graveyard_fuel_share(game, viewer_idx: int, owner_idx: int) -> float:
     """
     player = game.players[owner_idx]
     if viewer_idx == owner_idx:
-        consumers = (player.hand, player.library, player.battlefield,
-                     player.graveyard)
         sample = list(player.library)
+        known = own_graveyard_consumers(game, owner_idx)
     else:
-        consumers = (player.battlefield, player.graveyard)
-        sample = [c for zone in consumers for c in zone
+        public = (player.battlefield, player.graveyard)
+        sample = [c for zone in public for c in zone
                   if c.owner == owner_idx
                   and not getattr(c, 'is_token', False)]
+        known = _graveyard_consumers(public)
     if not sample:
         return 0.0
-    size_matters, recursion = _graveyard_consumers(consumers)
+    size_matters, recursion = known
     fuel = sum(1 for c in sample
                if _is_graveyard_fuel(c.template, size_matters, recursion))
     return fuel / len(sample)

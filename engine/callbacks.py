@@ -126,6 +126,18 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_cost_exile(
+        self, game: GameState, player_idx: int, source: Any,
+        pool: List[CardInstance], n: int,
+    ) -> List[CardInstance]:
+        """Pick which `n` cards of the payer's graveyard pay an exile cost
+        (CR 601.2h): an activation's, a spell's additional cost, an escape's
+        other cards. `pool` is the graveyard the cost may take from; the
+        answer is `n` distinct cards of it, or the engine's default
+        (`default_cost_exile`) stands.
+        """
+        ...
+
     def choose_artifact_tutor_target(
         self, game: GameState, player_idx: int,
         eligible: List[CardInstance],
@@ -332,6 +344,13 @@ class DefaultCallbacks:
             (c.power or 0) if c.effective_is_creature else 0,
             c.template.cmc or 0))
 
+    def choose_cost_exile(
+        self, game: GameState, player_idx: int, source: Any,
+        pool: List[CardInstance], n: int,
+    ) -> List[CardInstance]:
+        """Default: the head of the pile (`default_cost_exile`)."""
+        return default_cost_exile(pool, n)
+
     def choose_artifact_tutor_target(
         self, game: GameState, player_idx: int,
         eligible: List[CardInstance],
@@ -456,6 +475,13 @@ def default_trigger_targets(player_idx: int, req: Any, players: Sequence[int],
         [c for c in permanents if c.controller == player_idx] + \
         [p for p in players if p == player_idx]
     return order[:n]
+
+
+def default_cost_exile(pool: Sequence[Any], n: int) -> List[Any]:
+    """The engine's default payment of an exile-from-your-graveyard cost:
+    the first `n` cards of the pile, in zone order. No scoring: every card
+    pays an untyped cost alike as far as the rules are concerned."""
+    return list(pool)[:max(0, n)]
 
 
 def default_harmonize_tapper(tappers: Sequence[Any]) -> Optional[Any]:

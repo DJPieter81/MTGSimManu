@@ -501,6 +501,12 @@ class CastManager:
         if not template.is_land and \
                 rules_query.cast_time_restricted(game, player_idx):
             return False
+        # CR 601.2f-h: a spell's additional cost is part of its total cost
+        # on every cast route below; a mandatory one its caster cannot pay
+        # keeps the spell from being cast.
+        if not template.is_land and \
+                not CastManager.additional_cost_ready(game, player_idx, card):
+            return False
 
         # Madness (CR 702.35b): a card just discarded into exile may be
         # cast from there for its madness cost. The offer is made while
@@ -1500,6 +1506,89 @@ class CastManager:
         return True
 
     @staticmethod
+    def additional_cost(card_or_template):
+        """A spell's mandatory additional cost (CR 601.2b, 601.2f), typed at
+        load (`CardTemplate.additional_cost`, the activation cost model);
+        None when it prints none or only an optional one."""
+        template = getattr(card_or_template, 'template', card_or_template)
+        return getattr(template, 'additional_cost', None)
+
+    @staticmethod
+    def additional_cost_ready(game: "GameState", player_idx: int,
+                              card: "CardInstance") -> bool:
+        """Can the caster pay this spell's mandatory additional cost now
+        (CR 601.2h)? It is part of the total cost whatever route casts the
+        spell, a cast without paying its mana cost included (CR 118.9). An
+        item the payer does not pay -- an `unpayable` shape, mana or X
+        (which the total-cost owner does not add), an item only a permanent
+        source pays -- refuses the cast rather than letting it be made for
+        free. The cards it takes are the caster's others: the spell is on
+        the stack as the cost is paid (CR 601.2a). Life is payable only up
+        to the life total (CR 119.4)."""
+        cost = CastManager.additional_cost(card)
+        if cost is None:
+            return True
+        if (cost.unpayable or cost.mana.cmc > 0 or cost.x_count
+                or cost.tap_self or cost.untap_self or cost.sacrifice_self
+                or cost.exile_self or cost.put_counter_kind is not None
+                or cost.remove_counter_kind is not None):
+            return False
+        player = game.players[player_idx]
+        if cost.life > player.life:
+            return False
+        if cost.discard_cards > sum(1 for c in player.hand if c is not card):
+            return False
+        if cost.exile_from_graveyard_cards > sum(
+                1 for c in player.graveyard if c is not card):
+            return False
+        if cost.sacrifice_type is not None:
+            from .activation import ActivationManager
+            if not ActivationManager.legal_sacrifice_victims(
+                    game, player_idx, card, cost):
+                return False
+        return True
+
+    @staticmethod
+    def _additional_cost_before(game: "GameState", player_idx: int,
+                                card: "CardInstance", cost):
+        """What the additional cost's audit compares against: the caster's
+        life, the rest of its graveyard and hand, and its battlefield, as
+        the cast begins. None when the audit is off."""
+        from . import rules_audit
+        if cost is None or not rules_audit.enabled():
+            return None
+        p = game.players[player_idx]
+        return (p.life, [c for c in p.graveyard if c is not card],
+                sum(1 for c in p.hand if c is not card), list(p.battlefield))
+
+    @staticmethod
+    def _audit_additional_cost(game: "GameState", player_idx: int,
+                               card: "CardInstance", cost, before) -> None:
+        """CR 601.2h, restated from the zones: a spell with a mandatory
+        additional cost is cast with that cost paid -- the life lost, that
+        many of the caster's other cards gone from its hand and graveyard,
+        a permanent gone from its battlefield for a sacrifice. Observation
+        only."""
+        from . import rules_audit
+        if before is None:
+            return
+        life, graveyard, hand, battlefield = before
+        p = game.players[player_idx]
+        left_graveyard = sum(1 for c in graveyard
+                             if all(c is not g for g in p.graveyard))
+        hand_now = sum(1 for c in p.hand if c is not card)
+        sacrificed = any(all(c is not b for b in p.battlefield)
+                         for c in battlefield)
+        rules_audit.check(
+            "601.2h/additional_cost_paid",
+            life - p.life >= cost.life
+            and left_graveyard >= cost.exile_from_graveyard_cards
+            and hand - hand_now >= cost.discard_cards
+            and (cost.sacrifice_type is None or sacrificed),
+            f"{card.name} was cast without paying its additional cost",
+            game=game)
+
+    @staticmethod
     def free_cast_allowed(game: "GameState", player_idx: int,
                           template) -> bool:
         """May this player cast this spell now by a route that skips the
@@ -1628,8 +1717,11 @@ class CastManager:
                 found_card = top
                 break
 
-        if found_card and not CastManager.free_cast_allowed(
-                game, controller, found_card.template):
+        if found_card and not (
+                CastManager.free_cast_allowed(game, controller,
+                                              found_card.template)
+                and CastManager.additional_cost_ready(game, controller,
+                                                      found_card)):
             # A hit its caster may not cast now is not cast; it goes to the
             # bottom with the rest (CR 702.85a).
             game.log.append(
@@ -1719,6 +1811,24 @@ class CastManager:
             return False
         if announced != list(targets or []):
             targets = announced
+        # CR 601.2f-h: the additional cost is part of the total cost. Its
+        # payability was ruled on (can_cast; here for a free cast, CR
+        # 118.9), and a sacrifice's victim is chosen before anything is
+        # paid, so a refusal leaves nothing half-paid.
+        from .activation import ActivationManager
+        additional = CastManager.additional_cost(card)
+        victim = None
+        if additional is not None:
+            if free_cast and not CastManager.additional_cost_ready(
+                    game, player_idx, card):
+                return False
+            if additional.sacrifice_type is not None:
+                victim = ActivationManager.cost_victim(game, player_idx,
+                                                       card, additional)
+                if victim is None:
+                    return False
+        additional_before = CastManager._additional_cost_before(
+            game, player_idx, card, additional)
 
         # Pay mana cost (unless free cast)
         evoked = False
@@ -1801,21 +1911,15 @@ class CastManager:
             # Check if we should cast via Escape (from graveyard)
             escaped = False
             if card.zone == "graveyard" and template.escape_cost is not None:
-                # Exile other cards from graveyard as additional cost
-                exile_targets = [c for c in player.graveyard if c != card]
-                if len(exile_targets) >= template.escape_exile_count:
-                    # Exile the least valuable cards
-                    exile_targets.sort(key=lambda c: c.template.cmc)
-                    for i in range(template.escape_exile_count):
-                        ex = exile_targets[i]
-                        player.graveyard.remove(ex)
-                        ex.zone = "exile"
-                        player.exile.append(ex)
-                    escaped = True
-                    game.log.append(f"T{game.display_turn} P{player_idx+1}: "
-                                   f"Escape {card.name} (exile {template.escape_exile_count} cards)")
-                else:
+                # The escape cost's "exile N other cards from your graveyard"
+                # (CR 702.138a) is paid with the rest of the cost, below,
+                # from the cards its caster chooses.
+                if sum(1 for c in player.graveyard if c is not card) \
+                        < template.escape_exile_count:
                     return False
+                escaped = True
+                game.log.append(f"T{game.display_turn} P{player_idx+1}: "
+                               f"Escape {card.name} (exile {template.escape_exile_count} cards)")
 
             # Evoke (CR 702.74a): the controller's choice whenever the
             # printed evoke cost can be paid, whatever the mana cost and
@@ -2095,6 +2199,23 @@ class CastManager:
                         game.log.append(
                             f"T{game.display_turn} P{player_idx+1}: "
                             f"Flashback {template.name} — sacrifice {sac.name}")
+        # The cost items paid from the caster's other cards and life, now
+        # that the spell has left its zone (CR 601.2a, 601.2h): an escape's
+        # other cards and the additional cost, through the payer
+        # activations use.
+        if not free_cast and escaped and template.escape_exile_count:
+            for ex in ActivationManager.graveyard_exile_payment(
+                    game, player_idx, template.escape_exile_count,
+                    source=card):
+                game.zone_mgr.move_card_to_exile(
+                    game, ex, cause=f"escape cost ({card.name})")
+        if additional is not None:
+            ActivationManager.pay_resource_costs(
+                game, player_idx, additional, victim,
+                cause=f"additional cost ({card.name})",
+                life_note=f"{card.name} additional cost")
+            CastManager._audit_additional_cost(game, player_idx, card,
+                                               additional, additional_before)
         # CR 702.88a (and every other "if this spell was cast from your
         # X" replacement): the zone a spell was cast FROM is part of how
         # it was cast, so record it before the stack move overwrites it.

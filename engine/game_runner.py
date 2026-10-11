@@ -278,6 +278,10 @@ class AICallbacks(GameCallbacks):
         from ai.activation_ev import choose_sacrifice_victim
         return choose_sacrifice_victim(game, player_idx, legal)
 
+    def choose_cost_exile(self, game, player_idx, source, pool, n):
+        from ai.resolution_choices import pick_cost_exile
+        return pick_cost_exile(game, player_idx, source, pool, n)
+
     def choose_tutor_target(self, game, player_idx, source, eligible):
         from ai.activation_ev import choose_tutor_delivery
         return choose_tutor_delivery(game, player_idx, eligible, source=source)

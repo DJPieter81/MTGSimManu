@@ -6,7 +6,8 @@ already narrowed to the legal ones.
 The engine enumerates and never scores (`engine/effect_executors`); these
 functions decide, on the existing valuation primitives, from the typed spec
 alone -- no oracle text, no card names. `engine.game_runner.AICallbacks`
-routes `choose_optional_effect` and `choose_cards` here.
+routes `choose_optional_effect`, `choose_cards` and `choose_cost_exile`
+here.
 """
 from __future__ import annotations
 
@@ -77,6 +78,23 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
             elif any(aim.permanent is c for c in permanents):
                 return [aim.permanent]
     return default_trigger_targets(player_idx, req, players, permanents)
+
+
+def pick_cost_exile(game: Any, player_idx: int, source: Any,
+                    pool: Sequence[Any], n: int) -> List[Any]:
+    """Which `n` cards of the payer's graveyard pay an exile cost (an
+    activation's, a spell's additional cost, an escape's other cards): the
+    ones that serve it least where they lie. A card that is a resource
+    there by itself (`ai.predicates.is_graveyard_resource_itself`:
+    castable from the graveyard, a creature its deck can reanimate) goes
+    last; the others go first, in graveyard order. The payer's consumers
+    are read from every zone it holds."""
+    from ai.predicates import (is_graveyard_resource_itself,
+                               own_graveyard_consumers)
+    _size_matters, recursion = own_graveyard_consumers(game, player_idx)
+    order = sorted(range(len(pool)), key=lambda i: (
+        is_graveyard_resource_itself(pool[i].template, recursion), i))
+    return [pool[i] for i in order[:n]]
 
 
 def _deliver(game: Any, player_idx: int, cards: Sequence[Any],

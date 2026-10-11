@@ -937,6 +937,12 @@ class CardTemplate:
     # Printed harmonize cost (CR 702.180a), the fixed part (an {X} rides on
     # x_cost_data). Populated by oracle_parser.parse_harmonize_cost.
     harmonize_cost: Optional[ManaCost] = None
+    # A spell's mandatory additional cost (CR 601.2b, 601.2f: "As an
+    # additional cost to cast this spell, <cost>"), in the activation cost
+    # model its payer pays; an unpayable shape keeps its reasons and the
+    # spell is refused. None for none or an optional one ("you may").
+    # Populated by oracle_parser.parse_additional_cost.
+    additional_cost: Optional["ActivationCost"] = None
     # Land subtype a printed Flashback cost sacrifices ("Flashback—Sacrifice
     # a Mountain."), or None. oracle_parser.parse_flashback_sacrifice.
     flashback_sacrifice_subtype: Optional[str] = None
@@ -1418,6 +1424,9 @@ class CardTemplate:
                         self.escape_exile_count = _esc['exile']
             if self.splice_cost is None:
                 self.splice_cost = _psc(self.oracle_text)
+            if self.additional_cost is None:
+                from .oracle_parser import parse_additional_cost as _pac
+                self.additional_cost = _pac(self.oracle_text)
             if self.spectacle_cost is None:
                 self.spectacle_cost = _pspc(self.oracle_text)
             if self.madness_cost is None:

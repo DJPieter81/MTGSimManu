@@ -304,6 +304,39 @@ def parse_harmonize_cost(oracle: str) -> "Optional[ManaCost]":
     return _parse_mana_symbols_to_cost(symbols)
 
 
+_ADDITIONAL_COST_RE = re.compile(
+    r"\bas an additional cost to cast this spell, ([^.]+)\.", re.IGNORECASE)
+
+
+def parse_additional_cost(oracle: str):
+    """A spell's mandatory additional cost (CR 601.2b, 601.2f): "As an
+    additional cost to cast this spell, <cost>." read by the activation
+    cost model (`parse_activation_cost`), whose payer pays it. A shape that
+    model cannot pay keeps its `unpayable` reasons, so the cast is refused
+    rather than made for free. None when the spell prints none, or an
+    optional one ("you may ..."), which may go unpaid.
+
+    Class size: 195 pool cards print a mandatory additional cost, about
+    250 one at all. The effect grammar reads the same sentence into its
+    ADDITIONAL_COST host; a test pins the two readings equal.
+    Subsystem: oracle_parser -> card_database (CardTemplate.additional_cost).
+    """
+    if not oracle or "additional cost to cast this spell" not in \
+            oracle.lower():
+        return None
+    m = _ADDITIONAL_COST_RE.search(oracle)
+    if m is None:
+        return None
+    raw = m.group(1).strip()
+    if raw.lower().startswith("you may "):
+        return None
+    cost = parse_activation_cost(raw)
+    if cost is None:
+        from .cards import ActivationCost
+        return ActivationCost(unpayable=["unrecognised"])
+    return cost
+
+
 def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Dict]:
     """Parse X-cost spell properties from the printed mana cost.
 
@@ -1288,15 +1321,17 @@ def parse_activation_cost(cost_text: str):
         # does not model), and any exile from a zone that is not the
         # controller's own graveyard ("from a graveyard", "from your
         # hand"). 40 further cost items DB-wide stay refused on those
-        # grounds. Placed AFTER the `exile this <permanent>` branch so
-        # exile-SELF keeps its own structured field.
+        # grounds. The count is any number word ("exile six cards", a
+        # spell's additional cost) or digit. Placed AFTER the `exile this
+        # <permanent>` branch so exile-SELF keeps its own structured field.
         m_gy = re.fullmatch(
-            r'exile (a|an|one|two|three|four|\d+) cards? '
-            r'from your graveyard', low)
+            r'exile (a|an|one|two|three|four|five|six|seven|eight|\d+) '
+            r'cards? from your graveyard', low)
         if m_gy:
             tok = m_gy.group(1)
-            exile_from_graveyard_cards += (int(tok) if tok.isdigit()
-                                           else _NUM_WORDS.get(tok, 0))
+            exile_from_graveyard_cards += (
+                int(tok) if tok.isdigit()
+                else _NUM_WORDS.get(tok) or _NUMBER_WORDS.get(tok, 0))
             continue
         # Tranche 4: counter costs on the SOURCE. Parsed into a kind + an
         # amount; a SECOND counter item of the same direction is a choice

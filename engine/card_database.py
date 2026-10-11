@@ -1807,6 +1807,9 @@ class CardDatabase:
         # Harmonize cost (CR 702.180a): cast from graveyard for it, exiled
         from .oracle_parser import parse_harmonize_cost
         template.harmonize_cost = parse_harmonize_cost(oracle_text)
+        # A spell's mandatory additional cost (CR 601.2f), paid as it is cast
+        from .oracle_parser import parse_additional_cost
+        template.additional_cost = parse_additional_cost(oracle_text)
         from .oracle_parser import parse_flashback_sacrifice
         template.flashback_sacrifice_subtype = parse_flashback_sacrifice(oracle_text)
 

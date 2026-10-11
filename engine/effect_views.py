@@ -2922,6 +2922,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "modular_n": _KEYWORD, "ward_cost": _KEYWORD, "ward_life_cost": _KEYWORD,
     "protection_from_colors": _KEYWORD, "has_mobilize": _KEYWORD,
     "is_storm_spell": _KEYWORD, "has_converge": _KEYWORD,
+    "additional_cost": _COST,
     "alternate_exile_color": _COST, "alternate_exile_not_your_turn": _COST,
     "x_cost_data": _COST,
     "is_cost_reducer": "tag-derived (tags), not oracle-derived",

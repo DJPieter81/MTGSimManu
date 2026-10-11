@@ -536,22 +536,85 @@ class ActivationManager:
 
     @staticmethod
     def graveyard_exile_payment(game: "GameState", player_idx: int,
-                                count: int) -> List["CardInstance"]:
+                                count: int, source=None,
+                                exclude=None) -> List["CardInstance"]:
         """The cards an exile-from-your-graveyard cost takes (CR 601.2h).
 
-        Pure enumeration in ZONE ORDER, zero preference — the graveyard is
-        an ordered pile and the head of it is what the payer takes. This is
-        deliberately not a valuation: the cost names no type, so every card
-        in the pile pays it equally as far as the RULES are concerned, and
-        ranking them by what the controller would rather keep is a
-        strategic choice. Tranche 3 gave the sacrifice cost such a choice
-        (`callbacks.choose_sacrifice`) because its legal set is genuinely
-        heterogeneous; a seam here would be the same shape and can be added
-        the same way. Until it is, this is the single definition of WHICH
-        cards pay, so a future valuation layer reads it rather than
-        guessing and projection cannot disagree with payment.
+        WHICH cards pay is the payer's choice (`callbacks.choose_cost_exile`,
+        the same seam a sacrifice cost's victim uses): `count` distinct cards
+        of their graveyard, `exclude` aside (an escape's "other cards"). The
+        cost names no type, so every card in the pile pays it equally as far
+        as the RULES are concerned; ranking them by what the payer would
+        rather keep is strategy. An answer that is not `count` distinct cards
+        of the pile is not a payment the cost allows, and the engine's
+        default (`callbacks.default_cost_exile`: the head of the pile, in
+        zone order) stands. The single definition of which cards pay, so
+        projection cannot disagree with payment.
         """
-        return list(game.players[player_idx].graveyard)[:max(0, count)]
+        from .callbacks import default_cost_exile
+        count = max(0, count)
+        if count == 0:
+            return []
+        pool = [c for c in game.players[player_idx].graveyard
+                if c is not exclude]
+        picked = game.callbacks.choose_cost_exile(game, player_idx, source,
+                                                  list(pool), count)
+        ids = {id(c) for c in pool}
+        if (picked is None or len(picked) != count
+                or len({id(c) for c in picked}) != count
+                or any(id(c) not in ids for c in picked)):
+            return default_cost_exile(pool, count)
+        return list(picked)
+
+    @staticmethod
+    def cost_victim(game: "GameState", player_idx: int, source,
+                    cost) -> Optional["CardInstance"]:
+        """The permanent a sacrifice cost item takes (CR 601.2h): the
+        payer's choice among the legal victims (`callbacks.choose_sacrifice`).
+        None when there is none, or when the payer makes no legal choice --
+        an unpaid cost. Chosen before anything is paid, so a refusal leaves
+        nothing half-paid."""
+        legal = ActivationManager.legal_sacrifice_victims(
+            game, player_idx, source, cost)
+        if not legal:
+            return None
+        victim = game.callbacks.choose_sacrifice(game, player_idx, legal)
+        return victim if any(victim is c for c in legal) else None
+
+    @staticmethod
+    def pay_resource_costs(game: "GameState", player_idx: int, cost,
+                           victim, cause: str, life_note: str) -> None:
+        """Pay the cost items drawn from the payer's own resources, each
+        through its owner (CR 601.2h, 602.2b): life (CR 119.4: paying life
+        is losing that much life), a discard (the discard funnel, the
+        payer's own choice), an exile from their graveyard (the payer's
+        choice of cards) and a sacrifice (the victim `cost_victim` chose
+        before anything was paid). An activation and a spell's additional
+        cost are both paid here; payability was ruled on before."""
+        if cost.life > 0:
+            from .damage import lose_life
+            lose_life(game, player_idx, cost.life)
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: pays "
+                f"{cost.life} life ({life_note})")
+        if cost.discard_cards > 0:
+            # Through the same funnel forced discards use
+            # (callbacks.choose_discard + zone_mgr), so discard-linked
+            # triggers keep firing. self_discard=True: paying the cost was
+            # the player's own choice (CR 601.2h).
+            game._force_discard(player_idx, cost.discard_cards,
+                                self_discard=True)
+        if cost.exile_from_graveyard_cards > 0:
+            # The cards leave the graveyard as the cost is paid, through the
+            # zone funnel, so leaves-the-graveyard replacements and
+            # triggers see the move.
+            for gy_card in ActivationManager.graveyard_exile_payment(
+                    game, player_idx, cost.exile_from_graveyard_cards):
+                game.zone_mgr.move_card_to_exile(game, gy_card, cause=cause)
+        if victim is not None:
+            # The victim is sacrificed as part of the COST, through the
+            # zone funnel.
+            game.zone_mgr.move_card_to_graveyard(game, victim, cause=cause)
 
     @staticmethod
     def _audit_activation_targets(game: "GameState", player_idx: int,
@@ -588,11 +651,8 @@ class ActivationManager:
             # activate() is reached without a prior can_activate.
             victim = None
             if ability.cost.sacrifice_type is not None:
-                legal = ActivationManager.legal_sacrifice_victims(
+                victim = ActivationManager.cost_victim(
                     game, player_idx, perm, ability.cost)
-                if legal:
-                    victim = game.callbacks.choose_sacrifice(
-                        game, player_idx, legal)
                 if victim is None:
                     return False
             if (ability.cost.discard_cards > 0
@@ -643,11 +703,6 @@ class ActivationManager:
                     exclude_instance_id=perm.instance_id)
                 if not paid:
                     return False
-            if ability.cost.life > 0:
-                game.players[player_idx].life -= ability.cost.life
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: pays "
-                    f"{ability.cost.life} life ({perm.name} activation)")
             if ability.cost.tap_self:
                 perm.tap()
             # Counters, through the instance's own counter fields — the same
@@ -693,28 +748,10 @@ class ActivationManager:
             # sacrifice_self below: every step that could refuse has already
             # run, so nothing follows the consumption that could leave the
             # cost half-paid.
-            if ability.cost.discard_cards > 0:
-                # Through the same funnel forced discards use
-                # (callbacks.choose_discard + zone_mgr), so discard-linked
-                # triggers keep firing. self_discard=True: activating the
-                # ability was the player's own choice (CR 601.2h).
-                game._force_discard(player_idx, ability.cost.discard_cards,
-                                    self_discard=True)
-            if ability.cost.exile_from_graveyard_cards > 0:
-                # CR 602.2b — the cards leave the graveyard at ACTIVATION
-                # time, through the zone funnel, so leaves-the-graveyard
-                # replacements and triggers see the move.
-                for gy_card in ActivationManager.graveyard_exile_payment(
-                        game, player_idx,
-                        ability.cost.exile_from_graveyard_cards):
-                    game.zone_mgr.move_card_to_exile(
-                        game, gy_card,
-                        cause=f"activation cost ({perm.name})")
-            if victim is not None:
-                # CR 602.2b: the victim is sacrificed as part of the COST —
-                # it leaves at activation time, through the zone funnel.
-                game.zone_mgr.move_card_to_graveyard(
-                    game, victim, cause=f"activation cost ({perm.name})")
+            ActivationManager.pay_resource_costs(
+                game, player_idx, ability.cost, victim,
+                cause=f"activation cost ({perm.name})",
+                life_note=f"{perm.name} activation")
 
             if ability.cost.sacrifice_self:
                 # CR 602.2b: the sacrifice is part of the COST — the source

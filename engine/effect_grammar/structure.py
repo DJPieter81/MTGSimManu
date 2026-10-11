@@ -53,7 +53,8 @@ classified with first-match precedence (section 3):
    `parse_activated_abilities` rule (a line holding a quote takes none),
    and the kind MANA_ABILITY by CR 605.1a (no target anywhere, an ADD_MANA
    anywhere, riders allowed; A6).
-10. ADDITIONAL_COST -- "as an additional cost to cast ~, <cost>".
+10. ADDITIONAL_COST -- "as an additional cost to cast ~, <cost>"; a cost
+    that begins "you may" is flagged ``optional_cost`` (CR 601.2b).
 11. Spell statics on any face (A3) -- "~ can't be countered", "~ costs ...
     to cast", "you may cast ~ as though it had flash", ...:
     ``STATIC(from_zone='stack')``, a cost delta in ``cost_modifiers``.
@@ -727,6 +728,9 @@ def _classify(ctx: _Ctx, p: int, t: str, off: int, label: str = "") -> List[_B]:
     if m:
         b = _B(HostKind.ADDITIONAL_COST, p, t, label=label)
         b.extra["cost"] = _cost(ctx.printed_at(p, off)(m.span("cost")))[1]
+        if m.group("cost").startswith("you may "):
+            # CR 601.2b: an optional additional cost may go unpaid.
+            b.flags.add("optional_cost")
         b.consumed.append(("additional_cost", (0, m.end())))
         b.text = t[:m.end()]
         return [b] + _rest_after(ctx, p, t, off, m.end(), "")
