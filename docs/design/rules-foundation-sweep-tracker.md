@@ -7317,3 +7317,29 @@ Registered: Green Sun's Zenith.
 **Leads (not built):**
 - Conditional self-moves (the Pulses' "if an opponent has more life than you, return ~ to its owner's hand") and Approach of the Second Sun's "otherwise … seventh from the top" stay with their handlers.
 - Buyback and Omen ("then shuffle this card into its owner's library", reminder text) are not typed as self-moves.
+
+## Ruby Storm and Amulet Titan after units CR–SZ: scan evidence (2026-10-11)
+
+**Ruby Storm** (band 40–55). The same-seed n=20 Bo3 matrix moved:
+
+| Arm | col | CR | RG | HX | DR | SZ |
+|---|---|---|---|---|---|---|
+| Ruby Storm | 15.3 | 12.0 | 19.3 | 26.1 | 28.1 | 29.3 |
+
+These are two-perspective field figures from `compare_arms`. In the 48-game Bo1 scan (seeds 50000/50500 against the field), Storm wins 4 at `aeb97af`, 8 after RG, and 14 at the SZ head.
+
+Remaining patterns at the head:
+- **Next-turn fuel holds the finisher this turn.** At storm 6 with 1–2 mana, Storm holds Grapeshot because the hand has two Hex Magic (cost 3, uncastable this turn), then passes. It happens in 8 of 48 games, all one opening at s50500.
+  - The finisher hold counts fuel for any turn, a design pinned by `tests/test_storm_finisher_holds_for_chain.py` (hold at storm 3 for two Past in Flames next turn).
+  - The commit/develop comparison (`scarce_payoff_commit_ev`) sets develop reach to 0 whenever storm ≥ 1.
+  - The coherent rule is that a hold waits only for fuel castable this turn, with next turn's line priced by a reach model the code does not have.
+- Past in Flames is tagged `cantrip`, so it counts as chain fuel and gets `combo_continuation` over an empty graveyard. 49 pool spells are tagged `cantrip` with no typed draw or dig; 2 are registered (Past in Flames, Malevolent Rumble).
+
+**Amulet Titan** (band 45–60, matrix 28.2). In a 48-game Bo1 scan (seeds 50000/50500 against the field, SZ head):
+- Amulet wins 20.
+- Primeval Titan or Cultivator Colossus is cast in 26 games, almost always on global turn 7, which is Amulet's fourth turn (19 of 26), and the deck wins 14 of those 26.
+- Summoner's Pact finds Titan 29 times; its upkeep payment is still unmodelled, which favours Amulet.
+- Green Sun's Zenith finds Arboreal Grazer 24 times, Aftermath Analyst 14, Titan 6, Dryad 2.
+- Scapeshift is cast 27 times. In the traced games it sacrifices and refetches lands with no payoff in hand.
+
+The deck assembles Titan about two turns later than the real list's turn-2/3 Amulet starts. The lever is the mana sequencing of Amulet of Vigor with bounce lands (an AI planning unit), not a rules gap found so far. No unit is built from this; the next units come from the rules-audit ranking, which the matrix shards now print (`484d86e`).
