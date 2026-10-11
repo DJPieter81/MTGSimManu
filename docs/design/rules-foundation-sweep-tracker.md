@@ -8147,3 +8147,58 @@ Hundreds of pool cards sacrifice creatures.
 - **The player owner does not value a mill.** A targeted mill's player slot defaults to the opponent, while a reanimator wants its own graveyard filled.
 - **Landfall and other non-entry mill triggers** (Icetill Explorer's) stay with their legacy carriers.
 - **A mill-and-select rider** (Fallaji Archaeologist's "you may put a card from among them into your hand") still rides the legacy branch, now through the mill owner.
+
+## Unit DW: a draw instruction is performed with the instructions beside it (2026-10-11)
+
+**Rule (CR 121.1, 608.2c, 701.17a):**
+- A spell's or ability's "draw N cards" draws through the one draw owner, which counts the draw and fans out its triggers ("whenever you draw a card").
+- Every instruction printed beside the draw is performed in printed order: a mill, a surveil or a regrowth before it, and a condition on it.
+
+**Defect:** plain draws stayed with legacy carriers that read the draw alone.
+- Thought Scour's legacy draw clause dropped "target player mills two cards" (Grixis Reanimator, three main deck copies), as did Pilfered Plans', Thassa's Bounty's and Weight of Memory's.
+- Cerebral Download's dropped "Surveil X", and Recover's the return.
+- Resourceful Return drew whatever its condition.
+- An enter trigger's "mill two cards, then draw two cards" milled and never drew.
+- Unclassified draw activations went unperformed: Griselbrand's "Pay 7 life: Draw seven cards".
+
+**Class:** every card-flow host whose draws are plain. 1358 new-path pairs; 17 registered hosts switch, among them Thought Scour, Consider, Griselbrand's activation, the draw lands, Psychic Frog, Quantum Riddler and Omnath.
+
+**Steps (`9a6cdda`; A38 pin follow-up `a76f6a5`; arm request `e9b7379`):**
+- **The shape.** The card-flow strict shape admits a plain draw (`effect_views._plain_draw`).
+- **Spells.** The legacy card-flow clause handler yields a spell or chosen mode the family takes to the dispatched carrier, while the dispatcher is enabled (`effect_carrier.dispatching`). It reads the parse the caller supplies (`ClauseContext.effects`).
+- **Placement.** A carrier takes a spell's host only when the targets the cast announces fit its slots (`effect_carrier._announced_fit`). A requirement the legality owner reads from reminder text (an awaken's "target land you control") is announced, and no carrier can place it, so such a spell keeps its legacy carrier (Coastal Discovery).
+- **Logging.** The DRAW executor logs what it draws, in the legacy spell wording, so a replay still shows every triggered and activated draw.
+
+**Tests (red first, 3 of 5):** `tests/test_a_draw_instruction_is_performed_with_the_instructions_beside_it.py`.
+- The draw activation through the owner and the awaken spell are guards.
+- Pins moved:
+  - the plain-draw spell family test;
+  - the closure's new-path carrier set (+`activated_effects:DRAW_N`);
+  - the self-check fixture (245 hosts, floor 181);
+  - R2's A38 pin, which now holds the switch to its harness record (`a76f6a5`).
+
+**Gate parity / digest / anchor / suites:**
+- Gate parity: 1358 new-path pairs.
+  - 288 proven (+68: the switched draw spells are identical).
+  - 1070 intended (+405, each read from the legacy and new logs): 373 log-only (the draw line's wording), 22 pre-unit no-ops, and 10 rules corrections, each with its own reason.
+  - Niv-Mizzet's activation is a harness artifact: its own draw trigger cannot fire with every switched carrier off.
+- Ratchet (f): legacy fallback 3537 → 3184.
+- Digest: 19 games change.
+  - One shortens a turn with the same winner: Thought Scour now mills, aimed at the opponent by default.
+  - The rest are log lines; Hex Magic's "draw that many" draws are now logged.
+- Anchor: one turn-only drift refreshed (Grixis Reanimator vs Azorius Blink s53000, 11 → 13).
+- Suites at `9a6cdda` (pinned worktree): chunk A 4739 passed, two failures.
+  - R2's A38 pin, fixed in `a76f6a5`.
+  - A CPU-ceiling test (6.95 s of 6.8) that ran while another sim ran; it passes alone.
+  - Chunk B: 2712 passed.
+
+**Measured (same-seed n=20 Bo3, `dw-post` `e9b7379`, pre = `ml-post`):** 37 of 600 cells change.
+- Grixis Reanimator -1.5, Domain Zoo +1.2, Instant Reanimator -1.0; every other deck moves by at most ±0.6. No deck moves more than 5 pp; 0 aborts, 0 violations.
+- One cell swings hard: Grixis Reanimator vs Domain Zoo, 70 → 20. Replayed cell-exact from pinned worktrees (pre `a896cd7`, post `9a6cdda`): 14 of 20 → 4 of 20, ten matches flipping toward Zoo.
+- In both replayed matches (s50000, s51500) the first divergence is Thought Scour milling its caster's opponent. That is the player owner's default, since it does not value a mill. Zoo's library changes, and its graveyard holds what its four Psychic Frog exile for flying.
+- The mill is rules-correct. Aiming it at the opponent is the AI gap the next unit (MV) closes.
+
+**Leads (not built):**
+- **Thought Scour's player is the opponent by default.** The player owner does not value a mill, and Grixis Reanimator's gameplan declares no graveyard-fill goal for the plan predicate (`serves_plan_from_graveyard`) to read.
+- **The legality owner reads requirements from reminder text** (awaken, reinforce): 360 pool cards' requirements change when it is masked, 55 of them instants or sorceries. Hunting Triad cannot be cast without a creature on the battlefield. No registered spell is affected.
+- **A spell taken by an earlier legacy handler and by the card-flow family** keeps the legacy handler's partial reading.
