@@ -11,7 +11,9 @@ chosen then, a pick made on resolution that obeys the same rules.
 * Resolution-time "deal N damage to any target" picks follow the same
   rules and deal their damage through the damage owner.
 Card names are fixture carriers (real handlers resolved through the
-registry; synthetic targets).
+registry; synthetic targets). The artifact picks are carried by Wear //
+Tear's handler: Kolaghan's Command's was deleted (a modal spell's modes
+resolve by shape, before the registry, so it never ran in a real cast).
 """
 from __future__ import annotations
 
@@ -51,8 +53,8 @@ def test_a_resolving_spell_affects_the_target_chosen_when_it_was_cast(card_db):
     game = GameState(rng=random.Random(0))
     big = _perm(game, 1, types=[CardType.ARTIFACT], name="Big Rock", cmc=6)
     small = _perm(game, 1, types=[CardType.ARTIFACT], name="Small Rock", cmc=1)
-    cmd = _spell(game, card_db, "Kolaghan's Command")
-    EFFECT_REGISTRY.execute(cmd.template.name, EffectTiming.SPELL_RESOLVE, game, cmd, 0,
+    wear = _spell(game, card_db, "Wear // Tear")
+    EFFECT_REGISTRY.execute(wear.template.name, EffectTiming.SPELL_RESOLVE, game, wear, 0,
                             targets=[small.instance_id])
     assert small.zone == "graveyard" and big.zone == "battlefield"
 
@@ -74,8 +76,8 @@ def test_a_resolution_pick_skips_a_ward_its_controller_cannot_pay(card_db):
     game.players[0].life = 3
     warded = _perm(game, 1, types=[CardType.ARTIFACT], name="Warded Rock", cmc=6,
                    ward_life=7)
-    cmd = _spell(game, card_db, "Kolaghan's Command")
-    EFFECT_REGISTRY.execute(cmd.template.name, EffectTiming.SPELL_RESOLVE, game, cmd, 0)
+    wear = _spell(game, card_db, "Wear // Tear")
+    EFFECT_REGISTRY.execute(wear.template.name, EffectTiming.SPELL_RESOLVE, game, wear, 0)
     assert warded.zone == "battlefield"
 
 
