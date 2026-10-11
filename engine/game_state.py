@@ -697,8 +697,8 @@ class GameState:
     def _blink_permanent(self, card: CardInstance, controller: int):
         ResolutionManager._blink_permanent(self, card, controller)
 
-    def _creature_dies(self, creature: CardInstance):
-        PermanentEffects._creature_dies(self, creature)
+    def _creature_dies(self, creature: CardInstance, cause: str = ""):
+        PermanentEffects._creature_dies(self, creature, cause=cause)
 
     def _permanent_destroyed(self, permanent: CardInstance):
         PermanentEffects._permanent_destroyed(self, permanent)

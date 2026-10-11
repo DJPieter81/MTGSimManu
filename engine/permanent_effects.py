@@ -472,8 +472,12 @@ class PermanentEffects:
 
 
     @staticmethod
-    def _creature_dies(game: "GameState", creature: CardInstance):
-        """Handle a creature dying."""
+    def _creature_dies(game: "GameState", creature: CardInstance,
+                       cause: str = ""):
+        """Handle a creature dying: put into a graveyard from the
+        battlefield by any means (CR 700.4). The zone funnel hands every
+        such move here; the move itself goes back through the funnel as
+        the death (`dying=True`)."""
         owner = creature.owner
         controller = creature.controller
 
@@ -555,7 +559,8 @@ class PermanentEffects:
 
         # Route zone mutation through the funnel: single owner of battlefield→graveyard
         # list mutation, zone attribute, and leaving-battlefield cleanup.
-        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")
+        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard",
+                                cause=cause, dying=True)
         if exiled_instead:
             return                       # it did not die (CR 700.4)
         game.players[controller].creatures_died_this_turn += 1

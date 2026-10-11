@@ -1,5 +1,5 @@
 {
-  "combined": "18378dc6498a4247df56646d457c6e81f926bf431a5a2af59a866011c022ad8c",
+  "combined": "90bb250889f391551098fac08d57f84f698b472402a0a9b9feed2e0b7b12b6d6",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -21,8 +21,8 @@
       "winner": "Azorius Blink"
     },
     "bo1|Azorius Control (WST v2)|Boros Energy|53500": {
-      "lines": 525,
-      "sha256": "d39cea047364f9a5a742a20eea4ef7f016e3a67979efc43e3f25fcda01e3a475",
+      "lines": 531,
+      "sha256": "69cdfe3979a23577844d792fd17ee5feb39390afb7d41d1ed4557d54a8522dd8",
       "turns": 7,
       "winner": "Boros Energy"
     },
@@ -39,8 +39,8 @@
       "winner": "Affinity"
     },
     "bo1|Creatures Toolbox|Grixis Reanimator|56000": {
-      "lines": 674,
-      "sha256": "0bf546e08abb1ad74416b171071eeb804171a5360d5c633d3b06b65dba92c295",
+      "lines": 677,
+      "sha256": "7d42ab0f78328a19eface764e203cf8f14c6a7190ecf1163149440c94e08f027",
       "turns": 9,
       "winner": "Grixis Reanimator"
     },
@@ -75,20 +75,20 @@
       "winner": "Instant Reanimator"
     },
     "bo1|Jeskai Blink|4c Omnath|51500": {
-      "lines": 640,
-      "sha256": "e4664a3cfb9d1f8bb9df0b0cac339863990eb690c7cf10655c4332c47262a920",
+      "lines": 642,
+      "sha256": "ec8351922bb63f91f06e57bb354de46952139675ca8676d135a5e14f5fa7cb73",
       "turns": 9,
       "winner": "4c Omnath"
     },
     "bo1|Living End|Jeskai Blink|54000": {
-      "lines": 687,
-      "sha256": "77c694769d297f37138b410674c6679c99e7a6e1cfd56e4620ffcdc453704c45",
+      "lines": 690,
+      "sha256": "6d0d5dbce34262be20a47c99d9a437cc6916e882336ebe62f3bd3d2a2a13bebf",
       "turns": 11,
       "winner": "Jeskai Blink"
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
-      "lines": 839,
-      "sha256": "1aa1b63975ed069a0df8b3be413defb51201a5984de8be3f498f4ab42c8dda58",
+      "lines": 840,
+      "sha256": "ef304331fcb3a9f5f5e327db035f670850f160337b1f69330335a45ad9a0855d",
       "turns": 11,
       "winner": "4/5c Control"
     },
@@ -117,8 +117,8 @@
       "winner": "Ruby Storm"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {
-      "lines": 616,
-      "sha256": "d36f9e9af50c7f6554c322781cd15f1c5282ff0f607fe2fdb30d0c4e0b2aca35",
+      "lines": 624,
+      "sha256": "0a223618d7f9f952e97bcd908a118ea26dde6e45a8a1fcae2e24940373d45e49",
       "turns": 8,
       "winner": "Domain Zoo"
     },
@@ -147,14 +147,14 @@
       "winner": "Eldrazi Tron"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g3": {
-      "lines": 989,
-      "sha256": "bd25a4d414abc279e924c41156ab8f05cd716a0a386882b0ac8823a98b402256",
+      "lines": 990,
+      "sha256": "3f733f33217edee7f8aa72f575e7a2db6e5481fa89e117b66383bfcf79e59bf7",
       "turns": 15,
       "winner": "Eldrazi Tron"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
-      "lines": 715,
-      "sha256": "a413df48aaf16bdf927c9e716a69610e1362e6e2a40b1e4bd67e78d532c2f6a3",
+      "lines": 716,
+      "sha256": "cda6910938bbdb23ab7b996cc0c12fe2c23f8574962b211321041a29d3c14291",
       "turns": 11,
       "winner": "Living End"
     },

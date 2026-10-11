@@ -128,11 +128,12 @@ class SBAManager:
         for p in game.players:
             for c in list(p.battlefield):
                 if c.template.is_creature and c.toughness <= 0:
+                    # The funnel hands the death to the death owner,
+                    # which counts it (CR 700.4).
                     self.zone_manager.move_card(
                         game, c, "battlefield", "graveyard",
                         cause="SBA 704.5g: zero toughness"
                     )
-                    p.creatures_died_this_turn += 1
                     performed = True
 
         # 704.5h: Creature with lethal damage is destroyed
@@ -147,7 +148,6 @@ class SBAManager:
                             game, c, "battlefield", "graveyard",
                             cause="SBA 704.5h: lethal damage"
                         )
-                        p.creatures_died_this_turn += 1
                         performed = True
 
         # 704.5i: Creature dealt damage by a deathtouch source is

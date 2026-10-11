@@ -39,6 +39,7 @@ class ZoneManager:
         cause: str = "",
         controller_override: Optional[int] = None,
         transformed: bool = False,
+        dying: bool = False,
     ) -> bool:
         """Move a card from one zone to another.
 
@@ -54,6 +55,9 @@ class ZoneManager:
             transformed: Put a double-faced card onto the battlefield with
                 its back face up ("return it to the battlefield
                 transformed", CR 712).
+            dying: The death owner (`PermanentEffects._creature_dies`) is
+                performing a creature's death; any other battlefield ->
+                graveyard move of a creature is handed to it (CR 700.4).
 
         Returns:
             True if the move was performed, False if prevented.
@@ -79,6 +83,17 @@ class ZoneManager:
                 return False
             source_owner, from_zone = located
             source_list = self._get_zone_list(game, source_owner, from_zone)
+
+        # ── A creature dies, whatever moves it (CR 700.4) ───────────
+        # "Dies" means put into a graveyard from the battlefield: a
+        # sacrifice paid as a cost or demanded by an effect is a death like
+        # any other, so the death owner performs the move and its effects
+        # (undying, persist, modular, the death count, dies triggers,
+        # observers).
+        if not dying and self._dies(card, from_zone, to_zone):
+            game._creature_dies(card, cause=cause)
+            return True
+        was_creature = self._creature_on_battlefield(card, from_zone)
 
         # ── Graveyard-to-exile replacement (CR 614.1a, 614.6) ───────
         # Decided before the card leaves its zone: a replacement that
@@ -131,6 +146,8 @@ class ZoneManager:
         dest_list.append(card)
 
         self._after_graveyard_bound_move(game, card, actual_to, replaced_by)
+        if was_creature and actual_to == "graveyard":
+            self._audit_death(game, card, dying)
 
         # ── Handle entering battlefield ─────────────────────────────
         if actual_to == "battlefield":
@@ -360,6 +377,38 @@ class ZoneManager:
                      f"{card.name} reached a graveyard while "
                      f"{getattr(source, 'name', '')} exiles it instead",
                      game=game)
+
+    @staticmethod
+    def _dies(card: "CardInstance", from_zone: str, to_zone: str) -> bool:
+        """CR 700.4: is this move a creature dying -- a creature put into
+        a graveyard from the battlefield?"""
+        return (from_zone == "battlefield" and to_zone == "graveyard"
+                and (card.effective_is_creature
+                     or getattr(card, "is_animated", False)))
+
+    @staticmethod
+    def _creature_on_battlefield(card: "CardInstance", from_zone: str) -> bool:
+        """Restated from the raw face fields for the audit: the object is
+        a creature on the face it shows, or an animated land."""
+        if from_zone != "battlefield":
+            return False
+        t = card.template
+        back = bool(getattr(card, "is_transformed", False) and t.back_face_types)
+        types = t.back_face_types if back else t.card_types
+        return (any(getattr(ct, "name", "") == "CREATURE" for ct in types)
+                or bool(getattr(card, "is_animated", False)))
+
+    @staticmethod
+    def _audit_death(game: "GameState", card: "CardInstance",
+                     dying: bool) -> None:
+        """Rules audit (CR 700.4): a creature that reached a graveyard from
+        the battlefield died -- the death owner moved it. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("700.4/dies", dying,
+                     f"{card.name} reached a graveyard from the battlefield "
+                     f"without dying", game=game)
 
     @staticmethod
     def _audit_entry_loyalty(game: "GameState", card: "CardInstance") -> None:
