@@ -8099,3 +8099,51 @@ Hundreds of pool cards sacrifice creatures.
 - **Practiced Offense resolves to nothing** whatever its targets: the counters on each creature a player controls, and the keyword choice.
 - **The player owner values only tokens and edicts** (`named_player_value`). A mill, draw or counters slot falls back to the opponent: Thought Scour would mill the opponent once its mill is performed.
 - **A spell whose shape no pick knows is announced at the printed default.** That default is legal, not chosen for value.
+
+## Unit ML: a player mills the cards an instruction names (2026-10-11)
+
+**Rule (CR 701.17a/b, 614.1a):**
+- To mill N cards, a player puts that many cards from the top of their library into their graveyard; a player with fewer mills what there is.
+- Each player the instruction names mills: its controller ("mill N cards"), the player chosen for a target ("target player mills N"), or a printed player set ("each opponent", "each player").
+- A card a replacement effect sends elsewhere goes there instead.
+
+**Defect:**
+- The effect grammar typed MILL in 392 pool cards, but no dispatcher family executed it.
+- What resolved to nothing:
+  - every spell whose text is a mill (Glimpse the Unthinkable, Fractured Sanity; 18 pool spells);
+  - 13 unclassified mill activations;
+  - 7 enter triggers the legacy regex skipped ("each opponent mills", "each player mills").
+- Self-mill enter triggers milled through a regex branch and one card-name handler (Emry, Lurker of the Loch). The branch milled only its controller for "each player mills three cards" (Nezumi Freewheeler).
+- Thought Scour's legacy draw clause dropped its mill (unit DW).
+
+**Class:** 392 pool cards with a typed MILL. The switched card-flow shape takes 224 more hosts. Registered: Emry (Affinity ×3, Pinnacle ×2), Aftermath Analyst, Icetill Explorer, Fallaji Archaeologist, Thought Scour.
+
+**Steps (`bf083c3`; purity and test-carrier follow-up `a896cd7`; arm request `b0ab3d1`):**
+- `GameState.mill` is the one mill owner. It moves cards through the zone funnel, so a graveyard replacement applies. The legacy self-mill branch now calls it.
+- The MILL executor (card_flow): each player the instruction names mills. The actor helper (controller, printed player set or target player) is now shared with the token family (`_named_players_supported`). MILL joins the switched card-flow shape (A38).
+- Emry's name-keyed enter handler is retired, and the enter-trigger carrier takes its mill. Card-name registry 79 → 78.
+- Auditor `701.17a/mill`, restated from the library's size, tested both ways.
+
+**Tests (red first, 7 of 8):** `tests/test_a_player_mills_the_cards_an_instruction_names.py`.
+- Two existing tests followed in `a896cd7`:
+  - the executor purity pin forbids a subscript write (the result is a comprehension);
+  - the GH unit's milled-card test milled through the retired handler and now uses the enter-trigger carrier.
+
+**Gate parity / digest / anchor / suites:**
+- Gate parity: 882 new-path pairs (216 proven; 666 intended, +65 each with its reason, read from the legacy and new logs):
+  - 35 pre-unit no-ops;
+  - 29 log-only (the same cards milled; the legacy " mill" cause suffix and "ETB: mill N" line are gone);
+  - Nezumi Freewheeler's each-player mill.
+- Digest: 3 games change, log lines only (Emry, Aftermath Analyst, Fallaji Archaeologist). Anchor 29 passed.
+- Suites at `bf083c3` (pinned worktree): chunk A 4734 passed with the two follow-up failures, chunk B 2712. The follow-up files pass at `a896cd7`; CI runs there.
+
+**Measured (same-seed n=20 Bo3, `ml-post` `b0ab3d1`, pre = `rtf-post`):** 0 of 600 cells change.
+- The registered self-mill triggers milled before ML; their change is log-only.
+- 0 aborts, 0 violations.
+- Findings: Surgical Extraction 8, Untimely Malfunction 8, Practiced Offense 5 (all unchanged).
+
+**Leads (not built):**
+- **Thought Scour's mill needs the plain-draw switch (unit DW).** Its host mills, then draws.
+- **The player owner does not value a mill.** A targeted mill's player slot defaults to the opponent, while a reanimator wants its own graveyard filled.
+- **Landfall and other non-entry mill triggers** (Icetill Explorer's) stay with their legacy carriers.
+- **A mill-and-select rider** (Fallaji Archaeologist's "you may put a card from among them into your hand") still rides the legacy branch, now through the mill owner.
