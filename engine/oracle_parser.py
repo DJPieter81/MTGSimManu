@@ -286,6 +286,24 @@ def parse_flashback_mana_cost(oracle: str) -> "Optional[ManaCost]":
     return cost if cost.cmc > 0 else None
 
 
+def parse_harmonize_cost(oracle: str) -> "Optional[ManaCost]":
+    """The printed harmonize cost (CR 702.180a: "Harmonize [cost]" -- cast
+    this card from your graveyard for [cost] rather than its mana cost), or
+    None. An {X} in it rides on the card's `x_cost_data` (its mana cost
+    prints the same X): the X a harmonize cast chooses is paid on top of
+    this fixed part.
+
+    Class size: every card with a printed Harmonize cost (11 pool cards).
+    Subsystem: oracle_parser -> card_database (CardTemplate.harmonize_cost).
+    """
+    m = re.search(r'\bHarmonize[\s—\-]*((?:\{[^}]+\})+)', oracle or "")
+    if not m:
+        return None
+    symbols = [s for s in re.findall(r'\{([^}]+)\}', m.group(1))
+               if s.upper() != 'X']
+    return _parse_mana_symbols_to_cost(symbols)
+
+
 def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Dict]:
     """Parse X-cost spell properties from the printed mana cost.
 

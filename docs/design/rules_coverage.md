@@ -2,7 +2,7 @@
 title: Mechanic coverage census — keyword words in the pool vs the engine's model
 status: active
 priority: secondary
-session: 2026-10-10
+session: 2026-10-11
 tags:
   - rules-audit
   - coverage
@@ -16,7 +16,7 @@ summary: >
 
 # Mechanic coverage census
 
-Generated 2026-10-10 by `python tools/keyword_coverage.py` over the card DB and
+Generated 2026-10-11 by `python tools/keyword_coverage.py` over the card DB and
 the 25 registered lists (MB + SB). Regenerate after a DB refresh or a
 new mechanic lands; do not edit by hand.
 
@@ -32,7 +32,6 @@ exists to drive.
 |---|---|---:|---:|---:|---|
 | metalcraft | none | 10 | 2 | 32 | Galvanic Blast, Mox Opal |
 | ferocious | none | 4 | 1 | 26 | Stubborn Denial |
-| harmonize | none | 4 | 1 | 11 | Nature's Rhythm |
 | ninjutsu | none | 2 | 1 | 32 | Kaito, Bane of Nightmares |
 | gift | none | 1 | 1 | 25 | Into the Flood Maw |
 | overload | none | 1 | 1 | 23 | Vandalblast |
@@ -119,6 +118,7 @@ exists to drive.
 | madness | typed field (madness_cost) | 4 | 1 | 50 | Blazing Rootwalla |
 | plot | typed field (plot_cost) | 4 | 1 | 32 | Slickshot Show-Off |
 | mobilize | typed field (has_mobilize) | 4 | 1 | 12 | Voice of Victory |
+| harmonize | typed field (harmonize_cost) | 4 | 1 | 11 | Nature's Rhythm |
 | flurry | typed field (ordinal_cast_trigger) | 4 | 1 | 10 | Cori-Steel Cutter |
 | delve | typed field (has_delve) | 3 | 1 | 23 | Murktide Regent |
 | amass | handler (every registered card) | 2 | 1 | 63 | Orcish Bowmasters |
@@ -132,4 +132,4 @@ exists to drive.
 | spectacle | typed field (spectacle_cost) | 0 | 0 | 20 |  |
 | annihilator | enum | 0 | 0 | 15 |  |
 
-**50 words with no model**, ranked by registered-deck usage: metalcraft (10), ferocious (4), harmonize (4), ninjutsu (2), gift (1), overload (1), meld (1), crew (0), daybound (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0).
+**49 words with no model**, ranked by registered-deck usage: metalcraft (10), ferocious (4), ninjutsu (2), gift (1), overload (1), meld (1), crew (0), daybound (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0), start your engines (0).

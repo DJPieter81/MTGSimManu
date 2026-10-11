@@ -124,6 +124,10 @@ class ResolutionManager:
                 game, card, "exile", cause="flashback resolution (CR 702.33a)"
             )
             card.has_flashback = False  # no longer has flashback
+        elif getattr(card, '_cast_with_harmonize', False):
+            # Harmonize: exile instead of anywhere else (CR 702.180a)
+            game.zone_mgr.move_card_from_stack(
+                game, card, "exile", cause="harmonize (CR 702.180a)")
         elif (hasattr(card, '_rebound_controller')
               and getattr(card, '_cast_from_zone', 'hand') == 'hand'):
             # Rebound: exile instead of graveyard, cast for free next
@@ -162,6 +166,26 @@ class ResolutionManager:
                                                         position, nth)
             if resolved:
                 ResolutionManager._audit_resolved_destination(game, card)
+        ResolutionManager._audit_harmonized_exiled(game, card)
+
+    @staticmethod
+    def _audit_harmonized_exiled(game: "GameState", card: "CardInstance"):
+        """Rules audit (CR 702.180a), restated from the raw facts -- a card
+        with a printed harmonize cost, cast from a graveyard, with no
+        flashback or escape to have been cast with instead -- not from the
+        routing flag: as it leaves the stack it is exiled. Observes only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        t = card.template
+        if (getattr(card, '_cast_from_zone', None) != "graveyard"
+                or t.harmonize_cost is None or t.escape_cost is not None
+                or 'flashback' in (t.tags or set())):
+            return
+        rules_audit.check(
+            "702.180a/exiled", card.zone == "exile",
+            f"{card.name}, cast from a graveyard by harmonize, left the stack "
+            f"for {card.zone}", game=game)
 
     @staticmethod
     def _place_in_library(game: "GameState", card: "CardInstance",

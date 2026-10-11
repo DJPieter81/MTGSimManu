@@ -1018,7 +1018,8 @@ class GameState:
                 legal.append(card)
         # Include flashback and escape cards from graveyard
         for card in player.graveyard:
-            if (card.has_flashback or card.template.escape_cost is not None) and \
+            if (card.has_flashback or card.template.escape_cost is not None
+                    or card.template.harmonize_cost is not None) and \
                self.can_cast(player_idx, card):
                 legal.append(card)
         # Include exiled cards a permission lets the player play ("you may

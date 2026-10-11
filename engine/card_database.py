@@ -1804,6 +1804,9 @@ class CardDatabase:
         fb = parse_flashback_mana_cost(oracle_text)
         if fb is not None:
             template.flashback_cost = fb
+        # Harmonize cost (CR 702.180a): cast from graveyard for it, exiled
+        from .oracle_parser import parse_harmonize_cost
+        template.harmonize_cost = parse_harmonize_cost(oracle_text)
         from .oracle_parser import parse_flashback_sacrifice
         template.flashback_sacrifice_subtype = parse_flashback_sacrifice(oracle_text)
 

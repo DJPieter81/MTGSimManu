@@ -567,7 +567,12 @@ class CastManager:
                 return CastManager._can_pay_colored_pips(
                     game, player_idx, untapped_lands, template.escape_cost)
             elif not card.has_flashback:
-                return False  # No flashback, no escape — can't cast from GY
+                # Harmonize (CR 702.180a): castable for its harmonize cost,
+                # whose payability the quantity and colour gates below read
+                # (`graveyard_route_cost`); no flashback, no escape, no
+                # harmonize -- can't cast from the graveyard.
+                if template.harmonize_cost is None:
+                    return False
             else:
                 # Generic flashback-with-additional-cost parsing.
                 # "Flashback—Sacrifice a {subtype}." (Lava Dart pattern)
@@ -677,13 +682,17 @@ class CastManager:
         # equal to its mana cost").  Lava Dart's flashback cost is sacrifice-only
         # (flashback_cost=None); no mana is needed and the sacrifice is already
         # checked above in the GY-casting block.
-        _using_flashback_cost = CastManager._pays_printed_flashback_cost(card)
-        # The mana component of a printed flashback cost; a cost with no
-        # mana component ("Flashback—Sacrifice a Mountain") is an EMPTY
-        # ManaCost, not the printed mana cost.  Cards granted flashback by
-        # another effect (Past in Flames) are not on this path and pay
-        # their printed cost, as their oracle says.
-        _flashback_mana = CastManager._flashback_mana_cost(template)
+        # A graveyard cast's own cost (`graveyard_route_cost`): the mana
+        # component of a printed flashback cost -- a cost with no mana
+        # component ("Flashback—Sacrifice a Mountain") is an EMPTY ManaCost,
+        # not the printed mana cost; cards granted flashback by another
+        # effect (Past in Flames) are not on this path and pay their printed
+        # cost, as their oracle says -- or a harmonize cost after the best
+        # reduction a tapped creature gives (CR 702.180b).
+        _route_cost = CastManager.graveyard_route_cost(game, player_idx, card)
+        _using_flashback_cost = _route_cost is not None
+        _flashback_mana = _route_cost if _route_cost is not None \
+            else CastManager._flashback_mana_cost(template)
         # Quantity arithmetic starts from the LEAST mana that pays the
         # cost (`min_mana`): identical to `cmc` except that a two-brid pip
         # {2/W} counts 1 (a Plains pays it), not its mana value 2.
@@ -1103,6 +1112,48 @@ class CastManager:
         return (card.zone == "graveyard"
                 and bool(getattr(card, 'has_flashback', False))
                 and 'flashback' in (template.tags or set()))
+
+    @staticmethod
+    def harmonize_route(card: "CardInstance") -> bool:
+        """CR 702.180a: a card in a graveyard with a harmonize cost and no
+        flashback or escape of its own to be cast with instead."""
+        template = card.template
+        return (card.zone == "graveyard"
+                and template.harmonize_cost is not None
+                and not getattr(card, 'has_flashback', False)
+                and template.escape_cost is None)
+
+    @staticmethod
+    def harmonize_tappers(game: "GameState", player_idx: int) -> list:
+        """The untapped creatures a harmonize caster may tap to reduce the
+        cost (CR 702.180b)."""
+        return [c for c in game.players[player_idx].creatures if not c.tapped]
+
+    @staticmethod
+    def reduced_generic(cost: "ManaCost", amount: int) -> "ManaCost":
+        """`cost` with its generic part reduced by up to `amount` (CR
+        601.2f: a generic reduction never touches a coloured pip)."""
+        import dataclasses
+        return dataclasses.replace(cost, generic=max(0, cost.generic - amount),
+                                   hybrid=list(cost.hybrid),
+                                   phyrexian=dict(cost.phyrexian))
+
+    @staticmethod
+    def graveyard_route_cost(game: "GameState", player_idx: int,
+                             card: "CardInstance") -> "ManaCost | None":
+        """The cost a graveyard cast pays instead of the mana cost: a
+        printed flashback cost's mana (CR 702.33a), or the harmonize cost
+        reduced by the greatest power among the creatures its caster could
+        tap (CR 702.180a/b); None for any other cast."""
+        if CastManager._pays_printed_flashback_cost(card):
+            return CastManager._flashback_mana_cost(card.template)
+        if CastManager.harmonize_route(card):
+            power = max((c.power or 0 for c in
+                         CastManager.harmonize_tappers(game, player_idx)),
+                        default=0)
+            return CastManager.reduced_generic(card.template.harmonize_cost,
+                                               power)
+        return None
 
     @staticmethod
     def _flashback_mana_cost(template) -> "ManaCost":
@@ -1675,6 +1726,11 @@ class CastManager:
         warped = False
         spectacled = False
         madnessed = False
+        # Harmonize (CR 702.180): cast from the graveyard for its own cost;
+        # the reduction a tapped creature gives beyond the cost's generic
+        # part lowers the X paid on top of it.
+        harmonized = (not free_cast) and CastManager.harmonize_route(card)
+        harmonize_leftover = 0
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
 
@@ -1878,6 +1934,32 @@ class CastManager:
                 if not game.tap_lands_for_mana(player_idx, template.dash_cost,
                                                  card_name=template.name):
                     return False
+            elif harmonized:
+                # CR 702.180a/b: the harmonize cost, its generic part
+                # reduced by the power of the creature its caster taps.
+                tapper = game.callbacks.choose_harmonize_tapper(
+                    game, player_idx, card,
+                    CastManager.harmonize_tappers(game, player_idx))
+                if tapper is not None and (
+                        tapper.tapped or tapper.controller != player_idx
+                        or not tapper.template.is_creature):
+                    tapper = None
+                power = (tapper.power or 0) if tapper is not None else 0
+                if not game.tap_lands_for_mana(
+                        player_idx,
+                        CastManager.reduced_generic(template.harmonize_cost,
+                                                    power),
+                        card_name=template.name):
+                    return False
+                if tapper is not None:
+                    tapper.tapped = True
+                harmonize_leftover = max(
+                    0, power - template.harmonize_cost.generic)
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: Harmonize "
+                    f"{card.name} (pays {template.harmonize_cost}"
+                    + (f", taps {tapper.name} for {power}"
+                       if tapper is not None else "") + ")")
             elif not evoked:
                 # An alternative cost that exiles a card from hand (CR
                 # 118.9), paid instead of the mana cost when the controller
@@ -2019,6 +2101,7 @@ class CastManager:
         card._cast_from_zone = card.zone
         card.zone = "stack"
         card._cast_with_flashback = cast_with_flashback
+        card._cast_with_harmonize = harmonized
         card._evoked = evoked  # Track for sacrifice after ETB
         card._dashed = dashed  # Track for haste + return to hand at end of turn
         card._escaped = getattr(card, '_escaped', False) or (escaped if not free_cast else False)  # Track for sacrifice-unless-escaped
@@ -2039,7 +2122,7 @@ class CastManager:
             # X = (total mana available) / multiplier
             # For XX spells, X = mana / 2; for X spells, X = mana
             available_for_x = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
-            x_value = available_for_x // x_info["multiplier"]
+            x_value = (available_for_x + harmonize_leftover) // x_info["multiplier"]
             # AI chooses optimal X based on typed fields:
             if getattr(template, 'stax_class', None) == 'chalice':
                 # Hate permanent (Chalice-style): pick X to maximize NET
@@ -2139,8 +2222,9 @@ class CastManager:
                 x_value = max(int(x_info.get('min_x', 0) or 0), min(int(x_value), need))
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
-            # Pay the actual X cost
-            actual_cost = x_value * x_info["multiplier"]
+            # Pay the actual X cost (less what a harmonize tap reduced it by)
+            actual_cost = max(0, x_value * x_info["multiplier"]
+                              - harmonize_leftover)
             remaining = actual_cost
             # Pay from mana pool first
             from_pool = min(player.mana_pool.total(), remaining)

@@ -45,6 +45,7 @@ KEYWORD_WORDS: tuple = (
 _FIELD_FOR_WORD = {
     "ward": "ward_cost",
     "flashback": "flashback_cost",
+    "harmonize": "harmonize_cost",
     "cycling": "cycling_cost_data",
     "kicker": "kicker_cost",
     "evoke": "evoke_cost",

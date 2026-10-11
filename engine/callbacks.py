@@ -193,6 +193,15 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_harmonize_tapper(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        tappers: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Which untapped creature, if any, does the caster of a harmonize
+        spell tap to reduce its cost by that creature's power (CR
+        702.180b)? `tappers` are the creatures it may tap; None taps none."""
+        ...
+
     def choose_cast_targets(
         self, game: GameState, player_idx: int, card: CardInstance,
         requirements: List[Any], x_value: int = 0,
@@ -404,6 +413,11 @@ class DefaultCallbacks:
         """Default: `default_trigger_targets`, printed data only."""
         return default_trigger_targets(player_idx, req, players, permanents)
 
+    def choose_harmonize_tapper(self, game, player_idx, card, tappers):
+        """Default: the greatest power, the first in battlefield order on a
+        tie -- printed data only."""
+        return default_harmonize_tapper(tappers)
+
     def choose_cast_targets(self, game, player_idx, card, requirements,
                             x_value=0):
         """Default: `default_cast_targets`, printed data only."""
@@ -442,6 +456,14 @@ def default_trigger_targets(player_idx: int, req: Any, players: Sequence[int],
         [c for c in permanents if c.controller == player_idx] + \
         [p for p in players if p == player_idx]
     return order[:n]
+
+
+def default_harmonize_tapper(tappers: Sequence[Any]) -> Optional[Any]:
+    """The creature a harmonize cast taps by default (CR 702.180b): the
+    greatest power, the first in battlefield order on a tie; none when no
+    creature has power to give."""
+    best = max(tappers, key=lambda c: c.power or 0, default=None)
+    return best if best is not None and (best.power or 0) > 0 else None
 
 
 def default_cast_targets(game: Any, player_idx: int, card: Any,

@@ -288,6 +288,12 @@ class AICallbacks(GameCallbacks):
         return pick_trigger_targets(game, player_idx, source, spec, req,
                                     players, permanents, x_value=x_value)
 
+    def choose_harmonize_tapper(self, game, player_idx, card, tappers):
+        """The engine's default (`default_harmonize_tapper`): the most power
+        reduces the cost the most, and a bigger reduction is a bigger X."""
+        from .callbacks import default_harmonize_tapper
+        return default_harmonize_tapper(tappers)
+
     def bind_players(self, ais) -> None:
         """The players' AIs, by seat: a cast's targets are announced by its
         caster's own picker (`choose_cast_targets`)."""

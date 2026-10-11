@@ -934,6 +934,9 @@ class CardTemplate:
     # Flames use template.mana_cost instead (this field stays None for them).
     # Populated by oracle_parser.parse_flashback_mana_cost.
     flashback_cost: Optional[ManaCost] = None
+    # Printed harmonize cost (CR 702.180a), the fixed part (an {X} rides on
+    # x_cost_data). Populated by oracle_parser.parse_harmonize_cost.
+    harmonize_cost: Optional[ManaCost] = None
     # Land subtype a printed Flashback cost sacrifices ("Flashback—Sacrifice
     # a Mountain."), or None. oracle_parser.parse_flashback_sacrifice.
     flashback_sacrifice_subtype: Optional[str] = None
