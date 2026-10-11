@@ -7549,3 +7549,70 @@ Hundreds of pool cards sacrifice creatures.
 - **The pump family switch.** It needs a reconciliation of the two keyword-grant mechanisms (legacy `temp_keywords` against the layer system's `cem_keywords`) before the harness can prove it.
 - **Keyword counters** (CR 122.1b) are not modelled.
 - **Guide of Souls.** "Whenever you attack" has no carrier, and "target attacking creature" no target requirement.
+
+## Unit MD: a modal double-faced card's land face can be played as the turn's land (2026-10-11)
+
+**Rule (CR 712, 305.1, 712.8a):** "Sink into Stupor // Soporific Springs" is its front face, an instant, everywhere off the battlefield and the stack.
+- Its controller may cast that face, or play the back face as the turn's land play.
+- Played as a land, the permanent is Soporific Springs: a land that taps for {U} and enters tapped unless its controller pays 3 life.
+- When it leaves the battlefield it is the instant again.
+
+**Defect:** nothing ever offered the land face.
+- The decks that count these cards among their lands held them as spells.
+- Azorius Control never played its Sink into Stupor in a 24-game scan, and its mulligans counted it as a spell.
+- `LandManager.play_land` put any card it was handed onto the battlefield, including a Lightning Bolt.
+
+**Class:** 50 pool modal double-faced cards have a land back face. 15 registered main-deck copies in 7 decks:
+- Sink into Stupor in Azorius Control, Dimir Midrange, Pinnacle Affinity and Living End;
+- Valakut Awakening in Ruby Storm and Living End;
+- Witch Enchanter in Jeskai Blink and Azorius Blink.
+
+**Steps (`af72721`):**
+- `CardDatabase` builds the land back face as a full template from that face's own data (`CardTemplate.back_face_template`).
+- `CardTemplate.playable_land_face` is the face a player may play as a land: the card itself, a modal card's land face, or None.
+- `LandManager.play_land` plays only a land face. A modal card's back face becomes the permanent's template, so every land read is that face's: its mana, whether it enters tapped, and the 3-life untap payment.
+- The zone funnel restores the card's own template when it leaves the battlefield (CR 712.8a).
+- `get_legal_plays` offers the land face while a land play is left.
+- **AI:**
+  - A true land and the land face give the same land drop, and the modal card also keeps its spell. So the land face is a land candidate only when no true land is, scored as the land it is.
+  - A card that is legal only for its land face is not a cast candidate.
+  - The keep, the 0-land floor and the bottom choice's land floor count a land face as a land option (`ai.predicates.is_land_option`).
+- **Auditor:** `712.8a/front_face_off_battlefield` also reads a swapped face template.
+
+**Tests (red first):** `tests/test_a_modal_double_faced_land_face_is_a_land_play.py` (12). They cover:
+- the typed face;
+- the land play, with its mana, the life-or-tapped entry, the front face off the battlefield, and the land-play limit;
+- a non-land is no land play;
+- the AI plays the face only when it has no true land;
+- the keep and the bottom floor count it;
+- the auditor both ways.
+
+**Digest / anchor / suites:**
+- Anchor: 6 entries for decks carrying modal lands were refreshed. Two winner flips were replayed:
+  - Grixis Reanimator vs Azorius Blink s53000: Witch-Blessed Meadow, played untapped, casts Phelia on turn 5.
+  - Azorius Control vs Azorius Control (WST) s50000: the keep counts Sink into Stupor, and the control mirror reaches the turn cap as a draw.
+  - The other four are turn-only shifts.
+- Digest: 9 games change. One Bo3 game 3 flips (Azorius Control vs Ruby Storm s58500), downstream of game 2: Ruby Storm plays Valakut Stoneforge as its land.
+- Suites: 4641 + 2713 passed; CI green.
+
+**Measured (same-seed n=20 Bo3, `md-post` `eae8d99`, pre = `at-post`):** 226 of 600 cells change.
+
+| Deck | Before | After | Change |
+|---|---|---|---|
+| Pinnacle Affinity | 61.6 | 70.1 | +8.5 |
+| Azorius Control | 30.8 | 37.9 | +7.1 |
+| Azorius Blink | 36.0 | 39.6 | +3.5 |
+
+- Every other deck moves by at most ±2.3.
+- Violations 0 (findings 339 → 347); 0 aborts.
+- Both decks that move more than 5 pp were replayed against the AT head, cell-exact (both arms reproduce their matrix cells locally):
+  - **Jeskai Blink vs Pinnacle Affinity** (12/20 → 5/20), s50500 game 2. On turn 3 Pinnacle Affinity plays Soporific Springs, tapped, as its third land, then casts Kappa Cannoneer on turn 4. Pre, with two lands, it cast Cranial Plating.
+  - **Affinity vs Azorius Control** (13/20 → 6/20), s51000 game 3. Azorius Control's keep counts five lands instead of four, and on turn 6 it plays Soporific Springs as its sixth land. It wins on turn 23 instead of losing on turn 17.
+- Pinnacle Affinity now sits 0.1 above the default field band (30–70). The gain is the land face it was always allowed to play.
+
+**Leads (not built):**
+- **Modal spells' targets.**
+  - Avengers Disassembled (Boros Ponza MB ×3) is never cast. The AI asks every modal spell with a targeted mode for a target (`_spell_requires_targets` reads any ability's `targets_required`). It never aims the land mode, so it drops the spell, even though "deals 3 damage to each creature" needs no target (CR 601.2c, 700.2a).
+  - The same gate covers 65 pool modal spells, including Lorehold Charm and Warping Wail.
+  - "Choose one or both" is resolved as both. The modal resolver's gate counts its range as two of two, and "one or more" parses as "one".
+- **Tiered modes.** Fire Magic resolves its best tier without paying that tier's additional cost.
