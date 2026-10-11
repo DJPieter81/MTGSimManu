@@ -8274,3 +8274,54 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **An activated or loyalty ability's player slot** ("target player mills": 83 permanents, Ashiok's −1 in three sideboards) is not named by the player owner.
 - **Thassa's Oracle-style payoffs** that want an empty library are not read by the decking rule.
+
+## Unit AC: a spell's additional cost is paid as it is cast (2026-10-11)
+
+**Rule (CR 601.2b, 601.2f-h, 118.9, 119.4):**
+- "As an additional cost to cast this spell, <cost>" is part of the spell's total cost. Its caster pays it as the spell is cast, on every route; a spell cast without paying its mana cost still pays it.
+- A spell whose mandatory additional cost can't be paid can't be cast. An optional one ("you may ...") may go unpaid.
+- Paying life is losing that much life.
+
+**Defect:** the effect grammar typed each additional cost (an ADDITIONAL_COST host in the activation cost model), but the cast procedure never read it, so every such spell was cast for its mana cost alone.
+- Grixis Reanimator's four Abhorrent Oculus ("exile six cards from your graveyard") came down as a three-mana 5/5 flier on an empty graveyard.
+- Toxic Deluge ("pay X life") resolved as a blank.
+
+**Class:** 195 pool cards print a mandatory additional cost. The engine pays 66 of them (49 sacrifices, 16 discards, one graveyard exile) and refuses the other 128 rather than letting them be cast for free:
+- 48 sacrifices of a subtype or of more than one permanent;
+- 22 unrecognised (X life, "or" alternatives);
+- 22 typed graveyard exiles;
+- 15 reveals;
+- 7 typed discards;
+- the rest: return, tap other, put counter.
+
+**Steps (`f5828ab`; arm request `c50a9bc`):**
+- **Typed at load.** `CardTemplate.additional_cost` (`oracle_parser.parse_additional_cost`, the activation cost model). It is None for an optional "you may" cost, which the grammar now flags `optional_cost`. A pool-wide test pins the field to the grammar's ADDITIONAL_COST host. The graveyard-exile count reads every number word ("six"), activations included.
+- **Legality.** `CastManager.additional_cost_ready` is asked by `can_cast`, by a free cast and by cascade's hit check. An item the payer does not pay refuses the cast: an unpayable shape, mana or X, or a source-bound item.
+- **Payment: one payer for activations and spells** (`ActivationManager.pay_resource_costs`, lifted out of `activate`).
+  - Life goes through `damage.lose_life`, so an activation's life payment now counts as life lost.
+  - A discard goes through the funnel; a graveyard exile and a sacrifice go through the zone funnel.
+  - A sacrifice's victim is chosen before anything is paid (`cost_victim`).
+- **Which graveyard cards an exile cost takes** is the payer's choice (`callbacks.choose_cost_exile`; default zone order). The AI pays with the cards that are no resource there by themselves (`ai.resolution_choices.pick_cost_exile`, MV's fuel tiers).
+- **Escape.** "Exile N other cards" now asks the same seam and is paid with the rest of the cost, after the mana, through the funnel. Before, the engine sorted the cards by mana value itself and paid before the mana.
+- **Auditor.** New invariant `601.2h/additional_cost_paid`, restated from the zones.
+
+**Tests (16 of 18 red first):** `tests/test_a_spells_additional_cost_is_paid_as_it_is_cast.py`. The grammar-consistency pin and an activation's life payment came after.
+
+**Ratchets / digest / anchor / suites:**
+- Ratchets: single-owner `damage_write` 27 → 26 (the activation's life write); zone mutation 45 → 42 (escape's inline moves, plus two from earlier units claimed).
+- Digest: one game changes, with the same winner and turns (Oculus pays six graveyard cards, keeping Archon, Psychic Frog and a Faithless Looting). Anchor 29 passed.
+- Suites at `f5828ab` (pinned worktree): chunk A 4779 passed plus one failure, chunk B 2712 passed. CI green.
+  - The failure is `test_zoo_vs_dimir_balanced`. It counts Zoo's Bo1 wins, and the runner it uses has an unseeded RNG (`random.Random()`), so the count varies with what ran before it. It passes alone.
+
+**Measured (same-seed n=20 Bo3, `ac-post` `c50a9bc`, pre = `mv-post`):** 59 of 600 cells change.
+- Grixis Reanimator −9.2 (52.6 → 43.4); every other deck moves by at most 1.2. 0 aborts, 0 violations; audit findings 328 → 329.
+- Replayed cell-exact from pinned worktrees (pre `d8cc54e`, post `f5828ab`): Grixis Reanimator vs Azorius Control (WST), 55 → 20, reproduces at 4 of 20, with 9 matches flipping (8 toward Azorius).
+- In s50000, Grixis cast three Oculus for {2}{U} on turns 5, 6 and 9 of game 1 before the unit. After it, the first one waits until turn 11 and pays six graveyard cards: three fetchlands, two Persist and an Unearth, spent spells that are no resource there. The drop is the rules correction: the deck's three-mana 5/5 fliers were free.
+
+**Leads (not built):**
+- **The AI does not price an additional cost.** A cast that exiles graveyard cards, sacrifices or discards is valued as if free.
+- **The 128 refused mandatory costs:** X life (Toxic Deluge), "or" alternatives, subtyped and multiple sacrifices, typed exiles and discards, reveals, behold, blight, waterbend.
+- **Free-cast routes other than cascade** (suspend, rebound, plot) learn the additional cost only inside `cast_spell`; a refused cast leaves the card where the route put it.
+- **Phyrexian mana's life payment** in `cast_manager` still writes life directly, not through `damage.lose_life`.
+- **Delve's choice of cards** is made inline in the engine, not through the payer's choice.
+- **`test_zoo_vs_dimir_balanced`** uses an unseeded runner RNG.
