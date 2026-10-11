@@ -12,6 +12,37 @@ Asked by ``engine.modal_spell.choose_modes`` as the spell is cast (CR
 from __future__ import annotations
 
 
+def _perm_worth(perm) -> float:
+    """A hit is worth at least 1 (denying any permanent matters), scaled
+    by mana value (bigger investments hurt more to lose)."""
+    return 1.0 + float(perm.template.cmc or 0)
+
+
+def _edict_value(game, controller: int, host) -> float:
+    """Net value of an edict mode (`effect_executors.execute_sacrifice`):
+    each named player gives up their least valuable matches -- the
+    opponent's loss a gain, the caster's own a loss. A mode that matches
+    nothing of the opponent's is worth nothing."""
+    from engine.effect_executors import edict_victims
+    from engine.effect_spec import RefKind, SelectorKind, Verb, iter_specs
+    value = 0.0
+    for s in iter_specs(host.specs):
+        if s.verb is not Verb.SACRIFICE:
+            continue
+        kind = getattr(s.actor, 'kind', None)
+        if kind is SelectorKind.ALL_PLAYERS:
+            players = (controller, 1 - controller)
+        elif kind in (SelectorKind.OPPONENTS, RefKind.TARGET):
+            players = (1 - controller,)     # an aimed edict aims at them
+        else:
+            continue
+        for p in players:
+            lost = sorted(_perm_worth(c) for c in
+                          edict_victims(game, p, s.filter))[:s.amount.n]
+            value += sum(lost) if p != controller else -sum(lost)
+    return value
+
+
 def _mode_value(game, controller: int, mass) -> float:
     """Estimate the net board value (opponent's loss minus the caster's
     own) of a mass-sweep mode, from its shape typed at load
@@ -27,11 +58,6 @@ def _mode_value(game, controller: int, mass) -> float:
     opp = game.players[1 - controller]
     theirs = mass['scope'] in ('all', 'opponents')
     mine = mass['scope'] in ('all', 'you')
-
-    def _perm_worth(perm) -> float:
-        # A hit is worth at least 1 (denying any permanent matters),
-        # scaled by mana value (bigger investments hurt more to lose).
-        return 1.0 + float(perm.template.cmc or 0)
 
     if mass['kind'] == 'damage':
         amount = mass['amount']
@@ -98,6 +124,10 @@ def mode_value(game, card, controller: int, index: int, targets=None,
     if mode.get('removal'):
         return _targeted_removal_mode_value(
             game, controller, mode['removal'], targets, x_value)
+    from engine.effect_carrier import chosen_mode_host, mode_family
+    if mode_family(card.template, index) == "edict":
+        return _edict_value(game, controller,
+                            chosen_mode_host(card.template, index))
     return _mode_value(game, controller, mode.get('mass'))
 
 

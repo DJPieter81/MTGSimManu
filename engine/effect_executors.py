@@ -41,6 +41,7 @@ the one amass owner, `GameState.amass` (CR 701.47a).
 from __future__ import annotations
 
 import dataclasses
+import itertools
 from typing import Any, Tuple
 
 from . import effect_conditions as conditions
@@ -58,6 +59,7 @@ from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
 FAMILY_TOKENS_COUNTERS = "tokens_counters"
+FAMILY_EDICT = "edict"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -66,7 +68,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
                                          Verb.CONTINUOUS, Verb.DRAW}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
-                                               Verb.CREATE_TOKEN})}
+                                               Verb.CREATE_TOKEN}),
+            FAMILY_EDICT: frozenset({Verb.SACRIFICE})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -930,6 +933,128 @@ execute_continuous.allowed_families = (
     else None)
 
 
+# ── SACRIFICE: an edict (family edict, unit ED) ───────────────────────
+#
+# "<players> sacrifice(s) <N> <permanents> [of their choice]" (CR 701.21a):
+# each player the actor names sacrifices N permanents they control that
+# match the filter, each chosen by the player who sacrifices it (the
+# `choose_sacrifice` callback, the seam a sacrifice cost's choice uses);
+# the choices are made in APNAP order and the permanents then leave
+# together (CR 101.4). A player with fewer sacrifices every one.
+
+_EDICT_ACTORS = frozenset({SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS,
+                           SelectorKind.PLAYER})
+_CARD_TYPE_VALUES = frozenset(t.value for t in CardType)
+
+
+def _edict_filter(f: Any) -> bool:
+    """A battlefield filter of card types (any of them; none: any
+    permanent) and, optionally, token or nontoken."""
+    if not isinstance(f, CardFilter) or f.zone != "battlefield":
+        return False
+    entries = dict(f.as_tuple())
+    if not set(entries) <= {"types", "token"}:
+        return False
+    return set(entries.get("types", ())) <= _CARD_TYPE_VALUES
+
+
+def _sacrifice_supported(s: EffectSpec) -> bool:
+    """An edict: the player set or the chosen player sacrifices a printed
+    number of filtered permanents of their choice, unconditionally."""
+    a, actor = s.amount, s.actor
+    actor_ok = ((isinstance(actor, Selector) and actor.kind in _EDICT_ACTORS
+                 and actor.filter is None)
+                or (isinstance(actor, Ref) and actor.kind is RefKind.TARGET))
+    return (s.verb is Verb.SACRIFICE and actor_ok
+            and s.chooser is Chooser.PARTICIPANT
+            and isinstance(a, Amount) and a.kind is AmountKind.LITERAL
+            and isinstance(a.n, int) and a.n >= 1
+            and _edict_filter(s.filter)
+            and s.target is None and s.target_slot is None
+            and s.subject is None and s.ref is None and s.payload is None
+            and s.dest is None and s.duration is None and s.group is None
+            and not s.optional and not s.alternatives and not s.flags)
+
+
+def edict_victims(game: Any, player: int, f: CardFilter) -> list:
+    """The permanents `player` controls that an edict's filter admits, by
+    their current types (CR 613)."""
+    types = set(f.types or ())
+    out = []
+    for perm in game.players[player].battlefield:
+        if types and not any(t.value in types
+                             for t in perm.effective_card_types):
+            continue
+        if f.token is not None and bool(perm.is_token) != f.token:
+            continue
+        out.append(perm)
+    return out
+
+
+def _sacrifice(ctx: Resolution, perm: Any) -> None:
+    """CR 701.21a: its controller moves it to its owner's graveyard,
+    through the zone funnel (a creature dies, CR 700.4)."""
+    source = getattr(_source_object(ctx), "name", "an edict")
+    ctx.game.zone_mgr.move_card_to_graveyard(
+        ctx.game, perm, cause=f"sacrifice ({source})")
+
+
+def execute_sacrifice(ctx: Resolution, s: EffectSpec,
+                      actors: Tuple[int, ...]) -> Outcome:
+    n = s.amount.n
+    choices = []
+    for player in actors:                        # choices in APNAP order
+        legal = edict_victims(ctx.game, player, s.filter)
+        picks = []
+        while legal and len(picks) < n:
+            pick = ctx.game.callbacks.choose_sacrifice(ctx.game, player,
+                                                       list(legal))
+            if pick is None or pick not in legal:
+                pick = legal[0]                  # the choice is not optional
+            picks.append(pick)
+            legal.remove(pick)
+        choices.append((player, picks))
+    chosen = dict(choices)
+    before = {p: len(edict_victims(ctx.game, p, s.filter)) for p in actors}
+    for player in actors:                        # then one simultaneous move
+        for perm in chosen[player]:
+            _sacrifice(ctx, perm)
+    _audit_edict(ctx, s, actors, before)
+    return Outcome(any(chosen.values()),
+                   {p: tuple(handle_of(c) for c in v)
+                    for p, v in chosen.items() if v})
+
+
+def _audit_edict(ctx: Resolution, s: EffectSpec, actors: Tuple[int, ...],
+                 before: dict) -> None:
+    """CR 701.21a, restated from the battlefield's raw printed types: each
+    player the edict named controls N fewer permanents it matches, or
+    none. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    f = s.filter
+    types = set(f.types or ())
+
+    def count(player):
+        return sum(1 for p in ctx.game.players[player].battlefield
+                   if (not types or any(t.value in types
+                                        for t in p.template.card_types))
+                   and (f.token is None or bool(p.is_token) == f.token))
+    for player in actors:
+        want = max(0, before[player] - s.amount.n)
+        rules_audit.check("701.21a/edict", count(player) <= want,
+                          f"P{player + 1} controls {count(player)} matching "
+                          f"permanents after an edict, more than {want}",
+                          game=ctx.game)
+
+
+execute_sacrifice.supports = _sacrifice_supported
+# An edict runs only in its own family (unit ED): the removal family's
+# other sacrifices (costs, "sacrifice ~") stay with their carriers.
+execute_sacrifice.allowed_families = lambda s: frozenset({FAMILY_EDICT})
+
+
 # ── Conditions ────────────────────────────────────────────────────────
 
 def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
@@ -951,6 +1076,11 @@ EXECUTORS[Verb.EXILE] = execute_exile
 EXECUTORS[Verb.CONTINUOUS] = execute_continuous
 EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
+EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
+EXECUTOR_FILTER_KEYS[Verb.SACRIFICE] = frozenset(
+    ("types", combo) for k in (1, 2, 3)
+    for combo in itertools.combinations(sorted(_CARD_TYPE_VALUES), k)) | {
+    ("token", True), ("token", False)}
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state

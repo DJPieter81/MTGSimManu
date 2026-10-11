@@ -112,19 +112,11 @@
   ],
   [
    "Lorehold Charm",
-   "MODE:0:0:mode0"
-  ],
-  [
-   "Lorehold Charm",
    "MODE:0:1:mode1"
   ],
   [
    "Lorehold Charm",
    "MODE:0:2:mode2"
-  ],
-  [
-   "Lorehold Charm",
-   "SPELL:0:0"
   ],
   [
    "March of Otherworldly Light",
@@ -156,19 +148,11 @@
   ],
   [
    "Sheoldred's Edict",
-   "MODE:0:0:mode0"
-  ],
-  [
-   "Sheoldred's Edict",
    "MODE:0:1:mode1"
   ],
   [
    "Sheoldred's Edict",
    "MODE:0:2:mode2"
-  ],
-  [
-   "Sheoldred's Edict",
-   "SPELL:0:0"
   ],
   [
    "Simic Growth Chamber",
@@ -275,5 +259,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 176
+ "state_changing_floor": 180
 }

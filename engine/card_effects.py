@@ -1264,41 +1264,6 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
                         f"Wear // Tear: no valid targets")
 
 
-@EFFECT_REGISTRY.register("Pick Your Poison", EffectTiming.SPELL_RESOLVE,
-                           description="Opponent sacrifices artifact/enchantment or creature with flying/reach")
-def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
-    from .cards import CardType, Keyword
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Not targeting (CR 701.17): the OPPONENT chooses what to sacrifice, so
-    # hexproof / protection do not apply — this pick models their choice.
-    # Choose mode: destroy artifact/enchantment if they have one, else creature with flying
-    artifacts_enchantments = [c for c in opp.battlefield
-                              if not c.template.is_land and
-                              (CardType.ARTIFACT in c.template.card_types or
-                               CardType.ENCHANTMENT in c.template.card_types)]
-    flyers = [c for c in opp.creatures
-              if Keyword.FLYING in c.keywords]
-
-    if artifacts_enchantments:
-        # Sacrifice highest value artifact/enchantment
-        target = max(artifacts_enchantments,
-                     key=lambda c: _threat_score(c, game, opp))
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Pick Your Poison: opponent sacrifices {target.name}")
-    elif flyers:
-        target = max(flyers, key=lambda c: c.power or 0)
-        game._creature_dies(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Pick Your Poison: opponent sacrifices {target.name}")
-    else:
-        # Fallback: opponent loses 1 life (Toxic 1 mode)
-        opp.life -= 1
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Pick Your Poison: opponent loses 1 life")
-
-
 @EFFECT_REGISTRY.register("Meltdown", EffectTiming.SPELL_RESOLVE,
                            description="Destroy all artifacts with MV <= X")
 def meltdown_resolve(game, card, controller, targets=None, item=None):
@@ -1336,47 +1301,11 @@ def engineered_explosives_etb(game, card, controller, targets=None, item=None):
                     f"Engineered Explosives enters with {card.other_counters['charge']} charge counters")
 
 
-@EFFECT_REGISTRY.register("Kolaghan's Command", EffectTiming.SPELL_RESOLVE,
-                           description="Choose 2: deal 2 damage, destroy artifact, discard, return creature from GY")
-def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
-    from .cards import CardType
-    opponent = 1 - controller
-    opp = game.players[opponent]
-
-    # Mode selection: destroy artifact if available, else deal 2 damage
-    from .target_solver import pick_resolution_target
-    artifacts = [c for c in opp.battlefield
-                 if CardType.ARTIFACT in c.template.card_types]
-    target = pick_resolution_target(game, controller, card, artifacts,
-                                    preferred=targets,
-                                    key=lambda c: _threat_score(c, game, opp))
-    if target is not None:
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Kolaghan's Command destroys {target.name}")
-    else:
-        # Deal 2 damage to opponent (through the damage owner: prevention,
-        # redirection and life loss live there).
-        from .damage import deal_damage
-        deal_damage(card, opp, 2)
-        game.players[controller].damage_dealt_this_turn += 2
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Kolaghan's Command deals 2 to opponent")
-
-    # Second mode: return creature from GY or force discard
-    player = game.players[controller]
-    gy_creatures = [c for c in player.graveyard if c.template.is_creature]
-    if gy_creatures:
-        best = max(gy_creatures, key=lambda c: (c.template.power or 0))
-        player.graveyard.remove(best)
-        best.zone = "hand"
-        player.hand.append(best)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Kolaghan's Command returns {best.name} from GY")
-    else:
-        game._force_discard(opponent, 1)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Kolaghan's Command: opponent discards")
+# Modal spells' modes resolve by shape (engine/modal_spell.py): chosen as
+# the spell is cast, each performed by the owner of its shape. The modal
+# path resolves before the registry, so the name-keyed handlers of modal
+# spells (Pick Your Poison's edicts, Kolaghan's Command's regrowth, damage,
+# discard and artifact modes) never ran in a real cast and are deleted.
 
 
 def _nonland_permanent_threat(c, opp_battlefield):

@@ -1031,10 +1031,38 @@
     "strict": true
    },
    {
+    "card": "Lorehold Charm",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
     "card": "Reckless Impulse",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E5",
+    "strict": true
+   },
+   {
+    "card": "Sheoldred's Edict",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Sheoldred's Edict",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Sheoldred's Edict",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E2",
     "strict": true
    },
    {
@@ -1059,20 +1087,20 @@
     "strict": true
    }
   ],
-  "executable": 210,
+  "executable": 235,
   "family": "damage",
   "hosts": {
-   "mainboard": 10,
-   "pool": 199,
+   "mainboard": 14,
+   "pool": 220,
    "sideboard": 1
   },
   "steps": {
    "E1": 145,
-   "E2": 51,
+   "E2": 76,
    "E3": 3,
    "E5": 11
   },
-  "strict": 210,
+  "strict": 235,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,
@@ -1080,6 +1108,7 @@
    "CONTINUOUS,EXILE": 7,
    "DAMAGE": 145,
    "MOVE": 51,
+   "SACRIFICE": 25,
    "SURVEIL": 3
   }
  },

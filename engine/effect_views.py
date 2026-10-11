@@ -87,6 +87,9 @@ FAMILY_TRIGGER = "trigger"
 # its other types", CR 205.1b) with the keyword and P/T changes printed
 # beside them (unit AT): a shape no legacy handler applies.
 FAMILY_TYPE_CHANGE = "type_change"
+# Edicts ("<players> sacrifice(s) <N> <permanents> of their choice", CR
+# 701.21a; unit ED): a shape no legacy handler applies.
+FAMILY_EDICT = "edict"
 FAMILIES = frozenset({FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                       FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                       FAMILY_STACK_MANA, FAMILY_TRIGGER})
@@ -507,6 +510,13 @@ def strict_trigger(h: AbilityEffects) -> bool:
                     for s in iter_specs(h.specs)))
 
 
+def strict_edict(h: AbilityEffects) -> bool:
+    """Every spec an edict: a SACRIFICE, unconditional, its shape the
+    SACRIFICE executor's (a player set or a chosen player sacrifices a
+    printed number of filtered permanents of their choice)."""
+    return _strict_host(h, frozenset({Verb.SACRIFICE}))
+
+
 STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_DAMAGE: strict_damage,
     FAMILY_REMOVAL: strict_removal,
@@ -518,6 +528,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_DRAW_TRIGGER: strict_draw_trigger,
     FAMILY_COMBAT_DAMAGE_TRIGGER: strict_combat_damage_trigger,
     FAMILY_TYPE_CHANGE: strict_type_change,
+    FAMILY_EDICT: strict_edict,
 })
 
 

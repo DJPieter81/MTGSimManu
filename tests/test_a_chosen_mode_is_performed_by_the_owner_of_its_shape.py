@@ -174,13 +174,14 @@ def test_no_card_name_handler_resolves_a_modal_spells_modes(card_db):
 # ── A chosen mode no owner performs is recorded ───────────────────────
 
 def test_a_chosen_mode_that_resolves_to_nothing_is_recorded(card_db):
+    """"Target player creates X Spawn tokens; target player scries X, then
+    draws a card": no owner performs either mode yet."""
     from engine import effect_diagnostics
     effect_diagnostics.reset()
     game = _game()
-    _lands(game, card_db, "Swamp", 2)
-    _put(game, card_db, "Grizzly Bears", "battlefield", 1)
-    _cast(game, card_db, "Sheoldred's Edict", [])
-    assert ("Sheoldred's Edict", "mode") in \
+    _lands(game, card_db, "Wastes", 2)
+    _cast(game, card_db, "Kozilek's Command", [])
+    assert ("Kozilek's Command", "mode") in \
         effect_diagnostics.unhandled_effects()
     effect_diagnostics.reset()
 

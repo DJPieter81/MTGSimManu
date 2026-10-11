@@ -764,6 +764,30 @@
   {
    "pair": [
     "dispatched",
+    "Angrath's Rampage",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Angrath's Rampage",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Angrath's Rampage",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Artillerize",
     "SPELL:0:1"
    ],
@@ -800,6 +824,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Barter in Blood",
+    "SPELL:0:0"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
   },
   {
    "pair": [
@@ -908,10 +940,26 @@
   {
    "pair": [
     "dispatched",
+    "Crack the Earth",
+    "SPELL:0:0"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Crash and Burn",
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cruel Edict",
+    "SPELL:0:0"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
   },
   {
    "pair": [
@@ -940,6 +988,14 @@
   {
    "pair": [
     "dispatched",
+    "Dead Drop",
+    "SPELL:0:1"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Dead Revels",
     "SPELL:0:1"
    ],
@@ -964,10 +1020,26 @@
   {
    "pair": [
     "dispatched",
+    "Diabolic Edict",
+    "SPELL:0:0"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Disentomb",
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dromoka's Command",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1032,6 +1104,14 @@
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Extract the Truth",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1276,6 +1356,14 @@
   {
    "pair": [
     "dispatched",
+    "Kaya's Guile",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Kolaghan's Command",
     "MODE:0:0:mode0"
    ],
@@ -1320,6 +1408,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Lorehold Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1484,10 +1580,42 @@
   {
    "pair": [
     "dispatched",
+    "Pharika's Libation",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pharika's Libation",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Photon Blast Barrage",
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pick Your Poison",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pick Your Poison",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1552,6 +1680,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rankle's Prank",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1788,6 +1924,30 @@
   {
    "pair": [
     "dispatched",
+    "Sheoldred's Edict",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sheoldred's Edict",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sheoldred's Edict",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Shivan Meteor",
     "SPELL:0:0"
    ],
@@ -1800,6 +1960,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Silverquill Command",
+    "MODE:0:3:mode3"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -1916,6 +2084,14 @@
   {
    "pair": [
     "dispatched",
+    "Sudden Edict",
+    "SPELL:0:1"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
     "Sudden Shock",
     "SPELL:0:1"
    ],
@@ -1936,6 +2112,14 @@
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Tergrid's Shadow",
+    "SPELL:0:0"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
   },
   {
    "pair": [
@@ -2008,6 +2192,14 @@
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Umbral Juke",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
   },
   {
    "pair": [
@@ -2096,6 +2288,14 @@
     "SPELL:0:0"
    ],
    "reason": "Impulse draw from text (unit I): the top N cards of the controller's library go to exile with a permission to play them for the printed duration (CR 406, 601.2a); legacy moved them to hand when tagged as impulse draw and did nothing otherwise."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Yawning Fissure",
+    "SPELL:0:0"
+   ],
+   "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
   },
   {
    "pair": [

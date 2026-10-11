@@ -57,8 +57,9 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
 # the tag-gated impulse handler it replaces moved the cards to hand. The
 # type-change family joined with unit AT: a host that adds a type to an
 # object, which no legacy handler applies (Enter the Avatar State, Jump
-# Scare).
-SPELL_FAMILIES = ("damage", "card_flow", "type_change")
+# Scare). The edict family joined with unit ED: "<players> sacrifice(s)
+# <N> <permanents> of their choice", which no legacy handler applied.
+SPELL_FAMILIES = ("damage", "card_flow", "type_change", "edict")
 
 
 def spell_family(template: Any, effects: Any = None) -> Optional[str]:
@@ -570,11 +571,21 @@ def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
             and not any(h.targets for h in face_hosts if h is not host))
 
 
+def _names_slot_0(s: Any) -> bool:
+    """The spec targets slot 0, or its acting player is slot 0's chosen
+    player ("target player sacrifices ...")."""
+    from .effect_spec import Ref, RefKind
+    a = s.actor
+    return s.target_slot == 0 or (isinstance(a, Ref)
+                                  and a.kind is RefKind.TARGET
+                                  and a.index == 0)
+
+
 def _slot_span(host: Any) -> Optional[tuple]:
     """The printed span of slot 0's spec, when it lies inside the host's
     text (an empty or out-of-text span places nothing)."""
     span = next((s.span for s in iter_specs(host.specs)
-                 if s.target_slot == 0), None)
+                 if _names_slot_0(s)), None)
     if span is None or not 0 <= span[0] < span[1] <= len(host.text or ""):
         return None
     return span
