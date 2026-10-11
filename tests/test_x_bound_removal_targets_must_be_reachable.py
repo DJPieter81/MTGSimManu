@@ -79,7 +79,10 @@ def test_a_modal_x_bound_exile_cannot_exile_above_x_at_resolution(card_db):
     _add(game, card_db, "Eldrazi Temple", 0, "battlefield")
     cmd = _add(game, card_db, "Kozilek's Command", 0, "hand")
     bears = _add(game, card_db, "Grizzly Bears", 1, "battlefield")   # MV 2
-    assert CastManager.cast_spell(game, 0, cmd, [bears.instance_id])
+    # CR 601.2c: at X=0 a mana-value-2 creature is no legal choice for the
+    # mode's target, so the cast at it is refused before anything is paid
+    # (unit MT; before, the cast was taken and the bound held on resolution).
+    assert not CastManager.cast_spell(game, 0, cmd, [bears.instance_id])
     _resolve_all(game)
     assert bears in game.players[1].battlefield, (
         "X=0 cannot exile a mana-value-2 creature — the mode's bound was ignored")

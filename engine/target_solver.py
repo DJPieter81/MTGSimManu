@@ -734,6 +734,23 @@ def _matches_type(card: "CardInstance", types: FrozenSet[str],
     return False
 
 
+def _matches_current_type(card: "CardInstance",
+                          types: FrozenSet[str]) -> bool:
+    """A permanent's types are its current ones (CR 613.1d, 712.8): the
+    face it shows -- a transformed permanent's back face -- and the types
+    an effect adds. Does one of them, or the "permanent" / "nonland
+    permanent" words, answer a battlefield requirement's type?"""
+    current = {t.value for t in card.effective_card_types}
+    for tok in types:
+        if tok in ("permanent", "card"):
+            return True
+        if tok == "permanent_nonland" and "land" not in current:
+            return True
+        if tok in current:
+            return True
+    return False
+
+
 def _blocked_by_hexproof(card: "CardInstance", controller: int) -> bool:
     """CR 702.11d — a permanent with hexproof can't be the target of a
     spell or ability an OPPONENT controls (your own spells can still
@@ -804,9 +821,12 @@ def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
     types = set(req.types)
     if "permanent" in types:
         return True                # every object on the battlefield is one
+    current = {t.value for t in card.effective_card_types}
+    if "permanent_nonland" in types and "land" not in current:
+        return True
     admitted = ({"creature", "planeswalker"} if "any" in types
                 else types - {"player"})
-    return bool({t.value for t in card.effective_card_types} & admitted)
+    return bool(current & admitted)
 
 
 def _matches_supertype(card: "CardInstance",
@@ -983,23 +1003,41 @@ def has_legal_target(game: "GameState", controller: int,
                 return True
         return False
 
-    for card in _zone_cards(game, controller, req):
-        if exclude is not None and card is exclude:
-            continue
-        if not _matches_type(card, req.types, req.zone):
-            continue
-        if not _matches_supertype(card, req.supertype):
-            continue
-        if not _matches_subtype(card, req.subtype):
-            continue
-        if req.zone == "battlefield" and not can_be_targeted(card, source, controller):
-            continue
-        # Owner already pre-filtered by _zone_cards.
-        if req.max_mana_value_is_x and x_ceiling is not None and \
-                (card.template.cmc or 0) > x_ceiling:
-            continue  # CR 601.2c: beyond the X the caster can pay
-        return True
-    return False
+    return any(_admits_card(card, req, controller, exclude, x_ceiling, source)
+               for card in _zone_cards(game, controller, req))
+
+
+def _admits_card(card: "CardInstance", req: TargetRequirement,
+                 controller: int, exclude: Optional["CardInstance"],
+                 x_ceiling: Optional[int],
+                 source: Optional["CardInstance"]) -> bool:
+    """CR 601.2c / 115.1: does a requirement admit this card of its zone
+    (the zone and owner scope `_zone_cards` already applied) as a target --
+    its types, supertype and subtype, the source may target it (hexproof,
+    protection: battlefield only), and its mana value within the printed
+    bound and within the X the caster can pay? The one predicate
+    castability (`has_legal_target`), the enumeration
+    (`enumerate_legal_targets`) and the cast (`target_admitted`) read."""
+    if exclude is not None and card is exclude:
+        return False
+    if req.zone == "battlefield":
+        if not _matches_current_type(card, req.types):
+            return False
+    elif not _matches_type(card, req.types, req.zone):
+        return False
+    if not _matches_supertype(card, req.supertype):
+        return False
+    if not _matches_subtype(card, req.subtype):
+        return False
+    if req.zone == "battlefield" and not can_be_targeted(card, source,
+                                                         controller):
+        return False
+    mv = card.template.cmc or 0
+    if req.max_mana_value is not None and mv > req.max_mana_value:
+        return False
+    if req.max_mana_value_is_x and x_ceiling is not None and mv > x_ceiling:
+        return False                # beyond the X the caster can pay
+    return True
 
 
 def choose_targets(game: "GameState", controller: int, req: TargetRequirement,
@@ -1062,26 +1100,9 @@ def enumerate_legal_targets(game: "GameState", controller: int,
                 out.append(item.source)
         return out
 
-    out = []
-    for card in _zone_cards(game, controller, req):
-        if exclude is not None and card is exclude:
-            continue
-        if not _matches_type(card, req.types, req.zone):
-            continue
-        if not _matches_supertype(card, req.supertype):
-            continue
-        if not _matches_subtype(card, req.subtype):
-            continue
-        if req.zone == "battlefield" and not can_be_targeted(card, source, controller):
-            continue
-        if req.max_mana_value is not None and \
-                (card.template.cmc or 0) > req.max_mana_value:
-            continue
-        if req.max_mana_value_is_x and x_ceiling is not None and \
-                (card.template.cmc or 0) > x_ceiling:
-            continue  # CR 601.2c: beyond the X the caster can pay
-        out.append(card)
-    return out
+    return [card for card in _zone_cards(game, controller, req)
+            if _admits_card(card, req, controller, exclude, x_ceiling,
+                            source)]
 
 
 def legal_slot_choices(game: "GameState", controller: int,
@@ -1115,6 +1136,40 @@ def legal_slot_choices(game: "GameState", controller: int,
                 continue
             permanents.append(card)
     return players, permanents
+
+
+def target_admitted(game: "GameState", controller: int,
+                    requirements: List[TargetRequirement], target,
+                    exclude: Optional["CardInstance"] = None,
+                    x_ceiling: Optional[int] = None,
+                    source: Optional["CardInstance"] = None) -> bool:
+    """CR 601.2c: is an object chosen as a target a legal choice for some
+    requirement of the spell -- a spell of a kind a stack requirement
+    names, a permanent "any target" or a typed battlefield slot admits
+    (`slot_admits_permanent`, the source may target it), or a card of the
+    requirement's zone it admits (`_admits_card`)? A player marker
+    (a negative id) is not an object: True when some requirement admits a
+    player. None of the spell's own requirements admit it: False."""
+    if isinstance(target, int) and target < 0:
+        return any(set(r.types) & {"any", "player"} for r in requirements)
+    obj = game.get_card_by_id(target) if isinstance(target, int) else None
+    if obj is None:
+        return False
+    for req in requirements:
+        if req.zone == "stack":
+            if any(item.source is obj for item in game.stack.items) and \
+                    _spell_token_matches(obj, req.types):
+                return True
+        elif req.zone == "any":
+            if obj.zone == "battlefield" and \
+                    slot_admits_permanent(req, obj, controller) and \
+                    can_be_targeted(obj, source, controller):
+                return True
+        elif obj.zone == req.zone and \
+                any(c is obj for c in _zone_cards(game, controller, req)) and \
+                _admits_card(obj, req, controller, exclude, x_ceiling, source):
+            return True
+    return False
 
 
 def has_legal_target_for_spell(game: "GameState", controller: int,

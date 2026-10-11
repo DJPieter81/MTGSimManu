@@ -251,14 +251,19 @@ def choose_mode_players(game: "GameState", card: "CardInstance",
 def mode_targets(game: "GameState", card: "CardInstance", controller: int,
                  targets: Sequence, index: int,
                  mode_players: Optional[dict]) -> list:
-    """The cast-time targets one chosen mode reads. A mode whose every
-    requirement only a player satisfies reads the players chosen for it
-    (`choose_mode_players`), as the engine's player markers; any other
+    """The cast-time targets one chosen mode reads (CR 601.2c, 700.2a): a
+    mode the dispatcher performs (`effect_carrier.mode_family`, its typed
+    host authoritative) that targets nothing reads none; a mode whose
+    every requirement only a player satisfies reads the players chosen for
+    it (`choose_mode_players`), as the engine's player markers; any other
     mode reads the spell's target list, with those players in front when
     it also has such a requirement."""
     from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
-    from .effect_carrier import chosen_mode_host
+    from .effect_carrier import chosen_mode_host, mode_family
     host = chosen_mode_host(card.template, index)
+    if host is not None and not host.targets and \
+            mode_family(card.template, index) is not None:
+        return []
     if host is None or not any(_player_only(r) for r in host.targets):
         return list(targets)
     players = [p for slot in (mode_players or {}).get(index, ())

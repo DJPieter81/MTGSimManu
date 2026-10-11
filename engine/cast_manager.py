@@ -293,6 +293,45 @@ def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
                           f"{perm.name}'s printed restriction", game=game)
 
 
+def _audit_targets_admitted(game: "GameState", card, targets) -> None:
+    """Rules audit (CR 601.2c), restated from the requirements' raw fields
+    -- zone, type words and printed mana-value bound -- not from the
+    legality owner's predicate: every object an instant or sorcery is cast
+    at lies in the zone of one of its requirements, has one of that
+    requirement's types, and is within its printed bound. Observes only."""
+    from .rules_audit import check
+    from .target_solver import parse
+    t = card.template
+    if not (t.is_instant or t.is_sorcery):
+        return
+    reqs = parse(t.oracle_text or "")
+    if not reqs:
+        return
+
+    def fits(obj, req) -> bool:
+        zone = "battlefield" if req.zone == "any" else req.zone
+        if obj.zone != zone:
+            return False
+        printed = {ct.value for ct in obj.template.card_types}
+        words = set(req.types)
+        typed = ("card" in words or "permanent" in words
+                 or ("permanent_nonland" in words and "land" not in printed)
+                 or ("any" in words and printed & {"creature", "planeswalker"})
+                 or bool(printed & words))
+        bound = req.max_mana_value
+        return typed and (bound is None or (obj.template.cmc or 0) <= bound)
+
+    for tid in targets or ():
+        obj = game.get_card_by_id(tid) if isinstance(tid, int) and tid > 0 \
+            else None
+        if obj is None or obj.zone == "stack":
+            continue
+        check("601.2c/cast_target_admitted",
+              any(fits(obj, r) for r in reqs),
+              f"{card.name} cast at {obj.name} ({obj.zone}), which no "
+              f"requirement of it admits", game=game)
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
@@ -313,6 +352,28 @@ class CastManager:
                     + player._tron_mana_bonus())
         mult = max(1, int(x_info.get('multiplier', 1) or 1))
         return max(0, (capacity - (template.cmc or 0)) // mult)
+
+    @staticmethod
+    def targets_admitted(game: "GameState", player_idx: int,
+                         card: "CardInstance", targets) -> bool:
+        """CR 601.2c: is every chosen target a legal choice for one of
+        the instant's or sorcery's target requirements (the legality owner,
+        `target_solver.target_admitted`, with the X the caster can pay)? A
+        spell the legality owner types no requirement for, and a permanent
+        spell (whose targets are its enter trigger's, chosen as it enters),
+        keep their targets."""
+        template = card.template
+        if not (template.is_instant or template.is_sorcery):
+            return True
+        from .target_solver import parse as _parse_targets, target_admitted
+        requirements = _parse_targets(template.oracle_text or "")
+        if not requirements:
+            return True
+        x_ceiling = CastManager.affordable_x(game, player_idx, template)
+        return all(target_admitted(game, player_idx, requirements, t,
+                                   exclude=card, x_ceiling=x_ceiling,
+                                   source=card)
+                   for t in targets)
 
     @staticmethod
     def can_cast(game: "GameState", player_idx: int,
@@ -1495,6 +1556,12 @@ class CastManager:
         if free_cast and not CastManager.free_cast_allowed(
                 game, player_idx, card.template):
             return False
+        # CR 601.2c: each target is a legal choice for one of the spell's
+        # requirements; a cast at any other is refused whole, before
+        # anything is paid.
+        if targets and not CastManager.targets_admitted(game, player_idx,
+                                                        card, targets):
+            return False
 
         # Pay mana cost (unless free cast)
         evoked = False
@@ -2100,6 +2167,7 @@ class CastManager:
                                      f"{card.name} cast at {_tgt.name} in a "
                                      f"graveyard; its target is a permanent",
                                      game=game)
+            _audit_targets_admitted(game, card, targets)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,

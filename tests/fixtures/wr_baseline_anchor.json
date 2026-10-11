@@ -54,8 +54,8 @@
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "draw",
-      "turns": 30
+      "winner": "Azorius Control",
+      "turns": 28
     },
     {
       "deck1": "Azorius Control (WST v2)",
@@ -160,7 +160,7 @@
       "deck2": "Eldrazi Ramp",
       "seed": 52500,
       "winner": "Eldrazi Ramp",
-      "turns": 7
+      "turns": 9
     },
     {
       "deck1": "Broodscale Bloodchief",
@@ -173,8 +173,8 @@
       "deck1": "Grixis Reanimator",
       "deck2": "Azorius Blink",
       "seed": 53000,
-      "winner": "Azorius Blink",
-      "turns": 10
+      "winner": "Grixis Reanimator",
+      "turns": 11
     },
     {
       "deck1": "Hollow One",

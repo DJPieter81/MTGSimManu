@@ -4503,11 +4503,14 @@ class EVPlayer:
 
             def _reachable(c):
                 # The X bound, the permanent's own targeting restrictions
-                # (hexproof / protection, CR 702.16b), and a ward this
-                # spell's caster would not get past (CR 702.21a).
+                # (hexproof / protection, CR 702.16b), a ward this spell's
+                # caster would not get past (CR 702.21a), and the spell's
+                # requirement admitting it (CR 601.2c: the engine's cast
+                # check, so the AI aims only where the engine accepts).
                 return ((_x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling)
                         and _targetable(c, spell, self.player_idx)
-                        and not ward_rules_out_target(game, self.player_idx, spell, c))
+                        and not ward_rules_out_target(game, self.player_idx, spell, c)
+                        and self._admits(game, spell, c))
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -4573,7 +4576,8 @@ class EVPlayer:
             nonland = [c for c in opp.battlefield
                        if not c.template.is_land
                        and _targetable(c, spell, self.player_idx)
-                       and not ward_rules_out_target(game, self.player_idx, spell, c)]
+                       and not ward_rules_out_target(game, self.player_idx, spell, c)
+                       and self._admits(game, spell, c)]
             # An X-bound target ("with mana value X or less") is legal only
             # up to the X the caster can pay — the same engine formula
             # cast-time legality uses (CR 601.2b/c). Before this the pick
@@ -4612,10 +4616,10 @@ class EVPlayer:
                 best = max(me.creatures, key=lambda c: creature_value(c, snap))
                 return [best.instance_id]
 
-        # Reanimate: target best creature in our graveyard
+        # Reanimate: target the best creature card the spell may return
         if 'reanimate' in tags:
             me = game.players[self.player_idx]
-            gy_creatures = [c for c in me.graveyard if c.template.is_creature]
+            gy_creatures = self._reanimation_candidates(game, spell, me)
             if gy_creatures:
                 best = max(gy_creatures,
                            key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
@@ -4623,6 +4627,33 @@ class EVPlayer:
             return []  # No targets = can't cast
 
         return []
+
+    def _admits(self, game, spell, obj) -> bool:
+        """Is `obj` a legal choice for one of the spell's target
+        requirements (CR 601.2c)? The engine's own cast check
+        (`CastManager.targets_admitted`), so a target the AI prices is one
+        the cast accepts."""
+        from engine.cast_manager import CastManager
+        return CastManager.targets_admitted(game, self.player_idx, spell,
+                                            [obj.instance_id])
+
+    def _reanimation_candidates(self, game, spell, me) -> list:
+        """The creature cards a reanimation spell may return (CR 601.2c):
+        those its typed graveyard requirements admit
+        (`target_solver.enumerate_legal_targets`: zone, owner, types, the
+        printed mana-value bound and the X the caster can pay). A spell
+        with no typed graveyard requirement keeps its caster's creature
+        cards."""
+        from engine.target_solver import enumerate_legal_targets
+        host = spell.template.effects.spell(0)
+        reqs = [r for r in (host.targets if host is not None else ())
+                if r.zone == "graveyard"]
+        if not reqs:
+            return [c for c in me.graveyard if c.template.is_creature]
+        return [c for r in reqs
+                for c in enumerate_legal_targets(game, self.player_idx, r,
+                                                 exclude=spell, source=spell)
+                if c.template.is_creature]
 
     def _pick_best_removal_target(self, card, creatures, player,
                                    game, player_idx) -> Optional["CardInstance"]:
