@@ -402,6 +402,11 @@ class GameState:
             )
         return binned
 
+    def shuffle_library(self, player_idx: int) -> None:
+        """A player shuffles their library (CR 701.20a): the shuffle owner
+        the dispatcher's executors and the land-destruction rider share."""
+        self.rng.shuffle(self.players[player_idx].library)
+
     def mill(self, player_idx: int, n: int, cause: str = "") -> List[CardInstance]:
         """CR 701.17a — Mill N: the player puts that many cards from the
         top of their library into their graveyard; with fewer, all of them

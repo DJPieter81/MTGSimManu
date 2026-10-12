@@ -991,7 +991,14 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                 from engine.effect_carrier import activation_family
                 from ai.predicates import impulse_cards_held
                 _host = perm.template.effects.activated(ability.index)
-                if activation_family(ability, _host) is None:
+                _family = activation_family(ability, _host)
+                if _family is None:
+                    continue
+                if _family == "removal":
+                    planned = _land_destruction_plan(
+                        game, player_idx, perm, _host, snap, base, updates)
+                    if planned is not None:
+                        out.append((perm, ability.index) + planned)
                     continue
                 held = impulse_cards_held(_host)
                 if not held:
@@ -1009,6 +1016,46 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                           # not made; principled, not a tuned threshold
             out.append((perm, ability.index, declared, ev, reason))
     return out
+
+
+def _land_destruction_plan(game, player_idx, perm, host, snap, base,
+                           updates):
+    """(targets, ev, reason) for a removal-family activation that destroys
+    a target land, else None. What it BUYS is the opponent's mana it denies
+    (`ai.land_denial`: a land-drop turn of tempo while they are below their
+    curve top, plus the pips of a demanded colour stranded when their
+    scarcest source goes, both on the clock terms `position_value` uses),
+    aimed at that scarcest source. A basic-land search the activator makes
+    (each player's, or "you may") puts a land back on its side, offsetting
+    a sacrificed land."""
+    from ai.clock import position_value
+    from ai.land_denial import (choose_land_denial_target_for,
+                                host_land_destruction_data,
+                                land_denial_value_for)
+    from engine.cards import Supertype
+    from engine.target_solver import target_admitted
+    data = host_land_destruction_data(host)
+    if data is None:
+        return None
+    target = choose_land_denial_target_for(data, game, player_idx, snap)
+    if target is None or not target_admitted(
+            game, player_idx, list(host.targets), target.instance_id,
+            source=perm):
+        return None
+    updates = dict(updates)
+    if (data['rider_each_player_search_basic']
+            or data['rider_you_search_basic']) and any(
+                c.template.is_land
+                and Supertype.BASIC in (c.template.supertypes or ())
+                for c in game.players[player_idx].library):
+        updates["my_mana"] = updates.get("my_mana", snap.my_mana) + 1
+    after = snap.fast_replace(**updates)
+    ev = ((position_value(after) - base)
+          + land_denial_value_for(data, game, player_idx, snap))
+    if ev <= 0.0:
+        return None
+    return ([target.instance_id], ev,
+            f"activate: {perm.name} destroys {target.name}")
 
 
 def _pays_only_victim_and_mana(cost) -> bool:

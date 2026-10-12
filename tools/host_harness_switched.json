@@ -2300,6 +2300,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Demolition Field",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit LA: the activation was UNCLASSIFIED and the legacy route did nothing; it now destroys its target and its basic-land search riders follow in printed order (CR 608.2c, 701.19). The harness resolves the empty board with no target bound, which a real activation cannot (CR 602.2b); with its chosen target illegal the ability fizzles whole (CR 608.2b, pinned in tests/test_a_land_destruction_activation_destroys_its_target.py)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Devourer of Memory",
     "ACTIVATED:0:1"
    ],
@@ -2360,6 +2368,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Field of Ruin",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit LA: the activation was UNCLASSIFIED and the legacy route did nothing; it now destroys its target and its basic-land search riders follow in printed order (CR 608.2c, 701.19). The harness resolves the empty board with no target bound, which a real activation cannot (CR 602.2b); with its chosen target illegal the ability fizzles whole (CR 608.2b, pinned in tests/test_a_land_destruction_activation_destroys_its_target.py)"
   },
   {
    "pair": [
@@ -2520,6 +2536,14 @@
     "ACTIVATED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Molten Firebird",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit LA: the activation was UNCLASSIFIED and the legacy route did nothing; '{cost}: Exile ~' now exiles its source, in the removal family's strict shape"
   },
   {
    "pair": [
@@ -9068,7 +9092,17 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Aura of Silence",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Auriok Salvagers",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Barbarian Riftcutter",
    "ACTIVATED:0:0"
   ],
   [
@@ -9078,13 +9112,43 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Bumbleflower's Sharepot",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Cathar Commando",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Cathartic Adept",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Caustic Caterpillar",
    "ACTIVATED:0:0"
   ],
   [
    "activated_effects:UNCLASSIFIED",
    "Codex Shredder",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Curious Farm Animals",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Dispeller's Capsule",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "District Mascot",
+   "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -9108,13 +9172,88 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Eater of Hope",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Elf Replica",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Elvish Hexhunter",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Elvish Lyrist",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Elvish Scrapper",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Embalmer's Tools",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Encroaching Wastes",
    "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",
    "Enigma Eidolon",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Ethersworn Adjudicator",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Felidar Cub",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Font of Agonies",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Fulminator Mage",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Ghost Quarter",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Giant's Boulder",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Goblin Firebomb",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Goblin Replica",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Goblin Trashmaster",
+   "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -9128,12 +9267,37 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Hopeful Initiate",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Ipnu Rivulet",
    "ACTIVATED:0:2"
   ],
   [
    "activated_effects:UNCLASSIFIED",
    "Jessica Jones, Private Eye",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Kami of Ancient Law",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Keening Apparition",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Kithkin Spellduster",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Krark-Clan Engineers",
    "ACTIVATED:0:0"
   ],
   [
@@ -9153,6 +9317,16 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Lunatic Pandora",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Lux Cannon",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Marwyn, the Preserver",
    "ACTIVATED:0:1"
   ],
@@ -9163,8 +9337,18 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Memorial to War",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Merfolk Mesmerist",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Migloz, Maze Crusher",
+   "ACTIVATED:0:3"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -9188,7 +9372,22 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Nettle Guard",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Neurok Transmuter",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Nullmage Shepherd",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Outland Liberator // Frenzied Trapbreaker",
    "ACTIVATED:0:0"
   ],
   [
@@ -9208,12 +9407,52 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Priest of Iroas",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Qasali Pridemage",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Reckless Reveler",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Relic Golem",
    "ACTIVATED:0:1"
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Ronom Unicorn",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Ruinous Gremlin",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Sands of Delirium",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Scarblade Elite",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Seal of Cleansing",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Seal of Primordium",
    "ACTIVATED:0:0"
   ],
   [
@@ -9223,8 +9462,28 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Shattered Acolyte",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Shinewend",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Shriekhorn",
    "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Sinister Concoction",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Skirsdag Flayer",
+   "ACTIVATED:0:0"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -9238,8 +9497,53 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Steel Wrecking Ball",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Steelbane Hydra",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Stegron the Dinosaur Man",
    "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Stingmoggie",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Suncrusher",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Sylvok Replica",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Tectonic Edge",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Thaumaton Torpedo",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Thrashing Brontodon",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Torch Fiend",
+   "ACTIVATED:0:0"
   ],
   [
    "activated_effects:UNCLASSIFIED",
@@ -9253,13 +9557,73 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Undergrowth Leopard",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Underhanded Designs",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Universal Solvent",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Urn of Godfire",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Vedalken Entrancer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Viridian Zealot",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Vona, Butcher of Magan",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Voracious Varmint",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Westfold Rider",
    "ACTIVATED:0:0"
   ],
   [
    "activated_effects:UNCLASSIFIED",
    "Whetwheel",
    "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Wickerbough Elder",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Yavimaya Steelcrusher",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Zabaz, the Glimmerwasp",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Zacama, Primal Calamity",
+   "ACTIVATED:0:3"
   ],
   [
    "direct_damage",

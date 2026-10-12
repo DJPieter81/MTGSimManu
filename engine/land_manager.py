@@ -316,6 +316,27 @@ class LandManager:
             f"Crack {fetch_name} (no valid land found)")
 
     @staticmethod
+    def put_land_from_library(game: "GameState", card, player_idx: int,
+                              tapped: bool, cause: str) -> None:
+        """A land a search found enters the battlefield under its searcher
+        (CR 701.19a): through the zone funnel, tapped or not as the
+        instruction says, with the land-entry statics (an untap-on-enter
+        watcher, "lands you control enter untapped"). Its caller fires
+        landfall and the search's own triggers in its printed order."""
+        game.zone_mgr.move_card(game, card, "library", "battlefield",
+                                cause=cause, controller_override=player_idx)
+        card.tapped = bool(tapped)
+        LandManager.apply_land_etb_static(game, card, player_idx)
+        LandManager.apply_lands_enter_untapped(game, card, player_idx)
+
+    @staticmethod
+    def note_library_search(game: "GameState", searcher_idx: int) -> None:
+        """A player searched their library (CR 701.19): counted, and every
+        "whenever an opponent searches their library" watcher triggers."""
+        game.players[searcher_idx].library_searches_this_game += 1
+        LandManager.trigger_library_search(game, searcher_idx)
+
+    @staticmethod
     def trigger_library_search(game: "GameState", searcher_idx: int) -> None:
         """Trigger effects for opponents when a player searches their library.
 

@@ -188,10 +188,12 @@ def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
 # not read, so it has no legacy apply and nothing can regress -- resolves
 # in, when its typed host is in the family's strict shape (A38) and the
 # dispatcher can execute it: card flow (unit A, an activated impulse draw:
-# Cori Mountain Monastery) and type change (unit AT, "target permanent
+# Cori Mountain Monastery), type change (unit AT, "target permanent
 # becomes an artifact in addition to its other types until end of turn":
-# Liquimetal Coating).
-UNCLASSIFIED_ACTIVATION_FAMILIES = ("card_flow", "type_change")
+# Liquimetal Coating) and removal (unit LA, "destroy target [nonbasic]
+# land", its basic-land search riders included: Field of Ruin, Ghost
+# Quarter).
+UNCLASSIFIED_ACTIVATION_FAMILIES = ("card_flow", "type_change", "removal")
 
 
 def activation_family(ability: Any, host: Any) -> Optional[str]:

@@ -317,9 +317,49 @@ def strict_damage(h: AbilityEffects) -> bool:
 
 
 def strict_removal(h: AbilityEffects) -> bool:
-    """One unconditional destroy / exile / bounce / sacrifice spec."""
-    return (_strict_host(h, _REMOVAL_VERBS) and len(h.specs) == 1
-            and _plain(h.specs[0]))
+    """One unconditional destroy / exile / bounce / sacrifice spec; or one
+    destroy followed by basic-land search riders (unit LA) -- each a search
+    by named players ("its controller", "each player", "you"), the put of
+    what it found onto the battlefield and their shuffle (Field of Ruin,
+    Ghost Quarter, Demolition Field)."""
+    return ((_strict_host(h, _REMOVAL_VERBS) and len(h.specs) == 1
+             and _plain(h.specs[0])) or _destroy_with_basic_search(h))
+
+
+_FETCH_RIDER_VERBS = frozenset({Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE})
+
+
+def _destroy_with_basic_search(h: AbilityEffects) -> bool:
+    """A destroy, then one or more basic-land search riders: a search and,
+    after it, the put of what it found and the shuffle -- as the search's
+    own "then" when a "may" heads it (taken, they follow), else as the next
+    two instructions."""
+    if not _strict_host(h, frozenset({Verb.DESTROY}) | _FETCH_RIDER_VERBS):
+        return False
+    from .effect_executors import (destroy_supported, search_supported,
+                                   searched_to_battlefield, shuffle_supported)
+    specs = list(h.specs)
+    if not specs or not destroy_supported(specs[0]):
+        return False
+    i, riders = 1, 0
+    while i < len(specs):
+        search = specs[i]
+        if search.then:
+            rest, i = tuple(search.then), i + 1
+        else:
+            rest, i = tuple(specs[i + 1:i + 3]), i + 3
+        if len(rest) != 2 or search.otherwise:
+            return False
+        put, shuffle = rest
+        if not (search_supported(search) and searched_to_battlefield(put)
+                and shuffle_supported(shuffle)
+                and not (put.then or put.otherwise or shuffle.then
+                         or shuffle.otherwise)
+                and put.ref.index == search.seq
+                and put.actor == search.actor == shuffle.actor):
+            return False
+        riders += 1
+    return riders > 0
 
 
 # Impulse draw (unit I, CR 406, 601.2a): "exile the top N cards of your

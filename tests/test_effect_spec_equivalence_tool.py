@@ -1670,7 +1670,12 @@ def test_the_closure_takes_every_pairs_switch_from_its_apply_never_a_constant(ca
     pairs = t.closure(templates, t.parse_effects_of(templates))
     kinds = {p.handler.split(":")[0] for p in pairs}
     assert {"etb", t.SELF_CAST_HANDLER} <= kinds
-    assert all(p.switched for p in pairs)
+    # an enter-trigger carrier pair also needs a family the enter carrier
+    # takes (test_an_enter_trigger_carrier_pair_is_switched_only_in_...)
+    untaken = [p for p in pairs if p.handler.startswith("etb:")
+               and p.family not in effect_carrier.ETB_FAMILIES]
+    assert not any(p.switched for p in untaken)
+    assert all(p.switched for p in pairs if p not in untaken)
 
 
 def test_a_switched_handler_does_not_switch_a_host_its_carrier_never_dispatches(card_db, monkeypatch):
@@ -1693,6 +1698,23 @@ def test_a_switched_handler_does_not_switch_a_host_its_carrier_never_dispatches(
     assert (pairs[intercepted].switched, pairs["Resounding Thunder"].switched,
             pairs["Lightning Bolt"].switched) == (False, False, True)
     assert all(pairs[n].strict and pairs[n].executable for n in names)
+
+
+def test_an_enter_trigger_carrier_pair_is_switched_only_in_a_family_the_enter_carrier_takes(card_db):
+    """The enter-trigger carrier (`effect_carrier.dispatch_etb`) resolves
+    only `ETB_FAMILIES` hosts; an enter trigger of another family is still
+    resolved by its typed legacy branch, which runs first, however
+    executable its family has become for spells and activations. Its pair
+    stays on legacy fallback until the carrier takes that family."""
+    from engine.effect_carrier import ETB_FAMILIES
+    t = _eq_tool()
+    names = ["Ravenous Chupacabra", "Meteor Golem"]
+    templates = [card_db.get_card(n) for n in names]
+    pairs = [p for p in t.closure(templates, t.parse_effects_of(templates))
+             if p.handler == "etb:etb_targeted_removal_data"]
+    assert len(pairs) == len(names)
+    assert all(p.family not in ETB_FAMILIES and not p.switched
+               for p in pairs)
 
 
 def test_gate_parity_counts_every_accepted_host_of_an_unswitched_handler_as_legacy_fallback():

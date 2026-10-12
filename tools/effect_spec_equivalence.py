@@ -1006,8 +1006,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     draw_dispatch_switched = _is_switched(_resolve_path(DRAW_DISPATCH_APPLY))
     combat_dispatch_switched = _is_switched(
         _resolve_path(COMBAT_DAMAGE_DISPATCH_APPLY))
-    from engine.effect_carrier import (activation_family, combat_damage_plan,
-                                       draw_plan, etb_plan)
+    from engine.effect_carrier import (ETB_FAMILIES, activation_family,
+                                       combat_damage_plan, draw_plan,
+                                       etb_plan)
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1107,9 +1108,12 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         for field in ETB_CARRIERS:
             if enters and getattr(t, field, None):
                 rec = v.DERIVATIONS[field]
+                # the enter carrier takes only its own families; any other
+                # enter trigger is resolved by its typed legacy branch first
                 out.append(_pair(f"etb:{field}", rec.family, t, enters[0],
                                  _host_label(enters[0]), part,
-                                 etb_switched[field]))
+                                 etb_switched[field]
+                                 and rec.family in ETB_FAMILIES))
         for h, family in etb_plan(ce.front()) or ():
             out.append(_pair(ETB_DISPATCH_HANDLER, family, t, h,
                              _host_label(h), part,

@@ -450,6 +450,27 @@
     "strict": true
    },
    {
+    "card": "Demolition Field",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Field of Ruin",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Ghost Quarter",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Griselbrand",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
@@ -464,28 +485,28 @@
     "strict": true
    }
   ],
-  "executable": 131,
+  "executable": 202,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 3,
-   "pool": 127,
+   "mainboard": 6,
+   "pool": 195,
    "sideboard": 1
   },
   "steps": {
-   "E2": 26,
-   "E3": 88,
+   "E2": 94,
+   "E3": 91,
    "E5": 17
   },
-  "strict": 131,
+  "strict": 202,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
    "CONTINUOUS,EXILE": 12,
+   "DESTROY": 67,
+   "DESTROY,MOVE,SEARCH,SHUFFLE": 3,
    "DRAW": 14,
-   "DRAW,MILL": 1,
-   "DRAW,MOVE": 1,
    "DRAW,SURVEIL": 2,
-   "EXILE": 4,
+   "EXILE": 5,
    "MILL": 40,
    "MOVE": 22,
    "SURVEIL": 30
@@ -705,7 +726,7 @@
     "strict": false
    }
   ],
-  "executable": 88,
+  "executable": 100,
   "family": "card_flow",
   "hosts": {
    "mainboard": 11,
@@ -889,7 +910,7 @@
     "strict": false
    }
   ],
-  "executable": 162,
+  "executable": 163,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1411,7 +1432,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 22,
   "family": "removal",
   "hosts": {
    "mainboard": 1,
@@ -1541,7 +1562,7 @@
     "strict": false
    }
   ],
-  "executable": 0,
+  "executable": 12,
   "family": "removal",
   "hosts": {
    "mainboard": 2,
@@ -1796,7 +1817,7 @@
     "strict": true
    }
   ],
-  "executable": 9,
+  "executable": 10,
   "family": "removal",
   "hosts": {
    "mainboard": 6,
@@ -2196,7 +2217,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 151,
   "family": "removal",
   "hosts": {
    "mainboard": 3,

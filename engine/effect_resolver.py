@@ -365,14 +365,18 @@ def is_event_player(ref: Any) -> bool:
 def _actor_bindable(actor: Any) -> bool:
     """The acting-player shapes the dispatcher binds: the controller (no
     actor), a player set relative to the controller, a chosen player
-    target slot, or the player the trigger event names."""
+    target slot, the player the trigger event names, or the controller of
+    a chosen object target ("its controller", `_target_controllers`)."""
     if actor is None:
         return True
     if isinstance(actor, Selector):
         return actor.kind in _PLAYER_SETS and actor.filter is None
     if isinstance(actor, Ref):
+        of = actor.of
         return (actor.kind is RefKind.TARGET and isinstance(actor.index, int)
-                ) or is_event_player(actor)
+                ) or is_event_player(actor) or (
+            actor.kind is RefKind.CONTROLLER_OF and isinstance(of, Ref)
+            and of.kind is RefKind.TARGET and isinstance(of.index, int))
     return False
 
 
@@ -508,6 +512,24 @@ def _apnap_order(game: Any) -> Tuple[int, ...]:
     return tuple((game.active_player + i) % n for i in range(n))
 
 
+def _target_controllers(ctx: Resolution, actor: Ref) -> set:
+    """"Its controller": the controllers of the objects chosen for the
+    target slot the reference names -- as the object last existed on the
+    battlefield when it has left (CR 608.2h). An object that changed
+    zones keeps its last controller in the engine's instance."""
+    of = actor.of
+    if not isinstance(of, Ref) or of.kind is not RefKind.TARGET \
+            or of.index is None or of.index >= len(ctx.chosen):
+        return set()
+    out = set()
+    for v in ctx.chosen[of.index]:
+        if isinstance(v, Handle):
+            card = ctx.game.get_card_by_id(v.instance_id)
+            if card is not None:
+                out.add(card.controller)
+    return out
+
+
 def _actors_apnap(ctx: Resolution, s: EffectSpec) -> Tuple[int, ...]:
     """The acting players, active player first then in turn order."""
     actor = s.actor
@@ -520,6 +542,8 @@ def _actors_apnap(ctx: Resolution, s: EffectSpec) -> Tuple[int, ...]:
     if is_event_player(actor):                  # CR 603.2: "that player"
         p = event_player(ctx)
         return (p,) if p is not None else ()
+    if actor.kind is RefKind.CONTROLLER_OF:     # "its controller"
+        return tuple(p for p in order if p in _target_controllers(ctx, actor))
     slot = ctx.chosen[actor.index] if actor.index < len(ctx.chosen) else ()
     players = {v for v in slot if isinstance(v, int) and not isinstance(v, bool)}
     return tuple(p for p in order if p in players)

@@ -749,15 +749,11 @@ def _ld_owner_searches_basic(game: "GameState", owner_idx: int,
         game, owner_idx, None, basics, ['W', 'U', 'B', 'R', 'G'])
     if choice is None:
         choice = basics[0]
-    game.zone_mgr.move_card(game, choice, "library", "battlefield",
-                            cause=f"{cause_name} basic-land replacement",
-                            controller_override=owner_idx)
-    choice.tapped = bool(tapped)
-    LandManager.apply_land_etb_static(game, choice, owner_idx)
-    LandManager.apply_lands_enter_untapped(game, choice, owner_idx)
-    game.rng.shuffle(player.library)
-    player.library_searches_this_game += 1
-    LandManager.trigger_library_search(game, owner_idx)
+    LandManager.put_land_from_library(
+        game, choice, owner_idx, tapped,
+        cause=f"{cause_name} basic-land replacement")
+    game.shuffle_library(owner_idx)
+    LandManager.note_library_search(game, owner_idx)
     LandManager.trigger_landfall(game, owner_idx)
     game.log.append(
         f"T{game.display_turn} P{owner_idx+1}: searches a basic "

@@ -276,11 +276,21 @@ class ActivationManager:
                     or getattr(perm, 'is_animated', False)):
                 return False
 
-        # 15. CR 601.2c — a required target must have a legal choice.
+        # 15. CR 601.2c — a required target must have a legal choice. An
+        # UNCLASSIFIED ability the dispatcher takes declares the targets of
+        # its typed host (CR 602.2b).
+        from .target_solver import (binds_whatever_is_chosen,
+                                    has_legal_target_for_spell)
         if ability.targets_required and ability.target_requirements:
-            from .target_solver import has_legal_target_for_spell
             if not has_legal_target_for_spell(
                     game, player_idx, ability.target_requirements):
+                return False
+        elif ability.effect_kind is ActivationEffectKind.UNCLASSIFIED:
+            host = perm.template.effects.activated(ability.index)
+            required = [r for r in (host.targets if host is not None else ())
+                        if binds_whatever_is_chosen(r)]
+            if required and not has_legal_target_for_spell(
+                    game, player_idx, required, source=perm):
                 return False
 
         return True

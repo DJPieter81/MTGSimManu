@@ -132,14 +132,14 @@
       "deck2": "Boros Energy",
       "seed": 51000,
       "winner": "Boros Ponza",
-      "turns": 14
+      "turns": 15
     },
     {
       "deck1": "Instant Reanimator",
       "deck2": "Boros Ponza",
       "seed": 51500,
-      "winner": "Instant Reanimator",
-      "turns": 8
+      "winner": "Boros Ponza",
+      "turns": 20
     },
     {
       "deck1": "Eldrazi Ramp",

@@ -60,6 +60,7 @@ FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
 FAMILY_TOKENS_COUNTERS = "tokens_counters"
 FAMILY_EDICT = "edict"
+FAMILY_REMOVAL = "removal"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -70,7 +71,9 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                          Verb.MILL}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN}),
-            FAMILY_EDICT: frozenset({Verb.SACRIFICE})}
+            FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
+            FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
+                                       Verb.SHUFFLE})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -437,15 +440,70 @@ def _return_self_transformed(ctx: Resolution, s: EffectSpec) -> Outcome:
     return Outcome(True, {controller: (handle_of(card),)})
 
 
+def named_searcher(actor: Any) -> bool:
+    """Whose library a search (and its put and shuffle) is: each player,
+    you, or the controller of a chosen target ("its controller")."""
+    if isinstance(actor, Selector):
+        return (actor.kind in (SelectorKind.ALL_PLAYERS, SelectorKind.PLAYER)
+                and actor.filter is None)
+    return (isinstance(actor, Ref) and actor.kind is RefKind.CONTROLLER_OF
+            and isinstance(actor.of, Ref) and actor.of.kind is RefKind.TARGET)
+
+
+def searched_to_battlefield(s: Any) -> bool:
+    """"[and] put it onto the battlefield [tapped]": the card an earlier
+    search of this resolution found, by the same players, under the
+    searcher's control (CR 701.19a)."""
+    d, r = s.dest, s.ref
+    return (s.verb is Verb.MOVE and isinstance(d, Destination)
+            and dataclasses.replace(d, tapped=False)
+            == Destination(zone="battlefield")
+            and isinstance(r, Ref) and r.kind is RefKind.RESULT
+            and isinstance(r.index, int) and r.part is RefPart.ALL
+            and r.n is None and r.of is None
+            and s.flags <= {"may_scope"} and s.target is None
+            and s.filter is None and s.amount is None and s.payload is None
+            and s.duration is None and s.group is None
+            and not s.alternatives and not s.optional and s.subject is None
+            and s.chooser is Chooser.CONTROLLER and named_searcher(s.actor))
+
+
+def _put_searched(ctx: Resolution, s: EffectSpec,
+                  actors: Tuple[int, ...]) -> Outcome:
+    """Each searcher's found card, still in its library, enters the
+    battlefield under its control through the land-entry owner, and its
+    landfall triggers."""
+    from .land_manager import LandManager
+    produced = ctx.results.get(s.ref.index) or {}
+    cause = getattr(_source_object(ctx), "name", "")
+    moved = {}
+    for p in actors:
+        for h in produced.get(p, ()):
+            if not isinstance(h, Handle) or h.zone != "library":
+                continue
+            card = ctx.game.get_card_by_id(h.instance_id)
+            if card is None or card.zone != "library" \
+                    or all(card is not c for c in ctx.game.players[p].library):
+                continue
+            LandManager.put_land_from_library(ctx.game, card, p,
+                                              s.dest.tapped, cause)
+            LandManager.trigger_landfall(ctx.game, p)
+            moved.setdefault(p, []).append(handle_of(card))
+    return Outcome(bool(moved), {p: tuple(v) for p, v in moved.items()})
+
+
 def execute_move(ctx: Resolution, s: EffectSpec,
                  actors: Tuple[int, ...]) -> Outcome:
     if self_return_transformed(s):
         return _return_self_transformed(ctx, s)
+    if searched_to_battlefield(s):
+        return _put_searched(ctx, s, actors)
     return execute_move_to_hand(ctx, s, actors)
 
 
 execute_move.supports = (lambda s: _move_to_hand_supported(s)
-                         or self_return_transformed(s))
+                         or self_return_transformed(s)
+                         or searched_to_battlefield(s))
 # An unbound slot is the controller's choice through `choose_cards`, so a
 # carrier with no targets to bind (the enter-trigger carrier) may take it.
 execute_move.picks_unbound_slots = True
@@ -1194,10 +1252,155 @@ EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
+
+
+# ── DESTROY / SEARCH / SHUFFLE (family removal, unit LA) ──────────────
+
+def destroy_supported(s: EffectSpec) -> bool:
+    """"Destroy target <permanent>": the permanents chosen for the slot,
+    the controller choosing (CR 701.8a)."""
+    req = s.target
+    return (s.verb is Verb.DESTROY and req is not None
+            and s.target_slot is not None and req.zone == "battlefield"
+            and req.mode_group is None and not req.max_mana_value_is_x
+            and _plain_participants(s) and not s.flags and s.actor is None
+            and s.ref is None and s.amount is None and s.subject is None
+            and s.other is None)
+
+
+def _audit_destroyed(ctx: Resolution, perm: Any) -> None:
+    """CR 701.8a, restated from the zones: a permanent the destroy owner
+    was asked to destroy -- legal and not indestructible -- is no longer on
+    the battlefield. Observation only."""
+    from . import rules_audit
+    if rules_audit.enabled():
+        rules_audit.check(
+            "701.8a/destroyed",
+            all(perm is not p for pl in ctx.game.players
+                for p in pl.battlefield),
+            f"{getattr(_source_object(ctx), 'name', '?')} left "
+            f"{perm.name} on the battlefield", game=ctx.game)
+
+
+def execute_destroy(ctx: Resolution, s: EffectSpec,
+                    actors: Tuple[int, ...]) -> Outcome:
+    """Each chosen permanent still a legal target (CR 608.2b) is destroyed
+    -- put into its owner's graveyard through the destroy owner (CR
+    701.8a) -- unless it is indestructible (CR 702.12b)."""
+    source = _source_object(ctx)
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    out = {}
+    for value in slot:
+        perm = _bind_recipient(ctx, s.target, source, value)
+        if perm is None or isinstance(perm, int) \
+                or Keyword.INDESTRUCTIBLE in perm.keywords:
+            continue
+        controller, h = perm.controller, handle_of(perm)
+        ctx.game.log.append(
+            f"T{ctx.game.display_turn} P{ctx.controller+1}: "
+            f"{getattr(source, 'name', '')} destroys {perm.name}")
+        ctx.game._permanent_destroyed(perm)
+        _audit_destroyed(ctx, perm)
+        out.setdefault(controller, []).append(h)
+    return Outcome(bool(out), {p: tuple(v) for p, v in out.items()})
+
+
+execute_destroy.supports = destroy_supported
+
+_BASIC_LAND_CARD = CardFilter(zone="library", types=frozenset({"land"}),
+                              supertypes=frozenset({"basic"}))
+
+
+def search_supported(s: EffectSpec) -> bool:
+    """"<players> search(es) their library for a basic land card": each
+    named player finds up to one (CR 701.19a)."""
+    a = s.amount
+    return (s.verb is Verb.SEARCH and isinstance(s.filter, CardFilter)
+            and dataclasses.replace(s.filter, raw="") == _BASIC_LAND_CARD
+            and isinstance(a, Amount) and a.kind is AmountKind.LITERAL
+            and a.n == 1 and named_searcher(s.actor)
+            and s.target is None and s.target_slot is None and s.ref is None
+            and s.dest is None and s.payload is None and s.duration is None
+            and s.group is None and not s.alternatives and not s.flags
+            and s.subject is None and s.chooser is Chooser.CONTROLLER)
+
+
+def execute_search(ctx: Resolution, s: EffectSpec,
+                   actors: Tuple[int, ...]) -> Outcome:
+    """Each searcher looks through their library for a basic land card
+    and finds the one it chooses (`callbacks.choose_fetch_target`), or none
+    when there is none (CR 701.19a-b). The search is made either way."""
+    from .cards import Supertype
+    from .land_manager import LandManager
+    found = {}
+    for p in actors:
+        basics = [c for c in ctx.game.players[p].library
+                  if c.template.is_land
+                  and Supertype.BASIC in (c.template.supertypes or ())]
+        LandManager.note_library_search(ctx.game, p)
+        if not basics:
+            found[p] = ()
+            continue
+        pick = ctx.game.callbacks.choose_fetch_target(
+            ctx.game, p, None, basics, ['W', 'U', 'B', 'R', 'G'])
+        if all(pick is not c for c in basics):
+            pick = basics[0]
+        found[p] = (handle_of(pick),)
+    return Outcome(bool(actors), found)
+
+
+execute_search.supports = search_supported
+
+
+def shuffle_supported(s: EffectSpec) -> bool:
+    """"<players> shuffle(s)" after their search (CR 701.20a)."""
+    return (s.verb is Verb.SHUFFLE and named_searcher(s.actor)
+            and s.flags <= {"may_scope"} and s.target is None
+            and s.ref is None and s.filter is None and s.amount is None
+            and s.dest is None and s.payload is None and s.duration is None
+            and s.group is None and not s.alternatives and not s.optional
+            and s.subject is None and s.chooser is Chooser.CONTROLLER)
+
+
+def _took_the_may(ctx: Resolution, s: EffectSpec) -> bool:
+    """A "may" covers the instructions after it (`may_scope`, CR
+    608.2d): the nearest earlier optional instruction of the same players
+    was taken."""
+    if "may_scope" not in s.flags:
+        return True
+    from .effect_spec import iter_specs
+    head = None
+    for x in iter_specs(ctx.ability.specs):
+        if x.seq >= s.seq:
+            break
+        if x.optional and x.actor == s.actor:
+            head = x
+    return head is None or bool(ctx.performed.get(head.seq))
+
+
+def execute_shuffle(ctx: Resolution, s: EffectSpec,
+                    actors: Tuple[int, ...]) -> Outcome:
+    """Each named player shuffles their library through the shuffle owner
+    (CR 701.20a)."""
+    if not _took_the_may(ctx, s):
+        return Outcome(False, {})
+    for p in actors:
+        ctx.game.shuffle_library(p)
+    return Outcome(bool(actors), {p: () for p in actors})
+
+
+execute_shuffle.supports = shuffle_supported
+
+EXECUTORS[Verb.DESTROY] = execute_destroy
+EXECUTORS[Verb.SEARCH] = execute_search
+EXECUTORS[Verb.SHUFFLE] = execute_shuffle
 EXECUTOR_FILTER_KEYS[Verb.SACRIFICE] = frozenset(
     ("types", combo) for k in (1, 2, 3)
     for combo in itertools.combinations(sorted(_CARD_TYPE_VALUES), k)) | {
     ("token", True), ("token", False)}
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
+# The search executor evaluates "a basic land card" in the searcher's own
+# library itself (unit LA).
+EXECUTOR_FILTER_KEYS[Verb.SEARCH] = frozenset(_BASIC_LAND_CARD.as_tuple())
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state

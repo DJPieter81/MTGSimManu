@@ -206,7 +206,8 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     player's" (R2) -- itself, by taking the top N (unit I), and "all cards
     from your hand" by taking the whole hand (unit HX); the edict's
     SACRIFICE evaluates its card types and token-or-nontoken itself (unit
-    ED)."""
+    ED); the land-destruction rider's SEARCH evaluates "a basic land card"
+    in the searcher's library itself (unit LA)."""
     from engine.effect_executors import FAMILIES
     from engine.effect_spec import CardFilter, Ref, RefKind, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
@@ -215,6 +216,9 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     edict = keys.pop(Verb.SACRIFICE)
     assert {k for k, _ in edict} == {"types", "token"}
     assert {("token", True), ("token", False)} <= edict
+    assert keys.pop(Verb.SEARCH) == frozenset(CardFilter(
+        zone="library", types=frozenset({"land"}),
+        supertypes=frozenset({"basic"})).as_tuple())
     assert keys == {Verb.EXILE: frozenset(CardFilter(
         zone="library", owner="you", position="top").as_tuple()) | {
             ("owner", Ref(RefKind.EVENT_PLAYER)), ("zone", "hand")}}
@@ -396,11 +400,13 @@ def test_a_filter_subject_executes_only_entries_something_evaluates(
 
 def test_an_untargeted_card_filter_is_held_to_the_same_support(er, run, monkeypatch):
     run.register(Verb.SEARCH, _Recorder())
+    # a filter no evaluator and no declared executor entry covers (the
+    # search executor declares "a basic land card" only, unit LA)
     s = _spec(Verb.SEARCH, 0, filter=CardFilter(zone="library",
-                                                 supertypes=frozenset({"basic"})))
+                                                 subtypes=frozenset({"forest"})))
     assert er.can_execute(_host(s)) is False
     monkeypatch.setitem(er.EXECUTOR_FILTER_KEYS, Verb.SEARCH, frozenset(
-        {("zone", "library"), ("supertypes", ("basic",))}))
+        {("zone", "library"), ("subtypes", ("forest",))}))
     assert er.can_execute(_host(s)) is True
 
 
