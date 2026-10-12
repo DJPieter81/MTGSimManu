@@ -530,3 +530,11 @@ def default_card_pick(pool: Sequence[Any], n: int) -> List[Any]:
     if n <= 0:
         return []
     return sorted(pool, key=default_tutor_rank, reverse=True)[:n]
+
+
+def default_search_finds(pool: Sequence[Any]) -> List[Any]:
+    """The cards a search for "any number of" / "all" cards finds by
+    default: every card of the pile, in zone order (CR 701.19b lets a
+    searcher miss cards in a hidden zone; the engine's reading finds them
+    all). No scoring."""
+    return list(pool)

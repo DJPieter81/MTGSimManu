@@ -4636,6 +4636,14 @@
   {
    "pair": [
     "dispatched",
+    "Extirpate",
+    "SPELL:0:1"
+   ],
+   "reason": "unit SX: the multi-zone same-name search was refused (search_zone), so the legacy route resolved the spell as nothing; it now exiles every card sharing the chosen card's name from its owner's graveyard, hand and library, and that player shuffles (CR 701.19a, 701.20a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Extract the Truth",
     "MODE:0:1:mode1"
    ],
@@ -6240,6 +6248,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Surgical Extraction",
+    "SPELL:0:0"
+   ],
+   "reason": "unit SX: the multi-zone same-name search was refused (search_zone), so the legacy route resolved the spell as nothing; it now exiles every card sharing the chosen card's name from its owner's graveyard, hand and library, and that player shuffles (CR 701.19a, 701.20a)"
   },
   {
    "pair": [

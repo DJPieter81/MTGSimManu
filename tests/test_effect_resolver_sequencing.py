@@ -207,7 +207,8 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     from your hand" by taking the whole hand (unit HX); the edict's
     SACRIFICE evaluates its card types and token-or-nontoken itself (unit
     ED); the land-destruction rider's SEARCH evaluates "a basic land card"
-    in the searcher's library itself (unit LA)."""
+    in the searcher's library itself (unit LA), and a search for the cards
+    named like a chosen object its zones, owner and name (unit SX)."""
     from engine.effect_executors import FAMILIES
     from engine.effect_spec import CardFilter, Ref, RefKind, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
@@ -216,9 +217,22 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     edict = keys.pop(Verb.SACRIFICE)
     assert {k for k, _ in edict} == {"types", "token"}
     assert {("token", True), ("token", False)} <= edict
-    assert keys.pop(Verb.SEARCH) == frozenset(CardFilter(
-        zone="library", types=frozenset({"land"}),
-        supertypes=frozenset({"basic"})).as_tuple())
+    search = keys.pop(Verb.SEARCH)
+    basic = frozenset(CardFilter(zone="library", types=frozenset({"land"}),
+                                 supertypes=frozenset({"basic"})).as_tuple())
+    # unit SX: the zones, owner and name of a search for the cards named
+    # like a chosen object (its first or second target, chosen or as it
+    # last existed)
+    targets = [Ref(RefKind.TARGET, i, lki=lki) for i in (0, 1)
+               for lki in (False, True)]
+    zone_sets = {("graveyard",), ("hand",), ("library",),
+                 ("graveyard", "hand"), ("graveyard", "library"),
+                 ("hand", "library"), ("graveyard", "hand", "library")}
+    named = {("zone", "library")} | {("zones", z) for z in zone_sets} | {
+        ("owner", Ref(kind, of=t)) for t in targets
+        for kind in (RefKind.OWNER_OF, RefKind.CONTROLLER_OF)} | {
+        ("named", t) for t in targets}
+    assert search == basic | named
     assert keys == {Verb.EXILE: frozenset(CardFilter(
         zone="library", owner="you", position="top").as_tuple()) | {
             ("owner", Ref(RefKind.EVENT_PLAYER)), ("zone", "hand")}}
@@ -445,14 +459,16 @@ def test_an_unapplied_modification_kind_is_not_executable(er, run):
 
 
 def test_a_sub_ability_is_executable_only_if_its_own_host_is(er, run):
-    sub = _host(_spec(Verb.EXILE, 1, ref=Ref(RefKind.RESULT, index=0)),
+    # TAP: a verb no landed family executes (an exile of a result is,
+    # since unit SX)
+    sub = _host(_spec(Verb.TAP, 1, ref=Ref(RefKind.RESULT, index=0)),
                 kind=HostKind.TRIGGERED)
     trig = _spec(Verb.CREATE_TRIGGER, 1, payload=SubAbility(
         SubAbilityKind.DELAYED, DelayedTriggerTiming.NEXT_END_STEP, sub))
     host = _host(_spec(Verb.MOVE, 0), trig)
     run.register(Verb.MOVE, _Recorder())
     assert er.can_execute(host) is False
-    run.register(Verb.EXILE, _Recorder())
+    run.register(Verb.TAP, _Recorder())
     assert er.can_execute(host) is True
     untimed = _spec(Verb.CREATE_TRIGGER, 1, payload=SubAbility(
         SubAbilityKind.DELAYED, None, sub))

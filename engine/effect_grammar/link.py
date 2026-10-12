@@ -385,6 +385,11 @@ def _mentions(node: _Node) -> List[_Mention]:
         f = node.get("filter")
         types = f.types if isinstance(f, CardFilter) else frozenset()
         zone = f.zone if isinstance(f, CardFilter) else ""
+        if verb is Verb.SEARCH and isinstance(f, CardFilter) and \
+                isinstance(f.owner, Ref):
+            # "Search its owner's graveyard, hand, and library ... Then
+            # that player shuffles": the player whose zones are searched.
+            out.append(_Mention(node, f.owner, player=True))
         subject = node.get("subject")
         plural = True if subject is not None else _plural(node.get("amount"))
         if verb is Verb.CREATE_TOKEN:
@@ -724,6 +729,22 @@ def _fill_holes(ctx: _Ctx, node: _Node) -> None:
         nv = _map(v, hook_for(False))
         if nv is not v:
             node.fields[slot] = nv
+    _bind_same_name(ctx, node)
+
+
+def _bind_same_name(ctx: _Ctx, node: _Node) -> None:
+    """"cards with the same name as that card": the filter's name is the
+    object the anaphor names (the filter leaf's pending "same_name"), read
+    as it last existed when an earlier instruction moved it (CR 608.2h)."""
+    text = next((t for k, t in (node.cm.pending if node.cm else ())
+                 if k == "same_name"), None)
+    f = node.get("filter")
+    if text is None or not isinstance(f, CardFilter) or f.named is not None:
+        return
+    ref = _bind(ctx, node, _Want(player=False,
+                                 noun=_participant.reference_noun(text)),
+                last_known=True)
+    node.fields["filter"] = _copy_with(f, named=ref)
 
 
 # ── Placing one clause ──────────────────────────────────────────────────

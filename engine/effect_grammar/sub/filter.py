@@ -375,6 +375,12 @@ _KEYWORD_RE = re.compile(
 _KEYWORD_SHAPE_RE = re.compile(
     r"with(?:out)? (?P<w>[a-z][a-z'\-]*)(?=$|,| or | and )")
 _DIFFERENT_NAMES_RE = re.compile(r"with different names(?![\w'])")
+# "with the same name as that card": the cards sharing a name with an
+# object an earlier instruction names (CR 201.2) -- an anaphor the linker
+# binds (pending "same_name"); the filter's `named` is that object.
+_SAME_NAME_RE = re.compile(
+    r"with the same name as (?P<that>that (?:card|creature|land|permanent|"
+    r"spell|artifact|enchantment|planeswalker))(?![\w'])")
 _NAMED_RE = re.compile(r"(?:named )?(?P<mask>⟨n\d+⟩)|named (?P<self>~)(?![\w'])")
 _OTHER_THAN_RE = re.compile(r"other than ~(?![\w'])")
 # Relations to an object the ability already knows; the linker binds the
@@ -752,6 +758,9 @@ def _filter_rel(t: str, zone: str) -> _Rel:
         elif _DIFFERENT_NAMES_RE.match(t, pos):
             m = _DIFFERENT_NAMES_RE.match(t, pos)
             different_names = True
+        elif _SAME_NAME_RE.match(t, pos):
+            m = _SAME_NAME_RE.match(t, pos)
+            pending.append(("same_name", m.group("that")))
         elif _KEYWORD_RE.match(t, pos):
             m = _KEYWORD_RE.match(t, pos)
             if m.group("more"):

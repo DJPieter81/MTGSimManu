@@ -625,11 +625,11 @@
   },
   "steps": {
    "E2": 77,
-   "E3": 34,
+   "E3": 37,
    "E4": 9,
    "E5": 9,
    "E6": 3,
-   "none": 41
+   "none": 38
   },
   "strict": 57,
   "sub_kinds": {},
@@ -638,12 +638,12 @@
    "CONTINUOUS,MOVE": 4,
    "CREATE_TOKEN,MOVE": 6,
    "DRAW,MOVE": 19,
-   "KEYWORD_ACTION,MOVE": 3,
    "MOVE": 71,
    "MOVE,SCRY": 4,
+   "MOVE,SEARCH,SHUFFLE": 4,
    "MOVE,SURVEIL": 5,
    "MOVE,UNMODELLED": 11,
-   "UNMODELLED": 13
+   "UNMODELLED": 12
   }
  },
  "card_flow": {
@@ -910,7 +910,7 @@
     "strict": false
    }
   ],
-  "executable": 163,
+  "executable": 168,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1106,6 +1106,13 @@
     "strict": true
    },
    {
+    "card": "Surgical Extraction",
+    "host": "SPELL:0:0",
+    "part": "sideboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Thought Scour",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1134,21 +1141,21 @@
     "strict": true
    }
   ],
-  "executable": 444,
+  "executable": 446,
   "family": "damage",
   "hosts": {
    "mainboard": 18,
-   "pool": 424,
-   "sideboard": 2
+   "pool": 425,
+   "sideboard": 3
   },
   "steps": {
    "E1": 145,
    "E2": 76,
-   "E3": 93,
+   "E3": 95,
    "E4": 119,
    "E5": 11
   },
-  "strict": 444,
+  "strict": 446,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,
@@ -2328,12 +2335,12 @@
   },
   "steps": {
    "E3": 3,
-   "none": 2
+   "E5": 2
   },
   "strict": 0,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS,MOVE,SHUFFLE,UNMODELLED": 2,
+   "CONTINUOUS,MOVE,SEARCH,SHUFFLE": 2,
    "MOVE,SEARCH,SHUFFLE": 3
   }
  }

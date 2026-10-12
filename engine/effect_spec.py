@@ -302,6 +302,10 @@ class CardFilter:
     named: Union[None, str, Ref] = None
     position: Optional[str] = None
     different_names: bool = False
+    # A search of several of one player's zones at once ("search its
+    # owner's graveyard, hand, and library", CR 701.19a): the zones it
+    # covers. Empty for every one-zone description, which `zone` names.
+    zones: FrozenSet[str] = frozenset()
     raw: str = ""
 
     def as_tuple(self) -> Tuple[Tuple[str, Any], ...]:

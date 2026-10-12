@@ -77,8 +77,8 @@ from engine.effect_model import DurationKind, ModKind, Selector, SelectorKind
 from engine.effect_spec import replace as _copy_with
 from engine.effect_spec import (ACTOR_ONLY_VERBS, Amount, AmountKind,
                                 CardFilter, Chooser, Condition, ConditionKind,
-                                EffectSpec, HostKind, Ref, Stage, Unmodelled,
-                                Verb)
+                                EffectSpec, HostKind, Ref, RefKind, Stage,
+                                Unmodelled, Verb)
 from engine.target_solver import TargetRequirement
 
 __all__ = ["LEAF", "DETAIL_CODES", "ROWS", "CLAUSE_CACHE_SIZE",
@@ -594,9 +594,64 @@ _SEARCH_RE = re.compile(r"(?P<poss>%s) ?library(?P<more>(?: and(?:/or)? "
                         r"[a-z' ]+?)?) for " % _dest.ZONE_POSSESSIVE)
 
 
+# "search <player>'s graveyard, hand, and library for ...": one search of
+# several of one player's zones (CR 701.19a).
+_SEARCH_ZONE_WORD = r"(?:graveyard|hand|library)"
+_SEARCH_ZONES_RE = re.compile(
+    r"(?P<poss>%s) (?P<zones>%s(?:(?:,|,? and(?:/or)?) %s)+) for "
+    % (POSSESSIVE, _SEARCH_ZONE_WORD, _SEARCH_ZONE_WORD))
+_SEARCH_ZONE_NAME_RE = re.compile(_SEARCH_ZONE_WORD)
+
+
+def _search_owner(poss: str):
+    """(owner, pending) of the player whose zones a multi-zone search
+    covers: an object's owner or controller ("its owner's", the linker
+    binds the object), a player anaphor ("that player's", "their"), or the
+    player a possessive names ("your", "target player's"); None when the
+    possessive names no one player."""
+    for suffix, kind in (("owner's", RefKind.OWNER_OF),
+                         ("controller's", RefKind.CONTROLLER_OF)):
+        if poss.endswith(" " + suffix):
+            return Ref(kind), (("ref", poss[:-len(suffix) - 1]),)
+    p = possessive_player(poss)
+    if p is None:
+        return None
+    value, anaphor = p
+    if anaphor is not None:
+        return _participant.Anaphor(noun="player", player=True), ()
+    if value in ("opponents", "any"):
+        return None                    # several players' zones
+    return value, ()
+
+
+def _row_search_zones(m: _M, z, b: int) -> None:
+    h = m.h
+    found = _search_owner(z.group("poss"))
+    if found is None:
+        m.refuse(Stage.CLAUSE, "search_zone", z.group("poss").split()[0])
+    owner, pending = found
+    m.take("zone", (z.start(), z.end() - 1))
+    r = m.leaf(_filter.parse_filter(h, (z.end(), b), lemma=m.lemma,
+                                    zone="library"))
+    zones = frozenset(_SEARCH_ZONE_NAME_RE.findall(z.group("zones")))
+    m.fields["filter"] = _copy_with(r.value, zones=zones, owner=owner)
+    if r.amount is not None:
+        m.fields["amount"] = r.amount
+    elif _filter.ALL in r.flags:       # "for all cards with ..."
+        m.fields["amount"] = Amount(AmountKind.ALL)
+    else:
+        m.fields["amount"] = Amount(AmountKind.LITERAL, n=1)
+    m.pending.extend(r.pending)
+    m.pending.extend(pending)
+    m.take("filter", r.span)
+
+
 def _row_search(m: _M, a: int, b: int) -> None:
     h = m.h
     a, b = _trim(h, a, b)
+    z = _SEARCH_ZONES_RE.match(h, a, b)
+    if z is not None:
+        return _row_search_zones(m, z, b)
     s = _SEARCH_RE.match(h, a, b)
     if s is None:
         m.refuse(Stage.CLAUSE, "search_zone", _first_word(h, a, b))

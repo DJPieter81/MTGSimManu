@@ -379,7 +379,7 @@ def test_names_and_the_other_than_self_form():
 # ── Full consumption (A21) ─────────────────────────────────────────────
 
 @pytest.mark.parametrize("text,code", [
-    ("each creature with the same name as that creature", "unparsed"),
+    ("each creature with the same mana value as that creature", "unparsed"),
     ("creatures you control that entered this turn", "unparsed"),
     ("a basic plains card or a creature card", "np_union"),
     ("a creature card or an aura card", "np_union"),

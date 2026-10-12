@@ -1,8 +1,8 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.1583,
-  "deck_removal_typed_share": 0.8649,
+  "deck_removal_ready_share": 0.1699,
+  "deck_removal_typed_share": 0.8687,
   "deck_residue_by_code": {
    "target.colored": 3,
    "target.exclude_source": 4,
@@ -20,17 +20,17 @@
    "target.union:triggered": 1,
    "target.unparsed": 4
   },
-  "deck_typed_share": 0.7615,
+  "deck_typed_share": 0.7638,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
-   "CLAUSE": 26,
+   "CLAUSE": 24,
    "CONDITION": 19,
    "DURATION": 3,
-   "FILTER": 27,
+   "FILTER": 28,
    "ITERATION": 2,
    "NO_LEMMA": 14,
    "RECOGNIZED_UNSUPPORTED": 6,
-   "REFERENCE": 20,
+   "REFERENCE": 19,
    "REPLACEMENT": 59,
    "STRUCTURE": 3,
    "TARGET": 19,
@@ -95,33 +95,33 @@
    "UNPARSED": 293,
    "WIDENING": 807
   },
-  "typed_share": 0.7326,
+  "typed_share": 0.7346,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7941,
+   "ACTIVATED": 0.7948,
    "ALTERNATIVE_COST": 0.0,
    "CHAPTER": 0.7496,
    "KEYWORD": 0.0,
-   "LOYALTY": 0.7727,
+   "LOYALTY": 0.775,
    "MANA_ABILITY": 0.9498,
-   "MODE": 0.7787,
+   "MODE": 0.7804,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7316,
+   "SPELL": 0.7366,
    "STATIC": 0.6223,
-   "TRIGGERED": 0.7942,
+   "TRIGGERED": 0.796,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
    "AMOUNT": 788,
-   "CLAUSE": 1803,
+   "CLAUSE": 1717,
    "CONDITION": 1163,
    "DELAY": 16,
    "DURATION": 53,
-   "FILTER": 1534,
+   "FILTER": 1544,
    "ITERATION": 110,
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1382,
+   "REFERENCE": 1369,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1185,
@@ -132,9 +132,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7941,
+    "share": 0.7948,
     "specs": 6634,
-    "typed": 5268
+    "typed": 5273
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -152,9 +152,9 @@
     "typed": 0
    },
    "LOYALTY": {
-    "share": 0.7727,
+    "share": 0.775,
     "specs": 1302,
-    "typed": 1006
+    "typed": 1009
    },
    "MANA_ABILITY": {
     "share": 0.9498,
@@ -162,9 +162,9 @@
     "typed": 1513
    },
    "MODE": {
-    "share": 0.7787,
+    "share": 0.7804,
     "specs": 1758,
-    "typed": 1369
+    "typed": 1372
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -172,9 +172,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7316,
+    "share": 0.7366,
     "specs": 9992,
-    "typed": 7310
+    "typed": 7360
    },
    "STATIC": {
     "share": 0.6223,
@@ -182,9 +182,9 @@
     "typed": 3346
    },
    "TRIGGERED": {
-    "share": 0.7942,
+    "share": 0.796,
     "specs": 15272,
-    "typed": 12129
+    "typed": 12157
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -243,9 +243,9 @@
      "typed": 0
     },
     "SPELL": {
-     "share": 0.8696,
+     "share": 0.8804,
      "specs": 184,
-     "typed": 160
+     "typed": 162
     },
     "STATIC": {
      "share": 0.4156,
@@ -268,13 +268,13 @@
     "clauses": 259,
     "gate": 0.85,
     "met": false,
-    "ready": 41,
-    "ready_share": 0.1583,
-    "typed": 224,
-    "typed_share": 0.8649
+    "ready": 44,
+    "ready_share": 0.1699,
+    "typed": 225,
+    "typed_share": 0.8687
    },
    "specs": 868,
-   "typed": 661
+   "typed": 663
   },
   "keyword_lines": [
    [
@@ -1113,6 +1113,10 @@
     109
    ],
    [
+    "SEARCH? > MOVE",
+    38
+   ],
+   [
     "SEARCH? > SHUFFLE, MOVE",
     22
    ],
@@ -1122,10 +1126,6 @@
    ],
    [
     "DISCARD? > DRAW",
-    3
-   ],
-   [
-    "SEARCH? > MOVE",
     3
    ],
    [
@@ -1233,9 +1233,9 @@
     2
    ]
   ],
-  "typed": 32465,
-  "unmodelled": 11852,
-  "unmodelled_row_count": 1983,
+  "typed": 32554,
+  "unmodelled": 11763,
+  "unmodelled_row_count": 1980,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1340,12 +1340,6 @@
     70
    ],
    [
-    "REFERENCE",
-    "shuffle",
-    "link.unbound",
-    70
-   ],
-   [
     "AMOUNT",
     "become",
     "amount.scaler:with",
@@ -1368,6 +1362,12 @@
     "create",
     "payload.token_no_type",
     58
+   ],
+   [
+    "REFERENCE",
+    "shuffle",
+    "link.unbound",
+    57
    ],
    [
     "STRUCTURE",
@@ -1406,12 +1406,6 @@
     50
    ],
    [
-    "CLAUSE",
-    "search",
-    "patterns.search_zone:and",
-    47
-   ],
-   [
     "CONDITION",
     "",
     "condition.history_event",
@@ -1430,12 +1424,6 @@
     46
    ],
    [
-    "REFERENCE",
-    "put",
-    "link.unbound",
-    45
-   ],
-   [
     "AMOUNT",
     "deal",
     "patterns.no_recipient",
@@ -1445,6 +1433,12 @@
     "RECOGNIZED_UNSUPPORTED",
     "the ring tempts you",
     "lexicon.unsupported:the_ring_tempts_you",
+    44
+   ],
+   [
+    "REFERENCE",
+    "put",
+    "link.unbound",
     44
    ],
    [
@@ -1553,6 +1547,12 @@
     "CONDITION",
     "",
     "condition.unparsed:you",
+    27
+   ],
+   [
+    "FILTER",
+    "search",
+    "filter.unparsed:with",
     27
    ],
    [

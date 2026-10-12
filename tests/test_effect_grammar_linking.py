@@ -653,13 +653,13 @@ def test_an_instead_clause_whose_same_verb_antecedent_is_refused_is_unmodelled_n
     nearest spec of another verb. Its siblings with a typed same-verb
     antecedent still replace it."""
     h = _effect_host("Reveal a card from your hand. Search your library for "
-                     "a card with the same name as that card, reveal it, put "
-                     "it into your hand, then shuffle.\nHellbent — If you "
-                     "have no cards in hand, instead search your library for "
-                     "a card, put it into your hand, then shuffle.",
-                     types=("sorcery",))
+                     "a card with the same mana value as that card, reveal "
+                     "it, put it into your hand, then shuffle.\nHellbent — "
+                     "If you have no cards in hand, instead search your "
+                     "library for a card, put it into your hand, then "
+                     "shuffle.", types=("sorcery",))
     specs = list(h.specs)
-    first_search = next(s for s in specs if "same name" in s.raw)
+    first_search = next(s for s in specs if "same mana value" in s.raw)
     assert first_search.verb is Verb.UNMODELLED
     later = specs[specs.index(first_search) + 1:]
     put, shuffle = later[0], later[1]

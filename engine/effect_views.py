@@ -53,7 +53,8 @@ from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 from .effect_model import DurationKind, ModKind, SelectorKind
 from .effect_spec import (AbilityEffects, AmountKind, CardEffects, Chooser,
                           ConditionKind, CounterSpec, EventHint, Granted,
-                          HostKind, ManaSpec, Modification, RefKind, RefPart,
+                          HostKind, ManaSpec, Modification, Ref, RefKind,
+                          RefPart,
                           SubAbility, SubAbilityKind, TokenSpec, Verb,
                           iter_specs)
 
@@ -420,6 +421,27 @@ def _permission_over(s, exiled) -> bool:
 _CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE, Verb.MILL})
 
 
+# The same-name search shape (unit SX): a chosen object, a search of its
+# owner's (or controller's) zones for the cards sharing its name, "exile
+# them", and "that player shuffles" (CR 701.19a, 701.20a).
+_SAME_NAME_VERBS = (Verb.CHOOSE, Verb.SEARCH, Verb.EXILE, Verb.SHUFFLE)
+
+
+def _same_name_exile(h: AbilityEffects) -> bool:
+    if not _strict_host(h, frozenset(_SAME_NAME_VERBS)):
+        return False
+    specs = list(iter_specs(h.specs))
+    if tuple(s.verb for s in specs) != _SAME_NAME_VERBS:
+        return False
+    choose, search, exile, shuffle = specs
+    r = exile.ref
+    return (choose.target is not None and search.filter is not None
+            and bool(search.filter.zones) and search.filter.named is not None
+            and isinstance(r, Ref) and r.kind is RefKind.RESULT
+            and r.index == search.seq
+            and shuffle.actor == search.filter.owner)
+
+
 def strict_card_flow(h: AbilityEffects) -> bool:
     """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
     impulse shape: an EXILE of the top of the controller's library or of
@@ -427,7 +449,10 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     spec with a duration), and a draw of "that many" of it. A plain draw
     (unit DW: a count the draw owner reads, never "that many" of anything
     but such an exile) is switched too; whether its drawer and count are
-    the DRAW executor's is `can_execute`'s question (A38)."""
+    the DRAW executor's is `can_execute`'s question (A38). And the
+    same-name search shape (`_same_name_exile`, unit SX)."""
+    if _same_name_exile(h):
+        return True
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS,
                         durations=True, conditions=True):
         return False

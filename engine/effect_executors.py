@@ -48,7 +48,8 @@ from . import effect_conditions as conditions
 from .cards import CardType, Keyword
 from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_FILTER_KEYS,
                               EXECUTORS, Handle, Outcome, Resolution,
-                              event_player, handle_of, is_event_player)
+                              event_player, handle_of, is_event_player,
+                              names_target_player, target_players)
 from .effect_model import (DurationKind, Modification, ModKind, Selector,
                            SelectorKind)
 from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
@@ -68,7 +69,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                       Verb.GAIN_LIFE}),
             FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
                                          Verb.CONTINUOUS, Verb.DRAW,
-                                         Verb.MILL}),
+                                         Verb.MILL, Verb.CHOOSE, Verb.SEARCH,
+                                         Verb.SHUFFLE}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
@@ -442,12 +444,12 @@ def _return_self_transformed(ctx: Resolution, s: EffectSpec) -> Outcome:
 
 def named_searcher(actor: Any) -> bool:
     """Whose library a search (and its put and shuffle) is: each player,
-    you, or the controller of a chosen target ("its controller")."""
+    you, or the controller or owner of a chosen target ("its controller",
+    "that player" after "search its owner's ...")."""
     if isinstance(actor, Selector):
         return (actor.kind in (SelectorKind.ALL_PLAYERS, SelectorKind.PLAYER)
                 and actor.filter is None)
-    return (isinstance(actor, Ref) and actor.kind is RefKind.CONTROLLER_OF
-            and isinstance(actor.of, Ref) and actor.of.kind is RefKind.TARGET)
+    return names_target_player(actor)
 
 
 def searched_to_battlefield(s: Any) -> bool:
@@ -638,11 +640,59 @@ def self_return_transformed(s: Any) -> bool:
                                  controller=d.controller))
 
 
+def exile_found(s: EffectSpec) -> bool:
+    """"[and] exile them": every card an earlier instruction of this
+    resolution found (a search's result, CR 701.19a), from wherever it
+    was found."""
+    r = s.ref
+    return (s.verb is Verb.EXILE and isinstance(r, Ref)
+            and r.kind is RefKind.RESULT and isinstance(r.index, int)
+            and r.part is RefPart.ALL and r.n is None and r.of is None
+            and s.actor is None and s.target is None and s.target_slot is None
+            and s.filter is None and s.amount is None and s.dest is None
+            and s.payload is None and s.duration is None and s.group is None
+            and not s.alternatives and not s.flags and not s.optional
+            and s.subject is None and s.chooser is Chooser.CONTROLLER)
+
+
 def _exile_supported(s: EffectSpec) -> bool:
-    """The top N of a library, the controller's whole hand, or the
-    ability's own permanent ("exile ~"). Any other exile is refused."""
+    """The top N of a library, the controller's whole hand, the ability's
+    own permanent ("exile ~"), or the cards an earlier instruction found
+    ("exile them"). Any other exile is refused."""
     return (_exile_top_supported(s) or _exile_hand_supported(s)
-            or self_exile(s))
+            or self_exile(s) or exile_found(s))
+
+
+def _exile_them(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """Each found card still where it was found (the same object, CR
+    400.7) moves to exile through the zone funnel."""
+    produced = ctx.results.get(s.ref.index) or {}
+    cause = getattr(_source_object(ctx), "name", "")
+    found, moved = [], []
+    for handles in produced.values():
+        for h in handles:
+            card = ctx.game.get_card_by_id(h.instance_id) \
+                if isinstance(h, Handle) else None
+            if card is None or card.zone != h.zone:
+                continue
+            found.append(card)
+            if ctx.game.zone_mgr.move_card(ctx.game, card, card.zone,
+                                           "exile", cause=cause):
+                moved.append(handle_of(card))
+    _audit_found_exiled(ctx, found)
+    return Outcome(bool(moved), {ctx.controller: tuple(moved)})
+
+
+def _audit_found_exiled(ctx: Resolution, found) -> None:
+    """CR 701.19a / 608.2c, restated from the cards' zones: every card the
+    search found, still where it was found, is in exile after "exile
+    them". Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    left = [c.name for c in found if c.zone != "exile"]
+    rules_audit.check("701.19/found_exiled", not left,
+                      f"found but not exiled: {left}", game=ctx.game)
 
 
 def _exile_self(ctx: Resolution) -> Outcome:
@@ -688,6 +738,8 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
                   actors: Tuple[int, ...]) -> Outcome:
     if self_exile(s):
         return _exile_self(ctx)
+    if exile_found(s):
+        return _exile_them(ctx, s)
     if _is_your_hand(s.filter):
         return _exile_hand(ctx)
     n = _amount(ctx, s)
@@ -1311,7 +1363,7 @@ _BASIC_LAND_CARD = CardFilter(zone="library", types=frozenset({"land"}),
                               supertypes=frozenset({"basic"}))
 
 
-def search_supported(s: EffectSpec) -> bool:
+def _basic_land_search(s: EffectSpec) -> bool:
     """"<players> search(es) their library for a basic land card": each
     named player finds up to one (CR 701.19a)."""
     a = s.amount
@@ -1323,6 +1375,39 @@ def search_supported(s: EffectSpec) -> bool:
             and s.dest is None and s.payload is None and s.duration is None
             and s.group is None and not s.alternatives and not s.flags
             and s.subject is None and s.chooser is Chooser.CONTROLLER)
+
+
+# The zones a search for the cards named like an object covers (CR
+# 701.19a), and the counts it finds.
+_NAMED_SEARCH_ZONES = frozenset({"graveyard", "hand", "library"})
+_NAMED_SEARCH_COUNTS = frozenset({AmountKind.ANY_NUMBER, AmountKind.ALL})
+
+
+def same_name_search(s: EffectSpec) -> bool:
+    """"Search <its owner's | its controller's> graveyard, hand, and
+    library for <any number of | all> cards with the same name as that
+    <object>": the controller searches the zones of the player who owns
+    (or controls) the object chosen for the first target, for the cards
+    sharing its name (CR 201.2, 701.19a)."""
+    f = s.filter
+    return (s.verb is Verb.SEARCH and isinstance(f, CardFilter)
+            and f.zones and f.zones <= _NAMED_SEARCH_ZONES
+            and dataclasses.replace(f, raw="") == CardFilter(
+                zone="library", zones=f.zones, owner=f.owner, named=f.named)
+            and names_target_player(f.owner)
+            and isinstance(f.named, Ref) and f.named.kind is RefKind.TARGET
+            and isinstance(f.named.index, int)
+            and isinstance(s.amount, Amount)
+            and s.amount.kind in _NAMED_SEARCH_COUNTS
+            and s.actor is None and s.target is None and s.target_slot is None
+            and s.ref is None and s.dest is None and s.payload is None
+            and s.duration is None and s.group is None
+            and not s.alternatives and not s.flags and not s.optional
+            and s.subject is None and s.chooser is Chooser.CONTROLLER)
+
+
+def search_supported(s: EffectSpec) -> bool:
+    return _basic_land_search(s) or same_name_search(s)
 
 
 def execute_search(ctx: Resolution, s: EffectSpec,
@@ -1349,6 +1434,51 @@ def execute_search(ctx: Resolution, s: EffectSpec,
     return Outcome(bool(actors), dict(found))
 
 
+def _chosen_object(ctx: Resolution, ref: Ref) -> Any:
+    """The object chosen for the target slot `ref` names, wherever it is
+    now: the same card as it last existed (CR 608.2h) when an earlier
+    instruction moved it."""
+    slot = ctx.chosen[ref.index] if ref.index < len(ctx.chosen) else ()
+    for v in slot:
+        if isinstance(v, Handle):
+            return ctx.game.get_card_by_id(v.instance_id)
+    return None
+
+
+def _search_same_name(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The controller searches the named player's zones for the cards
+    sharing the chosen object's name and finds them
+    (`callbacks.default_search_finds`: every one -- CR 701.19b lets a
+    searcher miss cards in a hidden zone, never in a public one). A
+    search of the controller's own library is a library search for the
+    "whenever a player searches their library" watchers."""
+    from .callbacks import default_search_finds
+    from .land_manager import LandManager
+    f = s.filter
+    obj = _chosen_object(ctx, f.named)
+    players = target_players(ctx, f.owner)
+    if obj is None or len(players) != 1:
+        return Outcome(False, {})
+    (p,) = players
+    name = obj.template.name
+    zone_of = ctx.game.players[p]
+    pool = [c for z in sorted(f.zones) for c in getattr(zone_of, z)
+            if c.template.name == name]
+    if "library" in f.zones and p == ctx.controller:
+        LandManager.note_library_search(ctx.game, p)
+    found = default_search_finds(pool)
+    return Outcome(True, {ctx.controller: tuple(handle_of(c)
+                                                for c in found)})
+
+
+def _search_dispatch(ctx: Resolution, s: EffectSpec,
+                     actors: Tuple[int, ...]) -> Outcome:
+    if same_name_search(s):
+        return _search_same_name(ctx, s)
+    return execute_search(ctx, s, actors)
+
+
+_search_dispatch.supports = search_supported
 execute_search.supports = search_supported
 
 
@@ -1391,9 +1521,35 @@ def execute_shuffle(ctx: Resolution, s: EffectSpec,
 
 execute_shuffle.supports = shuffle_supported
 
+def choose_supported(s: EffectSpec) -> bool:
+    """"Choose target <object>": a target chosen as the spell was cast
+    (CR 601.2c) that the instructions after it name."""
+    return (s.verb is Verb.CHOOSE and s.target is not None
+            and isinstance(s.target_slot, int) and s.ref is None
+            and s.actor is None and s.filter is None and s.amount is None
+            and s.dest is None and s.payload is None and s.duration is None
+            and s.group is None and not s.alternatives and not s.flags
+            and not s.optional and s.subject is None
+            and s.chooser is Chooser.CONTROLLER)
+
+
+def execute_choose(ctx: Resolution, s: EffectSpec,
+                   actors: Tuple[int, ...]) -> Outcome:
+    """The object chosen for the slot is the one the later instructions
+    name; choosing it changes nothing. (With every target illegal the
+    spell does not resolve at all, CR 608.2b, before any executor.)"""
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) \
+        else ()
+    chosen = tuple(v for v in slot if isinstance(v, Handle))
+    return Outcome(bool(chosen), {ctx.controller: chosen})
+
+
+execute_choose.supports = choose_supported
+
 EXECUTORS[Verb.DESTROY] = execute_destroy
-EXECUTORS[Verb.SEARCH] = execute_search
+EXECUTORS[Verb.SEARCH] = _search_dispatch
 EXECUTORS[Verb.SHUFFLE] = execute_shuffle
+EXECUTORS[Verb.CHOOSE] = execute_choose
 EXECUTOR_FILTER_KEYS[Verb.SACRIFICE] = frozenset(
     ("types", combo) for k in (1, 2, 3)
     for combo in itertools.combinations(sorted(_CARD_TYPE_VALUES), k)) | {
@@ -1403,4 +1559,18 @@ EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
 # The search executor evaluates "a basic land card" in the searcher's own
 # library itself (unit LA).
 EXECUTOR_FILTER_KEYS[Verb.SEARCH] = frozenset(_BASIC_LAND_CARD.as_tuple())
+# ... and, for the cards named like a chosen object (unit SX), the zones of
+# the player who owns or controls it: its first or second target, read as
+# chosen or as it last existed.
+_TARGET_REFS = tuple(Ref(RefKind.TARGET, i, lki=lki)
+                     for i in range(len(("first", "second")))
+                     for lki in (False, True))
+EXECUTOR_FILTER_KEYS[Verb.SEARCH] |= frozenset(
+    [("zone", "library")]
+    + [("zones", tuple(sorted(z)))
+       for k in range(len(_NAMED_SEARCH_ZONES))
+       for z in itertools.combinations(sorted(_NAMED_SEARCH_ZONES), k + 1)]
+    + [("owner", Ref(kind, of=t)) for t in _TARGET_REFS
+       for kind in (RefKind.OWNER_OF, RefKind.CONTROLLER_OF)]
+    + [("named", t) for t in _TARGET_REFS])
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
