@@ -8403,3 +8403,74 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **Non-supertype negations** of a single type ("target nonartifact land", "target noncreature artifact") are still unread residue.
 - **Field of Ruin's class** (unit LA): its requirement is now right, but the activation is still unclassified. It needs the removal family's destroy executor on the dispatcher.
+
+## Unit LA: a land-destruction activation destroys its target on the dispatcher (2026-10-12)
+
+**Rule (CR 602.2b, 701.8a, 702.12b, 608.2c, 101.4, 701.19, 701.20):**
+- "[Cost]: Destroy target <type> [an opponent controls]" declares its target as it is activated, and destroys it on resolution unless it is indestructible.
+- Its basic-land search riders follow in printed order: "its controller may search", "each player searches" (in turn order) or "you may search". Each searcher shuffles after.
+- With every target illegal, the ability does nothing, riders included (CR 608.2b).
+
+**Defect:** the activation classifier never read these abilities. They stayed UNCLASSIFIED, declared no target and were never activated, so Boros Ponza's eight Field of Ruin and Demolition Field were colorless lands.
+
+**Class:** 72 pool activations reach the dispatcher's removal family. 10 of them destroy a target land and 63 a target artifact, enchantment, creature or permanent. Deck carriers: Boros Ponza (Field of Ruin ×4, Demolition Field ×4) and Eldrazi Ramp (Ghost Quarter ×1).
+
+**Steps (`3b394d6`; contract fix `a359b09`; arm request `745f465`):**
+- **The removal family lands on the dispatcher:**
+  - DESTROY skips an indestructible permanent; auditor `701.8a/destroyed`.
+  - SEARCH finds "a basic land card", declared in `EXECUTOR_FILTER_KEYS`.
+  - SHUFFLE, and MOVE's searched-to-battlefield branch.
+- **Its controller.** "Its controller" binds the target's controllers in APNAP order.
+- **The strict shape.** The strict removal shape admits a destroy with its basic-search riders, nested or flat.
+- **The carrier.** Unclassified activations reach the removal family, and need a legal target from their source to be activated.
+- **One owner each:** for a searched land entering, for a noted library search and for a shuffle. The legacy rider uses them in its old order, byte-identical.
+- **The AI.** The land-denial owner values and aims the activation from the host's typed data.
+- **The equivalence tool.** An enter-trigger carrier pair is on the new path only in a family the enter carrier takes (`ETB_FAMILIES`). Without this, 22 enter-trigger removals that their typed legacy branch still resolves read as switched.
+- **`a359b09`.** The search executor filled a local dict by subscript, which the executor contract (no state writes) cannot tell from a write. The pinned-worktree suite at `3b394d6` caught it: chunk A 1 failed, 4812 passed.
+
+**Tests (13, red first):** `tests/test_a_land_destruction_activation_destroys_its_target.py`. Covers the family, `can_activate`, each rider shape, the indestructible case, the fizzle, the AI and the auditor pair. The dispatcher-table pin and the equivalence tool's enter-carrier rule are also covered.
+
+**Pins moved:**
+- Harness record: +68 proven pairs and +3 intended. Field of Ruin and Demolition Field resolve their riders where the legacy route did nothing; Molten Firebird's "{4}{R}: Exile ~" exiles its source.
+- Gate parity: new path 1358 → 1429; legacy fallback 3184, unchanged.
+- The removal-family census share rises 0.0425 → 0.1583.
+- Self-check fixture: hosts 245 → 248. Ghost Quarter is a no-op on harness boards that have no land to target.
+
+**Digest / anchor / suites:**
+- Digest: Boros Ponza now beats Instant Reanimator at s55000. Field of Ruin destroys Watery Grave, and Reanimator's library holds no basic.
+- Anchor: Reanimator vs Ponza at s51500 flips the same way; on turn 5 Ponza takes a Mountain, then Reanimator a Plains. Ponza vs Boros Energy at s51000 moves by one turn.
+- Suites at `a359b09` (pinned worktree): chunk A 4819 passed, chunk B 2716 passed.
+
+**Measured (same-seed n=20 Bo3, `la-post` `745f465`, pre = `nb-post`):** 58 cells change, almost all in Boros Ponza's row and column.
+- **Boros Ponza +9.2** (22.4 → 31.6). Everything else moves by 1.7 or less: Azorius Blink −1.7, Creatures Toolbox −1.4, Eldrazi Ramp −1.4 (Ghost Quarter).
+- Auditor violations 89 → 0 (NB's false positives are gone).
+- **Replayed cell-exact:** Instant Reanimator vs Boros Ponza goes 13/20 → 3/20 in pinned worktrees, matching the arm's 65 → 15.
+  - Seed 52000, game 1: Ponza's Cleansing Wildfire, Price of Freedom and Demolition Field destroy Godless Shrine, Undercity Sewers and Breeding Pool.
+  - Reanimator runs one basic of each of its three types, and all three were already on its battlefield, so its "may search" finds nothing. Ponza's own search takes a Plains.
+  - Rules-correct: the deck's land-destruction plan now works against a thin basic count.
+
+**Leads (not built):**
+- **AI value for the 63 non-land activations:** built as unit LV.
+- **The equipment carrier vs the equipment.** `permanent_threat` rates a carrier with Cranial Plating attached above the Plating itself. Found while building LV.
+
+## Unit LV: a destroy-target activation is aimed at the permanent its controller loses most (2026-10-12)
+
+**Rule (AI, from CR 602.2b, 701.8a, 702.12b):** an activated "destroy target <type>" ability declares its target as it is activated. The AI's rule is the one it already follows for damage that destroys:
+- **The candidates** are the opposing permanents the ability may target, by the engine's own admission (types, qualifiers, controller; hexproof, protection). The instruction must destroy them (not indestructible), and their controller must be willing to pay their ward.
+- **The aim** is the candidate whose loss costs its controller most (`permanent_threat`).
+- **The activation** happens when that loss outweighs the activation's own cost terms.
+
+**Defect:** LA made 72 pool activations resolve, but the AI valued only the 9 aimed at a land. The other 63 were never activated.
+
+**Class:** 63 pool activations ("destroy target artifact or enchantment", "... creature", "... permanent"). No registered deck carries one.
+
+**Steps (`7fef32b`):**
+- `ai/damage_targets.choose_destroy_recipient` and `destroy_destroys` sit beside the damage aim: one owner of where AI-declared removal goes, in one currency.
+- `ai/activation_ev._destroy_plan` covers a removal-family activation whose one instruction is the destroy. A host with riders is not valued by it, since the plan has no price for them.
+- The removal branch takes the better of the land-denial plan and this one; an "artifact or land" target reaches both.
+
+**Tests (6; 5 red first, the held case pinned):** `tests/test_a_destroy_target_activation_is_aimed_at_the_permanent_its_controller_loses_most.py`.
+
+**Digest / anchor / suites:** digest byte-identical, anchor 29 passed. Suites at `a359b09`: chunk A 4819 passed, chunk B 2716 passed. **Not measured:** no registered deck carries the class, and the three deck lands have riders this plan declines.
+
+**Lead (recorded, not tuned):** `position_value` reads losing our only attacker as a gain when the opponent has a clock and ours is slow (3 power → 0: −26.1 → −19.1). This is the no-clock sentinel cliff, whose fix was measured and falsified on 2026-09-04. A sacrifice cost there reads as free or better.
