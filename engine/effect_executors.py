@@ -1332,21 +1332,21 @@ def execute_search(ctx: Resolution, s: EffectSpec,
     when there is none (CR 701.19a-b). The search is made either way."""
     from .cards import Supertype
     from .land_manager import LandManager
-    found = {}
+    found = []
     for p in actors:
         basics = [c for c in ctx.game.players[p].library
                   if c.template.is_land
                   and Supertype.BASIC in (c.template.supertypes or ())]
         LandManager.note_library_search(ctx.game, p)
         if not basics:
-            found[p] = ()
+            found.append((p, ()))
             continue
         pick = ctx.game.callbacks.choose_fetch_target(
             ctx.game, p, None, basics, ['W', 'U', 'B', 'R', 'G'])
         if all(pick is not c for c in basics):
             pick = basics[0]
-        found[p] = (handle_of(pick),)
-    return Outcome(bool(actors), found)
+        found.append((p, (handle_of(pick),)))
+    return Outcome(bool(actors), dict(found))
 
 
 execute_search.supports = search_supported
