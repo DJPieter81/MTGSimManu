@@ -20,9 +20,9 @@
    "target.union:triggered": 1,
    "target.unparsed": 4
   },
-  "deck_typed_share": 0.7667,
+  "deck_typed_share": 0.769,
   "deck_unmodelled_by_stage": {
-   "AMOUNT": 7,
+   "AMOUNT": 6,
    "CLAUSE": 23,
    "CONDITION": 19,
    "DURATION": 3,
@@ -30,7 +30,7 @@
    "ITERATION": 2,
    "NO_LEMMA": 14,
    "RECOGNIZED_UNSUPPORTED": 6,
-   "REFERENCE": 19,
+   "REFERENCE": 18,
    "REPLACEMENT": 59,
    "STRUCTURE": 3,
    "TARGET": 18,
@@ -44,7 +44,7 @@
    "target.keyword:awaken": 1,
    "target.keyword:cycling": 1,
    "target.keyword:defender": 5,
-   "target.keyword:flying": 72,
+   "target.keyword:flying": 73,
    "target.keyword:foretell": 1,
    "target.keyword:infect": 1,
    "target.keyword:landwalk:island": 1,
@@ -52,9 +52,9 @@
    "target.keyword:toxic": 2,
    "target.keyword:without_double_strike": 1,
    "target.keyword:without_first_strike": 1,
-   "target.keyword:without_flying": 14,
+   "target.keyword:without_flying": 16,
    "target.keyword:without_vigilance": 1,
-   "target.scope:not_you": 92,
+   "target.scope:not_you": 93,
    "target.scope:opponent": 15,
    "target.stat:greatest_power": 2,
    "target.stat:least_mana_value": 1,
@@ -82,7 +82,7 @@
    "target.union:food": 1,
    "target.union:land": 8,
    "target.union:opponent": 1,
-   "target.union:planeswalker": 133,
+   "target.union:planeswalker": 137,
    "target.union:player": 2,
    "target.union:sorcery": 61,
    "target.union:spacecraft": 2,
@@ -91,50 +91,50 @@
    "target.unparsed": 294
   },
   "residue_by_polarity": {
-   "NARROWING": 292,
+   "NARROWING": 296,
    "UNPARSED": 294,
-   "WIDENING": 809
+   "WIDENING": 813
   },
-  "typed_share": 0.7362,
+  "typed_share": 0.7383,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7982,
+   "ACTIVATED": 0.7979,
    "ALTERNATIVE_COST": 0.0,
    "CHAPTER": 0.7511,
    "KEYWORD": 0.0,
    "LOYALTY": 0.7801,
-   "MANA_ABILITY": 0.9498,
-   "MODE": 0.7838,
+   "MANA_ABILITY": 0.9448,
+   "MODE": 0.7935,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7381,
+   "SPELL": 0.7468,
    "STATIC": 0.6223,
    "TRIGGERED": 0.7972,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
-   "AMOUNT": 788,
+   "AMOUNT": 688,
    "CLAUSE": 1694,
    "CONDITION": 1163,
    "DELAY": 16,
    "DURATION": 53,
-   "FILTER": 1544,
+   "FILTER": 1547,
    "ITERATION": 110,
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1369,
+   "REFERENCE": 1368,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
-   "TARGET": 1152,
-   "TARGET_COUNT": 82,
+   "TARGET": 1155,
+   "TARGET_COUNT": 83,
    "TRIGGER_EMBEDDED": 165
   }
  },
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7982,
+    "share": 0.7979,
     "specs": 6669,
-    "typed": 5323
+    "typed": 5321
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -157,14 +157,14 @@
     "typed": 1018
    },
    "MANA_ABILITY": {
-    "share": 0.9498,
+    "share": 0.9448,
     "specs": 1593,
-    "typed": 1513
+    "typed": 1505
    },
    "MODE": {
-    "share": 0.7838,
+    "share": 0.7935,
     "specs": 1758,
-    "typed": 1378
+    "typed": 1395
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -172,9 +172,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7381,
+    "share": 0.7468,
     "specs": 9998,
-    "typed": 7380
+    "typed": 7467
    },
    "STATIC": {
     "share": 0.6223,
@@ -233,9 +233,9 @@
      "typed": 70
     },
     "MODE": {
-     "share": 0.875,
+     "share": 0.925,
      "specs": 40,
-     "typed": 35
+     "typed": 37
     },
     "REPLACEMENT": {
      "share": 0.0,
@@ -274,7 +274,7 @@
     "typed_share": 0.8721
    },
    "specs": 870,
-   "typed": 667
+   "typed": 669
   },
   "keyword_lines": [
    [
@@ -1193,7 +1193,7 @@
     1
    ]
   ],
-  "residue": 1395,
+  "residue": 1403,
   "specs": 44379,
   "sub_abilities": [
    [
@@ -1233,9 +1233,9 @@
     2
    ]
   ],
-  "typed": 32672,
-  "unmodelled": 11707,
-  "unmodelled_row_count": 1978,
+  "typed": 32766,
+  "unmodelled": 11613,
+  "unmodelled_row_count": 1977,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1308,12 +1308,6 @@
     "choose",
     "filter.unparsed:new",
     112
-   ],
-   [
-    "AMOUNT",
-    "deal",
-    "amount.x_unbound",
-    94
    ],
    [
     "FILTER",
@@ -1395,6 +1389,12 @@
    ],
    [
     "AMOUNT",
+    "deal",
+    "patterns.no_recipient",
+    51
+   ],
+   [
+    "AMOUNT",
     "prevent",
     "amount.scaler:to",
     51
@@ -1422,12 +1422,6 @@
     "deal",
     "target.no_requirement:attacking",
     46
-   ],
-   [
-    "AMOUNT",
-    "deal",
-    "patterns.no_recipient",
-    44
    ],
    [
     "RECOGNIZED_UNSUPPORTED",
@@ -1586,15 +1580,21 @@
     24
    ],
    [
-    "AMOUNT",
-    "draw",
-    "amount.x_unbound",
-    24
-   ],
-   [
     "CLAUSE",
     "become",
     "patterns.no_row:set_life",
+    24
+   ],
+   [
+    "FILTER",
+    "have",
+    "filter.unparsed:you",
+    24
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "flip a coin",
+    "lexicon.unsupported:flip_a_coin",
     24
    ]
   ]

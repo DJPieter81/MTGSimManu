@@ -1151,7 +1151,9 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
         elif sym == "C":
             cost.colorless += 1
         elif sym == "X":
-            pass  # X costs handled separately
+            # The pip is counted (CR 107.3a), never paid here: X costs
+            # are charged through `x_cost_data`.
+            cost.x_count += 1
         elif sym.isdigit():
             cost.generic += int(sym)
         elif sym == "S":

@@ -734,13 +734,13 @@
    "sideboard": 0
   },
   "steps": {
-   "E1": 1,
+   "E1": 2,
    "E2": 2,
-   "E3": 344,
+   "E3": 346,
    "E4": 53,
    "E5": 116,
    "E6": 34,
-   "none": 278
+   "none": 275
   },
   "strict": 90,
   "sub_kinds": {
@@ -757,7 +757,7 @@
    "DRAW,SCRY": 17,
    "DRAW,UNMODELLED": 78,
    "MOVE,UNMODELLED": 27,
-   "UNMODELLED": 19
+   "UNMODELLED": 18
   }
  },
  "cast_prohibition": {
@@ -918,10 +918,10 @@
    "sideboard": 2
   },
   "steps": {
-   "E4": 273,
+   "E4": 274,
    "E5": 50,
    "E6": 9,
-   "none": 90
+   "none": 89
   },
   "strict": 197,
   "sub_kinds": {
@@ -937,7 +937,7 @@
    "CREATE_TOKEN,DESTROY": 10,
    "CREATE_TOKEN,MOVE": 10,
    "CREATE_TOKEN,PUT_COUNTERS": 9,
-   "CREATE_TOKEN,UNMODELLED": 28,
+   "CREATE_TOKEN,UNMODELLED": 27,
    "UNMODELLED": 15
   }
  },
@@ -1148,31 +1148,31 @@
     "strict": true
    }
   ],
-  "executable": 460,
+  "executable": 470,
   "family": "damage",
   "hosts": {
    "mainboard": 19,
-   "pool": 438,
+   "pool": 448,
    "sideboard": 3
   },
   "steps": {
-   "E1": 145,
+   "E1": 154,
    "E2": 76,
-   "E3": 95,
-   "E4": 124,
+   "E3": 101,
+   "E4": 119,
    "E5": 20
   },
-  "strict": 460,
+  "strict": 470,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 8,
    "CONTINUOUS,EXILE": 7,
-   "CREATE_TOKEN": 119,
-   "DAMAGE": 145,
-   "DRAW": 63,
+   "CREATE_TOKEN": 114,
+   "DAMAGE": 154,
+   "DRAW": 68,
    "DRAW,MILL": 4,
    "DRAW,SURVEIL": 6,
-   "MILL": 15,
+   "MILL": 16,
    "MOVE": 51,
    "SACRIFICE": 25
   }
@@ -1359,23 +1359,23 @@
     "strict": true
    }
   ],
-  "executable": 236,
+  "executable": 237,
   "family": "card_flow",
   "hosts": {
    "mainboard": 16,
-   "pool": 220,
+   "pool": 221,
    "sideboard": 0
   },
   "steps": {
    "E2": 33,
-   "E3": 193,
+   "E3": 194,
    "E5": 10
   },
-  "strict": 236,
+  "strict": 237,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 10,
-   "DRAW": 107,
+   "DRAW": 108,
    "DRAW,MILL": 2,
    "EXILE": 1,
    "MILL": 37,
@@ -1859,7 +1859,7 @@
    "EXILE": 7,
    "MOVE": 4,
    "MOVE,UNMODELLED": 6,
-   "UNMODELLED": 10
+   "UNMODELLED": 9
   }
  },
  "planeswalker_manager:DAMAGE": {
@@ -2154,8 +2154,8 @@
   },
   "steps": {
    "E4": 3,
-   "E5": 310,
-   "none": 85
+   "E5": 311,
+   "none": 84
   },
   "strict": 179,
   "sub_kinds": {},

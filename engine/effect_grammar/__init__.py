@@ -64,6 +64,8 @@ def template_facts(template, face: int = 0,
     if face == 0:
         tc = _type_names(getattr(template, "card_types", ()))
         subs = tuple(getattr(template, "subtypes", ()) or ())
+        # An {X} in the printed mana cost binds X in the text (CR 107.3a):
+        # the cost counts its X pips (`ManaCost.x_count`).
         mc = getattr(template, "mana_cost", None)
         has_x = bool(getattr(mc, "x_count", 0))
         if keywords is None:

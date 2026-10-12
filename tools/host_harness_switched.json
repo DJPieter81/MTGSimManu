@@ -4780,6 +4780,14 @@
   {
    "pair": [
     "dispatched",
+    "Fascination",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the mode prints (CR 107.3a), so the chosen mode resolves through its typed instruction with the X chosen; the legacy mode path resolved nothing (returned False)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Feral Incarnation",
     "SPELL:0:1"
    ],
@@ -5148,6 +5156,22 @@
   {
    "pair": [
     "dispatched",
+    "Invoke the Firemind",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the mode prints (CR 107.3a), so the chosen mode resolves through its typed instruction with the X chosen; the legacy mode path resolved nothing (returned False)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Invoke the Firemind",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the mode prints (CR 107.3a), so the chosen mode resolves through its typed instruction with the X chosen; the legacy mode path resolved nothing (returned False)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Iroh's Demonstration",
     "MODE:0:1:mode1"
    ],
@@ -5468,6 +5492,22 @@
   {
    "pair": [
     "dispatched",
+    "Mishra's Command",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the mode prints (CR 107.3a), so the chosen mode resolves through its typed instruction with the X chosen; the legacy mode path resolved nothing (returned False)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Mishra's Command",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the mode prints (CR 107.3a), so the chosen mode resolves through its typed instruction with the X chosen; the legacy mode path resolved nothing (returned False)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Mishra's Onslaught",
     "MODE:0:0:mode0"
    ],
@@ -5696,6 +5736,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Purphoros's Intervention",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the mode prints (CR 107.3a), so the chosen mode resolves through its typed instruction with the X chosen; the legacy mode path resolved nothing (returned False)"
   },
   {
    "pair": [
@@ -7464,6 +7512,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gadwick, the Wizened",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit WX: an {X} in the mana cost now binds the X the enter trigger prints (CR 107.3a, the X paid to cast the permanent), so it draws X cards through the draw owner; the legacy enter path resolved nothing"
   },
   {
    "pair": [
@@ -10030,6 +10086,11 @@
   ],
   [
    "dispatched",
+   "Blaze",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Blood Divination",
    "SPELL:0:1"
   ],
@@ -10115,6 +10176,11 @@
   ],
   [
    "dispatched",
+   "Devil's Play",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Direct Current",
    "SPELL:0:0"
   ],
@@ -10170,6 +10236,11 @@
   ],
   [
    "dispatched",
+   "Even the Score",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Everdream",
    "SPELL:0:0"
   ],
@@ -10220,16 +10291,6 @@
   ],
   [
    "dispatched",
-   "Flurry of Wings",
-   "SPELL:0:0"
-  ],
-  [
-   "dispatched",
-   "Fungal Sprouting",
-   "SPELL:0:0"
-  ],
-  [
-   "dispatched",
    "Galvanic Blast",
    "SPELL:0:0"
   ],
@@ -10261,6 +10322,11 @@
   [
    "dispatched",
    "Harmonize",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Heat Ray",
    "SPELL:0:0"
   ],
   [
@@ -10345,6 +10411,11 @@
   ],
   [
    "dispatched",
+   "Mind Spring",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Of One Mind",
    "SPELL:0:1"
   ],
@@ -10405,16 +10476,6 @@
   ],
   [
    "dispatched",
-   "Rise of the Dread Marn",
-   "SPELL:0:0"
-  ],
-  [
-   "dispatched",
-   "Rise of the Varmints",
-   "SPELL:0:0"
-  ],
-  [
-   "dispatched",
    "Rowdy Research",
    "SPELL:0:1"
   ],
@@ -10460,17 +10521,17 @@
   ],
   [
    "dispatched",
+   "Silver Scrutiny",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
    "Splatter Technique",
    "MODE:0:0:mode0"
   ],
   [
    "dispatched",
    "Staggershock",
-   "SPELL:0:0"
-  ],
-  [
-   "dispatched",
-   "Storm Herd",
    "SPELL:0:0"
   ],
   [
@@ -10525,12 +10586,22 @@
   ],
   [
    "dispatched",
+   "Torch Breath",
+   "SPELL:0:2"
+  ],
+  [
+   "dispatched",
    "Tormenting Voice",
    "SPELL:0:1"
   ],
   [
    "dispatched",
    "Train of Thought",
+   "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Transcendent Message",
    "SPELL:0:1"
   ],
   [
@@ -10557,6 +10628,11 @@
    "dispatched",
    "Vivisection",
    "SPELL:0:1"
+  ],
+  [
+   "dispatched",
+   "Volcanic Geyser",
+   "SPELL:0:0"
   ],
   [
    "dispatched",

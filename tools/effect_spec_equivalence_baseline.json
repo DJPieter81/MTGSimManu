@@ -153,26 +153,26 @@
    "UNMODELLED_CLAUSE": 103
   },
   "can_target_planeswalker": {
-   "AGREE": 22012,
+   "AGREE": 22036,
    "DERIVED_COVERAGE_GROWTH": 17,
-   "UNEXPLAINED": 308,
-   "UNMODELLED_CLAUSE": 401
+   "UNEXPLAINED": 310,
+   "UNMODELLED_CLAUSE": 375
   },
   "can_target_player": {
-   "AGREE": 21602,
+   "AGREE": 21625,
    "DERIVED_COVERAGE_GROWTH": 22,
-   "UNEXPLAINED": 526,
-   "UNMODELLED_CLAUSE": 588
+   "UNEXPLAINED": 531,
+   "UNMODELLED_CLAUSE": 560
   },
   "cast_prohibition": {
    "AGREE": 22734,
    "DERIVED_COVERAGE_GROWTH": 4
   },
   "cast_targets": {
-   "AGREE": 4402,
+   "AGREE": 4442,
    "LEGACY_TARGET_ZONE": 10,
-   "UNEXPLAINED": 315,
-   "UNMODELLED_CLAUSE": 509
+   "UNEXPLAINED": 317,
+   "UNMODELLED_CLAUSE": 467
   },
   "cast_trigger_token": {
    "AGREE": 22675,
@@ -233,11 +233,11 @@
    "UNEXPLAINED": 2
   },
   "deals_targeted_damage": {
-   "AGREE": 20972,
+   "AGREE": 21011,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_TARGETED_DAMAGE_SCOPE": 6,
-   "UNEXPLAINED": 886,
-   "UNMODELLED_CLAUSE": 851
+   "UNEXPLAINED": 897,
+   "UNMODELLED_CLAUSE": 801
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -387,8 +387,8 @@
    "AGREE": 20816,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
-   "UNEXPLAINED": 919,
-   "UNMODELLED_CLAUSE": 966
+   "UNEXPLAINED": 923,
+   "UNMODELLED_CLAUSE": 962
   },
   "has_discard_effect": {
    "AGREE": 22255,
@@ -397,11 +397,11 @@
    "UNMODELLED_CLAUSE": 172
   },
   "has_draw_effect": {
-   "AGREE": 20916,
-   "DERIVED_COVERAGE_GROWTH": 274,
+   "AGREE": 20900,
+   "DERIVED_COVERAGE_GROWTH": 290,
    "LEGACY_DRAW_SCOPE": 162,
-   "UNEXPLAINED": 653,
-   "UNMODELLED_CLAUSE": 733
+   "UNEXPLAINED": 651,
+   "UNMODELLED_CLAUSE": 735
   },
   "has_dual_land_search": {
    "AGREE": 22682,
@@ -426,21 +426,21 @@
    "AGREE": 22307,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_GRAVEYARD_HATE": 1,
-   "UNEXPLAINED": 219,
-   "UNMODELLED_CLAUSE": 188
+   "UNEXPLAINED": 218,
+   "UNMODELLED_CLAUSE": 189
   },
   "has_graveyard_recursion": {
    "AGREE": 21475,
    "DERIVED_COVERAGE_GROWTH": 29,
    "LEGACY_GRAVEYARD_RECURSION": 4,
-   "UNEXPLAINED": 711,
-   "UNMODELLED_CLAUSE": 519
+   "UNEXPLAINED": 712,
+   "UNMODELLED_CLAUSE": 518
   },
   "has_graveyard_target": {
    "AGREE": 22121,
    "DERIVED_COVERAGE_GROWTH": 572,
-   "UNEXPLAINED": 17,
-   "UNMODELLED_CLAUSE": 28
+   "UNEXPLAINED": 18,
+   "UNMODELLED_CLAUSE": 27
   },
   "has_landfall": {
    "AGREE": 22203,
@@ -452,16 +452,16 @@
    "AGREE": 22738
   },
   "has_lifegain_token_trigger": {
-   "AGREE": 22627,
-   "DERIVED_COVERAGE_GROWTH": 104,
+   "AGREE": 22628,
+   "DERIVED_COVERAGE_GROWTH": 103,
    "UNEXPLAINED": 5,
    "UNMODELLED_CLAUSE": 2
   },
   "has_look_hand_selection": {
    "AGREE": 22517,
    "DERIVED_COVERAGE_GROWTH": 113,
-   "UNEXPLAINED": 19,
-   "UNMODELLED_CLAUSE": 89
+   "UNEXPLAINED": 20,
+   "UNMODELLED_CLAUSE": 88
   },
   "has_mana_value_wipe": {
    "AGREE": 22711,
@@ -472,8 +472,8 @@
    "AGREE": 21363,
    "DERIVED_COVERAGE_GROWTH": 3,
    "REMINDER_TEXT": 4,
-   "UNEXPLAINED": 646,
-   "UNMODELLED_CLAUSE": 722
+   "UNEXPLAINED": 650,
+   "UNMODELLED_CLAUSE": 718
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -491,8 +491,8 @@
    "AGREE": 20582,
    "DERIVED_COVERAGE_GROWTH": 720,
    "LEGACY_PUMP_GRANT_SCOPE": 11,
-   "UNEXPLAINED": 880,
-   "UNMODELLED_CLAUSE": 545
+   "UNEXPLAINED": 881,
+   "UNMODELLED_CLAUSE": 544
   },
   "has_recurring_draw_trigger": {
    "AGREE": 21783,
@@ -517,22 +517,22 @@
    "UNMODELLED_CLAUSE": 15
   },
   "has_scaling_token_finisher": {
-   "AGREE": 22586,
-   "DERIVED_COVERAGE_GROWTH": 120,
+   "AGREE": 22627,
+   "DERIVED_COVERAGE_GROWTH": 79,
    "UNEXPLAINED": 8,
    "UNMODELLED_CLAUSE": 24
   },
   "has_scry": {
-   "AGREE": 22698,
-   "DERIVED_COVERAGE_GROWTH": 3,
+   "AGREE": 22697,
+   "DERIVED_COVERAGE_GROWTH": 4,
    "UNEXPLAINED": 12,
    "UNMODELLED_CLAUSE": 25
   },
   "has_self_trigger": {
    "AGREE": 20997,
    "DERIVED_COVERAGE_GROWTH": 1344,
-   "UNEXPLAINED": 356,
-   "UNMODELLED_CLAUSE": 41
+   "UNEXPLAINED": 355,
+   "UNMODELLED_CLAUSE": 42
   },
   "has_surveil": {
    "AGREE": 22682,
@@ -546,11 +546,11 @@
    "UNMODELLED_CLAUSE": 12
   },
   "has_token_effect": {
-   "AGREE": 21997,
-   "DERIVED_COVERAGE_GROWTH": 52,
+   "AGREE": 21991,
+   "DERIVED_COVERAGE_GROWTH": 50,
    "REMINDER_TEXT": 3,
    "UNEXPLAINED": 301,
-   "UNMODELLED_CLAUSE": 385
+   "UNMODELLED_CLAUSE": 393
   },
   "has_x_counter_scaling": {
    "AGREE": 22633,
@@ -559,9 +559,9 @@
    "UNMODELLED_CLAUSE": 40
   },
   "has_x_damage": {
-   "AGREE": 22595,
+   "AGREE": 22645,
    "UNEXPLAINED": 33,
-   "UNMODELLED_CLAUSE": 110
+   "UNMODELLED_CLAUSE": 60
   },
   "is_counterspell": {
    "AGREE": 22714,
@@ -614,17 +614,17 @@
    "UNMODELLED_CLAUSE": 6
   },
   "mana_units": {
-   "AGREE": 22351,
+   "AGREE": 22353,
    "DERIVED_COVERAGE_GROWTH": 156,
-   "UNEXPLAINED": 217,
+   "UNEXPLAINED": 215,
    "UNMODELLED_CLAUSE": 14
   },
   "mass_graveyard_return": {
    "AGREE": 22690,
    "DERIVED_COVERAGE_GROWTH": 18,
    "LEGACY_GRAVEYARD_RECURSION": 1,
-   "UNEXPLAINED": 7,
-   "UNMODELLED_CLAUSE": 22
+   "UNEXPLAINED": 8,
+   "UNMODELLED_CLAUSE": 21
   },
   "modes[removal]": {
    "AGREE": 1358,
@@ -682,10 +682,10 @@
    "AGREE": 22738
   },
   "requires_creature_target": {
-   "AGREE": 19082,
+   "AGREE": 19092,
    "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 3377,
-   "UNMODELLED_CLAUSE": 277
+   "UNEXPLAINED": 3380,
+   "UNMODELLED_CLAUSE": 264
   },
   "ritual_mana": {
    "AGREE": 22513,
@@ -760,13 +760,13 @@
  },
  "gate_parity": {
   "legacy_fallback": 3168,
-  "new_path": 1455,
-  "pairs": 4623
+  "new_path": 1466,
+  "pairs": 4634
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813606,
-  "DERIVED_COVERAGE_GROWTH": 7863,
+  "AGREE": 2813813,
+  "DERIVED_COVERAGE_GROWTH": 7836,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 6,
@@ -779,7 +779,7 @@
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 202,
-  "UNEXPLAINED": 18064,
-  "UNMODELLED_CLAUSE": 9575
+  "UNEXPLAINED": 18094,
+  "UNMODELLED_CLAUSE": 9365
  }
 }

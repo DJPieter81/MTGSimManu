@@ -78,7 +78,7 @@ from engine.effect_spec import replace as _copy_with
 from engine.effect_spec import (ACTOR_ONLY_VERBS, Amount, AmountKind,
                                 CardFilter, Chooser, Condition, ConditionKind,
                                 EffectSpec, HostKind, Ref, RefKind, Stage,
-                                Unmodelled, Verb)
+                                TokenSpec, Unmodelled, Verb)
 from engine.target_solver import TargetRequirement
 
 __all__ = ["LEAF", "DETAIL_CODES", "ROWS", "CLAUSE_CACHE_SIZE",
@@ -99,6 +99,8 @@ DETAIL_CODES = frozenset({
     "for_each_uncounted",     # a leading "for each" over a verb with no count
     "search_zone",            # a search of anything but one library
     "amount_operator",        # an arithmetic operator on a printed count
+    "x_unbound",              # a payload "X" no cost {X} or definition binds
+    "x_defined_scaled",       # a defined X under a sign or factor (no such amount)
     "subject",                # a subject on a verb that takes none
     "duration_unread",        # a printed duration the duration leaf does not read
     "player_control",         # control of a player (CR 722), not of an object
@@ -525,6 +527,34 @@ def _row_counters(m: _M, a: int, b: int) -> None:
         m.fields["amount"] = amt
 
 
+def _bound_x(m: _M, a: Optional[Amount]) -> Optional[Amount]:
+    """A payload count or P/T the payload leaf typed as a bare "X" is the X
+    its card binds (`_amount._x_value`): its ", where x is" definition, else
+    the {X} of its cost (CR 107.3a). An X nothing binds is refused, never
+    zero; a defined X under a sign or factor other than one is refused
+    too (no such amount is evaluated)."""
+    if a is None or a.kind is not AmountKind.X:
+        return a
+    x = _amount._x_value(m.has_x, m.xdef)
+    if isinstance(x, tuple):
+        m.refuse(*x)
+    if x.kind is AmountKind.X:
+        return a
+    if a.n != 1:
+        m.refuse(Stage.AMOUNT, "x_defined_scaled", str(a.n))
+    return x
+
+
+def _payload_x_bound(m: _M, value: Any) -> Any:
+    """A token's printed "X/X" bound the same way (`_bound_x`)."""
+    if not isinstance(value, TokenSpec):
+        return value
+    power, toughness = _bound_x(m, value.power), _bound_x(m, value.toughness)
+    if power is value.power and toughness is value.toughness:
+        return value
+    return _copy_with(value, power=power, toughness=toughness)
+
+
 def _row_payload(m: _M, a: int, b: int) -> None:
     """A verb whose object is its payload: a token, mana, energy, a
     payment, a keyword action, an emblem."""
@@ -547,10 +577,10 @@ def _row_payload(m: _M, a: int, b: int) -> None:
         m.take("payload", r.span)
     else:
         r = m.leaf(r)
-        m.fields["payload"] = r.value
+        m.fields["payload"] = _payload_x_bound(m, r.value)
         m.take("payload", r.span)
     m.pending.extend(kv for kv in r.pending if kv[0] in ("granted", "copy_of"))
-    amt = r.amount if r.amount is not None else m.entry_amount
+    amt = _bound_x(m, r.amount) if r.amount is not None else m.entry_amount
     if r.rest_spans:
         scaled, _ = _scaler(m, r.rest_spans[0][0], r.rest_spans[-1][1],
                             amt if amt is not None else Amount(AmountKind.LITERAL, n=1))
