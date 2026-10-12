@@ -220,6 +220,26 @@ def test_the_ai_names_itself_for_counters_on_its_own_team(card_db):
     assert PLAYER_TARGET_SELF in out
 
 
+def test_a_target_that_became_illegal_leaves_the_others_to_resolve(card_db):
+    """CR 608.2b: a target that is illegal on resolution is not affected,
+    and the spell still does what it can with its legal ones -- it stays
+    on the slot it was chosen for, never sending the whole spell to a path
+    that does nothing (the matrix's "unhandled spell" for this card)."""
+    from engine import effect_diagnostics
+    from engine.constants import PLAYER_TARGET_SELF
+    game, mine, theirs = _game(card_db)
+    for _ in range(3):
+        _add(game, card_db, "Plains", 0)
+    po = _add(game, card_db, "Practiced Offense", 0, "hand")
+    before = set(effect_diagnostics.unhandled_effects())
+    assert game.cast_spell(0, po, [PLAYER_TARGET_SELF, mine[0].instance_id])
+    game._creature_dies(mine[0])
+    _resolve(game)
+    assert mine[1].plus_counters == 1
+    assert theirs[0].plus_counters == 0
+    assert set(effect_diagnostics.unhandled_effects()) == before
+
+
 # ── The auditor (CR 601.2c: a target on the slot it was chosen for) ────
 
 def _placed_findings(audit):

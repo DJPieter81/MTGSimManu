@@ -661,6 +661,19 @@ def _admits(game: Any, controller: int, req: Any, tid: Any) -> bool:
     return target_admitted(game, controller, [req], tid)
 
 
+def _admits_kind(game: Any, controller: int, req: Any, tid: Any) -> bool:
+    """Does the slot take `tid` by kind, whatever its legality now? A
+    target that became illegal still sits on the slot it was chosen for,
+    unaffected when the spell resolves (CR 608.2b): a player marker by the
+    players the slot names, an object by `target_solver.slot_admits_kind`."""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    from .target_solver import slot_admits_kind
+    if tid in (PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF):
+        return _admits(game, controller, req, tid)
+    card = game.get_card_by_id(tid)
+    return card is not None and slot_admits_kind(req, card)
+
+
 def _slot_span(host: Any) -> Optional[tuple]:
     """The printed span of slot 0's spec, when it lies inside the host's
     text (an empty or out-of-text span places nothing)."""
@@ -687,14 +700,18 @@ def _chosen(game: Any, controller: int, host: Any, legacy: list,
         # one entry per slot (`_slot_spans`), each placed on the one slot
         # whose requirement admits it (a player marker on a player slot,
         # an object on the slot of its kind): the cast's list is in
-        # announcement order, not printed order
+        # announcement order, not printed order. An entry no slot admits
+        # now became illegal (CR 608.2b): it goes to the one slot of its
+        # kind, where it is not affected.
         spans = _slot_spans(host)
         if len(legacy) != len(spans):
             return None
         positions = []
         for tid in legacy:
             ks = [k for k, req in enumerate(host.targets)
-                  if _admits(game, controller, req, tid)]
+                  if _admits(game, controller, req, tid)] or \
+                 [k for k, req in enumerate(host.targets)
+                  if _admits_kind(game, controller, req, tid)]
             if len(ks) != 1:
                 return None
             positions.append(spans[ks[0]][0])

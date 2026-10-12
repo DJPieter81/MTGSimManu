@@ -855,6 +855,22 @@ def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
     return bool(current & admitted)
 
 
+def slot_admits_kind(req: TargetRequirement, card: "CardInstance") -> bool:
+    """Does a target slot name the kind of object `card` is -- a spell the
+    slot's spell types admit, or one of its printed card types -- whatever
+    its legality now (zone, controller, protection)? The slot a target
+    that became illegal was chosen for: it stays there and is not affected
+    when the spell resolves (CR 608.2b)."""
+    from .cards import CardType
+    if req.zone == "stack":
+        return spell_matches(req, card)
+    t = card.template
+    if "any" in req.types and (t.is_creature
+                               or CardType.PLANESWALKER in t.card_types):
+        return True
+    return _matches_type(card, frozenset(req.types), req.zone)
+
+
 def _matches_supertype(card: "CardInstance",
                        supertype: Optional[str]) -> bool:
     """Filter by supertype. None = no filter. Mirrors the legendary /
