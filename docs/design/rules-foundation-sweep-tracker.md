@@ -8545,3 +8545,52 @@ Hundreds of pool cards sacrifice creatures.
 - **The exile- and counter-headed members** of SX-a's class (Crumble to Dust, Eradicate, Quash, Counterbore) need their heads on the dispatcher.
 - **SX-b:** "choose a card name" and its AI name choice. The Stone Brain is in Boros Ponza main deck ×1 and Eldrazi Tron sideboard ×1.
 - **Amulet Titan (25.5%, band 45–60).** A 40-game audit casts Primeval Titan on turn 9.2 on average and wins on turn 13. One replay (vs Boros Energy, s50000) showed a colorless-heavy draw rather than a misplay, so no subsystem is named yet. The next step is a Bo3 root-cause replay per the loop-break protocol.
+
+## Unit PO: counters on each creature a named player controls; a choice made on resolution; several target slots (2026-10-12)
+
+**Rule (CR 122.1, 115.1, 601.2c, 608.2b-d):**
+- "Put N +1/+1 counter(s) on each [other] creature <you control | target player controls>" puts that many counters on every such creature as it resolves, through the one counter owner (`CardInstance.add_plus_counters`, which applies counter replacements).
+- A target player is a requirement of its own, chosen as the spell is cast; the group's controller is bound to that slot.
+- "Gains your choice of A or B" is a choice its controller makes on resolution: one option per printed alternative, performed with the instruction's target and duration.
+- A cast's targets sit on the slots whose requirements admit them, whatever the order the caster announced them in. A target that became illegal stays on its own slot, unaffected, and the spell still does what it can (CR 608.2b).
+
+**Defect:** the dispatcher had no counters executor, and no legacy path read the shape on a spell. So Inspiring Roar resolved as nothing, and Practiced Offense (Domain Zoo and Hollow One main deck ×2) put no counters at all. The grammar also refused "each creature target player controls" and "your choice of" keyword grants.
+
+**Class:** 124 pool cards put +1/+1 counters on each creature a player controls; 37 name the group by "target player controls".
+
+**Steps:**
+- **PO.1 (`2fe2a91`):** `execute_put_counters` and auditor `122.1/counters_placed`.
+- **PO.2–PO.3 (`d82545f`):**
+  - The group a target player controls (`patterns._target_player_group`).
+  - Choice alternatives as typed options (`effect_resolver.is_choice` / `chosen_option`; engine default `callbacks.default_alternative`, the first printed).
+  - Multi-slot placement by admission (`effect_carrier._chosen`), with auditor `601.2c/slot_placed`.
+  - The tokens/counters family takes a keyword or P/T grant as a rider of a token or counter instruction, never alone.
+  - `ai/modal.named_player_value` values counters on the named player's creatures, so the caster names itself.
+- **PO.4 (`3281918`):** an entry no slot admits now goes to the one slot of its kind (`target_solver.slot_admits_kind`). Before this, PO.3's placement refused a host whose creature target had died in response, and the legacy parser did nothing.
+
+**Tests:** `tests/test_counters_are_put_on_each_creature_the_named_player_controls.py`, 13 tests, each red first, both auditors both ways.
+
+**Pins:**
+- Harness: 9 intended pairs, each checked board by board:
+  - Counters the legacy route skipped.
+  - Clue and Food tokens it skipped.
+  - Printed token subtypes.
+  - Renegade's Getaway's indestructible goes on its target; legacy gave it to the new Servo.
+  - Savor's -2/-2; legacy applied none and gained 6 life from the Food's reminder text.
+- Legacy fallback 3173 → 3168.
+- Spec-equivalence view drift is recorded card by card (precedent SX-a, HX). None of these views is switched, so engine behaviour is unaffected.
+- Digest byte-identical at each step; anchor 29 passed. Suites at `d82545f`: 4847 + 2716 passed.
+
+**Measured (same-seed n=20 Bo3, `po-post` `acaa684` = PO.1–PO.3, pre = `fz-post`):**
+- 28 cells change. **Hollow One +2.1** and **Domain Zoo +0.9**, the two decks that run Practiced Offense; every other deck is within ±0.5.
+- No deck moves more than 5 pp, so no replay is required. The largest cells are Hollow One's: vs Amulet Titan 50 → 65, vs 4/5c Control 10 → 20.
+- Findings: Untimely Malfunction (`unhandled/mode`) 9, and Practiced Offense (`unhandled/spell`) 6. The latter traced to PO.3's placement and was fixed by PO.4; the next arm confirms it. Violations 0.
+
+**Leads (not built):**
+- **Untimely Malfunction's retarget mode** (`unhandled/mode`, 9 cells).
+- **The dispatcher's characteristic executor writes no log line.** The legacy pump wrote "X gives Y +a/+b and kw", so replays of switched hosts (Cunning Maneuver, Shelob's Ambush) show the token but not the grant.
+- **Food's reminder text.** The legacy ability extraction reads "You gain 3 life" from it, so a Food-making spell still on the legacy route gains 6 life instead of making a Food.
+- **The AI never makes the choice.** A keyword choice made on resolution takes the engine default (the first printed).
+- **View drift:**
+  - `can_target_player` reads only damage and discard targets;
+  - the pump keyword views read no choice alternatives.
