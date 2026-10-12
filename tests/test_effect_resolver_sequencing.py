@@ -233,6 +233,10 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
         for kind in (RefKind.OWNER_OF, RefKind.CONTROLLER_OF)} | {
         ("named", t) for t in targets}
     assert search == basic | named
+    # unit PO: "each [other] creature <you | target player> control(s)"
+    assert keys.pop(Verb.PUT_COUNTERS) == frozenset(
+        [("types", ("creature",)), ("controller", "you"), ("other", True)]
+        + [("controller", Ref(RefKind.TARGET, i)) for i in (0, 1)])
     assert keys == {Verb.EXILE: frozenset(CardFilter(
         zone="library", owner="you", position="top").as_tuple()) | {
             ("owner", Ref(RefKind.EVENT_PLAYER)), ("zone", "hand")}}

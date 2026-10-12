@@ -363,7 +363,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 10,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
@@ -910,7 +910,7 @@
     "strict": false
    }
   ],
-  "executable": 168,
+  "executable": 169,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1141,21 +1141,21 @@
     "strict": true
    }
   ],
-  "executable": 446,
+  "executable": 450,
   "family": "damage",
   "hosts": {
    "mainboard": 18,
-   "pool": 425,
+   "pool": 429,
    "sideboard": 3
   },
   "steps": {
    "E1": 145,
    "E2": 76,
    "E3": 95,
-   "E4": 119,
+   "E4": 123,
    "E5": 11
   },
-  "strict": 446,
+  "strict": 450,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 3,

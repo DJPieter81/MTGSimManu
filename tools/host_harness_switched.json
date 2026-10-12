@@ -2187,6 +2187,86 @@
   },
   {
    "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Abandoned Air Temple",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Aron, Benalia's Ruin",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Durable Handicraft",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Gavony Township",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Genku, Future Shaper",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Katilda, Dawnhart Prime",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Leyline of Abundance",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Mikaeus, the Lunarch",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Munda's Vanguard",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Shalai, Voice of Plenty",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit PO: the same +1/+1 counters on the same creatures through the counter owner; the log line reads '<source> puts N +1/+1 counter(s) on <creature>' in place of the legacy activation's own wording"
+  },
+  {
+   "pair": [
     "activated_effects:UNCLASSIFIED",
     "Asmodeus the Archfiend",
     "ACTIVATED:0:1"
@@ -3916,6 +3996,14 @@
   {
    "pair": [
     "create_token",
+    "The Crystal's Chosen",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: four 1/1 Hero creature tokens (the token owner gives them their printed subtype, where the legacy handler made untyped creature tokens), then a +1/+1 counter on each creature its controller controls, which the legacy route skipped (CR 111.3, 122.1, 608.2c)"
+  },
+  {
+   "pair": [
+    "create_token",
     "Titania's Command",
     "MODE:0:2:mode2"
    ],
@@ -4128,6 +4216,14 @@
     "SPELL:0:0"
    ],
    "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Basri's Solidarity",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: no legacy path read 'put a +1/+1 counter on each creature you control' on a spell, so it resolved as nothing; the counters executor now puts them (CR 122.1)"
   },
   {
    "pair": [
@@ -5000,6 +5096,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Inspiring Roar",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: no legacy path read 'put a +1/+1 counter on each creature you control' on a spell, so it resolved as nothing; the counters executor now puts them (CR 122.1)"
   },
   {
    "pair": [
@@ -6324,6 +6428,14 @@
   {
    "pair": [
     "dispatched",
+    "The Crystal's Chosen",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: four 1/1 Hero creature tokens (the token owner gives them their printed subtype, where the legacy handler made untyped creature tokens), then a +1/+1 counter on each creature its controller controls, which the legacy route skipped (CR 111.3, 122.1, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Thought Scour",
     "SPELL:0:0"
    ],
@@ -6472,6 +6584,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "United Front",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: no legacy path read 'put a +1/+1 counter on each creature you control' on a spell, so it resolved as nothing; the counters executor now puts them (CR 122.1)"
   },
   {
    "pair": [

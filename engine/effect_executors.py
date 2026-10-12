@@ -72,7 +72,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                          Verb.MILL, Verb.CHOOSE, Verb.SEARCH,
                                          Verb.SHUFFLE}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
-                                               Verb.CREATE_TOKEN}),
+                                               Verb.CREATE_TOKEN,
+                                               Verb.PUT_COUNTERS}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE})}
@@ -960,6 +961,95 @@ def _audit_tokens(ctx: Resolution, s: EffectSpec, made: dict) -> None:
 execute_create_token.supports = _create_token_supported
 
 
+# ── PUT_COUNTERS: +1/+1 counters on each creature (family tokens_counters,
+# unit PO) ─────────────────────────────────────────────────────────────
+
+_PLUS_ONE = ("+1/+1",)
+_CREATURE_ENTRY = ("types", ("creature",))
+
+
+def _counter_recipient_players(ctx: Resolution, controller_ref: Any) -> set:
+    """The player whose creatures a team counter covers: the controller
+    ("you control") or the player chosen for a target slot ("target
+    player controls")."""
+    if controller_ref == "you":
+        return {ctx.controller}
+    if isinstance(controller_ref, Ref) and controller_ref.kind is RefKind.TARGET \
+            and isinstance(controller_ref.index, int) \
+            and controller_ref.index < len(ctx.chosen):
+        return {v for v in ctx.chosen[controller_ref.index]
+                if isinstance(v, int) and not isinstance(v, bool)}
+    return set()
+
+
+def team_counters_supported(s: EffectSpec) -> bool:
+    """"Put N +1/+1 counter(s) on each [other] creature <you control |
+    target player controls>" (CR 122.1): every creature that player
+    controls as the instruction resolves gets N."""
+    from .effect_spec import CounterSpec
+    p, subj, a = s.payload, s.subject, s.amount
+    if not (s.verb is Verb.PUT_COUNTERS and isinstance(p, CounterSpec)
+            and tuple(p.kinds) == _PLUS_ONE and not p.choice
+            and (a is None or (isinstance(a, Amount)
+                               and a.kind is AmountKind.LITERAL
+                               and a.n > 0))
+            and isinstance(subj, Selector) and subj.kind is SelectorKind.FILTER):
+        return False
+    entries = dict(subj.filter or ())
+    if entries.get("types") != _CREATURE_ENTRY[1] \
+            or set(entries) - {"types", "controller", "other"}:
+        return False
+    who = entries.get("controller")
+    return ((who == "you" or (isinstance(who, Ref)
+                              and who.kind is RefKind.TARGET
+                              and isinstance(who.index, int)))
+            and s.target is None and s.target_slot is None and s.ref is None
+            and s.actor is None and s.dest is None and s.duration is None
+            and s.group is None and not s.alternatives and not s.flags
+            and not s.optional and s.chooser is Chooser.CONTROLLER)
+
+
+def execute_put_counters(ctx: Resolution, s: EffectSpec,
+                         actors: Tuple[int, ...]) -> Outcome:
+    """Each creature the named player controls (the source too, unless
+    "other") gets the counters, through the counter owner
+    (`CardInstance.add_plus_counters`: the counter replacements apply)."""
+    entries = dict(s.subject.filter or ())
+    n = s.amount.n if s.amount is not None else 1
+    source = _source_object(ctx)
+    covered = [c for p in sorted(_counter_recipient_players(
+                   ctx, entries.get("controller")))
+               for c in list(ctx.game.players[p].battlefield)
+               if c.effective_is_creature
+               and not (entries.get("other") and c is source)]
+    before = [(c, c.plus_counters) for c in covered]
+    for c in covered:
+        c.add_plus_counters(n, ctx.game, source)
+        ctx.game.log.append(
+            f"T{ctx.game.display_turn} P{ctx.controller + 1}: "
+            f"{getattr(source, 'name', '')} puts {n} +1/+1 counter"
+            f"{'s' if n > 1 else ''} on {c.name}")
+    _audit_counters_placed(ctx, before)
+    return Outcome(bool(covered),
+                   {ctx.controller: tuple(handle_of(c) for c in covered)})
+
+
+execute_put_counters.supports = team_counters_supported
+
+
+def _audit_counters_placed(ctx: Resolution, before) -> None:
+    """CR 122.1, restated from the counts: every creature the instruction
+    covered has more +1/+1 counters than before it resolved. Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    short = [c.name for c, was in before
+             if c.zone == "battlefield" and c.plus_counters <= was]
+    rules_audit.check("122.1/counters_placed", not short,
+                      f"no counter put on {short}", game=ctx.game)
+
+
 # ── KEYWORD_ACTION: amass (family tokens_counters, unit D) ────────────
 
 def _amass_supported(s: EffectSpec) -> bool:
@@ -1302,6 +1392,7 @@ EXECUTORS[Verb.EXILE] = execute_exile
 EXECUTORS[Verb.CONTINUOUS] = execute_continuous
 EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
+EXECUTORS[Verb.PUT_COUNTERS] = execute_put_counters
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
 
@@ -1554,6 +1645,13 @@ EXECUTOR_FILTER_KEYS[Verb.SACRIFICE] = frozenset(
     ("types", combo) for k in (1, 2, 3)
     for combo in itertools.combinations(sorted(_CARD_TYPE_VALUES), k)) | {
     ("token", True), ("token", False)}
+# The counters executor evaluates "each [other] creature <you | target
+# player> control(s)" itself (unit PO): the controller, or the player
+# chosen for the first or second target.
+EXECUTOR_FILTER_KEYS[Verb.PUT_COUNTERS] = frozenset(
+    [_CREATURE_ENTRY, ("controller", "you"), ("other", True)]
+    + [("controller", Ref(RefKind.TARGET, i))
+       for i in range(len(("first", "second")))])
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
 # The search executor evaluates "a basic land card" in the searcher's own

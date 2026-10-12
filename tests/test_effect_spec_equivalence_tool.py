@@ -1760,7 +1760,9 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         "etb:dispatch", "draw:dispatch", "combat_damage:dispatch",
         "activated_effects:UNCLASSIFIED",
         # unit DW: a plain draw activation ("{T}: Draw a card")
-        "activated_effects:DRAW_N"}
+        "activated_effects:DRAW_N",
+        # unit PO: a team-counter activation (Leyline of Abundance)
+        "activated_effects:PUT_COUNTER_TEAM"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 
