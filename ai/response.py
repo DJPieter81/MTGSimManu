@@ -359,6 +359,28 @@ class ResponseDecider:
         # CLOCK_IMPACT_LIFE_SCALING converts clock-impact units into
         # life-point units (sourced from ai/scoring_constants.py).
         held_counter_floor_ev = card_clock_impact(snap_self) * CLOCK_IMPACT_LIFE_SCALING
+
+        # A spell whose every target is a card in a graveyard does not
+        # resolve once those cards have left it (CR 608.2b): an instant
+        # whose own resolution removes them answers it like a counter, when
+        # the spell threatens more than holding the answer is worth.
+        answer = self._graveyard_target_answer(game, stack_item, instants)
+        if answer is not None and threat > held_counter_floor_ev:
+            inst, answer_targets = answer
+            reason = ("removes the graveyard card the spell targets: it "
+                      "does nothing (CR 608.2b)")
+            if self.strategic_logger:
+                self.strategic_logger.log_response(
+                    self.player_idx, inst.name, stack_item.source.name,
+                    game, reason)
+            self._record_decision(
+                game, stack_item,
+                chosen_inst=inst, chosen_targets=list(answer_targets),
+                chosen_reason=reason, alternatives=[], instants=instants,
+                threat=threat, held_counter_floor_ev=held_counter_floor_ev,
+                triage_skip=False,
+            )
+            return inst, list(answer_targets)
         # Near-lethal cutoff: ½ × LETHAL_THREAT (sentinel inside
         # `evaluate_stack_threat`).  Above this, the counter must fire
         # because no held-counter future EV can outweigh "we lose now".
@@ -781,6 +803,39 @@ class ResponseDecider:
             "candidates_n": len(instants),
             "triage_skip": bool(triage_skip),
         }
+
+    def _graveyard_target_answer(self, game: "GameState",
+                                 stack_item: "StackItem",
+                                 instants: List["CardInstance"]):
+        """``(instant, targets)`` whose resolution leaves the stack spell no
+        legal target, or None: every target of the spell is a card in a
+        graveyard, and the instant -- resolving as typed on the dispatcher
+        (`effect_carrier.spell_family`) -- removes one of them it may
+        target and, sharing its name (`ai.predicates.
+        graveyard_target_removal`), every other."""
+        from ai.predicates import graveyard_target_removal
+        from engine.cast_manager import CastManager
+        from engine.effect_carrier import spell_family
+        aimed = [game.get_card_by_id(t) if isinstance(t, int) and t >= 0
+                 else None for t in (stack_item.targets or ())]
+        if not aimed or any(c is None or c.zone != "graveyard"
+                            for c in aimed):
+            return None
+        for inst in instants:
+            shape = graveyard_target_removal(inst.template.effects.spell(0))
+            if shape is None or spell_family(inst.template) is None:
+                continue
+            _slot, by_name = shape
+            for t in aimed:
+                if not CastManager.targets_admitted(
+                        game, self.player_idx, inst, [t.instance_id]):
+                    continue
+                removed = {t.instance_id} | {
+                    c.instance_id for c in game.players[t.owner].graveyard
+                    if by_name and c.template.name == t.template.name}
+                if all(c.instance_id in removed for c in aimed):
+                    return inst, [t.instance_id]
+        return None
 
     def _choose_response_targets(self, game: "GameState", instant: "CardInstance", stack_item: "StackItem",
                                   pick_removal_target_fn: Optional[Callable] = None) -> List[int]:

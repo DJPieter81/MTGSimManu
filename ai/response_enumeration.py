@@ -266,6 +266,21 @@ def _yield_pass() -> Iterator[ResponseCandidate]:
     )
 
 
+def _targets_only_graveyard_cards(game: "GameState",
+                                  stack_item: "StackItem") -> bool:
+    """Is every target of the stack item a card in a graveyard (a player
+    marker or a permanent is not)?"""
+    targets = list(getattr(stack_item, "targets", None) or ())
+    if not targets:
+        return False
+    for t in targets:
+        card = game.get_card_by_id(t) if isinstance(t, int) and t >= 0 \
+            else None
+        if card is None or card.zone != "graveyard":
+            return False
+    return True
+
+
 def _yield_hand_candidates(
     game: "GameState",
     controller: int,
@@ -323,6 +338,26 @@ def _yield_hand_candidates(
                     source=card,
                     cost=_format_mana_cost(card),
                     targets=(stack_item.source,),
+                    requires_tap_out=False,
+                )
+
+        # ── Removing a spell's graveyard targets (CR 608.2b) ──
+        # A spell whose every target is a card in a graveyard does not
+        # resolve once they have left it. Class: every instant whose
+        # typed resolution removes the graveyard card it targets
+        # (`predicates.graveyard_target_removal`) against every spell
+        # aimed only at graveyard cards (reanimation, regrowth); whether
+        # it is worth casting is the response decider's.
+        if stack_item is not None and _targets_only_graveyard_cards(
+                game, stack_item):
+            from ai.predicates import graveyard_target_removal
+            if graveyard_target_removal(tmpl.effects.spell(0)) is not None:
+                yield ResponseCandidate(
+                    action="graveyard_answer",
+                    source=card,
+                    cost=_format_mana_cost(card),
+                    targets=tuple(game.get_card_by_id(t)
+                                  for t in stack_item.targets),
                     requires_tap_out=False,
                 )
 

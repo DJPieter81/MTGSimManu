@@ -421,3 +421,43 @@ def is_land_option(card) -> bool:
     if getattr(t, "playable_land_face", None) is not None:
         return True
     return bool(getattr(t, "is_land", False))
+
+
+def graveyard_target_removal(host):
+    """``(slot, by_name)`` when a typed host's resolution removes from its
+    graveyard the card chosen for its target ``slot`` -- the target a
+    spell aimed at a graveyard card needs to stay legal (CR 608.2b): an
+    exile of that target (``by_name`` False), or a search of its owner's
+    zones, the graveyard among them, for the cards sharing its name, then
+    "exile them" (``by_name`` True: every card of that name in that
+    graveyard goes too). None for any other host."""
+    from engine.effect_spec import Ref, RefKind, Verb, iter_specs
+    if host is None:
+        return None
+    targets = list(getattr(host, "targets", ()) or ())
+    specs = list(iter_specs(getattr(host, "specs", ()) or ()))
+
+    def graveyard_slot(k) -> bool:
+        return isinstance(k, int) and k < len(targets) \
+            and targets[k].zone == "graveyard"
+
+    exiled = {s.ref.index for s in specs
+              if s.verb is Verb.EXILE and isinstance(s.ref, Ref)
+              and s.ref.kind is RefKind.RESULT}
+    for s in specs:
+        if s.verb is Verb.EXILE and graveyard_slot(s.target_slot):
+            return s.target_slot, False
+        f = s.filter
+        if s.verb is not Verb.SEARCH or f is None or s.seq not in exiled \
+                or "graveyard" not in (getattr(f, "zones", ()) or ()):
+            continue
+        named, owner = f.named, f.owner
+        if isinstance(named, Ref) and named.kind is RefKind.TARGET \
+                and graveyard_slot(named.index) \
+                and isinstance(owner, Ref) \
+                and owner.kind is RefKind.OWNER_OF \
+                and isinstance(owner.of, Ref) \
+                and owner.of.kind is RefKind.TARGET \
+                and owner.of.index == named.index:
+            return named.index, True
+    return None
