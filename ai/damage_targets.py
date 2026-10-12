@@ -1,24 +1,28 @@
 """Where N damage goes: the opponent's face, or an opposing creature or
-planeswalker the damage destroys (CR 115.4 "any target", CR 120.3).
+planeswalker the damage destroys (CR 115.4 "any target", CR 120.3); and
+which opposing permanent a "destroy target <type>" instruction takes (CR
+701.8a).
 
-One owner of the choice for damage whose target the AI declares (CR 601.2c,
-602.2b), and of what that damage is worth. Both sides of the comparison are
+One owner of the choice for removal whose target the AI declares (CR
+601.2c, 602.2b), and of what it is worth. Both sides of the comparison are
 the opponent's position-value loss in the opponent's frame, so they are in
 the same units and no tuned constant is needed -- the attack chooser's rule
 (`ai/attack_targets.py`):
 
 * N damage to the face is worth `face_damage_value`: the opponent's
   position value at their life minus at life - N (`ai/clock.position_value`);
-* N damage that destroys a creature or planeswalker is worth
+* a permanent the damage or the destroy puts into the graveyard is worth
   `permanent_threat`: the opponent's position value with it minus without
   it (`ai/permanent_threat.py`).
 
 Damage that reaches the opponent's life total goes to the face. A permanent
-the damage does not destroy is no candidate: damage marked on a creature
-that survives wears off in the cleanup step (CR 514.2), and no primitive
-prices a planeswalker's lost loyalty short of its death. Ties go to the
-face. Only the opponent's permanents are candidates, so nothing a cost
-sacrifices can be the target. Mechanic-driven; no card names, no literals.
+the instruction does not destroy is no candidate: damage marked on a
+creature that survives wears off in the cleanup step (CR 514.2), no
+primitive prices a planeswalker's lost loyalty short of its death, and
+"destroy" does not destroy an indestructible permanent (CR 702.12b). Ties
+go to the face. Only the opponent's permanents are candidates, so nothing
+a cost sacrifices can be the target. Mechanic-driven; no card names, no
+literals.
 """
 from __future__ import annotations
 
@@ -63,7 +67,8 @@ def damage_destroys(card: "CardInstance", amount: int, source) -> bool:
 
 
 class DamageAim(NamedTuple):
-    """A declared damage target and what it is worth."""
+    """A declared removal target (of damage or of a destroy) and what it is
+    worth."""
     target_id: int                          # instance id, or the face marker
     permanent: Optional["CardInstance"]     # None when it is the face
     value: float                            # the opponent's position lost
@@ -99,6 +104,47 @@ def choose_damage_recipient(game: "GameState", controller: int, source,
         if not (slot_admits_permanent(requirement, card, controller)
                 and damage_destroys(card, amount, source)
                 and can_be_targeted(card, source, controller)):
+            continue
+        if ward_rules_out_target(game, controller, source, card,
+                                 mana_committed=mana_committed):
+            continue
+        value = permanent_threat(card, opp, game)
+        if best is None or value > best.value:
+            best = DamageAim(card.instance_id, card, value)
+    return best
+
+
+def destroy_destroys(card: "CardInstance") -> bool:
+    """Would "destroy" put ``card`` into its owner's graveyard? Every
+    permanent but an indestructible one (CR 701.8a, 702.12b)."""
+    from engine.cards import Keyword
+    return Keyword.INDESTRUCTIBLE not in card.keywords
+
+
+def choose_destroy_recipient(game: "GameState", controller: int, source,
+                             requirements, *,
+                             mana_committed: int) -> Optional[DamageAim]:
+    """Which opposing permanent a "destroy target <type>" instruction from
+    ``source``, controlled by ``controller``, takes (CR 602.2b), or None
+    when its ``requirements`` admit none worth declaring.
+
+    Candidates are the opposing permanents the requirements admit (the
+    engine's own admission, `target_solver.target_admitted`: the slot's
+    types, qualifiers and controller; hexproof and protection) that the
+    destroy destroys (`destroy_destroys`) and whose ward its controller
+    would pay with the mana left after ``mana_committed``; the one whose
+    loss costs the opponent most (`permanent_threat`) is chosen, as for
+    damage that destroys."""
+    from engine.target_solver import target_admitted
+    from ai.permanent_threat import permanent_threat
+    from ai.ward_targeting import ward_rules_out_target
+
+    opp = game.players[1 - controller]
+    best: Optional[DamageAim] = None
+    for card in list(opp.battlefield):
+        if not (destroy_destroys(card)
+                and target_admitted(game, controller, list(requirements),
+                                    card.instance_id, source=source)):
             continue
         if ward_rules_out_target(game, controller, source, card,
                                  mana_committed=mana_committed):

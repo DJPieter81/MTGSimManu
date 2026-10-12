@@ -995,10 +995,18 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                 if _family is None:
                     continue
                 if _family == "removal":
-                    planned = _land_destruction_plan(
-                        game, player_idx, perm, _host, snap, base, updates)
-                    if planned is not None:
-                        out.append((perm, ability.index) + planned)
+                    # The better of what the land-denial owner and the
+                    # removal-aim owner make of it (an "artifact or land"
+                    # target reaches both).
+                    plans = [p for p in (
+                        _land_destruction_plan(game, player_idx, perm,
+                                               _host, snap, base, updates),
+                        _destroy_plan(game, player_idx, perm, ability,
+                                      _host, snap, base, updates))
+                        if p is not None]
+                    if plans:
+                        out.append((perm, ability.index)
+                                   + max(plans, key=lambda p: p[1]))
                     continue
                 held = impulse_cards_held(_host)
                 if not held:
@@ -1056,6 +1064,36 @@ def _land_destruction_plan(game, player_idx, perm, host, snap, base,
         return None
     return ([target.instance_id], ev,
             f"activate: {perm.name} destroys {target.name}")
+
+
+def _destroy_plan(game, player_idx, perm, ability, host, snap, base,
+                  updates):
+    """(targets, ev, reason) for a removal-family activation whose one
+    instruction destroys a target permanent (CR 701.8a), else None. Aimed
+    by the one removal-aim owner (`ai.damage_targets.
+    choose_destroy_recipient`, the ability's own mana as what is spent
+    before any ward is paid) and worth what the opponent loses with its
+    aim (`permanent_threat`, the removal scorer's currency) net of the
+    activation's cost terms -- the rule an aimed damage activation
+    follows. A host with any other instruction is not valued here: this
+    plan has no price for its riders."""
+    from ai.clock import position_value
+    from ai.damage_targets import choose_destroy_recipient
+    from engine.effect_spec import Verb, iter_specs
+    specs = list(iter_specs(getattr(host, "specs", ()) or ()))
+    if not specs or specs[1:] or specs[0].verb is not Verb.DESTROY \
+            or specs[0].target is None:
+        return None
+    aim = choose_destroy_recipient(game, player_idx, perm,
+                                   [specs[0].target],
+                                   mana_committed=ability.cost.mana.cmc)
+    if aim is None:
+        return None
+    ev = (position_value(snap.fast_replace(**updates)) - base) + aim.value
+    if ev <= 0.0:
+        return None
+    return ([aim.target_id], ev,
+            f"activate: {perm.name} destroys {aim.permanent.name}")
 
 
 def _pays_only_victim_and_mana(cost) -> bool:
