@@ -8474,3 +8474,74 @@ Hundreds of pool cards sacrifice creatures.
 **Digest / anchor / suites:** digest byte-identical, anchor 29 passed. Suites at `a359b09`: chunk A 4819 passed, chunk B 2716 passed. **Not measured:** no registered deck carries the class, and the three deck lands have riders this plan declines.
 
 **Lead (recorded, not tuned):** `position_value` reads losing our only attacker as a gain when the opponent has a clock and ours is slow (3 power → 0: −26.1 → −19.1). This is the no-clock sentinel cliff, whose fix was measured and falsified on 2026-09-04. A sacrifice cost there reads as free or better.
+
+## Unit SX-a: a search for the cards named like an object exiles them from the zones it names (2026-10-12)
+
+**Rule (CR 701.19a-b, 701.20a, 608.2c, 608.2h):**
+- "Search <its owner's | its controller's> graveyard, hand, and library for <any number of | all> cards with the same name as that <card> and exile them. Then that player shuffles." is one search of one player's zones.
+- It looks for the cards sharing a name with the object an earlier instruction names, read as it last existed if that instruction moved it.
+- The cards found are exiled, and the player whose library was searched shuffles it.
+
+**Defect:** the grammar refused every multi-zone search (`search_zone`). So Surgical Extraction (sideboard in six registered decks) and its class resolved as nothing: cast, resolved, no zone changed.
+
+**Class:**
+- 18 pool cards search a player's zones for the cards named like an object. The two whose head the dispatcher runs ("choose target card in a graveyard": Surgical Extraction, Extirpate) now resolve.
+- The exile- and counter-headed members keep their legacy heads (Crumble to Dust, Eradicate, Quash, Counterbore; lead).
+- 9 more ("choose a card name. Search ...": The Stone Brain, Slaughter Games, Unmoored Ego) are SX-b.
+
+**Steps (`e1863b6`):**
+- **The schema.** `CardFilter.zones`.
+- **The search row.** It reads "<possessive> graveyard, hand, and library" and "for all". The owner is an object's owner or controller that the linker binds, a player anaphor, or the player named.
+- **The filter leaf.** It reads "with the same name as that <noun>" as a pending reference.
+- **The linker.** It binds that reference to the object it names (last known), and offers a search's zone owner as a player mention, so "that player shuffles" binds.
+- **"Its owner".** It binds like "its controller" (`target_players`).
+- **Executors:**
+  - CHOOSE;
+  - SEARCH for the cards named like the chosen object (`callbacks.default_search_finds`: all of them);
+  - EXILE of the cards an earlier instruction found, with auditor `701.19/found_exiled`;
+  - SHUFFLE by the object's owner.
+  - The card-flow strict shape admits the tail after a chosen target.
+
+**Tests (8; 6 red first; the auditor both ways):** `tests/test_a_same_name_search_exiles_the_cards_it_finds.py`. Three grammar pins that used the same-name phrase as their example of a refusal take a still-refused phrase or verb.
+
+**Pins:**
+- Harness: +2 intended pairs; the legacy route resolved nothing.
+- Census: CLAUSE refusals 1803 → 1717, REFERENCE 1382 → 1369. FILTER 1534 → 1544: the "with that name" class now parses up to the name its caster chooses.
+- Spec equivalence: is_tutor AGREE +34. The disagreements a refused search clause used to mask are compared now and kept as leads, e.g. Angrath's Fury's "target player or planeswalker".
+- The self-check fixture drops Surgical Extraction from its no-op hosts.
+- Of the deck cards' typed effects, only Surgical Extraction and The Stone Brain change (still refused, one stage later). Digest byte-identical; anchor 29 passed. Suites at `e1863b6`: 4827 + 2716 passed.
+
+**Measured:** together with FZ below.
+
+## Unit FZ: a spell that targets a graveyard card is answered by exiling it in response (2026-10-12)
+
+**Rule (AI, from CR 608.2b, 400.7):**
+- A spell does not resolve when every target it has is illegal, and a card that left the graveyard it was chosen in is no longer that target.
+- So an instant whose own resolution removes the targeted card answers a reanimation or regrowth spell the way a counter does. That removal is either an exile of that target, or a same-name search through its owner's graveyard.
+- The AI answers when the spell threatens more than holding the answer is worth: the counter triage's own currency (`held_counter_floor_ev`).
+
+**Defect:** the response enumerator offered hand instants only by category (counter, silence, pitch, ...), so the AI never cast its graveyard answers. Surgical Extraction sat in hand while Goryo's Vengeance returned Griselbrand.
+
+**Class:** every spell aimed only at graveyard cards (the reanimation and regrowth class), against every instant whose typed resolution removes its graveyard target. Today that is Surgical Extraction and Extirpate; any "exile target card from a graveyard" instant joins once its exile runs on the dispatcher.
+
+**Steps (`3d2798d`):**
+- `ai/predicates.graveyard_target_removal` gives the typed host's shape.
+- `ai/response_enumeration` adds a `graveyard_answer` candidate.
+- `ai/response._graveyard_target_answer` picks the instant and the target that leave the spell no legal target, cast when threat > held floor.
+
+**Tests (7; 6 red first; the decision rule from the same primitives):** `tests/test_a_spell_that_targets_a_graveyard_card_is_answered_by_exiling_it.py`. Digest byte-identical; anchor 29 passed. Suites at `3d2798d`: 4834 + 2716 passed.
+
+**Seen in play:** Boros Energy vs Goryo's Vengeance, seed 51500, game 3. Goryo's targets Atraxa; Boros responds with Surgical Extraction (2 life for the Phyrexian pip) and exiles all four Atraxas, and Goryo's fizzles. Boros wins the game.
+
+**Measured (same-seed n=20 Bo3, `fz-post` `f8edcaf`, pre = `la-post`; SX-a and FZ together):** 10 cells change; every deck within ±0.8.
+- **Boros Energy vs Goryo's Vengeance 70 → 80** (the answer above).
+- **Six Living End cells move ±5 to ±15.** The cause:
+  - Jeskai Blink, Boros Energy, 4c Omnath and the others already cast their sideboarded Surgical Extraction proactively against Living End, as a spell that did nothing. It now exiles every copy of its target.
+  - The AI aims it at the first card in the graveyard, a land: Misty Rainforest, Steam Vents. That is lead SXT.
+- The "unhandled spell: Surgical Extraction" finding is gone. Violations 0.
+
+**Leads (not built):**
+- **SXT, AI.** A same-name exile is aimed at the name whose copies are worth most to their owner (graveyard fuel, reanimation targets), not at the first card in the graveyard. A proactive cast should wait for such a name.
+- **The exile- and counter-headed members** of SX-a's class (Crumble to Dust, Eradicate, Quash, Counterbore) need their heads on the dispatcher.
+- **SX-b:** "choose a card name" and its AI name choice. The Stone Brain is in Boros Ponza main deck ×1 and Eldrazi Tron sideboard ×1.
+- **Amulet Titan (25.5%, band 45–60).** A 40-game audit casts Primeval Titan on turn 9.2 on average and wins on turn 13. One replay (vs Boros Energy, s50000) showed a colorless-heavy draw rather than a misplay, so no subsystem is named yet. The next step is a Bo3 root-cause replay per the loop-break protocol.
