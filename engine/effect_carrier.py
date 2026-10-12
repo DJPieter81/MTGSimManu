@@ -521,11 +521,15 @@ def names_slot(s: Any, k: int) -> bool:
     """The spec targets slot `k`, or its acting player is the player
     chosen for slot `k` ("target player creates ...", "target player
     sacrifices ...")."""
-    from .effect_spec import Ref, RefKind
+    from .effect_spec import CardFilter, Ref, RefKind
     a = s.actor
+    f = s.filter
     return s.target_slot == k or (isinstance(a, Ref)
                                   and a.kind is RefKind.TARGET
-                                  and a.index == k)
+                                  and a.index == k) or (
+        # "each creature target player controls": the group of the player
+        # chosen for slot k
+        isinstance(f, CardFilter) and f.controller == Ref(RefKind.TARGET, k))
 
 
 def slot_spec(host: Any, k: int) -> Optional[Any]:
@@ -616,8 +620,45 @@ def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
     counted on the new path."""
     if not host.targets:
         return True
-    return (len(host.targets) == 1 and _slot_span(host) is not None
-            and not any(h.targets for h in face_hosts if h is not host))
+    if any(h.targets for h in face_hosts if h is not host):
+        return False
+    if len(host.targets) == 1:
+        return _slot_span(host) is not None
+    return _slot_spans(host) is not None
+
+
+def _slot_spans(host: Any) -> Optional[list]:
+    """The printed spans of a several-slot host's slots, in slot order,
+    when each slot is one required target (CR 601.2c: the cast announces
+    exactly one object or player for it) whose spec's span lies inside the
+    host's text, and no two spans overlap: the cast's list then holds one
+    entry per slot in printed order. None otherwise."""
+    spans = []
+    for k, req in enumerate(host.targets):
+        if req.count_min != 1 or req.count_max != 1 or req.is_optional \
+                or req.mode_group is not None:
+            return None
+        s = slot_spec(host, k)
+        span = s.span if s is not None else None
+        if span is None or not 0 <= span[0] < span[1] <= len(host.text or ""):
+            return None
+        spans.append(span)
+    ordered = sorted(spans)
+    if any(a[1] > b[0] for a, b in zip(ordered, ordered[1:])) \
+            or ordered != spans:
+        return None
+    return spans
+
+
+def _admits(game: Any, controller: int, req: Any, tid: Any) -> bool:
+    """Does the slot requirement `req` admit the cast's target `tid` (a
+    player marker or an object id)?"""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    from .target_solver import slot_admits_player, target_admitted
+    if tid in (PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF):
+        player = controller if tid == PLAYER_TARGET_SELF else 1 - controller
+        return slot_admits_player(req, player, controller)
+    return target_admitted(game, controller, [req], tid)
 
 
 def _slot_span(host: Any) -> Optional[tuple]:
@@ -639,10 +680,58 @@ def _chosen(game: Any, controller: int, host: Any, legacy: list,
         return None
     if not host.targets:
         return () if not legacy else None
-    span = _slot_span(host)
+    if len(host.targets) == 1:
+        spans = [_slot_span(host)]
+        positions = [spans[0][0]] * len(legacy)
+    else:
+        # one entry per slot (`_slot_spans`), each placed on the one slot
+        # whose requirement admits it (a player marker on a player slot,
+        # an object on the slot of its kind): the cast's list is in
+        # announcement order, not printed order
+        spans = _slot_spans(host)
+        if len(legacy) != len(spans):
+            return None
+        positions = []
+        for tid in legacy:
+            ks = [k for k, req in enumerate(host.targets)
+                  if _admits(game, controller, req, tid)]
+            if len(ks) != 1:
+                return None
+            positions.append(spans[ks[0]][0])
+        if len(set(positions)) != len(positions):
+            return None
     try:
-        return er.chosen_from_legacy(
-            host, legacy, [span[0]] * len(legacy), slot_spans=[span],
+        chosen = er.chosen_from_legacy(
+            host, legacy, positions, slot_spans=spans,
             game=game, face=1 - controller, self_face=controller)
     except ValueError:                         # no slot holds the position
         return None
+    if len(host.targets) > 1:
+        _audit_slots_placed(game, host, chosen)
+    return chosen
+
+
+def _audit_slots_placed(game: Any, host: Any, chosen: Any) -> None:
+    """CR 601.2c, restated from the printed types of each slot: a player
+    sits only on a slot that names players, an object only on a slot that
+    names one of its card types (or any permanent / card). Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    bad = []
+    for req, values in zip(host.targets, chosen):
+        types = set(req.types)
+        for v in values:
+            if isinstance(v, int) and not isinstance(v, bool):
+                ok = bool(types & {"player", "opponent", "any"})
+            else:
+                card = game.get_card_by_id(getattr(v, "instance_id", None))
+                kinds = {t.value for t in card.effective_card_types} \
+                    if card is not None else set()
+                ok = card is not None and bool(
+                    types & ({"permanent", "card", "any"} | kinds))
+            if not ok:
+                bad.append((sorted(types), v))
+    rules_audit.check("601.2c/slot_placed", not bad,
+                      f"misplaced targets {bad}", game=game)

@@ -910,7 +910,7 @@
     "strict": false
    }
   ],
-  "executable": 169,
+  "executable": 174,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -919,11 +919,11 @@
   },
   "steps": {
    "E4": 273,
-   "E5": 49,
+   "E5": 50,
    "E6": 9,
-   "none": 91
+   "none": 90
   },
-  "strict": 183,
+  "strict": 197,
   "sub_kinds": {
    "DELAYED": 12,
    "REFLEXIVE": 2
@@ -1078,6 +1078,13 @@
     "strict": true
    },
    {
+    "card": "Practiced Offense",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
     "card": "Reckless Impulse",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1141,24 +1148,24 @@
     "strict": true
    }
   ],
-  "executable": 450,
+  "executable": 460,
   "family": "damage",
   "hosts": {
-   "mainboard": 18,
-   "pool": 429,
+   "mainboard": 19,
+   "pool": 438,
    "sideboard": 3
   },
   "steps": {
    "E1": 145,
    "E2": 76,
    "E3": 95,
-   "E4": 123,
-   "E5": 11
+   "E4": 124,
+   "E5": 20
   },
-  "strict": 450,
+  "strict": 460,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 3,
+   "CONTINUOUS,CREATE_TOKEN": 8,
    "CONTINUOUS,EXILE": 7,
    "CREATE_TOKEN": 119,
    "DAMAGE": 145,
@@ -1687,17 +1694,17 @@
    "sideboard": 5
   },
   "steps": {
-   "E1": 21,
+   "E1": 23,
    "E2": 17,
-   "none": 3
+   "none": 1
   },
   "strict": 17,
   "sub_kinds": {},
   "verb_sets": {
-   "DAMAGE": 21,
+   "DAMAGE": 23,
    "DESTROY": 10,
    "EXILE": 7,
-   "UNMODELLED": 3
+   "UNMODELLED": 1
   }
  },
  "mass_reanimate": {
@@ -1836,13 +1843,14 @@
    "E2": 14,
    "E3": 6,
    "E4": 8,
-   "E5": 7,
+   "E5": 8,
    "E6": 7,
-   "none": 28
+   "none": 27
   },
   "strict": 5,
   "sub_kinds": {},
   "verb_sets": {
+   "CONTINUOUS": 2,
    "COPY": 3,
    "COPY,UNMODELLED": 2,
    "CREATE_TOKEN": 6,
@@ -1850,9 +1858,8 @@
    "DRAW": 3,
    "EXILE": 7,
    "MOVE": 4,
-   "MOVE,SEARCH,SHUFFLE": 2,
    "MOVE,UNMODELLED": 6,
-   "UNMODELLED": 11
+   "UNMODELLED": 10
   }
  },
  "planeswalker_manager:DAMAGE": {
@@ -1922,7 +1929,7 @@
    "DAMAGE": 36,
    "DAMAGE,GAIN_LIFE": 5,
    "DAMAGE,UNMODELLED": 8,
-   "UNMODELLED": 26
+   "UNMODELLED": 25
   }
  },
  "planeswalker_manager:DRAW_AND_UNTAP_LANDS": {
@@ -2124,13 +2131,6 @@
     "strict": true
    },
    {
-    "card": "Practiced Offense",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
-   },
-   {
     "card": "Undying Evil",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -2148,28 +2148,28 @@
   "executable": 0,
   "family": "pump_restrict",
   "hosts": {
-   "mainboard": 5,
-   "pool": 399,
+   "mainboard": 4,
+   "pool": 394,
    "sideboard": 0
   },
   "steps": {
    "E4": 3,
-   "E5": 311,
-   "none": 90
+   "E5": 310,
+   "none": 85
   },
-  "strict": 178,
+  "strict": 179,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 184,
-   "CONTINUOUS,CREATE_TOKEN": 7,
+   "CONTINUOUS": 186,
    "CONTINUOUS,DAMAGE": 13,
    "CONTINUOUS,DRAW": 22,
    "CONTINUOUS,FIGHT": 10,
    "CONTINUOUS,GAIN_LIFE": 6,
+   "CONTINUOUS,KEYWORD_ACTION": 6,
    "CONTINUOUS,PUT_COUNTERS": 11,
    "CONTINUOUS,SCRY": 15,
-   "CONTINUOUS,UNMODELLED": 61,
-   "CONTINUOUS,UNTAP": 19
+   "CONTINUOUS,UNMODELLED": 59,
+   "CONTINUOUS,UNTAP": 20
   }
  },
  "targeted_removal": {

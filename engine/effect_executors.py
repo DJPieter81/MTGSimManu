@@ -73,7 +73,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                          Verb.SHUFFLE}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN,
-                                               Verb.PUT_COUNTERS}),
+                                               Verb.PUT_COUNTERS,
+                                               Verb.CONTINUOUS}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE})}
@@ -1191,12 +1192,14 @@ def execute_continuous(ctx: Resolution, s: EffectSpec,
 
 execute_continuous.supports = (lambda s: _permit_supported(s)
                                or _characteristic_supported(s))
-# A characteristic change runs only in the type-change family (unit AT):
-# the pump family's keyword and P/T hosts stay on their legacy appliers
-# until that family's switch is proven host by host.
+# A characteristic change runs in the type-change family (unit AT) and as
+# a rider of a token or counter instruction in the tokens/counters family
+# (unit PO: "Target creature gains your choice of ..."): the pump family's
+# keyword and P/T hosts stay on their legacy appliers until that family's
+# switch is proven host by host.
 execute_continuous.allowed_families = (
-    lambda s: frozenset({"type_change"}) if _characteristic_supported(s)
-    else None)
+    lambda s: frozenset({"type_change", FAMILY_TOKENS_COUNTERS})
+    if _characteristic_supported(s) else None)
 
 
 # ── SACRIFICE: an edict (family edict, unit ED) ───────────────────────

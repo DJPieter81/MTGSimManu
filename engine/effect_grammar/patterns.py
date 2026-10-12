@@ -198,6 +198,35 @@ def _first_word(h: str, a: int, b: int) -> str:
 
 _SET = {"actor": "actor", "other": "other"}
 
+# "each creature target player controls" (CR 115.1, 601.2c): a group whose
+# controller is the player chosen for a target. The player is a target
+# requirement of its own (role "possessor": the linker slots it and binds
+# the group's controller to it); the group is the participant leaf's.
+_TARGET_PLAYER_GROUP_RE = re.compile(
+    r"(?P<group>(?:each|all) [a-z' ]+?) (?P<who>target (?:player|opponent)) "
+    r"controls?")
+
+
+def _target_player_group(m: _M, g) -> None:
+    h = m.h
+    r = m.leaf(_target.parse_target(h, g.span("who"), lemma=m.lemma))
+    if r.rest_spans:
+        m.refuse(Stage.TARGET, "possessive_object")
+    for req, sp in zip(r.value.requirements, r.value.spans):
+        m.targets.append(("possessor", req, sp))
+    m.residue.extend(r.value.residue)
+    p = m.leaf(_participant.parse_participant(h, g.span("group"),
+                                              lemma=m.lemma))
+    v = p.value
+    if not isinstance(v, CardFilter) or v.controller != "any" \
+            or not (_filter.EACH in p.flags or "all" in p.flags):
+        m.refuse(Stage.REFERENCE, "subject", "group")
+    v = _copy_with(v, controller=Ref(RefKind.TARGET, noun="player"))
+    m.fields["filter"] = v
+    m.fields["subject"] = v.as_selector()
+    m.pending.extend(p.pending)
+    m.take("principal", (g.start(), g.end()))
+
 
 def _slot(m: _M, span: Span, role: str, zone: str = "") -> None:
     """A participant slot: a counted target word through the target leaf,
@@ -232,6 +261,9 @@ def _slot(m: _M, span: Span, role: str, zone: str = "") -> None:
         m.take(role, (a, b))
         return
     if targeted:
+        g = _TARGET_PLAYER_GROUP_RE.fullmatch(h, a, b)
+        if g is not None and role == "principal" and not inherited:
+            return _target_player_group(m, g)
         r = m.leaf(_target.parse_target(h, (a, b), lemma=m.lemma))
         if r.rest_spans:
             m.refuse(Stage.TARGET, "possessive_object")
@@ -529,13 +561,39 @@ def _row_payload(m: _M, a: int, b: int) -> None:
         m.fields["amount"] = Amount(AmountKind.LITERAL, n=1)
 
 
+def _continuous_alternatives(m: _M, vs: int, b: int):
+    """"gains your choice of A or B" (A19, CR 608.2d): each option a
+    Modification of its own, typed on its own text; the controller chooses
+    one on resolution. (result, first option's Modification), or None when
+    the predicate offers no choice."""
+    h = m.h
+    r = _payload.parse_payload(m.entry, h, (vs, b), lemma=m.lemma)
+    if r is None or r.value is not None or not r.alternatives:
+        return None
+    alts = []
+    for alt in r.alternatives:
+        alt = m.leaf(alt)
+        alts.append(EffectSpec(verb=Verb.CONTINUOUS, payload=alt.value,
+                               span=alt.span, raw=h[alt.span[0]:alt.span[1]]))
+        m.take("payload", alt.span)
+    m.fields["alternatives"] = tuple(alts)
+    m.take("payload", r.span)
+    return r, alts[0].payload
+
+
 def _row_continuous(m: _M, a: int, b: int) -> None:
     h = m.h
     vs = m.fields.pop("_verb_start")
-    r = m.leaf(_payload.parse_modification(m.entry, h, (vs, b), lemma=m.lemma))
-    mod = r.value
-    m.fields["payload"] = mod
-    m.take("payload", r.span)
+    chosen = (_continuous_alternatives(m, vs, b)
+              if _payload.offers_choice(h[vs:b]) else None)
+    if chosen is not None:
+        r, mod = chosen
+    else:
+        r = m.leaf(_payload.parse_modification(m.entry, h, (vs, b),
+                                               lemma=m.lemma))
+        mod = r.value
+        m.fields["payload"] = mod
+        m.take("payload", r.span)
     m.pending.extend(kv for kv in r.pending if kv[0] in ("granted",))
     subj = m.fields.pop("_subject")
     # A permission to play or cast objects (CR 305.1, 601.2): the subject

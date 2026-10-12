@@ -729,6 +729,12 @@ def _fill_holes(ctx: _Ctx, node: _Node) -> None:
         nv = _map(v, hook_for(False))
         if nv is not v:
             node.fields[slot] = nv
+    f = node.get("filter")
+    if "possessor" in node.role_slots and isinstance(f, CardFilter) \
+            and isinstance(node.get("subject"), Selector):
+        # the group a target player controls: the subject is that filter,
+        # its controller now bound (a Selector is opaque to `_map`)
+        node.fields["subject"] = f.as_selector()
     _bind_same_name(ctx, node)
 
 
@@ -769,7 +775,10 @@ def _place_targets(node: _Node) -> List[_Node]:
             principals.append(k)
         else:
             node.role_slots[role] = k
-            node.fields[role] = Ref(RefKind.TARGET, k)
+            if role != "possessor":
+                # a possessor ("each creature target player controls") is
+                # no field of the spec: the group's controller names it
+                node.fields[role] = Ref(RefKind.TARGET, k)
     if principals:
         node.slot = principals[0]
     extra.extend(principals[1:])

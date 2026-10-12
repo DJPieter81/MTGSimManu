@@ -1,8 +1,8 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.1699,
-  "deck_removal_typed_share": 0.8687,
+  "deck_removal_ready_share": 0.1705,
+  "deck_removal_typed_share": 0.8721,
   "deck_residue_by_code": {
    "target.colored": 3,
    "target.exclude_source": 4,
@@ -20,10 +20,10 @@
    "target.union:triggered": 1,
    "target.unparsed": 4
   },
-  "deck_typed_share": 0.7638,
+  "deck_typed_share": 0.7667,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
-   "CLAUSE": 24,
+   "CLAUSE": 23,
    "CONDITION": 19,
    "DURATION": 3,
    "FILTER": 28,
@@ -33,14 +33,14 @@
    "REFERENCE": 19,
    "REPLACEMENT": 59,
    "STRUCTURE": 3,
-   "TARGET": 19,
+   "TARGET": 18,
    "TRIGGER_EMBEDDED": 2
   },
   "residue_by_code": {
    "target.colored": 7,
-   "target.conjunctive_types": 21,
+   "target.conjunctive_types": 22,
    "target.dependent_controller": 41,
-   "target.exclude_source": 257,
+   "target.exclude_source": 258,
    "target.keyword:awaken": 1,
    "target.keyword:cycling": 1,
    "target.keyword:defender": 5,
@@ -88,31 +88,31 @@
    "target.union:spacecraft": 2,
    "target.union:triggered": 6,
    "target.union:vehicle": 28,
-   "target.unparsed": 293
+   "target.unparsed": 294
   },
   "residue_by_polarity": {
    "NARROWING": 292,
-   "UNPARSED": 293,
-   "WIDENING": 807
+   "UNPARSED": 294,
+   "WIDENING": 809
   },
-  "typed_share": 0.7346,
+  "typed_share": 0.7362,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7948,
+   "ACTIVATED": 0.7982,
    "ALTERNATIVE_COST": 0.0,
-   "CHAPTER": 0.7496,
+   "CHAPTER": 0.7511,
    "KEYWORD": 0.0,
-   "LOYALTY": 0.775,
+   "LOYALTY": 0.7801,
    "MANA_ABILITY": 0.9498,
-   "MODE": 0.7804,
+   "MODE": 0.7838,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7366,
+   "SPELL": 0.7381,
    "STATIC": 0.6223,
-   "TRIGGERED": 0.796,
+   "TRIGGERED": 0.7972,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
    "AMOUNT": 788,
-   "CLAUSE": 1717,
+   "CLAUSE": 1694,
    "CONDITION": 1163,
    "DELAY": 16,
    "DURATION": 53,
@@ -124,7 +124,7 @@
    "REFERENCE": 1369,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
-   "TARGET": 1185,
+   "TARGET": 1152,
    "TARGET_COUNT": 82,
    "TRIGGER_EMBEDDED": 165
   }
@@ -132,9 +132,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7948,
-    "specs": 6634,
-    "typed": 5273
+    "share": 0.7982,
+    "specs": 6669,
+    "typed": 5323
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -142,9 +142,9 @@
     "typed": 0
    },
    "CHAPTER": {
-    "share": 0.7496,
+    "share": 0.7511,
     "specs": 699,
-    "typed": 524
+    "typed": 525
    },
    "KEYWORD": {
     "share": 0.0,
@@ -152,9 +152,9 @@
     "typed": 0
    },
    "LOYALTY": {
-    "share": 0.775,
-    "specs": 1302,
-    "typed": 1009
+    "share": 0.7801,
+    "specs": 1305,
+    "typed": 1018
    },
    "MANA_ABILITY": {
     "share": 0.9498,
@@ -162,9 +162,9 @@
     "typed": 1513
    },
    "MODE": {
-    "share": 0.7804,
+    "share": 0.7838,
     "specs": 1758,
-    "typed": 1372
+    "typed": 1378
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -172,9 +172,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7366,
-    "specs": 9992,
-    "typed": 7360
+    "share": 0.7381,
+    "specs": 9998,
+    "typed": 7380
    },
    "STATIC": {
     "share": 0.6223,
@@ -182,9 +182,9 @@
     "typed": 3346
    },
    "TRIGGERED": {
-    "share": 0.796,
-    "specs": 15272,
-    "typed": 12157
+    "share": 0.7972,
+    "specs": 15290,
+    "typed": 12189
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -243,9 +243,9 @@
      "typed": 0
     },
     "SPELL": {
-     "share": 0.8804,
-     "specs": 184,
-     "typed": 162
+     "share": 0.8925,
+     "specs": 186,
+     "typed": 166
     },
     "STATIC": {
      "share": 0.4156,
@@ -265,16 +265,16 @@
    },
    "cards": 358,
    "removal_gate": {
-    "clauses": 259,
+    "clauses": 258,
     "gate": 0.85,
     "met": false,
     "ready": 44,
-    "ready_share": 0.1699,
+    "ready_share": 0.1705,
     "typed": 225,
-    "typed_share": 0.8687
+    "typed_share": 0.8721
    },
-   "specs": 868,
-   "typed": 663
+   "specs": 870,
+   "typed": 667
   },
   "keyword_lines": [
    [
@@ -1193,8 +1193,8 @@
     1
    ]
   ],
-  "residue": 1392,
-  "specs": 44317,
+  "residue": 1395,
+  "specs": 44379,
   "sub_abilities": [
    [
     "DELAYED",
@@ -1233,9 +1233,9 @@
     2
    ]
   ],
-  "typed": 32554,
-  "unmodelled": 11763,
-  "unmodelled_row_count": 1980,
+  "typed": 32672,
+  "unmodelled": 11707,
+  "unmodelled_row_count": 1978,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1454,12 +1454,6 @@
     43
    ],
    [
-    "CLAUSE",
-    "gain",
-    "payload.modification_unknown",
-    38
-   ],
-   [
     "FILTER",
     "choose",
     "filter.unparsed:name",
@@ -1574,12 +1568,6 @@
     26
    ],
    [
-    "TARGET",
-    "exile",
-    "patterns.possessive_object",
-    26
-   ],
-   [
     "AMOUNT",
     "must",
     "amount.scaler:if",
@@ -1595,6 +1583,18 @@
     "AMOUNT",
     "can't",
     "amount.scaler:and",
+    24
+   ],
+   [
+    "AMOUNT",
+    "draw",
+    "amount.x_unbound",
+    24
+   ],
+   [
+    "CLAUSE",
+    "become",
+    "patterns.no_row:set_life",
     24
    ]
   ]

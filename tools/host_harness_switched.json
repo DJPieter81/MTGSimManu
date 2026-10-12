@@ -3484,6 +3484,14 @@
   {
    "pair": [
     "create_token",
+    "Fungal Infection",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher (the tokens/counters family takes a P/T change until end of turn as a rider of its token instruction): the same -1/-1 on the target, and the token owner gives the Saproling its printed subtype, where the legacy handler made an untyped 'saproling' token (CR 111.3, 608.2c)"
+  },
+  {
+   "pair": [
+    "create_token",
     "Gisa's Bidding",
     "SPELL:0:0"
    ],
@@ -3816,6 +3824,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Renegade's Getaway",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: the target permanent gains indestructible until end of turn (the legacy handler gave it to the new Servo token, ignoring the target), and the token owner gives the Servo its printed subtype (CR 111.3, 608.2c, 611.2a)"
   },
   {
    "pair": [
@@ -4460,6 +4476,14 @@
   {
    "pair": [
     "dispatched",
+    "Collective Effort",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit PO: no legacy path read 'put a +1/+1 counter on each creature target player controls', so the mode resolved as nothing; the counters executor now puts one on each creature the target player controls (CR 115.1, 122.1)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Command the Storm",
     "SPELL:0:0"
    ],
@@ -4512,6 +4536,14 @@
     "SPELL:0:0"
    ],
    "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cunning Maneuver",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: the same +3/+1 until end of turn on the target, and the Clue token the legacy pump handler skipped (CR 111.10f, 608.2c)"
   },
   {
    "pair": [
@@ -4872,6 +4904,14 @@
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fungal Infection",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher (the tokens/counters family takes a P/T change until end of turn as a rider of its token instruction): the same -1/-1 on the target, and the token owner gives the Saproling its printed subtype, where the legacy handler made an untyped 'saproling' token (CR 111.3, 608.2c)"
   },
   {
    "pair": [
@@ -5612,6 +5652,14 @@
   {
    "pair": [
     "dispatched",
+    "Practiced Offense",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: a +1/+1 counter on each creature the target player controls, which the legacy pump handler skipped, and the keyword its controller chooses on resolution (the engine's default is the first printed, the legacy grant's) (CR 115.1, 122.1, 608.2d)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Prismari Command",
     "MODE:0:0:mode0"
    ],
@@ -5844,6 +5892,14 @@
   {
    "pair": [
     "dispatched",
+    "Renegade's Getaway",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: the target permanent gains indestructible until end of turn (the legacy handler gave it to the new Servo token, ignoring the target), and the token owner gives the Servo its printed subtype (CR 111.3, 608.2c, 611.2a)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Repeating Barrage",
     "SPELL:0:0"
    ],
@@ -5972,6 +6028,14 @@
   {
    "pair": [
     "dispatched",
+    "Savor",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: -2/-2 until end of turn on the target and a Food token; the legacy route applied neither and gained 6 life from the Food's reminder text (CR 111.10b, 207.2, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Scatter the Seeds",
     "SPELL:0:1"
    ],
@@ -6072,6 +6136,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shelob's Ambush",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PO: the whole spell now resolves on the dispatcher: the same +1/+2 and deathtouch until end of turn on the target and a Food token; the legacy route made no Food and, with no creature target, gained 6 life from the Food's reminder text (CR 111.10b, 207.2, 608.2c)"
   },
   {
    "pair": [

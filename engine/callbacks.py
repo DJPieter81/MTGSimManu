@@ -538,3 +538,10 @@ def default_search_finds(pool: Sequence[Any]) -> List[Any]:
     searcher miss cards in a hidden zone; the engine's reading finds them
     all). No scoring."""
     return list(pool)
+
+
+def default_alternative(options: Sequence[Any]) -> int:
+    """The option of a choice its controller makes on resolution ("your
+    choice of A or B", A19, CR 608.2d) the engine takes by default: the
+    first printed. No scoring."""
+    return 0

@@ -471,8 +471,34 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     return True
 
 
+_RIDER_KINDS = frozenset({ModKind.ADD_KEYWORDS, ModKind.MODIFY_PT})
+
+
 def strict_tokens_counters(h: AbilityEffects) -> bool:
-    return _strict_host(h, _TOKEN_COUNTER_VERBS)
+    """Token and counter instructions. A keyword or P/T change until end
+    of turn rides along when the host also has a token or counter
+    instruction ("Put a +1/+1 counter on each creature target player
+    controls. Target creature gains your choice of double strike or
+    lifelink until end of turn.", unit PO); a host of such changes alone
+    is the pump family's, not this one's."""
+    if _strict_host(h, _TOKEN_COUNTER_VERBS):
+        return True
+    if not _strict_host(h, _TOKEN_COUNTER_VERBS | {Verb.CONTINUOUS},
+                        durations=True):
+        return False
+    specs = list(iter_specs(h.specs))
+    options = {id(a) for s in specs for a in s.alternatives}
+
+    def rider_kinds(s):
+        # a choice of riders (A19) is read option by option
+        if s.payload is None and s.alternatives:
+            return [getattr(_mod(a), "kind", None) for a in s.alternatives]
+        return [getattr(_mod(s), "kind", None)]
+    return (any(s.verb in _TOKEN_COUNTER_VERBS for s in specs)
+            and all(k in _RIDER_KINDS
+                    for s in specs if s.verb is Verb.CONTINUOUS
+                    and id(s) not in options
+                    for k in rider_kinds(s)))
 
 
 def strict_pump_restrict(h: AbilityEffects) -> bool:

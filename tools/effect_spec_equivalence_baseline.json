@@ -161,18 +161,18 @@
   "can_target_player": {
    "AGREE": 21602,
    "DERIVED_COVERAGE_GROWTH": 22,
-   "UNEXPLAINED": 507,
-   "UNMODELLED_CLAUSE": 607
+   "UNEXPLAINED": 526,
+   "UNMODELLED_CLAUSE": 588
   },
   "cast_prohibition": {
    "AGREE": 22734,
    "DERIVED_COVERAGE_GROWTH": 4
   },
   "cast_targets": {
-   "AGREE": 4388,
+   "AGREE": 4402,
    "LEGACY_TARGET_ZONE": 10,
-   "UNEXPLAINED": 319,
-   "UNMODELLED_CLAUSE": 519
+   "UNEXPLAINED": 315,
+   "UNMODELLED_CLAUSE": 509
   },
   "cast_trigger_token": {
    "AGREE": 22675,
@@ -236,8 +236,8 @@
    "AGREE": 20972,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_TARGETED_DAMAGE_SCOPE": 6,
-   "UNEXPLAINED": 883,
-   "UNMODELLED_CLAUSE": 854
+   "UNEXPLAINED": 886,
+   "UNMODELLED_CLAUSE": 851
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -384,24 +384,24 @@
    "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
-   "AGREE": 20811,
+   "AGREE": 20816,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
-   "UNEXPLAINED": 916,
-   "UNMODELLED_CLAUSE": 974
+   "UNEXPLAINED": 919,
+   "UNMODELLED_CLAUSE": 966
   },
   "has_discard_effect": {
    "AGREE": 22255,
    "DERIVED_COVERAGE_GROWTH": 88,
-   "UNEXPLAINED": 222,
-   "UNMODELLED_CLAUSE": 173
+   "UNEXPLAINED": 223,
+   "UNMODELLED_CLAUSE": 172
   },
   "has_draw_effect": {
    "AGREE": 20916,
    "DERIVED_COVERAGE_GROWTH": 274,
    "LEGACY_DRAW_SCOPE": 162,
-   "UNEXPLAINED": 652,
-   "UNMODELLED_CLAUSE": 734
+   "UNEXPLAINED": 653,
+   "UNMODELLED_CLAUSE": 733
   },
   "has_dual_land_search": {
    "AGREE": 22682,
@@ -433,8 +433,8 @@
    "AGREE": 21475,
    "DERIVED_COVERAGE_GROWTH": 29,
    "LEGACY_GRAVEYARD_RECURSION": 4,
-   "UNEXPLAINED": 710,
-   "UNMODELLED_CLAUSE": 520
+   "UNEXPLAINED": 711,
+   "UNMODELLED_CLAUSE": 519
   },
   "has_graveyard_target": {
    "AGREE": 22121,
@@ -472,8 +472,8 @@
    "AGREE": 21363,
    "DERIVED_COVERAGE_GROWTH": 3,
    "REMINDER_TEXT": 4,
-   "UNEXPLAINED": 643,
-   "UNMODELLED_CLAUSE": 725
+   "UNEXPLAINED": 646,
+   "UNMODELLED_CLAUSE": 722
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -488,11 +488,11 @@
    "UNMODELLED_CLAUSE": 1
   },
   "has_pump_grant": {
-   "AGREE": 20581,
+   "AGREE": 20582,
    "DERIVED_COVERAGE_GROWTH": 720,
    "LEGACY_PUMP_GRANT_SCOPE": 11,
    "UNEXPLAINED": 880,
-   "UNMODELLED_CLAUSE": 546
+   "UNMODELLED_CLAUSE": 545
   },
   "has_recurring_draw_trigger": {
    "AGREE": 21783,
@@ -502,8 +502,8 @@
   },
   "has_recurring_trigger": {
    "AGREE": 17533,
-   "UNEXPLAINED": 4168,
-   "UNMODELLED_CLAUSE": 1037
+   "UNEXPLAINED": 4172,
+   "UNMODELLED_CLAUSE": 1033
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -531,8 +531,8 @@
   "has_self_trigger": {
    "AGREE": 20997,
    "DERIVED_COVERAGE_GROWTH": 1344,
-   "UNEXPLAINED": 355,
-   "UNMODELLED_CLAUSE": 42
+   "UNEXPLAINED": 356,
+   "UNMODELLED_CLAUSE": 41
   },
   "has_surveil": {
    "AGREE": 22682,
@@ -542,15 +542,15 @@
   },
   "has_symmetric_reanimation": {
    "AGREE": 22712,
-   "UNEXPLAINED": 13,
-   "UNMODELLED_CLAUSE": 13
+   "UNEXPLAINED": 14,
+   "UNMODELLED_CLAUSE": 12
   },
   "has_token_effect": {
    "AGREE": 21997,
    "DERIVED_COVERAGE_GROWTH": 52,
    "REMINDER_TEXT": 3,
-   "UNEXPLAINED": 299,
-   "UNMODELLED_CLAUSE": 387
+   "UNEXPLAINED": 301,
+   "UNMODELLED_CLAUSE": 385
   },
   "has_x_counter_scaling": {
    "AGREE": 22633,
@@ -650,26 +650,26 @@
    "AGREE": 22608,
    "DERIVED_COVERAGE_GROWTH": 44,
    "LEGACY_HASH_ORDER": 13,
-   "UNEXPLAINED": 51,
-   "UNMODELLED_CLAUSE": 22
+   "UNEXPLAINED": 53,
+   "UNMODELLED_CLAUSE": 20
   },
   "pump_spell_keywords": {
    "AGREE": 22620,
    "DERIVED_COVERAGE_GROWTH": 50,
-   "UNEXPLAINED": 50,
-   "UNMODELLED_CLAUSE": 18
-  },
-  "pump_spell_power": {
-   "AGREE": 22592,
-   "DERIVED_COVERAGE_GROWTH": 82,
-   "UNEXPLAINED": 49,
+   "UNEXPLAINED": 53,
    "UNMODELLED_CLAUSE": 15
   },
+  "pump_spell_power": {
+   "AGREE": 22593,
+   "DERIVED_COVERAGE_GROWTH": 82,
+   "UNEXPLAINED": 49,
+   "UNMODELLED_CLAUSE": 14
+  },
   "pump_spell_toughness": {
-   "AGREE": 22655,
+   "AGREE": 22656,
    "DERIVED_COVERAGE_GROWTH": 48,
    "UNEXPLAINED": 28,
-   "UNMODELLED_CLAUSE": 7
+   "UNMODELLED_CLAUSE": 6
   },
   "reanimates_from_graveyard": {
    "AGREE": 22302,
@@ -682,10 +682,10 @@
    "AGREE": 22738
   },
   "requires_creature_target": {
-   "AGREE": 19081,
+   "AGREE": 19082,
    "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 3376,
-   "UNMODELLED_CLAUSE": 279
+   "UNEXPLAINED": 3377,
+   "UNMODELLED_CLAUSE": 277
   },
   "ritual_mana": {
    "AGREE": 22513,
@@ -759,13 +759,13 @@
   }
  },
  "gate_parity": {
-  "legacy_fallback": 3173,
-  "new_path": 1446,
-  "pairs": 4619
+  "legacy_fallback": 3168,
+  "new_path": 1455,
+  "pairs": 4623
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813583,
+  "AGREE": 2813606,
   "DERIVED_COVERAGE_GROWTH": 7863,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
@@ -779,7 +779,7 @@
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 202,
-  "UNEXPLAINED": 18023,
-  "UNMODELLED_CLAUSE": 9639
+  "UNEXPLAINED": 18064,
+  "UNMODELLED_CLAUSE": 9575
  }
 }

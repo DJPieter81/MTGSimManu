@@ -1172,7 +1172,12 @@ def _late(spec: EffectSpec, hashed: bool = False) -> Optional[str]:
     if verb is Verb.UNMODELLED and not spec.raw:
         return "unmodelled:raw"
     # 5. payload
-    if verb is Verb.CONTINUOUS and not isinstance(spec.payload, Modification):
+    if verb is Verb.CONTINUOUS and not isinstance(spec.payload, Modification) \
+            and not (spec.payload is None and spec.alternatives and all(
+                a.verb is Verb.CONTINUOUS and isinstance(a.payload, Modification)
+                for a in spec.alternatives)):
+        # A choice of continuous effects (A19) carries one Modification per
+        # alternative and none of its own.
         return "payload:continuous"
     if (verb is Verb.CREATE_TRIGGER) != isinstance(spec.payload, SubAbility):
         return "payload:create_trigger"

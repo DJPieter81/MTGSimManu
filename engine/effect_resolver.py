@@ -212,7 +212,12 @@ def _host_executable(host: AbilityEffects, family: Optional[str],
         return False
     if not all(_replacements_well_formed(lst) for lst in _sibling_lists(host.specs)):
         return False
-    if not all(_spec_executable(s, family, by_seq) for s in iter_specs(host.specs)):
+    # An option of a choice is checked as the instruction it performs (the
+    # choice's own check), never on its own.
+    options = {id(a) for s in iter_specs(host.specs) if is_choice(s)
+               for a in s.alternatives}
+    if not all(_spec_executable(s, family, by_seq)
+               for s in iter_specs(host.specs) if id(s) not in options):
         return False
     return all(_host_executable(m, family, by_seq) for m in host.modes)
 
@@ -245,11 +250,31 @@ def _replacements_well_formed(specs: Tuple[EffectSpec, ...]) -> bool:
                    for rs in replacers.values())
 
 
+def is_choice(s: EffectSpec) -> bool:
+    """A choice its controller makes on resolution ("[gains] your choice
+    of A or B", A19, CR 608.2d): the spec carries no payload of its own,
+    and each alternative of its own verb names what one option performs;
+    the rest (its target, its duration) is the spec's."""
+    return (s.payload is None and bool(s.alternatives)
+            and all(a.verb is s.verb for a in s.alternatives))
+
+
+def chosen_option(s: EffectSpec, a: EffectSpec) -> EffectSpec:
+    """The instruction option `a` of the choice `s` performs."""
+    return dataclasses.replace(
+        s, payload=a.payload,
+        amount=a.amount if a.amount is not None else s.amount,
+        alternatives=())
+
+
 def _spec_executable(s: EffectSpec, family: Optional[str],
                      by_seq: Mapping[int, EffectSpec]) -> bool:
     verb = s.verb
     if verb is Verb.UNMODELLED:
         return False
+    if is_choice(s):
+        return all(_spec_executable(chosen_option(s, a), family, by_seq)
+                   for a in s.alternatives)
     executor = None
     if verb is Verb.CREATE_TRIGGER:
         sub = s.payload
@@ -507,6 +532,10 @@ def _run(ctx: Resolution, s: EffectSpec, *, decided: bool = False) -> None:
         ctx.performed[s.seq] = True
         ctx.results[s.seq] = {}
         return _branch(ctx, s.then)
+    if is_choice(s):
+        # CR 608.2d: its controller chooses the option on resolution
+        from .callbacks import default_alternative
+        s = chosen_option(s, s.alternatives[default_alternative(s.alternatives)])
     actors = _actors_apnap(ctx, s)              # choices in APNAP order (CR 101.4) ...
     out = EXECUTORS[s.verb](ctx, s, actors)     # ... then ONE simultaneous action (A33)
     ctx.results[s.seq] = {a: tuple(v) for a, v in dict(out.result or {}).items()}

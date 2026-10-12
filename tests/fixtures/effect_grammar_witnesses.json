@@ -2857,8 +2857,7 @@
       "target_slot": 1
      }
     ]
-   },
-   "known_gap": "'each creature target player controls' is patterns.possessive_object; 'your choice of double strike or lifelink' is payload.modification_unknown"
+   }
   },
   {
    "card": "Kozilek's Command",

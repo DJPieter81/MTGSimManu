@@ -37,7 +37,9 @@ def named_player_value(game, ai_player: int, spec, player: int,
       to their side when it is fuel to them, one per card (CR 701.17a;
       `ai.predicates.graveyard_fuel_share`). A mill that empties a library
       loses its player the game at their next draw (CR 121.4, 704.5b),
-      which outweighs any fuel.
+      which outweighs any fuel;
+    - +1/+1 counters it puts on each creature that player controls are a
+      gain to their side (CR 122.1), each counter worth what a token is.
     None for an instruction this does not value."""
     from engine.effect_spec import TokenSpec, Verb
     verb = getattr(spec, "verb", None)
@@ -55,6 +57,14 @@ def named_player_value(game, ai_player: int, spec, player: int,
         n = amount_value(game, ai_player, spec.amount, x_value) \
             if spec.amount is not None else 1
         gained = max(0, n) * _worth(0)
+        return gained if player == ai_player else -gained
+    if verb is Verb.PUT_COUNTERS and spec.filter is not None:
+        from engine.effect_conditions import amount_value
+        n = amount_value(game, ai_player, spec.amount, x_value) \
+            if spec.amount is not None else 1
+        team = sum(1 for c in game.players[player].battlefield
+                   if c.effective_is_creature)
+        gained = max(0, n) * team * _worth(0)
         return gained if player == ai_player else -gained
     if verb is Verb.SACRIFICE and spec.filter is not None \
             and spec.amount is not None:

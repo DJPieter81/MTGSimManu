@@ -692,6 +692,12 @@ def _or_split(t: str, start: int) -> _AltSplit:
     return (tuple(opts), end)
 
 
+def offers_choice(t: str) -> bool:
+    """Does the payload text offer its controller a choice ("[gains] your
+    choice of A or B", A19)?"""
+    return _CHOICE_OF_RE.match(t.strip()) is not None
+
+
 def _split_alternatives(t: str) -> _AltSplit:
     m = _CHOICE_OF_RE.match(t)
     if m:

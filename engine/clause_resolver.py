@@ -303,7 +303,18 @@ def _a_mass_mode(ctx):
 
 
 def _g_pump(ctx):
-    return ctx.oracle_override is None and ctx.template.has_targeted_pump
+    # A spell whose whole host the tokens/counters family takes -- its
+    # keyword or P/T grant a rider of a counter or token instruction
+    # (unit PO) -- is the dispatched carrier's: this handler declines it.
+    # Under `effect_resolver.legacy_only()` (the per-host harness's legacy
+    # side) the dispatcher declines, so this handler keeps every host.
+    if ctx.oracle_override is not None or not ctx.template.has_targeted_pump:
+        return False
+    from engine import effect_carrier
+    from engine.effect_executors import FAMILY_TOKENS_COUNTERS
+    return not (effect_carrier.dispatching()
+                and effect_carrier.spell_family(ctx.template, ctx.effects)
+                == FAMILY_TOKENS_COUNTERS)
 
 
 def _a_pump(ctx):
