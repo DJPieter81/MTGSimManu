@@ -340,9 +340,10 @@ def _performed_object(t: str, a: int, b: int) -> Optional[Any]:
     ("if you put a Cave onto the battlefield this way", "if you discard a
     creature card this way"): the named action's result must be such a
     card (CR 608.2c), so the linker tests it. None when the object narrows
-    nothing ("a card", "it") or the filter leaf cannot type it."""
+    nothing ("a card", "it") or is no object group of the participant leaf
+    (the leaf that types an untargeted object as the filter leaf's
+    CardFilter)."""
     import dataclasses
-    from engine.effect_grammar.sub import filter as _filter
     from engine.effect_spec import CardFilter
     v = _lexicon.find_verb(t, (a, b))
     if v.value is None:
@@ -354,9 +355,8 @@ def _performed_object(t: str, a: int, b: int) -> Optional[Any]:
     ob = m.start() if m is not None else b
     if ob <= oa:
         return None
-    r = _filter.parse_filter(t, (oa, ob), zone="graveyard")
-    f = r.value
-    if f is None or not (f.types or f.subtypes):
+    f = _participant.parse_participant(t, (oa, ob), zone="graveyard").value
+    if not isinstance(f, CardFilter) or not (f.types or f.subtypes):
         return None
     bare = dataclasses.replace(f, types=frozenset(), subtypes=frozenset(),
                               zone=CardFilter().zone, raw="")
