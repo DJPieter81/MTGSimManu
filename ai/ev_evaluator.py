@@ -1160,6 +1160,16 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if _is_immediate_interaction(oracle, tags, t):
         signals.append('immediate_interaction')
 
+    # 4b. A graveyard-card removal with a card worth aiming at
+    #     (ai/graveyard_removal): its owner uses that card on their own
+    #     turn -- reanimates it, casts it from the graveyard, or casts the
+    #     copies of a keystone still in their hand -- so removing it now
+    #     is worth more than next turn.
+    if game is not None:
+        from ai.graveyard_removal import choose_removal_target
+        if choose_removal_target(game, player_idx, card, snap) is not None:
+            signals.append('graveyard_removal')
+
     # 5. Card draw this turn — includes true draw, library-dig
     #    "put X into your hand", and impulse-draw "exile top N, may
     #    play".  All three deliver same-turn card advantage even

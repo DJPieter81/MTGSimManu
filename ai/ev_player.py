@@ -1306,6 +1306,21 @@ class EVPlayer:
             from ai.land_denial import land_denial_value
             ev += land_denial_value(t, game, self.player_idx, snap)
 
+        # ── Graveyard-removal overlay (typed host shape) ──
+        # The board projection sees no exile from a graveyard, hand or
+        # library, so a spell that removes a graveyard card carries the
+        # value of what it takes from the card its pick aims at
+        # (ai/graveyard_removal.py, in the hand-denial currency).
+        if game is not None:
+            from ai.graveyard_removal import (choose_removal_target,
+                                              removal_shape, removal_value)
+            _gy_shape = removal_shape(t)
+            if _gy_shape is not None:
+                _gy_target = choose_removal_target(game, self.player_idx,
+                                                   card, snap)
+                if _gy_target is not None:
+                    ev += removal_value(game, _gy_target, _gy_shape, snap)
+
         # ── Flashback additional cost: the land it sacrifices ──
         # A spell cast from the graveyard whose printed Flashback cost
         # sacrifices a land (typed `flashback_sacrifice_subtype`) pays
@@ -1324,6 +1339,20 @@ class EVPlayer:
             sac = flashback_sacrifice_land(game, self.player_idx, t)
             if sac is not None:
                 ev -= own_land_loss_value(game, self.player_idx, sac, snap)
+
+        # ── Escape additional cost: the graveyard cards it exiles ──
+        # A spell cast from the graveyard for its escape cost exiles other
+        # cards from its caster's graveyard (CR 702.138a); the score spends
+        # what the cards its payment takes are worth to the caster
+        # (ai/graveyard_removal.own_cost_exile_value, in the hand-denial
+        # currency). Unpriced, a reanimator escaped a graveyard-hate spell
+        # by exiling its own reanimation target (Grixis Reanimator vs
+        # Creatures Toolbox s56000).
+        if (getattr(card, 'zone', None) == 'graveyard'
+                and getattr(t, 'escape_cost', None) is not None
+                and game is not None):
+            from ai.graveyard_removal import own_cost_exile_value
+            ev -= own_cost_exile_value(game, self.player_idx, card, snap)
 
         # ── Hand-denial overlay (caster-chosen discard class) ──
         # The projection books a forced discard as a card-neutral trade;
@@ -4425,6 +4454,22 @@ class EVPlayer:
                                key=lambda c: permanent_threat(c, opp, game))
                     return [best.instance_id]
             return []
+
+        # A spell that removes a card from a graveyard (typed host shape,
+        # ai/graveyard_removal): the card whose removal is worth most to
+        # its owner. With nothing worth aiming at, a spell that is only
+        # the removal is not cast; one with a rider keeps the engine's
+        # default aim for its rider.
+        from ai.graveyard_removal import choose_removal_target, removal_shape
+        shape = removal_shape(t)
+        if shape is not None:
+            chosen = choose_removal_target(game, self.player_idx, spell, snap)
+            if chosen is not None:
+                self._last_target_reason = (
+                    f"graveyard card worth most to its owner ({chosen.name})")
+                return [chosen.instance_id]
+            if shape.removal_only:
+                return []
 
         # Beneficial pump (typed "+N/+M until end of turn"): the caster's
         # own creature — an attacker first, else the most valuable body.

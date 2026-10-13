@@ -125,6 +125,32 @@ def removal_value(game: "GameState", card: "CardInstance",
     return value + engine_disruption_value(card, owner, game)
 
 
+def own_cost_exile_value(game: "GameState", caster_idx: int,
+                         spell: "CardInstance", snap: "EVSnapshot") -> float:
+    """What an escape cast (CR 702.138a) spends from its caster's
+    graveyard: the other cards its payment takes -- the ones that serve the
+    caster least (`ai.resolution_choices.pick_cost_exile`) -- each worth
+    its denied value while it is a resource there by itself (castable from
+    the graveyard, a creature its deck can reanimate:
+    `predicates.is_graveyard_resource_itself`), nothing otherwise. 0 for
+    any other cast."""
+    from ai.hand_denial import _denied_value
+    from ai.predicates import (is_graveyard_resource_itself,
+                               own_graveyard_consumers)
+    from ai.resolution_choices import pick_cost_exile
+    t = spell.template
+    n = getattr(t, "escape_exile_count", 0) or 0
+    if getattr(spell, "zone", None) != "graveyard" \
+            or getattr(t, "escape_cost", None) is None or n <= 0:
+        return 0.0
+    graveyard = [c for c in game.players[caster_idx].graveyard
+                 if c is not spell]
+    _size, recursion = own_graveyard_consumers(game, caster_idx)
+    taken = pick_cost_exile(game, caster_idx, spell, graveyard, n)
+    return sum(_denied_value(c, snap) for c in taken
+               if is_graveyard_resource_itself(c.template, recursion))
+
+
 def _rank(game: "GameState", snap: "EVSnapshot", card: "CardInstance",
           shape: Optional[RemovalShape]) -> tuple:
     """The ranking key (module docstring, **Ranking**)."""
