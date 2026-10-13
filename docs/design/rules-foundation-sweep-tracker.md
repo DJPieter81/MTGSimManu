@@ -8973,3 +8973,118 @@ Hundreds of pool cards sacrifice creatures.
   - **A play permission that ends this turn is not spent before it ends.** In Storm vs Boros Energy g2, Hex Magic exiles Wish on T4. Wish may be played until the end of T5, but the AI never casts it. On T6 Storm chains about 20 spells with Past in Flames and has no finisher left. This is AI combo planning: a finisher reachable only through an expiring permission.
   - **A walker's future activations are valued as one average card each.** In Storm vs Izzet Prowess g1 T5, Ral, Leyline Prodigy's +1 (a cost reduction, with no spell in hand) scores +3.8, and the −2 that kills a hasty 1/2 flier scores −7.4. That flier then hits for 7. The pool (`ev_evaluator.expected_future_value` → `clock.loyalty_pool_value`) prices each loyalty counter at about 3.8 position units against 2.0 for the kill (`permanent_threat`). This is the miscalibrated primitive, its own unit. The −2's divided damage is also UNMODELLED, so its host has no typed target.
   - **A flashback cost that sacrifices a land is underpriced once lands run out.** In Izzet Prowess vs Storm g2 T2, Prowess sacrifices both of its lands to flash back Lava Dart for 1 damage each. `land_denial.own_land_loss_value` charges one land's tempo per sacrifice, and nothing more as the count reaches zero.
+
+## Unit LY.1: a loyalty ability resolves from its typed instructions; its targets are chosen as it is activated (2026-10-13)
+
+**Rule (CR 606.1, 602.2b, 601.2c, 608.2c):** a loyalty ability is an activated ability.
+- Its targets are chosen as it is activated, among the choices each requirement admits.
+- A required target with no legal choice means the ability cannot be activated, so nothing is paid.
+- On resolution its instructions are performed in order.
+
+**Defect (a census of the field's planeswalkers, prompted by the Storm replays):**
+- **Never offered:** a line the legacy classifier left UNCLASSIFIED was never offered, even when the dispatcher could perform its typed host. Examples: Liliana of the Veil's edict, Nissa's team counters, Jace's mills, Chandra's impulse lines.
+- **Damage read as a number:** the DAMAGE resolver dealt that many damage to the highest-mana-value creature it killed, else to the opponent, whatever the line's target admitted. "4 damage to target creature" hit the face on a board without creatures. "Any target" never reached a planeswalker.
+- **AI valuation:** a damage line was valued as its clause's scaled face damage, not by where its damage goes.
+
+**Class:** 783 front-face loyalty lines. The carrier now takes 26 pool lines: 10 unclassified and 16 damage.
+- **In the field:** Wrenn and Six's −1 (4c Omnath, 4/5c Control).
+- **Not yet built (see leads):** the other field lines need executor shapes.
+
+**Steps (`2f7e3d4`, follow-up `ac11892`):**
+- **Engine:** `effect_carrier.loyalty_family`, `loyalty_targets`, `dispatch_loyalty`.
+  - An UNCLASSIFIED or DAMAGE line whose typed host is in a landed family's strict shape and executable is performed by the dispatcher.
+  - Its targets come from the controller's per-slot pick (`trigger_targets`).
+  - The walker's menu (`resolvable_ability_slots(pw, game)`) drops a taken line with no legal choice for a required target.
+  - Auditor `602.2b/loyalty_target`, also read at the legacy damage resolver.
+- **AI:** `pw_ability.dispatched_damage_value`. A line whose damage the carrier deals is valued by its aim (`choose_damage_recipient`, the pick the carrier takes).
+- **Tools:**
+  - The closure takes a carried line from its family. A declined line's switch is read from its kind's branch (`LOYALTY_BRANCH`).
+  - The harness covers carried UNCLASSIFIED lines.
+
+**Tests:** 9, 8 red first: `tests/test_a_loyalty_ability_resolves_from_its_typed_instructions.py`. Two damage-owner tests were moved to the paths they pin.
+
+**Pins:**
+- Unclassified census 393 → 384.
+- Gate parity: 26 new pairs, verified board by board and recorded as intended.
+  - Creature-only lines no longer hit the face.
+  - "Any target" goes where the pick puts it.
+  - Nahiri's X is its typed X.
+  - The 10 unclassified lines perform what they print.
+- Legacy fallback 3156 → 3140.
+- Digest: one game, same winner. Anchor 29.
+- Chunks at `ac11892`: 4957 + 2721.
+
+**Measured (same-seed n=20 Bo3, `ly-post` `8e75ed1` covers LY.1 and RH; pre = `sc-post`):**
+- Every deck is within ±0.6: 4c Omnath −0.6, 4/5c Control −0.4.
+- 68 cells change, concentrated in the two Wrenn and Six decks' rows and columns, mixed in sign. For example:
+  - 4/5c Control vs Azorius Control 55 → 80;
+  - 4/5c Control vs Domain Zoo 45 → 25.
+- No deck moves more than 5 pp.
+- Violations 0 (the new `602.2b/loyalty_target` never fires). Findings 312 → 314.
+
+**Leads (not built):**
+- **The field's other walker lines need executor shapes.** Each is not yet performed:
+  - Ajani, Nacatl Avenger's 0 is typed DAMAGE; its legacy resolver deals 1 and makes no Cat. Building it needs a token plus a reflexive damage trigger.
+  - Ajani's +2 needs counters on each creature of a subtype.
+  - Karn's ± are UNMODELLED.
+  - Narset's −2 reveals a card and puts it into hand.
+  - Tyvar's +1 needs an untap; its −2 needs a mill plus a filtered graveyard-to-battlefield return.
+  - Kaito's −2 is a tap plus stun counters; his 0 draws once for each opponent.
+  - Tamiyo's −3 is a regrowth plus conditional mana.
+  - Ugin's 0 adds mana in a loyalty line.
+  - Ashiok's −1 mills and exiles a whole graveyard.
+  - Chandra, Awakened Inferno's −3 damages each creature.
+- **A DAMAGE-typed line the carrier declines** (Ral's divided −2, Chandra, Torch of Defiance's +1 and emblem, Gideon's prevent lines) still meets the regex resolver. The classifier types any line containing "damage" as DAMAGE.
+- **A land card its controller can still play this turn is worth the land it becomes** (RH). At T7 of the digest game, one more card is worth 0.125 against 0.143 for 1 damage to a 31-life opponent.
+
+## Unit RH: a card returned from a graveyard to its owner's hand is valued as one more card in that hand (AI, 2026-10-13)
+
+**Rule (AI, from CR 400.7 and 608.2b):** "[You may] return target <card> from your graveyard to your hand" puts one more card in its controller's hand.
+- It counts on the snapshot's card term, as a drawn card does.
+- It counts no more cards than the requirement admits in that graveyard now.
+
+**Defect:** neither the cast projection nor a loyalty line's value counted the card. Wrenn and Six's +1, with a fetchland to return, was worth 0. After LY.1 valued the −1 by its aim, the walker pinged a 31-life opponent instead (digest: Pinnacle Affinity vs 4/5c Control s52500).
+
+**Class:** 445 pool cards. Registered decks hold 6 of them: Eternal Witness, Tamiyo, Wrenn and Six, Salvage Titan, Abstergo Entertainment, Colossal Skyturtle.
+
+**Steps (`5071607`):**
+- `ai/regrowth.py` is the one owner of the count, reading the executor's shape (`effect_executors.graveyard_to_hand`, now public).
+- The cast projection reads it on `ai.land_put.cast_hosts`; a loyalty line reads it on the walker's own line host.
+
+**Tests:** 5, 4 red first: `tests/test_a_card_returned_from_a_graveyard_to_hand_is_valued_as_a_card.py`.
+
+**Pins:**
+- Digest: the same game, same winner and turns (the +1 returns a Plains on T10).
+- Anchor 29.
+
+**Measured:** together with LY.1 above (`ly-post`).
+
+## Unit FB: a flashback granted until end of turn ends with the turn and with the object (2026-10-13)
+
+**Rule (CR 611.2a, 514.2, 400.7):** a flashback granted "until end of turn" ends in the cleanup step.
+- A card that leaves the graveyard is a new object without the grant.
+- A printed flashback is the card's own and never ends.
+
+**Defect:** Past in Flames and Snapcaster Mage set a permanent flag. A card in the graveyard when the grant resolved kept flashback for the rest of the game.
+- Ruby Storm vs Boros Energy (seed 50001, T5) flashed back a Hex Magic milled on T4, with no Past in Flames cast that turn.
+- In the matrix replay, Storm's T5 candidates included three graveyard spells on T4's grant.
+
+**Class:** 10 pool cards: Past in Flames (Ruby Storm ×3, plus 1 in the sideboard) and Snapcaster Mage (Dimir Midrange ×2) in registered decks.
+
+**Steps (`bb407e7`):**
+- `cast_manager.grant_flashback` / `end_flashback_grants`.
+  - A grant records its turn.
+  - A cleanup-clock subscriber ends every grant; the zone funnel ends a moved card's grant.
+  - Printed flashback (`flashback_cost` or a sacrifice cost) stays.
+- Both grant handlers go through the owner.
+- Auditor `611.2a/flashback_grant` at the flashback cast.
+
+**Tests:** 7, 5 red first, including the auditor both ways: `tests/test_a_granted_flashback_ends_with_the_turn.py`.
+
+**Pins:**
+- Digest: 5 games change.
+  - Ruby Storm vs Dimir s50500 flips to Dimir. The old line flashed back four spells on T7–T8 on earlier turns' grants.
+  - Azorius Control vs Ruby Storm s58500 g1 runs 6 → 8 turns, same winner, so g2 deals different hands and the match ends 2-0.
+- Anchor 29.
+
+**Measured:** the `fb-post` arm (pre = `ly-post`) follows.
