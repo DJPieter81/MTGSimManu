@@ -546,10 +546,13 @@ def _put_land_from_hand(ctx: Resolution, s: EffectSpec) -> Outcome:
         return Outcome(False, {})
     card = picked[0]
     played = player.lands_played_this_turn
-    LandManager.put_land_onto_battlefield(
+    LandManager.enter_land(
         ctx.game, card, ctx.controller, "hand", s.dest.tapped,
         getattr(_source_object(ctx), "name", ""))
+    # The put is audited as it happens: what the land's entry then sets
+    # off (a bounce land returning itself) is a later event (CR 603.2).
     _audit_land_put(ctx, card, played)
+    LandManager.land_entered(ctx.game, card, ctx.controller)
     LandManager.trigger_landfall(ctx.game, ctx.controller)
     return Outcome(True, {ctx.controller: (handle_of(card),)})
 

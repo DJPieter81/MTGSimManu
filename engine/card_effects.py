@@ -1729,18 +1729,14 @@ def _primeval_titan_search(game, controller):
         if haste_lands:
             to_put = [to_put[0], haste_lands[0]]
 
+    from .land_manager import LandManager
     for land in to_put:
-        player.library.remove(land)
-        land.enter_battlefield()
-        land.controller = controller
-        # Titan puts lands onto the battlefield tapped.
-        land.tapped = True
-        player.battlefield.append(land)
-        # Apply Amulet-style untap AND Spelunking-style untapped-static to
-        # keep all land-entry paths consistent. Without Spelunking here,
-        # Amulet Titan's combo loop breaks on Titan-fetched bounce lands.
-        game._apply_land_etb_static(land, controller)
-        game._apply_lands_enter_untapped(land, controller)
+        # Titan puts lands onto the battlefield tapped. Each enters as any
+        # land does -- its own entry rules, its enter abilities, an
+        # untap-on-enter watcher and "lands enter untapped" (the land-entry
+        # owner, CR 305.4, 603.6a, 614.1d).
+        LandManager.put_land_onto_battlefield(game, land, controller,
+                                              "library", True, "")
         game._trigger_landfall(controller)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Primeval Titan searches for {land.name}")
@@ -2935,10 +2931,9 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     for land in chosen:
         if land not in player.library:
             continue  # safety guard (shouldn't happen in Phase 1)
-        player.library.remove(land)
-        land.zone = "battlefield"
-        land.tapped = True  # enters tapped (Amulet/Spelunking untaps in Phase 2)
-        player.battlefield.append(land)
+        # Enters tapped, by its own entry rules too (the land-entry owner;
+        # Amulet/Spelunking untap in Phase 2).
+        _LM.enter_land(game, land, controller, "library", True, "")
         lands_entered.append(land)
 
     # ── Phase 2: fire ETBs in LIFO order (MTG stack semantics) ──────
@@ -2949,14 +2944,10 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     # triggers are then skipped because those lands are no longer on
     # the battlefield, leaving N/2 bounce lands on the field.
     # FIFO would instead produce a cascade that leaves only 1.
-    # A land bounced to hand by an earlier trigger is handled by the
-    # `if land not in player.battlefield: return` guard in
-    # `apply_land_etb_static`, so it is skipped cleanly.
-    from .oracle_resolver import resolve_etb_from_oracle
+    # A land bounced to hand by an earlier trigger is skipped cleanly by
+    # the land-entry owner (`LandManager.land_entered`).
     for land in reversed(lands_entered):
-        game._apply_land_etb_static(land, controller)
-        game._apply_lands_enter_untapped(land, controller)
-        resolve_etb_from_oracle(game, land, controller)
+        _LM.land_entered(game, land, controller)
         game._trigger_landfall(controller)
 
     game.rng.shuffle(player.library)

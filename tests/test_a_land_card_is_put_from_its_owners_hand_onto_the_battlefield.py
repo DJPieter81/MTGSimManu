@@ -172,13 +172,12 @@ def _findings(audit):
 def test_the_audit_records_a_land_put_counted_as_a_land_played(
         card_db, audit, monkeypatch):
     from engine.land_manager import LandManager
-    real = LandManager.put_land_onto_battlefield
+    real = LandManager.enter_land
 
     def counted(game, card, player_idx, from_zone, tapped, cause):  # the defect
         real(game, card, player_idx, from_zone, tapped, cause)
         game.players[player_idx].lands_played_this_turn += 1
-    monkeypatch.setattr(LandManager, "put_land_onto_battlefield",
-                        staticmethod(counted))
+    monkeypatch.setattr(LandManager, "enter_land", staticmethod(counted))
     game = _game(card_db)
     _cast(game, card_db, "Growth Spiral")
     assert _findings(audit)
@@ -187,4 +186,23 @@ def test_the_audit_records_a_land_put_counted_as_a_land_played(
 def test_the_audit_is_silent_when_the_land_is_put(card_db, audit):
     game = _game(card_db)
     _cast(game, card_db, "Growth Spiral")
+    assert not _findings(audit)
+
+
+def test_the_audit_is_silent_when_the_put_lands_own_trigger_returns_it(
+        card_db, audit):
+    """A bounce land put with no other land returns itself ("return a land
+    you control to its owner's hand"): the put happened, and the land's own
+    trigger is a later event (CR 603.2). Living End vs Amulet Titan s57500,
+    T4: Living End returned Arboreal Grazer to a board with no land."""
+    from engine.activated_effects import resolve_activated_ability
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    game.current_phase = Phase.MAIN1
+    _add(game, card_db, "Island", 0, "library")
+    chamber = _add(game, card_db, "Simic Growth Chamber", 0, "hand")
+    scout = _add(game, card_db, "Sakura-Tribe Scout", 0, "battlefield")
+    ability = scout.template.activated_abilities[0]
+    assert resolve_activated_ability(game, scout, 0, [], ability=ability)
+    assert chamber.zone == "hand"                  # it returned itself
     assert not _findings(audit)

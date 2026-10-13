@@ -5,7 +5,7 @@
   "engine/activation.py": 0,
   "engine/callbacks.py": 0,
   "engine/card_database.py": 0,
-  "engine/card_effects.py": 17,
+  "engine/card_effects.py": 16,
   "engine/cards.py": 1,
   "engine/cast_manager.py": 7,
   "engine/clause_resolver.py": 0,

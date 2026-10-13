@@ -20,15 +20,55 @@ argument, matching the CombatManager / ManaPayment pattern.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     from .cards import CardInstance
     from .game_state import GameState
 
 
+# Which of a land's own entry rules decided its tapped state
+# (`LandManager.settle_own_entry_tapped`; CR 614.1d, 614.12).
+ENTERS_TAPPED = "enters_tapped"           # "This land enters tapped."
+PAYS_TO_UNTAP = "pays_to_untap"           # "... you may pay 2 life. If you don't, it enters tapped."
+COUNTS_OTHER_LANDS = "counts_other_lands"  # "... enters tapped unless you control two or fewer other lands."
+
+
 class LandManager:
     """Land-entry flow. Stateless; call methods with `game` as 1st arg."""
+
+    @staticmethod
+    def settle_own_entry_tapped(game: "GameState", card: "CardInstance",
+                                player_idx: int) -> Tuple[str, int]:
+        """A land's own entry rules decide whether it enters tapped,
+        however it enters (CR 614.1d, 614.12: each is a replacement
+        effect on its entering). `enter_battlefield` has already tapped a
+        land whose template enters tapped. Then:
+        - an optional untap payment ("you may pay 2 life") is offered
+          through the optional-cost router;
+        - a land-count condition untaps the land when few enough other
+          lands are present.
+
+        Returns which rule applied (`ENTERS_TAPPED`, `PAYS_TO_UNTAP`,
+        `COUNTS_OTHER_LANDS`, or "" for none) and, for the land count, the
+        other lands counted, so the caller can log."""
+        t = card.template
+        if (t.enters_tapped and t.untap_life_cost == 0
+                and t.untap_max_other_lands < 0):
+            return ENTERS_TAPPED, 0
+        if t.untap_life_cost > 0:
+            from engine.optional_costs import offer_optional_costs
+            offer_optional_costs(game, player_idx, card, trigger="etb")
+            return PAYS_TO_UNTAP, 0
+        if t.untap_max_other_lands >= 0:
+            # Exclude the land now entering from the count.
+            other_lands = len([c for c in game.players[player_idx].battlefield
+                               if c.template.is_land
+                               and c.instance_id != card.instance_id])
+            if other_lands <= t.untap_max_other_lands:
+                card.tapped = False
+            return COUNTS_OTHER_LANDS, other_lands
+        return "", 0
 
     @staticmethod
     def play_land(game: "GameState", player_idx: int,
@@ -113,48 +153,25 @@ class LandManager:
                  kind=TransferKind.ETB, controller=player_idx)
 
         # ── Post-entry tapped-state finalisation ──
-        # `enter_battlefield()` sets `tapped = True` only for lands
-        # whose template flag is enters_tapped=True; the conditional
-        # cases below override for shock-pay (optional cost flips
-        # back to untapped) and fast-lands (untapped if few other
-        # lands).  Logging is done here so each path's message
-        # matches the legacy format and the replay parser is
-        # unchanged.
-        if (card.template.enters_tapped
-                and card.template.untap_life_cost == 0
-                and card.template.untap_max_other_lands < 0):
-            # Always-tapped land — `enter_battlefield` already set
-            # tapped=True. No-op here, just log.
+        # The land's own entry rules (`settle_own_entry_tapped`, the one
+        # owner a land put by an effect reads too). Logging is done here
+        # so each path's message matches the legacy format and the replay
+        # parser is unchanged.
+        rule, other_lands = LandManager.settle_own_entry_tapped(
+            game, card, player_idx)
+        if rule == ENTERS_TAPPED:
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: "
                 f"Play {card.name} (enters tapped)")
-        elif card.template.untap_life_cost > 0:
-            # Shock-pay / painland: offer the optional ETB-untapped
-            # cost. The router-driven cost may flip `card.tapped`
-            # back to False as part of apply_to_game.
-            from engine.optional_costs import offer_optional_costs
-            offer_optional_costs(game, player_idx, card, trigger="etb")
+        elif rule == PAYS_TO_UNTAP:
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: Play {card.name}"
                 f" ({'untapped, life: ' + str(player.life) if not card.tapped else 'tapped'})")
-        elif card.template.untap_max_other_lands >= 0:
-            # Fast-land: untapped if few enough other lands present.
-            # `enter_battlefield` set tapped=True (template flag);
-            # override to False when condition holds.  Exclude the
-            # land just entered from the count.
-            other_lands = len([c for c in player.battlefield
-                               if c.template.is_land
-                               and c.instance_id != card.instance_id])
-            if other_lands <= card.template.untap_max_other_lands:
-                card.tapped = False
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: "
-                    f"Play {card.name} (untapped, {other_lands} other lands)")
-            else:
-                # Already tapped from enter_battlefield(); just log.
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: "
-                    f"Play {card.name} (tapped, {other_lands} other lands)")
+        elif rule == COUNTS_OTHER_LANDS:
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: "
+                f"Play {card.name} ({'tapped' if card.tapped else 'untapped'}"
+                f", {other_lands} other lands)")
         else:
             # Regular land (untapped, no special cost).
             game.log.append(
@@ -247,55 +264,38 @@ class LandManager:
             )
             if not best_land:
                 break
-            player.library.remove(best_land)
-            best_land.controller = player_idx
 
             paid = (f" (pay {profile.life_cost} life)"
                     if profile.life_cost else "")
-            # Lands with discoverable optional ETB costs.  Router-driven;
-            # no mechanic-named callback.  See `engine/optional_costs.py`.
+            # The fetch's OWN text decides how the found land arrives:
+            # "put it onto the battlefield" vs "… onto the battlefield
+            # tapped". The land enters as any land does (its own entry
+            # rules, an untap payment offered through the optional-cost
+            # router: `enter_land`). Then comes any conditional untap rider
+            # ("Then if you control four or more lands, untap that land"),
+            # whose count includes the land now on the battlefield.
+            LandManager.enter_land(game, best_land, player_idx, "library",
+                                   profile.target_enters_tapped, "")
+            if (profile.target_enters_tapped
+                    and profile.untap_target_min_lands
+                    and len(player.lands) >= profile.untap_target_min_lands):
+                best_land.tapped = False
             if best_land.template.untap_life_cost > 0:
-                from engine.optional_costs import offer_optional_costs
-                best_land.enter_battlefield()
-                best_land.tapped = True
-                offer_optional_costs(game, player_idx, best_land, trigger="etb")
                 state = ("untapped" if not best_land.tapped else "tapped")
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Crack {fetch_name}{paid} -> {best_land.name} "
                     f"({state}, life: {player.life})")
             else:
-                # The fetch's OWN text decides how the found land arrives:
-                # "put it onto the battlefield" vs "… onto the battlefield
-                # tapped", plus any conditional untap rider ("Then if you
-                # control four or more lands, untap that land").  The +1
-                # counts the land now entering, which the printed
-                # threshold includes.
-                best_land.enter_battlefield()
-                if profile.target_enters_tapped:
-                    best_land.tapped = True
-                    if (profile.untap_target_min_lands
-                            and len(player.lands) + 1
-                            >= profile.untap_target_min_lands):
-                        best_land.tapped = False
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Crack {fetch_name} -> {best_land.name} "
                     f"({'tapped' if best_land.tapped else 'untapped'})")
 
-            player.battlefield.append(best_land)
-            # Amulet of Vigor and similar untap triggers
-            LandManager.apply_land_etb_static(
-                game, best_land, player_idx)
-            # Spelunking / "lands you control enter untapped" static must
-            # apply on the fetchland-crack path too — matches the play_land
-            # path.
-            LandManager.apply_lands_enter_untapped(
-                game, best_land, player_idx)
-            # Bounce land ETB (return a land to hand)
-            if best_land.template.is_land:
-                from .oracle_resolver import resolve_etb_from_oracle
-                resolve_etb_from_oracle(game, best_land, player_idx)
+            # Its enter abilities, then an untap-on-enter watcher, a
+            # karoo's return and "lands you control enter untapped" -- as
+            # for a land played.
+            LandManager.land_entered(game, best_land, player_idx)
             # Shuffle library
             game.rng.shuffle(player.library)
             # Track library search and trigger opponent's search triggers
@@ -316,22 +316,90 @@ class LandManager:
             f"Crack {fetch_name} (no valid land found)")
 
     @staticmethod
+    def enter_land(game: "GameState", card, player_idx: int, from_zone: str,
+                   tapped: bool, cause: str) -> None:
+        """A land an effect puts onto the battlefield enters it under
+        `player_idx` from `from_zone`, through the zone funnel. Putting a
+        land is not playing one (CR 305.4), but it enters like any land:
+        - its own entry rules decide its tapped state
+          (`settle_own_entry_tapped`, as for a land played; CR 614.1d,
+          614.12);
+        - the instruction's "tapped" adds to them, so a land put tapped
+          enters tapped and is offered no untap payment that could buy
+          nothing.
+
+        Auditor `614.1d/land_entry`. The land's entry triggers and the
+        statics that see it follow in `land_entered`; a simultaneous entry
+        enters every land before any of them."""
+        game.zone_mgr.move_card(game, card, from_zone, "battlefield",
+                                cause=cause, controller_override=player_idx)
+        if tapped:
+            card.tapped = True
+        else:
+            LandManager.settle_own_entry_tapped(game, card, player_idx)
+        LandManager._audit_land_entry(game, card, player_idx, tapped)
+
+    @staticmethod
+    def _audit_land_entry(game: "GameState", card, player_idx: int,
+                          tapped: bool) -> None:
+        """CR 614.1d, restated from the template's printed entry fields:
+        a land put tapped, or one whose text says it enters tapped, is
+        tapped as it enters. A land whose tapped state is a land count
+        is tapped exactly when more other lands are present. A land with
+        no entry rule enters untapped. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        t = card.template
+        if tapped or (t.enters_tapped and not t.untap_life_cost
+                      and t.untap_max_other_lands < 0):
+            ok = card.tapped
+        elif t.untap_life_cost:
+            ok = True       # the payment's choice decides it
+        elif t.untap_max_other_lands >= 0:
+            others = sum(1 for c in game.players[player_idx].battlefield
+                         if c.template.is_land and c is not card)
+            ok = card.tapped == (others > t.untap_max_other_lands)
+        else:
+            ok = not card.tapped
+        rules_audit.check(
+            "614.1d/land_entry", ok,
+            f"{card.name} entered {'tapped' if card.tapped else 'untapped'}"
+            f" (put {'tapped' if tapped else 'untapped'})")
+
+    @staticmethod
+    def land_entered(game: "GameState", card, player_idx: int) -> None:
+        """What a land's entry sets off: its enter abilities (CR 603.6a: the
+        ETB fan-out a land played reaches -- a Saga's first lore counter
+        and chapter I (CR 714.3a), a registered enter handler, the typed
+        enter triggers), then the statics that see it enter (an
+        untap-on-enter watcher, a karoo's return, "lands you control enter
+        untapped").
+
+        Lands that entered together (a mass search) have their entries
+        resolved one at a time. A land that a co-entrant's trigger already
+        returned is skipped: it is no longer the object that entered (CR
+        400.7), and its own enter triggers are not modelled past its
+        leaving."""
+        from .zone_transfer import TransferKind, fire_fanout
+        if card.zone != "battlefield":
+            return
+        fire_fanout(game, card, TransferKind.ETB, controller=player_idx)
+        LandManager.apply_land_etb_static(game, card, player_idx)
+        LandManager.apply_lands_enter_untapped(game, card, player_idx)
+
+    @staticmethod
     def put_land_onto_battlefield(game: "GameState", card, player_idx: int,
                                   from_zone: str, tapped: bool,
                                   cause: str) -> None:
-        """A land an instruction puts onto the battlefield -- one a search
-        found (CR 701.19a), one from a hand (CR 305.4) -- enters under
-        `player_idx` from `from_zone` through the zone funnel, tapped or not
-        as the instruction says, with the land-entry statics (an
-        untap-on-enter watcher, a karoo's return, "lands you control enter
-        untapped"). Putting a land is not playing one (CR 305.4): no land
-        drop is spent. Its caller fires landfall and its own triggers in
-        their printed order."""
-        game.zone_mgr.move_card(game, card, from_zone, "battlefield",
-                                cause=cause, controller_override=player_idx)
-        card.tapped = bool(tapped)
-        LandManager.apply_land_etb_static(game, card, player_idx)
-        LandManager.apply_lands_enter_untapped(game, card, player_idx)
+        """A land an instruction puts onto the battlefield (one a search
+        found, CR 701.19a; one from a hand, CR 305.4) enters
+        (`enter_land`) and its entry sets off what it does
+        (`land_entered`). Its caller fires landfall and its own triggers
+        in their printed order."""
+        LandManager.enter_land(game, card, player_idx, from_zone, tapped,
+                               cause)
+        LandManager.land_entered(game, card, player_idx)
 
     @staticmethod
     def put_land_from_library(game: "GameState", card, player_idx: int,
