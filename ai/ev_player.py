@@ -1134,10 +1134,10 @@ class EVPlayer:
                 c is not card
                 and getattr(c.template, 'x_creature_tutor_data', None)
                 for c in me.hand)
-            target_tags = getattr(target.template, 'tags', set()) or set()
-            land_in_hand = any(c.template.is_land for c in me.hand)
+            from ai.land_put import lands_put_on_cast
             accelerates = (
-                ('etb_land_from_hand' in target_tags and land_in_hand)
+                # It puts a land from the hand that holds one (`ai.land_put`).
+                lands_put_on_cast(game, self.player_idx, target.template) > 0
                 or bool(getattr(target.template, 'produces_mana', None))
                 or getattr(target.template, 'extra_land_drops', 0) > 0
                 # An engine completion is acceleration — the loop's mana

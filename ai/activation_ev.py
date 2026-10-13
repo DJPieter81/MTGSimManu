@@ -1008,6 +1008,27 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                         out.append((perm, ability.index)
                                    + max(plans, key=lambda p: p[1]))
                     continue
+                from ai.land_put import land_put_mana, lands_put
+                put = lands_put(game, player_idx, (_host,))
+                if put:
+                    # What a land put BUYS is its land's mana, this turn
+                    # and each after (CR 305.4: no land drop is spent),
+                    # priced at the per-mana clock rate the untap and tutor
+                    # branches use. The land card is not charged: its use
+                    # is the land it becomes (`ai.land_put`, the one owner
+                    # the cast projection reads too).
+                    from ai.clock import mana_clock_impact
+                    after = snap.fast_replace(**updates)  # cost terms only
+                    per_mana = (mana_clock_impact(snap)
+                                * CLOCK_IMPACT_LIFE_SCALING)
+                    ev = ((position_value(after) - base)
+                          + land_put_mana(put) * per_mana)
+                    if ev <= 0.0:
+                        continue
+                    out.append((perm, ability.index, declared, ev,
+                                f"activate: {perm.name} puts {put} land(s) "
+                                f"from hand"))
+                    continue
                 held = impulse_cards_held(_host)
                 if not held:
                     continue

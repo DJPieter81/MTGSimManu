@@ -25,6 +25,7 @@
   "ai/graveyard_removal.py": 0,
   "ai/hand_denial.py": 0,
   "ai/land_denial.py": 0,
+  "ai/land_put.py": 0,
   "ai/mana_engine.py": 0,
   "ai/mana_planner.py": 0,
   "ai/modal.py": 0,
