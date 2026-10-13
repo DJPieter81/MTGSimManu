@@ -442,6 +442,13 @@ def _same_name_exile(h: AbilityEffects) -> bool:
             and shuffle.actor == search.filter.owner)
 
 
+def _graveyard_target_exile(s) -> bool:
+    """"Exile target <card> from a graveyard" (unit GX): the executor's
+    own shape."""
+    from .effect_executors import graveyard_target_exile
+    return graveyard_target_exile(s)
+
+
 def strict_card_flow(h: AbilityEffects) -> bool:
     """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
     impulse shape: an EXILE of the top of the controller's library or of
@@ -450,16 +457,23 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     (unit DW: a count the draw owner reads, never "that many" of anything
     but such an exile) is switched too; whether its drawer and count are
     the DRAW executor's is `can_execute`'s question (A38). And the
-    same-name search shape (`_same_name_exile`, unit SX)."""
+    same-name search shape (`_same_name_exile`, unit SX). And the exile
+    of a card chosen in a graveyard (unit GX), which a life gain may ride
+    beside ("If it was a creature card, you gain 3 life. Otherwise, you
+    draw a card."); a life gain rides with nothing else here."""
     if _same_name_exile(h):
         return True
-    if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS,
-                        durations=True, conditions=True):
+    if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS
+                        | {Verb.GAIN_LIFE}, durations=True, conditions=True):
         return False
     exiled = {s.seq for s in iter_specs(h.specs)
               if _library_top_exile(s) or _hand_exile(s)}
+    graveyard = any(_graveyard_target_exile(s) for s in iter_specs(h.specs))
     for s in iter_specs(h.specs):
-        if s.verb is Verb.EXILE and s.seq not in exiled:
+        if s.verb is Verb.EXILE and s.seq not in exiled \
+                and not _graveyard_target_exile(s):
+            return False
+        if s.verb is Verb.GAIN_LIFE and not graveyard:
             return False
         if s.verb is Verb.CONTINUOUS and not _permission_over(s, exiled):
             return False
@@ -480,9 +494,17 @@ def strict_tokens_counters(h: AbilityEffects) -> bool:
     instruction ("Put a +1/+1 counter on each creature target player
     controls. Target creature gains your choice of double strike or
     lifelink until end of turn.", unit PO); a host of such changes alone
-    is the pump family's, not this one's."""
+    is the pump family's, not this one's. The exile of a card chosen in a
+    graveyard rides beside a token or counter instruction too ("Exile
+    target card from a graveyard. Create a 2/2 black Zombie creature
+    token.", unit GX)."""
     if _strict_host(h, _TOKEN_COUNTER_VERBS):
         return True
+    if _strict_host(h, _TOKEN_COUNTER_VERBS | {Verb.EXILE}):
+        specs = list(iter_specs(h.specs))
+        return (any(s.verb in _TOKEN_COUNTER_VERBS for s in specs)
+                and all(_graveyard_target_exile(s) for s in specs
+                        if s.verb is Verb.EXILE))
     if not _strict_host(h, _TOKEN_COUNTER_VERBS | {Verb.CONTINUOUS},
                         durations=True):
         return False

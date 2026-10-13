@@ -212,7 +212,10 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     from engine.effect_executors import FAMILIES
     from engine.effect_spec import CardFilter, Ref, RefKind, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
-    assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE}
+    # unit GX: "if it was a <type> card" over the card an earlier
+    # instruction moved
+    assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE,
+                                            ConditionKind.OBJECT}
     keys = dict(er.EXECUTOR_FILTER_KEYS)
     edict = keys.pop(Verb.SACRIFICE)
     assert {k for k, _ in edict} == {"types", "token"}

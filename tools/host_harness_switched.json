@@ -2348,6 +2348,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Creakwood Ghoul",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Cryptex",
     "ACTIVATED:0:1"
    ],
@@ -2548,6 +2556,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Jack-o'-Lantern",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Jodah's Codex",
     "ACTIVATED:0:0"
    ],
@@ -2736,6 +2752,14 @@
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Scrabbling Claws",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
   },
   {
    "pair": [
@@ -3304,6 +3328,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, keywords, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Beckon Apparition",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), beside the 1/1 flying Spirit token, which the token owner gives its printed subtype; the legacy route only made an untyped token"
   },
   {
    "pair": [
@@ -4059,6 +4091,14 @@
   },
   {
    "pair": [
+    "create_token",
+    "Vile Rebirth",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), beside the 2/2 Zombie token, which the token owner gives its printed subtype; the legacy route only made an untyped token"
+  },
+  {
+   "pair": [
     "dispatched",
     "Abrade",
     "MODE:0:0:mode0"
@@ -4260,6 +4300,14 @@
   {
    "pair": [
     "dispatched",
+    "Beckon Apparition",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), beside the 1/1 flying Spirit token, which the token owner gives its printed subtype; the legacy route only made an untyped token"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Bestial Incursion",
     "SPELL:0:0"
    ],
@@ -4296,6 +4344,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Break Ties",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
   },
   {
    "pair": [
@@ -4452,6 +4508,14 @@
   {
    "pair": [
     "dispatched",
+    "Cling to Dust",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); the branch reads the card it exiled: a creature card gains 3 life, otherwise its controller draws (CR 608.2c). The legacy route exiled nothing and always drew"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Cobra Trap",
     "SPELL:0:1"
    ],
@@ -4500,6 +4564,14 @@
   {
    "pair": [
     "dispatched",
+    "Consecrate // Consume",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), then its controller draws; the legacy route only drew"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Coordinated Maneuver",
     "MODE:0:0:mode0"
    ],
@@ -4528,6 +4600,14 @@
     "SPELL:0:1"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, keywords, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cremate",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), then its controller draws; the legacy route only drew"
   },
   {
    "pair": [
@@ -4956,6 +5036,14 @@
   {
    "pair": [
     "dispatched",
+    "Glorious Decay",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); the legacy mode path reported the mode performed but exiled nothing"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Goblin Grenade",
     "SPELL:0:1"
    ],
@@ -5072,6 +5160,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Heritage Reclamation",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); the legacy mode path reported the mode performed but exiled nothing"
   },
   {
    "pair": [
@@ -5740,6 +5836,14 @@
   {
    "pair": [
     "dispatched",
+    "Purify the Grave",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Purphoros's Intervention",
     "MODE:0:1:mode1"
    ],
@@ -5988,6 +6092,14 @@
   {
    "pair": [
     "dispatched",
+    "Return to Nature",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Revel of the Fallen God",
     "SPELL:0:0"
    ],
@@ -6176,6 +6288,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shadowfeed",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), and its controller gains 3 life once; the legacy route exiled nothing and gained 6 life"
   },
   {
    "pair": [
@@ -6724,6 +6844,14 @@
   {
    "pair": [
     "dispatched",
+    "Vile Rebirth",
+    "SPELL:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b), beside the 2/2 Zombie token, which the token owner gives its printed subtype; the legacy route only made an untyped token"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Wail of War",
     "MODE:0:1:mode1"
    ],
@@ -7020,6 +7148,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ambush Wolf",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Anarchist",
     "TRIGGERED:0:0"
    ],
@@ -7088,6 +7224,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Blood Operative",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
   },
   {
    "pair": [
@@ -7224,6 +7368,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Crossroads Candleguide",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
   },
   {
    "pair": [
@@ -7820,6 +7972,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Lantern of the Lost",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Lazav, the Multifarious",
     "TRIGGERED:0:0"
    ],
@@ -7980,10 +8140,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Mirror Golem",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b) (an enter trigger's target is its controller's pick, A36); no legacy path performed it, so the trigger resolved as nothing. The imprint link to the exiled card is not modelled (lead)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Mistmeadow Council",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mourner's Shield",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b) (an enter trigger's target is its controller's pick, A36); no legacy path performed it, so the trigger resolved as nothing. The imprint link to the exiled card is not modelled (lead)"
   },
   {
    "pair": [
@@ -8476,6 +8652,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Soul-Guide Gryff",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Soul-Guide Lantern",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Spare Supplies",
     "TRIGGERED:0:1"
    ],
@@ -8560,6 +8752,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sungold Sentinel",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
   },
   {
    "pair": [
@@ -8840,6 +9040,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wreck Remover",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
   },
   {
    "pair": [

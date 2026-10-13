@@ -485,19 +485,19 @@
     "strict": true
    }
   ],
-  "executable": 202,
+  "executable": 205,
   "family": "card_flow",
   "hosts": {
    "mainboard": 6,
-   "pool": 195,
+   "pool": 198,
    "sideboard": 1
   },
   "steps": {
-   "E2": 94,
-   "E3": 91,
+   "E2": 95,
+   "E3": 93,
    "E5": 17
   },
-  "strict": 202,
+  "strict": 205,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
@@ -505,7 +505,7 @@
    "DESTROY": 67,
    "DESTROY,MOVE,SEARCH,SHUFFLE": 3,
    "DRAW": 14,
-   "DRAW,SURVEIL": 2,
+   "DRAW,EXILE": 2,
    "EXILE": 5,
    "MILL": 40,
    "MOVE": 22,
@@ -663,13 +663,6 @@
     "strict": false
    },
    {
-    "card": "Cling to Dust",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": false
-   },
-   {
     "card": "Expressive Iteration",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -729,14 +722,14 @@
   "executable": 100,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 11,
-   "pool": 817,
+   "mainboard": 10,
+   "pool": 813,
    "sideboard": 0
   },
   "steps": {
    "E1": 2,
    "E2": 2,
-   "E3": 346,
+   "E3": 341,
    "E4": 53,
    "E5": 116,
    "E6": 34,
@@ -910,7 +903,7 @@
     "strict": false
    }
   ],
-  "executable": 174,
+  "executable": 177,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -923,7 +916,7 @@
    "E6": 9,
    "none": 89
   },
-  "strict": 197,
+  "strict": 200,
   "sub_kinds": {
    "DELAYED": 12,
    "REFLEXIVE": 2
@@ -998,6 +991,13 @@
     "host": "MODE:0:0:mode0",
     "part": "sideboard",
     "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Cling to Dust",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
     "strict": true
    },
    {
@@ -1148,21 +1148,21 @@
     "strict": true
    }
   ],
-  "executable": 470,
+  "executable": 481,
   "family": "damage",
   "hosts": {
-   "mainboard": 19,
-   "pool": 448,
+   "mainboard": 20,
+   "pool": 458,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
-   "E2": 76,
-   "E3": 101,
-   "E4": 119,
+   "E2": 80,
+   "E3": 106,
+   "E4": 121,
    "E5": 20
   },
-  "strict": 470,
+  "strict": 481,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 8,
@@ -1170,7 +1170,7 @@
    "CREATE_TOKEN": 114,
    "DAMAGE": 154,
    "DRAW": 68,
-   "DRAW,MILL": 4,
+   "DRAW,EXILE": 4,
    "DRAW,SURVEIL": 6,
    "MILL": 16,
    "MOVE": 51,
@@ -1331,6 +1331,13 @@
     "strict": true
    },
    {
+    "card": "Soul-Guide Lantern",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
     "card": "Thought Monitor",
     "host": "TRIGGERED:0:2",
     "part": "mainboard",
@@ -1359,25 +1366,26 @@
     "strict": true
    }
   ],
-  "executable": 237,
+  "executable": 247,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 16,
-   "pool": 221,
+   "mainboard": 17,
+   "pool": 230,
    "sideboard": 0
   },
   "steps": {
-   "E2": 33,
+   "E2": 43,
    "E3": 194,
    "E5": 10
   },
-  "strict": 237,
+  "strict": 247,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 10,
    "DRAW": 108,
    "DRAW,MILL": 2,
-   "EXILE": 1,
+   "EXILE": 10,
+   "EXILE,GAIN_LIFE": 1,
    "MILL": 37,
    "MOVE": 32,
    "SURVEIL": 47

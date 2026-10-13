@@ -124,9 +124,18 @@ def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
     serves_plan_from_graveyard`: the reanimation resource, a self-recurring
     spell) stays there; the others come by the hand-delivery choice
     (`_deliver`). A staying card is taken only to fill a target the effect
-    requires (`count_min`). Any other destination keeps the engine's
-    default pick."""
+    requires (`count_min`). For an exile of graveyard cards: the cards
+    whose removal is worth most to their owners (`ai.graveyard_removal.
+    pick_removals`). Any other destination keeps the engine's default
+    pick."""
     from engine.callbacks import default_card_pick
+    from engine.effect_spec import Verb
+    target = getattr(spec, "target", None)
+    if getattr(spec, "verb", None) is Verb.EXILE and target is not None \
+            and target.zone == "graveyard":
+        from ai.graveyard_removal import pick_removals
+        return pick_removals(game, ctx.controller, list(pool), n,
+                             target.count_min)
     if not _to_own_hand(spec):
         return default_card_pick(pool, n)
     from ai.discard_advisor import serves_plan_from_graveyard

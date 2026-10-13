@@ -171,10 +171,6 @@
    "TRIGGERED:0:1"
   ],
   [
-   "Soul-Guide Lantern",
-   "TRIGGERED:0:0"
-  ],
-  [
    "Spelunking",
    "TRIGGERED:0:0"
   ],
@@ -259,5 +255,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 184
+ "state_changing_floor": 185
 }

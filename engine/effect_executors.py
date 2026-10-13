@@ -37,6 +37,13 @@ those cards <duration>" through the one rule-effect store
 
 Family `tokens_counters` (unit D): KEYWORD_ACTION "amass <subtype> N" through
 the one amass owner, `GameState.amass` (CR 701.47a).
+
+Unit GX: EXILE of the cards chosen in a graveyard ("exile target card from
+a graveyard", CR 701.13a) through the zone funnel, re-checked on
+resolution (CR 608.2b), in the card-flow family and beside a token or
+counter instruction in that family; a GAIN_LIFE rides beside it in
+card-flow; and the OBJECT condition "if it was a <type> card" over the
+card it moved, with its "otherwise" branch (CR 608.2c).
 """
 from __future__ import annotations
 
@@ -70,11 +77,11 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
                                          Verb.CONTINUOUS, Verb.DRAW,
                                          Verb.MILL, Verb.CHOOSE, Verb.SEARCH,
-                                         Verb.SHUFFLE}),
+                                         Verb.SHUFFLE, Verb.GAIN_LIFE}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN,
                                                Verb.PUT_COUNTERS,
-                                               Verb.CONTINUOUS}),
+                                               Verb.CONTINUOUS, Verb.EXILE}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE})}
@@ -657,12 +664,66 @@ def exile_found(s: EffectSpec) -> bool:
             and s.subject is None and s.chooser is Chooser.CONTROLLER)
 
 
+def graveyard_target_exile(s: Any) -> bool:
+    """"[You may] exile [up to N] target <card> from <a | your | an
+    opponent's> graveyard" (CR 701.13a): the cards chosen for the slot,
+    still legal on resolution (CR 608.2b), move from their owner's
+    graveyard to exile through the zone funnel (CR 400.7: each is a new
+    object there). "You may" is the dispatcher's question (A35), asked
+    before this runs."""
+    if s.verb is not Verb.EXILE or s.flags or s.dest is not None:
+        return False
+    if s.alternatives or s.filter is not None or s.group is not None \
+            or s.payload is not None or s.duration is not None \
+            or s.amount is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or not _acts_as_controller(s.actor):
+        return False
+    req = s.target
+    return (s.target_slot is not None and req is not None
+            and req.zone == "graveyard" and req.count_max >= 1
+            and req.mode_group is None and not req.max_mana_value_is_x
+            and bool(req.types) and set(req.types) <= _GRAVEYARD_CARD_TYPES)
+
+
+def _exile_graveyard_targets(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The slot's chosen cards that are still legal (`_bound_cards`), or,
+    for a slot no target was chosen for (an enter trigger's, A36), the
+    controller's pick (`_owner_picks`), each moved graveyard -> exile."""
+    source = _source_object(ctx)
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    cards = (_bound_cards(ctx, s, source, slot) if slot
+             else _owner_picks(ctx, s, source))
+    cause = getattr(source, "name", "")
+    moved = []
+    for card in cards:
+        if ctx.game.zone_mgr.move_card(ctx.game, card, "graveyard", "exile",
+                                       cause=cause):
+            moved.append(handle_of(card))
+    _audit_graveyard_targets_exiled(ctx, cards)
+    return Outcome(bool(moved), {ctx.controller: tuple(moved)})
+
+
+def _audit_graveyard_targets_exiled(ctx: Resolution, cards) -> None:
+    """CR 701.13a, restated from the cards' zones: every card the exile
+    bound in a graveyard is in exile afterwards. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    left = [c.name for c in cards if c.zone != "exile"]
+    rules_audit.check("701.13/graveyard_target_exiled", not left,
+                      f"chosen in a graveyard but not exiled: {left}",
+                      game=ctx.game)
+
+
 def _exile_supported(s: EffectSpec) -> bool:
     """The top N of a library, the controller's whole hand, the ability's
-    own permanent ("exile ~"), or the cards an earlier instruction found
-    ("exile them"). Any other exile is refused."""
+    own permanent ("exile ~"), the cards an earlier instruction found
+    ("exile them"), or the cards chosen in a graveyard. Any other exile is
+    refused."""
     return (_exile_top_supported(s) or _exile_hand_supported(s)
-            or self_exile(s) or exile_found(s))
+            or self_exile(s) or exile_found(s) or graveyard_target_exile(s))
 
 
 def _exile_them(ctx: Resolution, s: EffectSpec) -> Outcome:
@@ -742,6 +803,8 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
         return _exile_self(ctx)
     if exile_found(s):
         return _exile_them(ctx, s)
+    if graveyard_target_exile(s):
+        return _exile_graveyard_targets(ctx, s)
     if _is_your_hand(s.filter):
         return _exile_hand(ctx)
     n = _amount(ctx, s)
@@ -759,6 +822,15 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
 
 
 execute_exile.supports = _exile_supported
+# A graveyard target's exile runs in the card-flow family, and beside a
+# token or counter instruction in that family (unit GX); every other exile
+# shape is unrestricted, as before.
+execute_exile.allowed_families = (
+    lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS})
+    if graveyard_target_exile(s) else None)
+# An enter trigger's graveyard target nobody chose is its controller's pick
+# through `choose_cards` (A36), as for the graveyard MOVE.
+execute_exile.picks_unbound_slots = True
 
 # The durations a permission to play is bound with: "this turn" and "until
 # the end of your next turn" (bound to the controller and the turn now).
@@ -1332,6 +1404,45 @@ def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
 
 evaluate_state.supports = conditions.state_condition_supported
 
+# The card types an OBJECT condition's filter may name ("if it was a
+# creature card", "... an instant or sorcery card").
+_CARD_TYPE_VALUES = frozenset(t.value for t in CardType)
+
+
+def _object_condition_supported(cond: Condition) -> bool:
+    """"If it was a <type> card": the card an earlier instruction of this
+    resolution moved (its RESULT, CR 608.2c) has one of the filter's card
+    types. Any other object predicate is refused."""
+    r, f = cond.ref, cond.filter
+    return (cond.kind is ConditionKind.OBJECT and cond.pred == "is"
+            and isinstance(r, Ref) and r.kind is RefKind.RESULT
+            and isinstance(r.index, int) and r.part is RefPart.ALL
+            and r.n is None and r.of is None and not r.per_actor
+            and cond.payer is None and cond.n is None and cond.cost is None
+            and not cond.children and isinstance(f, CardFilter)
+            and f.zone == "" and bool(f.types) and f.types <= _CARD_TYPE_VALUES
+            and dataclasses.replace(f, types=frozenset(), raw="",
+                                    zone=CardFilter().zone) == CardFilter())
+
+
+def evaluate_object(ctx: Resolution, cond: Condition) -> bool:
+    """True when a card the named instruction moved has one of the
+    filter's types, read from the card where it now is (its
+    characteristics are the same there, CR 400.7). An instruction that
+    moved nothing satisfies no "if it was"."""
+    produced = ctx.results.get(cond.ref.index) or {}
+    for handles in produced.values():
+        for h in handles:
+            card = ctx.game.get_card_by_id(h.instance_id) \
+                if isinstance(h, Handle) else None
+            if card is not None and cond.filter.types & {
+                    t.value for t in card.template.card_types}:
+                return True
+    return False
+
+
+evaluate_object.supports = _object_condition_supported
+
 
 # ── MILL (family card_flow, unit ML) ──────────────────────────────────
 
@@ -1675,3 +1786,4 @@ EXECUTOR_FILTER_KEYS[Verb.SEARCH] |= frozenset(
        for kind in (RefKind.OWNER_OF, RefKind.CONTROLLER_OF)]
     + [("named", t) for t in _TARGET_REFS])
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
+CONDITION_EVALUATORS[ConditionKind.OBJECT] = evaluate_object
