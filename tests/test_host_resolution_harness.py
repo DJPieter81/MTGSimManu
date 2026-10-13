@@ -135,7 +135,7 @@ def test_every_host_of_a_card_is_either_resolvable_through_a_legacy_apply_or_rep
     from engine.effect_grammar import parse_template
     h = _h()
     seen = {"SPELL": 0, "MODE": 0, "ACTIVATED": 0, "LOYALTY": 0, "ETB": 0,
-            "DRAW": 0, "COMBAT_DAMAGE": 0}
+            "DRAW": 0, "COMBAT_DAMAGE": 0, "CAST": 0}
     for t in h.deck_templates(card_db):
         ce = parse_template(t)
         ok, skipped = h.host_cases(t, ce)
@@ -208,8 +208,8 @@ NOOP_FIXTURE = REPO / "tests" / "fixtures" / "host_harness_noop_hosts.json"
 
 
 # The E0 self-check over every registered-deck MB and SB host with a
-# legacy apply: 239 hosts (enter triggers since unit E, draw triggers
-# since unit D) x 6
+# legacy apply: 257 hosts (enter triggers since unit E, draw triggers
+# since unit D, cast triggers since unit CT) x 6
 # boards x 2 seeds x 2 sides, plus one placed-only copy per (host, board)
 # for the no-op report. Measured 2026-10-09: ~95 s on a quiet 4-core box
 # (2026-10-02, 175 hosts: ~53 s CPU), plus ~18 s when first in the process

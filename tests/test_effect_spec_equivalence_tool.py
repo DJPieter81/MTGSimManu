@@ -1765,7 +1765,10 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         "activated_effects:PUT_COUNTER_TEAM",
         # unit LY: a loyalty line the loyalty carrier performs from its
         # typed host (Wrenn and Six's -1)
-        "planeswalker_manager:DAMAGE"}
+        "planeswalker_manager:DAMAGE",
+        # unit CT: a permanent's cast trigger the cast carrier performs
+        # from its typed host (Artist's Talent's rummage)
+        "cast:dispatch"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 
