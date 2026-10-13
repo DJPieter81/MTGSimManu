@@ -155,6 +155,15 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_copy_targets(
+        self, game: GameState, player_idx: int, item, remaining: int,
+    ) -> Optional[List[int]]:
+        """The targets for a copy of the spell `item` (CR 707.10c: its
+        controller may choose new ones), with `remaining` copies, this one
+        included, still to be made; None keeps the original's targets. The
+        engine refuses targets the spell could not have chosen."""
+        ...
+
     def choose_mana_color(
         self, game: GameState, player_idx: int, source: CardInstance,
         options: List[str],
@@ -382,6 +391,13 @@ class DefaultCallbacks:
             return (is_mana, is_artifact_scaler, cmc)
 
         return max(eligible, key=_rank)
+
+    def choose_copy_targets(
+        self, game: GameState, player_idx: int, item, remaining: int,
+    ) -> Optional[List[int]]:
+        """Default: a copy keeps the original's targets (CR 707.10c: new
+        ones are its controller's option, never required)."""
+        return None
 
     def choose_mana_color(
         self, game: GameState, player_idx: int, source: CardInstance,

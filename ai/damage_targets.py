@@ -153,3 +153,112 @@ def choose_destroy_recipient(game: "GameState", controller: int, source,
         if best is None or value > best.value:
             best = DamageAim(card.instance_id, card, value)
     return best
+
+
+def _already_destroyed(card: "CardInstance") -> bool:
+    """A creature whose marked damage is lethal is destroyed at the next
+    state-based check (CR 704.5g); damage aimed at it is wasted."""
+    toughness = card.toughness or 0
+    return (getattr(card, 'effective_is_creature', False)
+            and 0 < toughness <= (card.damage_marked or 0))
+
+
+def copies_to_destroy(card: "CardInstance", amount: int, most: int,
+                      source) -> Optional[int]:
+    """The fewest copies of ``amount`` damage from ``source`` that together
+    destroy ``card`` (`damage_destroys`, counting the damage already
+    marked), at most ``most``; None when even ``most`` do not."""
+    for k in range(1, most + 1):
+        if damage_destroys(card, k * amount, source):
+            return k
+    return None
+
+
+def plan_copy_damage(game: "GameState", controller: int, source,
+                     amount: int, copies: int,
+                     requirement: "TargetRequirement", *,
+                     mana_committed: int = 0) -> list:
+    """Where ``copies`` copies of a spell that deals ``amount`` damage to one
+    target go (CR 707.10c: each copy's controller may choose its targets
+    anew). One entry per copy: a target id, or None to keep the spell's
+    own target.
+
+    Copies lethal together go to the face. Otherwise the copies kill the
+    set of opposing permanents worth most (`permanent_threat`, each
+    needing `copies_to_destroy` copies: a 1/2 takes two 1-damage copies),
+    and the rest go to the face, valued as the face value of what they deal
+    together (`face_damage_value`). A small 0/1 knapsack over the copies,
+    in the same currency as `choose_damage_recipient`; ties go to the
+    face. The candidates are the ones `choose_damage_recipient` admits:
+    what the slot admits and the source may target, with any ward its
+    controller would pay."""
+    from engine.constants import PLAYER_TARGET_OPPONENT
+    from engine.target_solver import (can_be_targeted, slot_admits_permanent,
+                                      slot_admits_player)
+    from ai.permanent_threat import permanent_threat
+    from ai.ward_targeting import ward_rules_out_target
+
+    if copies <= 0:
+        return []
+    opp_idx = 1 - controller
+    opp = game.players[opp_idx]
+    face = slot_admits_player(requirement, opp_idx, controller)
+    if face and amount * copies >= opp.life:
+        return [PLAYER_TARGET_OPPONENT] * copies
+    candidates = []
+    for card in list(opp.battlefield):
+        if not (slot_admits_permanent(requirement, card, controller)
+                and can_be_targeted(card, source, controller)) \
+                or _already_destroyed(card) \
+                or ward_rules_out_target(game, controller, source, card,
+                                         mana_committed=mana_committed):
+            continue
+        need = copies_to_destroy(card, amount, copies, source)
+        if need is not None:
+            candidates.append((card.instance_id, need,
+                               permanent_threat(card, opp, game)))
+    # best[w]: the most a set of kills spending exactly w copies is worth.
+    best = {0: (0.0, ())}
+    for tid, need, value in candidates:
+        for spent, (worth, kills) in list(best.items()):
+            total = spent + need
+            if total <= copies and (total not in best
+                                    or best[total][0] < worth + value):
+                best[total] = (worth + value, kills + ((tid, need),))
+
+    def plan_value(spent):
+        left = copies - spent
+        rest = (face_damage_value(game, opp_idx, left * amount)
+                if face and left else 0.0)
+        return best[spent][0] + rest
+    spent = max(best, key=lambda k: (plan_value(k), -k))
+    plan = [tid for tid, need in best[spent][1] for _ in range(need)]
+    plan += [PLAYER_TARGET_OPPONENT if face else None] * (copies - len(plan))
+    return plan
+
+
+def copy_targets(game: "GameState", controller: int, item,
+                 remaining: int) -> Optional[list]:
+    """The AI's targets for a copy of the spell ``item`` (CR 707.10c), or
+    None to keep the original's. A spell whose one instruction deals N
+    damage to one target (its typed DAMAGE, one target requirement) is
+    aimed by `plan_copy_damage` over the copies still to be made, this one
+    first; any other spell keeps its targets."""
+    from engine.cast_manager import CastManager
+    from engine.effect_conditions import amount_value
+    from engine.effect_spec import Verb, iter_specs
+    card = item.source
+    host = card.template.effects.spell(0)
+    if host is None:
+        return None
+    specs = list(iter_specs(host.specs))
+    reqs = CastManager.spell_requirements(card)
+    if len(specs) != 1 or specs[0].verb is not Verb.DAMAGE \
+            or len(reqs) != 1 or len(item.targets) != 1:
+        return None
+    amount = amount_value(game, controller, specs[0].amount, item.x_value)
+    plan = plan_copy_damage(game, controller, card, amount, remaining,
+                            reqs[0])
+    if not plan or plan[0] is None:
+        return None
+    return [plan[0]]

@@ -1719,14 +1719,67 @@ class CastManager:
         if copies <= 0:
             return
 
-        controller = item.controller
-        card = item.source
         game.log.append(f"T{game.display_turn}: Storm copies: {copies}")
 
         for i in range(copies):
-            game._execute_spell_effects(item)
+            game._execute_spell_effects(
+                CastManager._spell_copy(game, item, copies - i))
             if game.game_over:
                 return
+
+    @staticmethod
+    def _spell_copy(game: "GameState", item: StackItem,
+                    remaining: int) -> StackItem:
+        """A copy of a spell on the stack (CR 707.10): its copiable values
+        and the choices made as it was cast (modes, X). It copies the
+        spell's targets, and its controller may choose new ones for it
+        (CR 707.10c), asked through `callbacks.choose_copy_targets` with
+        the copies still to be made. A choice the spell could not have
+        made (`copy_targets_legal`) is refused, and the copy keeps the
+        original's targets. Auditor `707.10c/copy_targets`."""
+        import dataclasses
+        targets = list(item.targets)
+        if targets:
+            asked = game.callbacks.choose_copy_targets(
+                game, item.controller, item, remaining)
+            if asked is not None and CastManager.copy_targets_legal(
+                    game, item, asked):
+                targets = list(asked)
+        copy = dataclasses.replace(item, targets=targets)
+        CastManager._audit_copy_targets(game, item, copy)
+        return copy
+
+    @staticmethod
+    def copy_targets_legal(game: "GameState", item: StackItem,
+                           targets) -> bool:
+        """CR 707.10c: new targets for a copy are ones the spell could have
+        chosen. There are as many as the original's, each admitted by the
+        spell's target requirements (the legality owner,
+        `target_solver.target_admitted`)."""
+        from .target_solver import target_admitted
+        if len(targets) != len(item.targets):
+            return False
+        reqs = CastManager.spell_requirements(item.source)
+        return all(target_admitted(game, item.controller, reqs, t,
+                                   source=item.source) for t in targets)
+
+    @staticmethod
+    def _audit_copy_targets(game: "GameState", item: StackItem,
+                            copy: StackItem) -> None:
+        """CR 707.10c, restated from the copy itself: it has as many targets
+        as the spell it copies, each one the spell's requirements admit.
+        Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        from .target_solver import target_admitted
+        reqs = CastManager.spell_requirements(item.source)
+        ok = len(copy.targets) == len(item.targets) and all(
+            target_admitted(game, item.controller, reqs, t,
+                            source=item.source) for t in copy.targets)
+        rules_audit.check("707.10c/copy_targets", ok,
+                          f"{item.source.name}: copy targets {copy.targets}"
+                          f" for {item.targets}", game=game)
 
     @staticmethod
     def _handle_cascade(game: "GameState", item: StackItem) -> None:

@@ -326,6 +326,13 @@ class AICallbacks(GameCallbacks):
         from ai.resolution_choices import pick_cards
         return pick_cards(ctx.game, ctx, spec, pool, n)
 
+    def choose_copy_targets(self, game, player_idx, item, remaining):
+        """A copy's targets from the AI's one aim for where N damage goes,
+        planned over the copies still to be made
+        (`ai.damage_targets.copy_targets`)."""
+        from ai.damage_targets import copy_targets
+        return copy_targets(game, player_idx, item, remaining)
+
     def choose_mana_color(self, game, player_idx, source, options):
         """Pick an entry-choice colour from the deck's actual mana needs.
 
