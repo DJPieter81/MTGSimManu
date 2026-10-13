@@ -112,10 +112,70 @@ def choose_discard(game: "GameState", player_idx: int,
 
     # Self-discard: score-based choice, highest score = discard first.
     from ai.predicates import count_lands
+    discard_score, gy_safe = _self_discard_scorer(game, player_idx)
+    lands_in_hand = count_lands(hand)
+
+    # Live-plan role guard: the LAST accessible copy of a role the
+    # gameplan requires is never pitched while the plan is live.  A
+    # copy that stays role-usable from the graveyard after the discard
+    # (safe-graveyard fuel, flashback) is relocated, not lost, and
+    # stays pitchable.  If every card in hand is protected we must
+    # still discard something — fall back to the full hand.
+    protected = _plan_role_protected_ids(game, player_idx, hand, gy_safe)
+    eligible = [c for c in hand if id(c) not in protected] or hand
+
+    return max(eligible, key=lambda c: discard_score(c, lands_in_hand))
+
+
+def draw_improves_on_discard(game: "GameState", player_idx: int,
+                             n: int) -> bool:
+    """Is trading `n` cards from the player's hand for `n` cards drawn
+    at random from its library likely to improve the hand, by the
+    player's own self-discard ranking? (A rummage: "you may discard a
+    card. If you do, draw a card.")
+
+    The cards given up are the ones `choose_discard` would discard, one
+    at a time; the comparison is with the last of them, the one the
+    ranking keeps longest. Each library card is scored as it would sit
+    in the hand after the trade: the given cards gone, a drawn land
+    joining the lands left in hand. Library cards the ranking would
+    keep before the compared card count for the trade, cards it would
+    discard first count against it, ties count for neither; the trade
+    improves the hand when the first outnumber the second. The player
+    knows its library's contents (its decklist less the cards it has
+    seen), never their order."""
+    from ai.predicates import count_lands
+    player = game.players[player_idx]
+    hand = list(player.hand)
+    if n < 1 or len(hand) < n or not player.library:
+        return False
+    discard_score, _gy_safe = _self_discard_scorer(game, player_idx)
+    given_score = None
+    for _ in range(n):
+        given = choose_discard(game, player_idx, hand, True)
+        given_score = discard_score(given, count_lands(hand))
+        hand = [c for c in hand if c is not given]
+    lands_left = count_lands(hand)
+    keep_before = discard_first = 0
+    for card in player.library:
+        drawn_lands = lands_left + (1 if card.template.is_land else 0)
+        score = discard_score(card, drawn_lands)
+        if score < given_score:
+            keep_before += 1
+        elif score > given_score:
+            discard_first += 1
+    return keep_before > discard_first
+
+
+def _self_discard_scorer(game: "GameState", player_idx: int):
+    """The self-discard ranking of `choose_discard` (highest score =
+    discard first), as `discard_score(card, lands_in_hand)`: one card's
+    score in a hand holding `lands_in_hand` lands. Returned with
+    whether the player's graveyard is safe to hold its resources
+    (`_graveyard_is_safe`), which the live-plan role guard also reads."""
     from ai.ev_evaluator import snapshot_from_game
     player = game.players[player_idx]
     lands_on_field = len(player.lands)
-    lands_in_hand = count_lands(hand)
 
     # Race-state context (2026-08-27 reanimator-pair secondary lever):
     # discard choice is evaluated against the live plan and the race,
@@ -176,7 +236,7 @@ def choose_discard(game: "GameState", player_idx: int,
     reanimation_min_cmc = _reanimation_fuel_min_cmc(game, player_idx)
     keystones = _declared_keystones(game, player_idx)
 
-    def discard_score(card: "CardInstance") -> float:
+    def discard_score(card: "CardInstance", lands_in_hand: int) -> float:
         t = card.template
         score = 0.0
 
@@ -261,16 +321,7 @@ def choose_discard(game: "GameState", player_idx: int,
 
         return score
 
-    # Live-plan role guard: the LAST accessible copy of a role the
-    # gameplan requires is never pitched while the plan is live.  A
-    # copy that stays role-usable from the graveyard after the discard
-    # (safe-graveyard fuel, flashback) is relocated, not lost, and
-    # stays pitchable.  If every card in hand is protected we must
-    # still discard something — fall back to the full hand.
-    protected = _plan_role_protected_ids(game, player_idx, hand, gy_safe)
-    eligible = [c for c in hand if id(c) not in protected] or hand
-
-    return max(eligible, key=discard_score)
+    return discard_score, gy_safe
 
 
 def choose_card_to_exile_from_hand(game: "GameState", player_idx: int,

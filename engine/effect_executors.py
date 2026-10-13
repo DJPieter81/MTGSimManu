@@ -69,6 +69,10 @@ FAMILY_CARD_FLOW = "card_flow"
 FAMILY_TOKENS_COUNTERS = "tokens_counters"
 FAMILY_EDICT = "edict"
 FAMILY_REMOVAL = "removal"
+# The cast-trigger carrier's family (unit CT, `effect_carrier.
+# dispatch_cast_triggers`): what a permanent's "whenever <player> casts a
+# <kind> spell" ability performs.
+FAMILY_CAST_TRIGGER = "cast_trigger"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -85,7 +89,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                                Verb.CONTINUOUS, Verb.EXILE}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
-                                       Verb.SHUFFLE})}
+                                       Verb.SHUFFLE}),
+            FAMILY_CAST_TRIGGER: frozenset({Verb.DISCARD, Verb.DRAW})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -984,7 +989,10 @@ def _draw_supported(s: EffectSpec) -> bool:
     player"), an optional draw, or any other shape is refused."""
     if s.verb is not Verb.DRAW:
         return False
-    if s.flags or s.optional or s.alternatives or s.filter is not None \
+    # "If you do, draw ..." sits in its named action's branch, which the
+    # dispatcher runs only when that action was performed (CR 608.2c).
+    if s.flags - {"if_you_do"} or s.optional or s.alternatives \
+            or s.filter is not None \
             or s.group is not None or s.dest is not None \
             or s.payload is not None or s.duration is not None \
             or s.chooser is not Chooser.CONTROLLER:
@@ -1012,6 +1020,75 @@ def execute_draw(ctx: Resolution, s: EffectSpec,
 
 
 execute_draw.supports = _draw_supported
+
+
+# ── DISCARD (family cast_trigger, unit CT) ────────────────────────────
+
+def discard_supported(s: EffectSpec) -> bool:
+    """"[You may] discard <N> card(s)" by the controller, of their choice
+    (CR 701.9a): each card through the one discard funnel
+    (`GameState.discard_card`, where madness and the discard count live),
+    chosen by the controller's discard choice (`callbacks.choose_discard`).
+    "You may" is the dispatcher's question (A35), asked before this runs.
+    Any other discarder, a random or filtered discard, or any other shape is
+    refused."""
+    if s.verb is not Verb.DISCARD or s.flags or s.alternatives:
+        return False
+    f = s.filter
+    if not (isinstance(f, CardFilter) and f.zone == "hand"
+            and f == CardFilter(zone="hand", raw=f.raw)):
+        return False
+    a = s.amount
+    if not (a is None or (a.kind is AmountKind.LITERAL and a.n >= 1)):
+        return False
+    return (s.target is None and s.target_slot is None and s.ref is None
+            and s.subject is None and s.other is None and s.dest is None
+            and s.payload is None and s.duration is None and s.group is None
+            and s.chooser is Chooser.CONTROLLER
+            and _acts_as_controller(s.actor))
+
+
+def execute_discard(ctx: Resolution, s: EffectSpec,
+                    actors: Tuple[int, ...]) -> Outcome:
+    """The controller discards N cards of their choice, one at a time,
+    through the discard funnel."""
+    game, player = ctx.game, ctx.controller
+    n = s.amount.n if s.amount is not None else 1
+    source = _source_object(ctx)
+    cause = getattr(source, "name", "") or "discard"
+    discarded = []
+    for _ in range(n):
+        hand = list(game.players[player].hand)
+        if not hand:
+            break
+        card = game.callbacks.choose_discard(game, player, hand,
+                                             self_discard=True)
+        if card is None or all(card is not c for c in hand):
+            card = hand[0]
+        game.discard_card(player, card, cause=cause)
+        _audit_discarded(game, player, card)
+        discarded.append(handle_of(card))
+    return Outcome(bool(discarded), {player: tuple(discarded)})
+
+
+def _audit_discarded(game: Any, player: int, card: Any) -> None:
+    """Rules audit (CR 701.9a), restated from the raw zones: a card
+    discarded leaves its discarder's hand for their graveyard (or exile,
+    where a madness card goes, CR 702.35a). Observation only."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    hand = game.players[player].hand
+    _audit_check("701.9a/discarded",
+                 all(card is not c for c in hand)
+                 and card.zone in ("graveyard", "exile"),
+                 f"{card.name} was discarded but is in {card.zone}",
+                 game=game)
+
+
+execute_discard.supports = discard_supported
+# Proven only where the cast-trigger carrier runs it (unit CT).
+execute_discard.allowed_families = lambda s: frozenset({FAMILY_CAST_TRIGGER})
 
 
 # ── CREATE_TOKEN (family tokens_counters, R2; printed tokens, unit TK) ─
@@ -1678,6 +1755,7 @@ EXECUTORS[Verb.PUT_COUNTERS] = execute_put_counters
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
 EXECUTORS[Verb.ADD_MANA] = execute_add_mana
+EXECUTORS[Verb.DISCARD] = execute_discard
 
 
 # ── DESTROY / SEARCH / SHUFFLE (family removal, unit LA) ──────────────
@@ -1939,6 +2017,9 @@ EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
 # The move executor evaluates "a land card from your hand" itself (unit SP).
 EXECUTOR_FILTER_KEYS[Verb.MOVE] = frozenset(_LAND_IN_YOUR_HAND)
+# The discard executor evaluates "a card" in its discarder's hand itself
+# (unit CT): the hand is the discard's own zone (CR 701.9a).
+EXECUTOR_FILTER_KEYS[Verb.DISCARD] = frozenset({("zone", "hand")})
 # The search executor evaluates "a basic land card" in the searcher's own
 # library itself (unit LA).
 EXECUTOR_FILTER_KEYS[Verb.SEARCH] = frozenset(_BASIC_LAND_CARD.as_tuple())

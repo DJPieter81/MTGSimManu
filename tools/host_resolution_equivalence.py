@@ -219,6 +219,29 @@ class BoardPool:
         self.instant = next((t for t in vanilla if _types(t) == {"instant"}
                              and t.oracle_text), None)
         self.grave = creatures[:GRAVEYARD_CARDS]
+        self._vanilla = vanilla
+
+    def spell_for(self, kind: str):
+        """The first card (name order) whose spell is of a cast event's
+        kind (`effect_spec.CastEvent.spell`): what a CAST case casts."""
+        def colors(t):
+            return {c for c in "WUBRG" if f"{{{c}}}" in str(
+                getattr(t, "mana_cost", "") or "")} or set(
+                getattr(t, "color_identity", ()) or ())
+        tests = {
+            "any": lambda t: _types(t) == {"instant"},
+            "noncreature": lambda t: _types(t) == {"instant"},
+            "instant_or_sorcery": lambda t: _types(t) == {"instant"},
+            "creature": lambda t: _types(t) == {"creature"},
+            "artifact": lambda t: _types(t) == {"artifact"},
+            "enchantment": lambda t: _types(t) == {"enchantment"},
+            "colorless": lambda t: _types(t) == {"artifact"},
+            "multicolored": lambda t: _types(t) == {"instant"}
+            and len(colors(t)) >= 2,
+        }
+        test = tests.get(kind)
+        return next((t for t in self._vanilla if t.oracle_text and test(t)),
+                    None) if test else None
 
 
 def _add(game, template, controller, zone):
@@ -336,7 +359,8 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
                         EventHint.DRAW in h.trigger.event_hints
                         and h.trigger.draw is not None) or (
                         h.trigger.combat_damage is not None
-                        and h.trigger.combat_damage.dealer == "self")):
+                        and h.trigger.combat_damage.dealer == "self") or (
+                        h.trigger.cast is not None)):
             # an enter trigger: its legacy apply is the enter resolver; a
             # typed draw trigger: a draw (a head naming both -- "When ~
             # enters and whenever an opponent draws" -- has both cases); a
@@ -351,9 +375,24 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
                     h.trigger.combat_damage.dealer == "self":
                 ok.append(HostCase(template.name, label, "COMBAT_DAMAGE",
                                    h.index))
+            if h.trigger.cast is not None:
+                # a typed cast trigger (unit CT): its caster casting a
+                # spell of its kind
+                ok.append(HostCase(template.name, label, "CAST", h.index))
         else:
             skipped.append(HostCase(template.name, label, h.kind.name))
     return ok, skipped
+
+
+# The board pool the CAST cases cast from (set as the boards are built).
+_POOL_FOR_CAST: List[Any] = []
+
+
+def _cast_head(template, case: HostCase):
+    """The typed cast event of a CAST case's host."""
+    from engine.effect_spec import HostKind
+    return next(h.trigger.cast for h in template.effects.front()
+                if h.kind is HostKind.TRIGGERED and h.index == case.key)
 
 
 def _draw_head(template, case: HostCase):
@@ -469,6 +508,18 @@ def legacy_apply(game, template, case: HostCase) -> Any:
         game.players[drawer].cards_drawn_this_turn = \
             (draw.nth - 1) if draw.nth else 0
         return len(game.draw_cards(drawer, 1))
+    if case.kind == "CAST":
+        # the head's caster casts a spell of its kind; the cast resolver
+        # runs every watcher's cast triggers (the carrier first)
+        from engine.oracle_resolver import resolve_spell_cast_trigger
+        head = _cast_head(template, case)
+        caster = 1 - CONTROLLER if head.caster == "opponent" else CONTROLLER
+        spell_t = _POOL_FOR_CAST[0].spell_for(head.spell) \
+            if _POOL_FOR_CAST else None
+        if spell_t is None:
+            return None
+        spell = _add(game, spell_t, caster, "stack")
+        return resolve_spell_cast_trigger(game, caster, spell)
     if case.kind == "COMBAT_DAMAGE":
         # the source deals combat damage to the opponent: the combat
         # manager's one entry point for those triggers
@@ -561,6 +612,7 @@ def self_check(db, templates: Iterable[Any], *, seeds=SEEDS,
     """E0: legacy against legacy on every resolvable host of `templates`."""
     from engine.effect_grammar import parse_template
     pool = BoardPool(db)
+    _POOL_FOR_CAST[:] = [pool]
     built = {b: build_board(pool, b) for b in boards}
     hosts = skipped = 0
     divergences: List[Divergence] = []
@@ -599,7 +651,8 @@ SWITCHED_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
 # The host case a carrier's pairs resolve through, where one host has two
 # (a head naming both an enter and a draw event).
 _HANDLER_CASE_KIND = {"etb:dispatch": "ETB", "draw:dispatch": "DRAW",
-                      "combat_damage:dispatch": "COMBAT_DAMAGE"}
+                      "combat_damage:dispatch": "COMBAT_DAMAGE",
+                      "cast:dispatch": "CAST"}
 
 
 def legacy_only_apply(game, template, case: HostCase) -> Any:
@@ -626,6 +679,7 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
     pairs = [p for p in eq.closure(templates, effects) if p.new_path]
     by_name = {t.name: t for t in templates}
     pool = BoardPool(db)
+    _POOL_FOR_CAST[:] = [pool]
     built = {b: build_board(pool, b) for b in boards}
     proven: List[List[str]] = []
     diverging: List[List[str]] = []

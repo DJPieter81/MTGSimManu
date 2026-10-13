@@ -105,8 +105,8 @@ from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
                                        unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
-from engine.effect_spec import (Amount, CombatDamageEvent, Condition,
-                                CostSnapshot, DrawEvent,
+from engine.effect_spec import (Amount, CastEvent, CombatDamageEvent,
+                                Condition, CostSnapshot, DrawEvent,
                                 EventHint, HostKind, KeywordSpec, Stage,
                                 TriggerHead, Unmodelled, freeze_cost)
 from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
@@ -446,6 +446,38 @@ def _draw_event(head: str) -> Optional[DrawEvent]:
                      except_first_in_draw_step=m.group("exc") is not None)
 
 
+# A cast event's head (CR 601.2i, 603.2): the closed table of casters and
+# spell kinds. An ordinal ("your second spell each turn"), a rider ("during
+# your turn", "that targets ~", "with mana value ...", "from exile") or any
+# other spell kind leaves the head a SPELL_CAST head with no typed event.
+_CASTERS = {"you": "you", "an opponent": "opponent", "a player": "player"}
+_CAST_SPELLS = {"": "any", "noncreature ": "noncreature",
+                "instant or sorcery ": "instant_or_sorcery",
+                "creature ": "creature", "artifact ": "artifact",
+                "enchantment ": "enchantment", "colorless ": "colorless",
+                "multicolored ": "multicolored"}
+_CAST_EVENT_RE = re.compile(
+    r"(?:whenever|when) (?P<who>%s) casts? an? (?P<what>%s)spell"
+    % ("|".join(_CASTERS),
+       "|".join(re.escape(k) for k in sorted(_CAST_SPELLS, key=len,
+                                              reverse=True))))
+
+
+def _cast_event(head: str) -> Optional[CastEvent]:
+    """The cast the head's one SPELL_CAST disjunct names, read from the
+    closed table (`_CAST_EVENT_RE`); None when the head has no such
+    disjunct, more than one, or one with a rider the table does not read."""
+    parts = [p for p in _DISJUNCT_RE.split(head)
+             if EventHint.SPELL_CAST in _part_hints(p)[0]]
+    if len(parts) != 1:
+        return None
+    m = _CAST_EVENT_RE.fullmatch(parts[0])
+    if m is None:
+        return None
+    return CastEvent(caster=_CASTERS[m.group("who")],
+                     spell=_CAST_SPELLS[m.group("what")])
+
+
 # A combat-damage event's head (CR 510.2): the closed table of single
 # dealers and recipients. "One or more creatures you control deal ..." (one
 # event for the batch, CR 603.2c), "a creature you control", and every
@@ -783,9 +815,10 @@ def _head(hints, raw: str, **kw) -> TriggerHead:
     draw = _draw_event(raw) if EventHint.DRAW in hints else None
     combat = (_combat_damage_event(raw)
               if EventHint.COMBAT_DAMAGE_TO_PLAYER in hints else None)
+    cast = _cast_event(raw) if EventHint.SPELL_CAST in hints else None
     return TriggerHead(event_hints=hints, raw=raw, names_player=player,
                        names_object=obj, draw=draw, combat_damage=combat,
-                       **kw)
+                       cast=cast, **kw)
 
 
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:

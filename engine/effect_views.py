@@ -90,6 +90,10 @@ FAMILY_TYPE_CHANGE = "type_change"
 # Edicts ("<players> sacrifice(s) <N> <permanents> of their choice", CR
 # 701.21a; unit ED): a shape no legacy handler applies.
 FAMILY_EDICT = "edict"
+# The cast-trigger carrier's family (unit CT, `effect_carrier.
+# dispatch_cast_triggers`): a permanent's typed "whenever <player> casts a
+# <kind> spell" ability.
+FAMILY_CAST_TRIGGER = "cast_trigger"
 FAMILIES = frozenset({FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                       FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                       FAMILY_STACK_MANA, FAMILY_TRIGGER})
@@ -656,6 +660,30 @@ def strict_trigger(h: AbilityEffects) -> bool:
                     for s in iter_specs(h.specs)))
 
 
+def strict_cast_trigger(h: AbilityEffects) -> bool:
+    """A cast-triggered host whose head the grammar typed (`TriggerHead.
+    cast`), with no intervening-if, that performs one of the closed
+    card-flow shapes the cast carrier runs: a plain draw, or a rummage --
+    an optional discard whose "if you do" branch draws (CR 603.2, 608.2c)."""
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or h.trigger.cast is None or h.trigger.intervening_if is not None:
+        return False
+    if len(h.specs) != 1:
+        return False
+    s = h.specs[0]
+    if s.condition is not None or s.otherwise or s.alternatives \
+            or s.replaces or s.duration is not None:
+        return False
+    if s.verb is Verb.DRAW:
+        return not s.then
+    if s.verb is Verb.DISCARD:
+        return (s.optional and len(s.then) == 1
+                and s.then[0].verb is Verb.DRAW
+                and "if_you_do" in s.then[0].flags
+                and not s.then[0].then and not s.then[0].otherwise)
+    return False
+
+
 def strict_edict(h: AbilityEffects) -> bool:
     """Every spec an edict: a SACRIFICE, unconditional, its shape the
     SACRIFICE executor's (a player set or a chosen player sacrifices a
@@ -675,6 +703,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_COMBAT_DAMAGE_TRIGGER: strict_combat_damage_trigger,
     FAMILY_TYPE_CHANGE: strict_type_change,
     FAMILY_EDICT: strict_edict,
+    FAMILY_CAST_TRIGGER: strict_cast_trigger,
 })
 
 

@@ -760,6 +760,33 @@
    "UNMODELLED": 18
   }
  },
+ "cast:dispatch": {
+  "deck_hosts": [
+   {
+    "card": "Artist's Talent",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 16,
+  "family": "cast_trigger",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 15,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 16
+  },
+  "strict": 16,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DISCARD,DRAW": 2,
+   "DRAW": 14
+  }
+ },
  "cast_prohibition": {
   "deck_hosts": [
    {

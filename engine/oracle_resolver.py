@@ -1717,7 +1717,16 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
     player = game.players[caster_idx]
     opponent = 1 - caster_idx
 
+    # The cast carrier (unit CT) performs a permanent's typed cast triggers
+    # from their hosts; a card it takes is not read again below.
+    from .effect_carrier import dispatch_cast_triggers
+    taken = dispatch_cast_triggers(game, caster_idx, spell_cast)
+    if game.game_over:
+        return
+
     for permanent in list(player.battlefield):  # copy: battlefield may change (transform)
+        if permanent.instance_id in taken:
+            continue
         oracle = (permanent.template.oracle_text or '').lower()
         if not oracle or 'whenever' not in oracle:
             continue
@@ -1844,6 +1853,8 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
     # Check OPPONENT's permanents for "whenever an opponent casts" triggers
     opp_player = game.players[opponent]
     for permanent in opp_player.battlefield:
+        if permanent.instance_id in taken:
+            continue
         oracle = (permanent.template.oracle_text or '').lower()
         if not oracle or 'whenever' not in oracle:
             continue

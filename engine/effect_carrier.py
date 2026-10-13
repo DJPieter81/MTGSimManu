@@ -750,6 +750,143 @@ def _audit_unresolved_draw_trigger(game: Any, src: Any, hosts: Iterable[Any],
             return
 
 
+# ── The cast-trigger carrier (unit CT, CR 601.2i, 603.2) ───────────────
+
+# The strict shape the cast carrier takes (`effect_views.
+# strict_cast_trigger`, A38) and the family label its resolutions carry.
+CAST_FAMILY = "cast_trigger"
+
+
+def cast_matches(event: Any, controller: int, caster: int,
+                 spell: Any) -> bool:
+    """Does `caster` casting `spell` trigger a head typed `event`
+    (`effect_spec.CastEvent`) on a permanent `controller` controls? Who
+    casts, relative to the controller, and what kind of spell, read from
+    the spell as it is cast (CR 601.2i)."""
+    from .cards import CardType
+    if event.caster == "you" and caster != controller:
+        return False
+    if event.caster == "opponent" and caster == controller:
+        return False
+    t = spell.template
+    kind = event.spell
+    if kind == "any":
+        return True
+    if kind == "noncreature":
+        return not t.is_creature
+    if kind == "creature":
+        return bool(t.is_creature)
+    if kind == "instant_or_sorcery":
+        return bool(t.is_instant or t.is_sorcery)
+    if kind == "artifact":
+        return CardType.ARTIFACT in t.card_types
+    if kind == "enchantment":
+        return CardType.ENCHANTMENT in t.card_types
+    colors = getattr(spell, "colors", None) or ()
+    if kind == "colorless":
+        return not colors
+    if kind == "multicolored":
+        return len(colors) >= 2
+    return False
+
+
+def _cast_family(h: Any) -> Optional[str]:
+    """`CAST_FAMILY` when the cast-triggered host `h` is in its strict
+    shape and executable; None otherwise."""
+    from .effect_views import STRICT
+    if h.trigger is None or not STRICT[CAST_FAMILY](h) \
+            or not er.can_execute(h, CAST_FAMILY):
+        return None
+    return CAST_FAMILY
+
+
+def cast_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The cast carrier's plan for one face: ``[(host, family)]`` for every
+    host whose head is a SPELL_CAST event when each is takeable
+    (`_cast_family`); None when the face has no such host or any one is not
+    (a card is taken whole or not at all, so no trigger of it resolves
+    twice or not at all). One owner, read by the carrier, the legacy cast
+    resolver and the closure."""
+    from .effect_spec import EventHint, HostKind
+    hosts = [h for h in face_hosts
+             if h.kind is HostKind.TRIGGERED and h.trigger is not None
+             and EventHint.SPELL_CAST in h.trigger.event_hints]
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = _cast_family(h)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
+    """The cast carrier (CR 601.2i, 603.2): each permanent's cast-triggered
+    abilities whose typed head names this cast (`cast_matches`), resolved
+    through the dispatcher with the caster as the trigger event's player,
+    targets picked as they are put on the stack (`trigger_targets`). In
+    stack order: the non-active player's triggers resolve first (CR
+    603.3b). Returns the instance ids of the permanents whose cast triggers
+    the carrier took, performed or not, so the legacy cast resolver skips
+    them; the rules audit records a matching head no carrier takes
+    (`603.2/cast_trigger_unresolved`)."""
+    taken: set = set()
+    if not er.dispatch_enabled():
+        return taken
+    ap = game.active_player
+    order = [p for p in range(len(game.players)) if p != ap] + [ap]
+    event = er.TriggerEvent(player=caster)
+    for idx in order:
+        for src in list(game.players[idx].battlefield):
+            template = getattr(src, "template", None)
+            if template is None or getattr(template, "is_loyalty_clause",
+                                           False):
+                continue
+            hosts = _face_hosts(src)
+            plan = cast_plan(hosts)
+            if plan is None:
+                _audit_unresolved_cast_trigger(game, src, hosts, caster,
+                                               spell)
+                continue
+            taken.add(src.instance_id)
+            controller = src.controller
+            for h, family in plan:
+                if not cast_matches(h.trigger.cast, controller, caster,
+                                    spell):
+                    continue
+                chosen = trigger_targets(game, src, controller, h)
+                if chosen is None:
+                    continue
+                er.resolve_ability(game, er.handle_of(src), controller, h,
+                                   chosen, family=family, event=event,
+                                   source_object=src)
+                if game.game_over:
+                    return taken
+    return taken
+
+
+def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],
+                                   caster: int, spell: Any) -> None:
+    """Rules audit, a census once per card: a typed cast-triggered head of
+    `src` names this cast, but the carrier does not take the card (its
+    legacy cast branches may still resolve it, CR 603.2)."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .effect_spec import EventHint, HostKind
+    for h in hosts:
+        if h.kind is not HostKind.TRIGGERED or h.trigger is None \
+                or EventHint.SPELL_CAST not in h.trigger.event_hints:
+            continue
+        c = h.trigger.cast
+        if c is not None and cast_matches(c, src.controller, caster, spell):
+            rules_audit.census("603.2/cast_trigger_unresolved", src.name,
+                               detail=h.trigger.raw, game=game)
+            return
+
+
 def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
     """Can a carrier place its legacy target list on `host`'s slots
     without reading text? Yes for a host with no slot (its list is empty)

@@ -208,7 +208,9 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     SACRIFICE evaluates its card types and token-or-nontoken itself (unit
     ED); the land-destruction rider's SEARCH evaluates "a basic land card"
     in the searcher's library itself (unit LA), and a search for the cards
-    named like a chosen object its zones, owner and name (unit SX)."""
+    named like a chosen object its zones, owner and name (unit SX); the
+    cast-trigger DISCARD evaluates "a card" in its discarder's hand (unit
+    CT)."""
     from engine.effect_executors import FAMILIES
     from engine.effect_spec import CardFilter, Ref, RefKind, Verb
     assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
@@ -236,6 +238,9 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
         for kind in (RefKind.OWNER_OF, RefKind.CONTROLLER_OF)} | {
         ("named", t) for t in targets}
     assert search == basic | named
+    # unit CT: the discard executor evaluates "a card" in its discarder's
+    # hand
+    assert keys.pop(Verb.DISCARD) == frozenset({("zone", "hand")})
     # unit SP: the move executor evaluates "a land card from your hand"
     assert keys.pop(Verb.MOVE) == frozenset(CardFilter(
         zone="hand", types=frozenset({"land"}), owner="you").as_tuple())

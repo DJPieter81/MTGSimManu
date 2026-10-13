@@ -609,6 +609,17 @@ class CombatDamageEvent:
 
 
 @dataclass(**_FROZEN)
+class CastEvent:
+    """The cast a cast-triggered head names (CR 601.2i, 603.2): who casts,
+    relative to the ability's controller ('you', 'opponent' or 'player'),
+    and what kind of spell -- 'any', 'noncreature', 'instant_or_sorcery',
+    'creature', 'artifact', 'enchantment', 'colorless' or 'multicolored',
+    read from the spell as it is cast."""
+    caster: str
+    spell: str = "any"
+
+
+@dataclass(**_FROZEN)
 class TriggerHead:
     event_hints: Tuple[EventHint, ...] = ()      # disjunctive heads keep every hint (A11)
     raw: str = ""
@@ -630,6 +641,11 @@ class TriggerHead:
     # table (`structure._combat_damage_event`); None for a dealer or rider
     # the table does not read.
     combat_damage: Optional[CombatDamageEvent] = None
+    # The cast a SPELL_CAST head names, from a closed table
+    # (`structure._cast_event`); None for an ordinal, a rider ("during your
+    # turn", "that targets ~", "with mana value ...") or a spell kind the
+    # table does not read.
+    cast: Optional[CastEvent] = None
 
 
 @dataclass(**_FROZEN)

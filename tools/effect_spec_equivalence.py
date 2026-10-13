@@ -763,6 +763,11 @@ DRAW_DISPATCH_APPLY = "engine.zone_transfer:_fire_on_draw_triggers"
 COMBAT_DAMAGE_DISPATCH_HANDLER = "combat_damage:dispatch"
 COMBAT_DAMAGE_DISPATCH_APPLY = \
     "engine.combat_manager:CombatManager.combat_damage_triggers"
+# The cast carrier (`effect_carrier.dispatch_cast_triggers`, unit CT): its
+# pairs are the hosts `effect_carrier.cast_plan` takes, through the cast
+# resolver that runs every watcher's cast triggers.
+CAST_DISPATCH_HANDLER = "cast:dispatch"
+CAST_DISPATCH_APPLY = "engine.oracle_resolver:resolve_spell_cast_trigger"
 SELF_CAST_HANDLER = "oracle_resolver.resolve_self_cast_trigger"
 SELF_CAST_APPLY = "engine.oracle_resolver:resolve_self_cast_trigger"
 # The dispatcher entry point a switched apply reaches (section 10,
@@ -1019,11 +1024,12 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     self_cast_switched = _is_switched(_resolve_path(SELF_CAST_APPLY))
     etb_dispatch_switched = _is_switched(_resolve_path(ETB_DISPATCH_APPLY))
     draw_dispatch_switched = _is_switched(_resolve_path(DRAW_DISPATCH_APPLY))
+    cast_dispatch_switched = _is_switched(_resolve_path(CAST_DISPATCH_APPLY))
     combat_dispatch_switched = _is_switched(
         _resolve_path(COMBAT_DAMAGE_DISPATCH_APPLY))
     from engine.effect_carrier import (ETB_FAMILIES, activation_family,
-                                       combat_damage_plan, draw_plan,
-                                       etb_plan, loyalty_family)
+                                       cast_plan, combat_damage_plan,
+                                       draw_plan, etb_plan, loyalty_family)
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1150,6 +1156,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         for h, family in combat_damage_plan(ce.front()) or ():
             out.append(_pair(COMBAT_DAMAGE_DISPATCH_HANDLER, family, t, h,
                              _host_label(h), part, combat_dispatch_switched))
+        for h, family in cast_plan(ce.front()) or ():
+            out.append(_pair(CAST_DISPATCH_HANDLER, family, t, h,
+                             _host_label(h), part, cast_dispatch_switched))
         # the spell's own cast triggers
         if "when you cast this spell" in _printed_text(t):
             for h in ce.front():

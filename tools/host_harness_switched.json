@@ -3051,6 +3051,134 @@
   },
   {
    "pair": [
+    "cast:dispatch",
+    "Archmage of Runes",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed draw trigger (CR 601.2i, 603.2); the legacy has_cast_spell_draw branch drew the same card silently, so only the logged draw differs. That branch drew on every spell cast; the carrier draws only on a spell of the kind the head names."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Artist's Talent",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed rummage (CR 601.2i, 603.2, 701.9a): on a spell of the kind the head names, the controller may discard a card of their choice through the discard funnel, and if they do, draws a card. The legacy cast resolver read no rummage shape, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Beast Whisperer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Case of the Ransacked Lab",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed draw trigger (CR 601.2i, 603.2); the legacy has_cast_spell_draw branch drew the same card silently, so only the logged draw differs. That branch drew on every spell cast; the carrier draws only on a spell of the kind the head names."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Champions of the Perfect",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Enchantress's Presence",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Hazoret's Monument",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed rummage (CR 601.2i, 603.2, 701.9a): on a spell of the kind the head names, the controller may discard a card of their choice through the discard funnel, and if they do, draws a card. The legacy cast resolver read no rummage shape, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Moderation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed draw trigger (CR 601.2i, 603.2); the legacy has_cast_spell_draw branch drew the same card silently, so only the logged draw differs. That branch drew on every spell cast; the carrier draws only on a spell of the kind the head names."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Nezahal, Primal Tide",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Niv-Mizzet, Parun",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Satyr Enchanter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Song of Creation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Tome of the Guildpact",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Vedalken Archmage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Whirlwind of Thought",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Zendikar Resurgent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
     "combat_damage:dispatch",
     "Barbed Servitor",
     "TRIGGERED:0:2"
