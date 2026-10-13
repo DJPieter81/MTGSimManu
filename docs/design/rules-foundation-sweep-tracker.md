@@ -9157,7 +9157,13 @@ Hundreds of pool cards sacrifice creatures.
   - 4c Omnath vs Ruby Storm s57500 keeps its winner (6 → 8 turns).
 - Anchor 29.
 
-**Measured:** the `ct-post` arm (pre = `fb-post`) follows.
+**Measured (same-seed n=20 Bo3, `ct-post` `4409c19`, pre = `fb-post`):**
+- **Ruby Storm 14.2 → 13.0 (−1.1).** Every other deck is within ±0.7.
+- 36 cells change, all in Storm's row and column, mixed in sign (Azorius Control vs Ruby Storm 55 → 85, Ruby Storm vs Grixis Reanimator 10 → 25). No deck moves by more than 5 pp, so nothing was replayed.
+- 0 aborts, 0 violations.
+- Findings 306 → 492. The new rows are the census `603.2/cast_trigger_unresolved`: the typed cast heads the carrier declines (Dragon's Rage Channeler, Pinnacle Emissary, Ugin, Vexing Bauble, Slickshot Show-Off, Glaring Fleshraker, Vengevine). They are the leads for the cast family's next shapes.
+- **Field bands:** 4 decks out of band, 39.9 pp total miss (fb-post 39.2).
+- **Reading:** Storm's rummage is now performed, and Storm neither gains nor loses by it. Storm's 27 pp miss lies elsewhere. Under the loop-break rule, the next Storm code waits for a Bo3 root cause written down in `docs/`.
 
 **Leads (not built):**
 - **The self-discard ranking breaks ties by hand order.** Every card it gives no bonus scores 0 (Ral, Monsoon Mage, Hex Magic, the rituals), so a rummage discards the oldest of them. The card's worth while held (the strip value `choose_card_to_exile_from_hand` reads, keystones last) would order them.
