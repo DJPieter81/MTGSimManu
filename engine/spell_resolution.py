@@ -179,9 +179,10 @@ class ResolutionManager:
         if not rules_audit.enabled():
             return
         t = card.template
+        from .cast_manager import printed_flashback
         if (getattr(card, '_cast_from_zone', None) != "graveyard"
                 or t.harmonize_cost is None or t.escape_cost is not None
-                or 'flashback' in (t.tags or set())):
+                or printed_flashback(t)):
             return
         rules_audit.check(
             "702.180a/exiled", card.zone == "exile",

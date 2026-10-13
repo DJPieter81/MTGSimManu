@@ -1176,12 +1176,12 @@ class CastManager:
         card granted flashback by another effect (Past in Flames: "its
         flashback cost is equal to its mana cost") is not on this path —
         `has_flashback` is set for both, the printed keyword only for the
-        former (`'flashback' in template.tags`, as `setup_game` flags it).
+        former (`printed_flashback`, the card's typed cost).
         """
         template = card.template
         return (card.zone == "graveyard"
                 and bool(getattr(card, 'has_flashback', False))
-                and 'flashback' in (template.tags or set()))
+                and printed_flashback(template))
 
     @staticmethod
     def harmonize_route(card: "CardInstance") -> bool:

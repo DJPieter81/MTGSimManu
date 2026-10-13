@@ -252,15 +252,17 @@ class GameState:
         game N+1 (CR 103.2). None preserves legacy random-die behaviour
         for single-game runs.
         """
+        from .cast_manager import printed_flashback
         for template in deck1:
             card = CardInstance(
                 template=template, owner=0, controller=0,
                 instance_id=self.next_instance_id(), zone="library",
             )
             card._game_state = self
-            # Innate flashback (Lava Dart, Lingering Souls, etc.)
-            if 'flashback' in template.tags:
-                card.has_flashback = True
+            # A printed flashback (CR 702.33a), read from the card's typed
+            # cost by its one owner; a text that only names flashback (a
+            # grant, an emblem) prints none.
+            card.has_flashback = printed_flashback(template)
             self.players[0].library.append(card)
 
         for template in deck2:
@@ -269,8 +271,7 @@ class GameState:
                 instance_id=self.next_instance_id(), zone="library",
             )
             card._game_state = self
-            if 'flashback' in template.tags:
-                card.has_flashback = True
+            card.has_flashback = printed_flashback(template)
             self.players[1].library.append(card)
 
         self.rng.shuffle(self.players[0].library)

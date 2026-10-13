@@ -159,3 +159,29 @@ def test_the_audit_is_silent_on_a_flashback_cast_the_same_turn(card_db, audit):
     bolt = _past_in_flames(game, card_db)
     assert game.cast_spell(0, bolt, [PLAYER_TARGET_OPPONENT])
     assert not _findings(audit)
+
+
+# ── Printed flashback is read from the card, never from a text mention ──
+
+@pytest.mark.parametrize("name", ["Snapcaster Mage", "Wrenn and Six"])
+def test_a_card_whose_text_only_names_flashback_has_none(card_db, name):
+    """A card that grants flashback, or names it in an emblem, does not
+    print it (CR 702.33a): from a graveyard it is not castable. Game setup
+    once gave it "innate" flashback from a text tag, and the auditor saw
+    Snapcaster Mage cast from a graveyard with no grant."""
+    game = GameState(rng=random.Random(0))
+    deck = [card_db.get_card(name)] + [card_db.get_card("Island")] * 20
+    game.setup_game(deck, list(deck))
+    card = next(c for p in game.players for z in ("library", "hand")
+                for c in getattr(p, z) if c.name == name)
+    assert not card.has_flashback
+
+
+def test_a_printed_flashback_is_set_up_from_the_card(card_db):
+    game = GameState(rng=random.Random(0))
+    deck = [card_db.get_card("Faithless Looting")] + \
+        [card_db.get_card("Island")] * 20
+    game.setup_game(deck, list(deck))
+    card = next(c for p in game.players for z in ("library", "hand")
+                for c in getattr(p, z) if c.name == "Faithless Looting")
+    assert card.has_flashback

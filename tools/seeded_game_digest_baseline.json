@@ -1,5 +1,5 @@
 {
-  "combined": "f3abfdf12093df6d1b85681c42f95f8be4e744327dcfb77e9811188cea009de5",
+  "combined": "d6c0feeab59267854a272e7328e013adf8a7d09fda9ccd559ab41645467c93da",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -45,9 +45,9 @@
       "winner": "Grixis Reanimator"
     },
     "bo1|Dimir Midrange|Domain Zoo|57000": {
-      "lines": 659,
-      "sha256": "678a03277678415e278c40bea7a706dadb77a1302540df4babdd5f9d69e8abfe",
-      "turns": 10,
+      "lines": 547,
+      "sha256": "5026f7f9b63341ad88d56c6d5e5bb7d5839f090239df8edf9b09eb87bcbf0e10",
+      "turns": 9,
       "winner": "Domain Zoo"
     },
     "bo1|Domain Zoo|Eldrazi Tron|51000": {
@@ -93,9 +93,9 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 956,
-      "sha256": "513e8d77f83f94080266dc35c37bbb1ed871628d3af5990771e0c78b12319a4c",
-      "turns": 12,
+      "lines": 767,
+      "sha256": "68c115119d01bf69b2fa28934dad03a88eda727d0b16b034208d88a1b5ce33d6",
+      "turns": 10,
       "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
