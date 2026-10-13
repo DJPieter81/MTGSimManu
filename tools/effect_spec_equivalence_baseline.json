@@ -216,8 +216,8 @@
   },
   "creature_dies_observer": {
    "AGREE": 22389,
-   "DERIVED_COVERAGE_GROWTH": 346,
-   "UNEXPLAINED": 3
+   "DERIVED_COVERAGE_GROWTH": 345,
+   "UNEXPLAINED": 4
   },
   "cycling_variant_data": {
    "AGREE": 22664,
@@ -760,13 +760,13 @@
  },
  "gate_parity": {
   "legacy_fallback": 3140,
-  "new_path": 1558,
-  "pairs": 4698
+  "new_path": 1813,
+  "pairs": 4953
  },
  "templates": 22738,
  "totals": {
   "AGREE": 2813813,
-  "DERIVED_COVERAGE_GROWTH": 7836,
+  "DERIVED_COVERAGE_GROWTH": 7835,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 6,
@@ -779,7 +779,7 @@
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 202,
-  "UNEXPLAINED": 18094,
+  "UNEXPLAINED": 18095,
   "UNMODELLED_CLAUSE": 9365
  }
 }

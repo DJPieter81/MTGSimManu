@@ -122,6 +122,52 @@ def printed_token(spec) -> "dict | None":
     }
 
 
+def observer_matches(spec: dict, creature: CardInstance) -> bool:
+    """Does a typed dies observer's filter admit the dying creature? Only
+    the subtype filter of "one or more other <subtype>s you control die"
+    narrows it (CR 205.3, read from the creature's own subtypes); the scope
+    (whose creature) is checked by the caller."""
+    wanted = spec.get("subtypes")
+    if not wanted:
+        return True
+    return any(st.lower() in wanted for st in creature.effective_subtypes)
+
+
+def _prints_observer(perm: CardInstance, spec: dict) -> bool:
+    """A self-transforming observer is printed on the face that transforms
+    (CR 712.8): a permanent showing its back face has no such trigger."""
+    return not (spec["kind"] == "transform_self"
+                and getattr(perm, "is_transformed", False))
+
+
+def _audit_dies_observers(game: "GameState", creature: CardInstance,
+                          controller: int, fired: set) -> None:
+    """CR 603.2, restated from the raw fields (not from `observer_matches`):
+    a creature's death triggers every dies observer on the battlefield whose
+    scope covers its controller and whose subtype (if any) is one of the
+    creature's own -- whatever the creature's text. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    dying = {st.lower() for st in creature.effective_subtypes}
+    for p_idx, player in enumerate(game.players):
+        for perm in player.battlefield:
+            spec = perm.template.creature_dies_observer
+            if not spec or not _prints_observer(perm, spec):
+                continue
+            scope = spec["scope"]
+            if (scope == "you" and controller != p_idx) or \
+                    (scope == "opponent" and controller == p_idx):
+                continue
+            wanted = spec.get("subtypes")
+            if wanted and not dying & set(wanted):
+                continue
+            rules_audit.check(
+                "603.2/dies_observer", id(perm) in fired,
+                f"{creature.name} died and {perm.name}'s observer "
+                f"({spec['kind']}) did not trigger", game=game)
+
+
 class PermanentEffects:
     """Stateless lifecycle + resource helpers for permanents."""
 
@@ -752,15 +798,20 @@ class PermanentEffects:
         observer's attached creature or on itself (subtype bonus honoured),
         drain, gain, draw — through the engine's own funnels (the counter
         funnel fires counters-placed triggers; life loss reaches the SBA)."""
+        fired: set = set()
         for p_idx, player in enumerate(game.players):
             for perm in list(player.battlefield):
                 spec = perm.template.creature_dies_observer
-                if not spec or perm.zone != "battlefield":
+                if not spec or perm.zone != "battlefield" \
+                        or not _prints_observer(perm, spec):
                     continue
                 if spec["scope"] == "you" and controller != p_idx:
                     continue
                 if spec["scope"] == "opponent" and controller == p_idx:
                     continue
+                if not observer_matches(spec, creature):
+                    continue
+                fired.add(id(perm))
                 kind = spec["kind"]
                 if kind in ("counter_attached", "counter_self"):
                     target = perm
@@ -806,8 +857,17 @@ class PermanentEffects:
                         from .damage import lose_life
                         lose_life(game, p_idx, spec["lose_life"])
                         game.check_state_based_actions()
+                elif kind == "transform_self":
+                    # "You may exile <this>, then return it to the
+                    # battlefield transformed": a new object (CR 400.7)
+                    # through the zone funnel. The engine performs the
+                    # optional exile, as the resolver it replaces did.
+                    from .oracle_resolver import _transform_permanent
+                    _transform_permanent(game, perm, p_idx,
+                                         returns_as_new_object=True)
                 if game.game_over:
                     return
+        _audit_dies_observers(game, creature, controller, fired)
 
 
     @staticmethod

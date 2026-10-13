@@ -2254,6 +2254,10 @@ class CardDatabase:
         # (CR 603.2). Fanned out by the death funnel.
         from .oracle_parser import parse_creature_dies_observer
         template.creature_dies_observer = parse_creature_dies_observer(oracle)
+        # "Whenever a <type> you control enters, create … token" watchers
+        # (CR 603.2), read from the watch clause's own ability.
+        from .oracle_parser import parse_enter_watch_token
+        template.enter_watch_token = parse_enter_watch_token(oracle)
         # "Whenever one or more +1/+1 counters are put on this …" (CR 122,
         # 16 cards). Fired by the CardInstance.add_plus_counters funnel.
         from .oracle_parser import parse_counter_placement_trigger

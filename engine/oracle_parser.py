@@ -3623,6 +3623,91 @@ _DIES_OBSERVER_GAIN_RE = re.compile(
     r"^you gain (\d+|one|two) life(?: and draw a card)?$")
 _DIES_OBSERVER_DRAW_RE = re.compile(
     r"^(?:you )?draw (a|one|two) cards?(?: and you lose (\d+|one) life)?$")
+# "Whenever one or more other <subtype>s you control die, you may exile
+# <this>, then return <it> to the battlefield transformed under <its>
+# owner's control." The returned permanent is a new object (CR 400.7) whose
+# face prints no such trigger, so one transform answers a whole batch of
+# deaths; a batched trigger with any other effect (a counter, a drain) needs
+# the batch and is refused.
+_DIES_OBSERVER_SELF_TRANSFORM_RE = re.compile(
+    r"whenever one or more other (\w+) you control die, you may exile "
+    r"[^,.\n]+, then return (?:him|her|it|them) to the battlefield "
+    r"transformed under (?:his|her|its|their) owner's control")
+
+
+
+def _own_ability_span(text: str, pos: int) -> Optional[Tuple[int, int]]:
+    """The (start, end) span of the ability paragraph of `text` that holds
+    position `pos`, with the modal bullets ("•" lines) it introduces; None
+    when `pos` lies in quoted text (an ability granted to another object,
+    CR 113.1a) or in reminder text (CR 207.2), neither of which is the
+    card's own ability. The scope for a trigger whose instruction must sit
+    in the trigger's own ability (CR 603.1), not anywhere on the card.
+
+    >>> t = 'Flying\\nWhenever a land enters, choose one —\\n• Draw.\\nX'
+    >>> s, e = _own_ability_span(t, t.index('Whenever'))
+    >>> t[s:e]
+    'Whenever a land enters, choose one —\\n• Draw.'
+    """
+    before = text[:pos]
+    if before.count('"') % 2 or before.count('(') > before.count(')'):
+        return None
+    start = text.rfind("\n", 0, pos) + 1
+    end = pos
+    while True:
+        nl = text.find("\n", end)
+        if nl < 0:
+            return start, len(text)
+        if text[nl + 1:nl + 2] == "•":
+            end = nl + 1
+            continue
+        return start, nl
+
+
+_ENTER_WATCH_RE = re.compile(
+    r"whenever an? (nontoken\s+)?(\w+) you control enters")
+_ENTER_WATCH_COUNT_RE = re.compile(r"create (a|an|one|two|three|four|\d+)\b")
+
+
+def parse_enter_watch_token(oracle: str) -> Optional[Dict]:
+    """Parse a permanent's "whenever a[n] [nontoken] <type> you control
+    enters, ... create <N> ... token" watch trigger (CR 603.2, 603.6a) from
+    the ONE ability that holds the watch clause (CR 603.1): its paragraph
+    with the modal bullets it introduces (`_own_ability_span`).
+
+    Returns::
+
+        {"nontoken_only": bool, "permanent_type": str, "count": int,
+         "artifact_token": bool, "ability": str}
+
+    `ability` is the ability's own text, from which the token owner builds
+    the token (`create_token(source_oracle=...)`). None when the card has
+    no watch clause, when the clause is quoted (an ability granted to
+    another object, CR 113.1a) or reminder text (CR 207.2), or when the
+    clause's own ability creates no token: 32 of the 67 pool cards the
+    whole-text match used to take (Kiora's emblem, Scurry Oak's evolve
+    reminder, Avenger of Zendikar's landfall counters).
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    m = _ENTER_WATCH_RE.search(lo)
+    if m is None:
+        return None
+    span = _own_ability_span(lo, m.start())
+    if span is None:
+        return None
+    ability = lo[span[0]:span[1]]
+    if "create" not in ability or "token" not in ability:
+        return None
+    cm = _ENTER_WATCH_COUNT_RE.search(ability)
+    count = 1
+    if cm:
+        tok = cm.group(1)
+        count = int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 1)
+    return {"nontoken_only": bool(m.group(1)), "permanent_type": m.group(2),
+            "count": count, "artifact_token": "artifact token" in ability,
+            "ability": oracle[span[0]:span[1]]}
 
 
 def parse_creature_dies_observer(oracle: str) -> Optional[Dict]:
@@ -3634,9 +3719,16 @@ def parse_creature_dies_observer(oracle: str) -> Optional[Dict]:
     Returns::
 
         {"scope": "any" | "you" | "opponent", "another": bool,
-         "kind": "counter_attached" | "counter_self" | "drain" | "gain" | "draw",
+         "kind": "counter_attached" | "counter_self" | "drain" | "gain"
+                 | "draw" | "transform_self",
          "amount": int, "gain": int, "lose_life": int, "draw": int,
-         "subtype_bonus": Optional[(subtype, amount)]}
+         "subtype_bonus": Optional[(subtype, amount)],
+         "subtypes": frozenset[str]   # transform_self only: the dying
+                                      # creature's subtype, singular forms}
+
+    "transform_self" is "whenever one or more other <subtype>s you control
+    die, you may exile <this>, then return it to the battlefield
+    transformed" (3 pool cards, Ajani in Boros Energy).
 
     or None when there is no such clause OR its rider is a shape the
     dispatcher does not execute (sacrifice, damage, counters elsewhere,
@@ -3649,7 +3741,14 @@ def parse_creature_dies_observer(oracle: str) -> Optional[Dict]:
     lo = strip_reminder_text(oracle).lower()
     m = _DIES_OBSERVER_RE.search(lo)
     if not m:
-        return None
+        tm = _DIES_OBSERVER_SELF_TRANSFORM_RE.search(lo)
+        if tm is None:
+            return None
+        from .effect_grammar.sub.filter import _singulars
+        return {"scope": "you", "another": True, "kind": "transform_self",
+                "amount": 0, "gain": 0, "lose_life": 0, "draw": 0,
+                "subtype_bonus": None,
+                "subtypes": frozenset(_singulars(tm.group(1)))}
     scope = {" you control": "you", " an opponent controls": "opponent"}.get(
         m.group(2) or "", "any")
     another = m.group(1) == "another"

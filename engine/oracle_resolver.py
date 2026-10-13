@@ -1354,37 +1354,6 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
                 best.zone = "hand"
                 player.hand.append(best)
 
-    # ── Subtype-death transform trigger (Ajani, Nacatl Pariah) ──
-    # "Whenever one or more other [Subtype]s you control die, you may
-    #  exile [this], then return [it] to the battlefield transformed."
-    # Generic: any controller-permanent with this trigger pattern fires
-    # when a creature of the matching subtype dies under our control.
-    # Tokens may carry the subtype in their name (e.g. "Cat Token"),
-    # not in a subtypes list — check both.
-    dying_subtypes = [s.lower() for s in (card.template.subtypes or [])]
-    dying_name = (card.template.name or '').lower()
-    player = game.players[controller]
-    for perm in list(player.battlefield):
-        if perm.instance_id == card.instance_id:
-            continue
-        if getattr(perm, 'is_transformed', False):
-            continue
-        p_oracle = (perm.template.oracle_text or '').lower()
-        m = re.search(
-            r'whenever one or more other (\w+?)s?\s+you control die',
-            p_oracle,
-        )
-        if not m:
-            continue
-        subtype = m.group(1)
-        if subtype not in dying_subtypes and subtype not in dying_name:
-            continue
-        # Require the transform clause in the same oracle
-        if 'transformed' not in p_oracle or 'exile' not in p_oracle:
-            continue
-        _transform_permanent(game, perm, controller,
-                             returns_as_new_object=True)
-
 
 def _parse_count_threshold(oracle: str) -> Optional[int]:
     """Parse "(two|three|four|five|N) or more" threshold from oracle.

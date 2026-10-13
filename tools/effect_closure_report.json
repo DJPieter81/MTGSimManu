@@ -1288,6 +1288,13 @@
     "strict": true
    },
    {
+    "card": "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Arboreal Grazer",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -1327,6 +1334,13 @@
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
     "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Generous Ent",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E4",
     "strict": true
    },
    {
@@ -1421,31 +1435,32 @@
     "strict": true
    }
   ],
-  "executable": 257,
+  "executable": 512,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 20,
-   "pool": 237,
+   "mainboard": 22,
+   "pool": 490,
    "sideboard": 0
   },
   "steps": {
    "E2": 46,
    "E3": 196,
+   "E4": 255,
    "E5": 10,
    "E6": 5
   },
-  "strict": 257,
+  "strict": 512,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
+   "CREATE_TOKEN": 249,
    "DRAW": 108,
-   "DRAW,GAIN_LIFE,MOVE": 1,
-   "DRAW,MILL": 2,
    "EXILE": 10,
    "EXILE,GAIN_LIFE": 3,
    "MILL": 37,
    "MOVE": 33,
+   "PUT_COUNTERS": 6,
    "SURVEIL": 47
   }
  },

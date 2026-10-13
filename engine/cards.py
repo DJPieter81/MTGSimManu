@@ -1182,6 +1182,11 @@ class CardTemplate:
     # oracle_parser.parse_creature_dies_observer; fanned out by
     # PermanentEffects._creature_dies after the dying creature has left.
     creature_dies_observer: Optional[dict] = None
+    # "Whenever a[n] [nontoken] <type> you control enters, ... create <N>
+    # ... token" -- read from the ONE ability holding the watch clause (CR
+    # 603.1). Populated by oracle_parser.parse_enter_watch_token; fired by
+    # TriggerManager.trigger_etb when a permanent of that type enters.
+    enter_watch_token: Optional[dict] = None
     # "If one or more <kind> counters would be put on <scope> you control,
     # <that many ±1 | twice that many> are put on it instead" (CR 614.1c,
     # 14 Modern cards). Applied inside the ONE counter funnel

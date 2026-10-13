@@ -7300,10 +7300,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Abzan Ascendancy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Aftermath Analyst",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Air Nomad Legacy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7332,10 +7356,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Alirios, Enraptured",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Along the Crooked Way",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ambassador Oak",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7364,10 +7404,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ant-Man's Army",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aquatic Incursion",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Arahbo, the First Fang",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Arboreal Grazer",
     "TRIGGERED:0:1"
    ],
    "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it), tapped as printed; its card-name registry handler is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Argivian Cavalier",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Armada Wurm",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7380,6 +7460,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Aspiring Aeronaut",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Astral Wingspan",
     "TRIGGERED:0:2"
    ],
@@ -7388,10 +7476,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Atmospheric Greenhouse",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Attended Knight",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Auramancer",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Autarch Mammoth",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aviation Pioneer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Bakersbane Duo",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7412,6 +7540,46 @@
   {
    "pair": [
     "etb:dispatch",
+    "Bastion of Remembrance",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Baxter Stockman",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Bear's Companion",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Belfry Spirit",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Benthicore",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Bilbo Baggins, Burglar // Take a Glance",
     "TRIGGERED:0:0"
    ],
@@ -7420,10 +7588,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Bill the Pony",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Billowing Shriekmass",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Biogenic Ooze",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Blade Splicer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7460,10 +7652,106 @@
   {
    "pair": [
     "etb:dispatch",
+    "Brandywine Farmer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Brazen Freebooter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Breya's Apprentice",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Breya, Etherium Shaper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Brigid, Clachan's Heart // Brigid, Doun's Mind",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Brine Comber // Brinebound Gift",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Bristlebud Farmer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Broadcast Rambler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Broodmate Dragon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Broodspinner",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Builder's Talent",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Bumbleflower's Sharepot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Burdened Aerialist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7480,6 +7768,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Canyon Crawler",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Captain of the Watch",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7508,10 +7812,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Cartouche of Solidarity",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Carven Caryatid",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cat Collector",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7524,6 +7844,30 @@
   {
    "pair": [
     "etb:dispatch",
+    "Chancellor of the Forge",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Charforger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Chimney Rabble",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Chosen by Heliod",
     "TRIGGERED:0:1"
    ],
@@ -7532,10 +7876,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Clachan Festival",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Clarion Cathars",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cloudgoat Ranger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Cloudkin Seer",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cogworker's Puzzleknot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7572,10 +7948,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Corpses of the Lost",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Corsair Captain",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Courier's Briefcase",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Crackling Drake",
     "TRIGGERED:0:2"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Crested Herdcaller",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7636,10 +8044,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Dawnhart Mentor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Daysquad Marshal",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Deadbridge Chant",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Deep Forest Hermit",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7668,6 +8100,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Dion, Bahamut's Dominant // Bahamut, Warden of Light",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Disciple of the Sun",
     "TRIGGERED:0:1"
    ],
@@ -7684,10 +8124,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Dori, Bearer of Friends",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Dragon Mantle",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dragon Trainer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dragoon's Wyvern",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7704,6 +8168,38 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Drey Keeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Drunau Corpse Trawler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dwarven Mine",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Eager Glyphmage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7732,6 +8228,30 @@
   {
    "pair": [
     "etb:dispatch",
+    "Elanor Gardner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elder Auntie",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elderleaf Mentor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Elegant Parlor",
     "TRIGGERED:0:1"
    ],
@@ -7744,6 +8264,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elturgard Ranger",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7764,10 +8292,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Embalmed Ascendant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Emry, Lurker of the Loch",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Enchanted Carriage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7780,10 +8324,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Enlightened Maniac",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Equilibrium Adept",
     "TRIGGERED:0:0"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Esika's Chariot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7816,6 +8376,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Experimental Aviator",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Experimental Confectioner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7860,10 +8436,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ferocious Pup",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Fierce Witchstalker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Fists of Ironwood",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Flamekin Gildweaver",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Flight of Fancy",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Flopsie, Bumi's Buddy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
   },
   {
    "pair": [
@@ -7876,10 +8492,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Forecasting Fortune Teller",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Fortifying Provisions",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Foul Watcher",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Friendly Neighborhood",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7892,10 +8532,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "F\u00edli the Pathfinder",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gadget Technician",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Gadwick, the Wizened",
     "TRIGGERED:0:0"
    ],
    "reason": "unit WX: an {X} in the mana cost now binds the X the enter trigger prints (CR 107.3a, the X paid to cast the permanent), so it draws X cards through the draw owner; the legacy enter path resolved nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Galazeth Prismari",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gallant Cavalry",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7908,10 +8580,66 @@
   {
    "pair": [
     "etb:dispatch",
+    "Geist-Honored Monk",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates its printed tokens (CR 111.3, 603.6a), which the creator's own characteristic-defining power and toughness count; the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Generous Ent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Generous Stray",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ghirapur Gearcrafter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gilded Goose",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gilded Pinions",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gingerbread Cabin",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gingerbread Hunter // Puny Snack",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7924,10 +8652,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Glimmerlight",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Gloomshrieker",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Goblin Instigator",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gold Pan",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7944,6 +8696,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Grave Titan",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -7968,6 +8728,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Greta, Sweettooth Scourge",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8004,6 +8772,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Guarded Heir",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Guardian of Cloverdell",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Guidelight Matrix",
     "TRIGGERED:0:0"
    ],
@@ -8036,10 +8820,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Hanged Executioner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Harmonious Archon",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Haru-Onna",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Haunted Dead",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Head of the Homestead",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hearthcage Giant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8060,6 +8884,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Hero of the Nyxborn",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Heroic Feast",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Hidden Grotto",
     "TRIGGERED:0:0"
    ],
@@ -8072,6 +8912,62 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Honored Knight-Captain",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hopeful Vigil",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Horn of Gondor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hornet Queen",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hot Dog Cart",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hour of Victory",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Howling Giant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8116,6 +9012,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Infestation Expert // Infested Werewolf",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Inside Source",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Instant Ramen",
     "TRIGGERED:0:1"
    ],
@@ -8128,6 +9040,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Invasion Reinforcements",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8148,10 +9068,58 @@
   {
    "pair": [
     "etb:dispatch",
+    "Iroh, Tea Master",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Jennika, Bad Apple Big Sister",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Jewel Thief",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Joraga Visionary",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Joyful Stormsculptor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Jungleborn Pioneer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kalain, Reclusive Painter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8172,6 +9140,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Katara, Water Tribe's Hope",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Kavu Climber",
     "TRIGGERED:0:0"
    ],
@@ -8188,10 +9164,66 @@
   {
    "pair": [
     "etb:dispatch",
+    "Khalni Garden",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kiora of Fire and Ashes",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Knight Luminary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Knight of the New Coalition",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Knight-Captain of Eos",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Knightly Valor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Kulrath Zealot",
     "TRIGGERED:0:0"
    ],
    "reason": "An enter trigger that exiles the top N cards of the controller's library (with a permission to play them, when printed) resolves from its text (unit I); legacy resolved nothing for it."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Kyoshi Warriors",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8220,6 +9252,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Legion's Landing // Adanto, the First Fort",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Leonin Squire",
     "TRIGGERED:0:0"
    ],
@@ -8236,10 +9276,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Liliana's Mastery",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Lithoform Blight",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Living History",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8256,6 +9312,14 @@
     "TRIGGERED:0:2"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Long-Bodied Grey Dog",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8300,6 +9364,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Magitek Armor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Malcator, Purity Overseer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Manic Scribe",
     "TRIGGERED:0:0"
    ],
@@ -8316,10 +9396,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Marsh Flitter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Masked Admirers",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Master Splicer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8332,10 +9428,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Master's Guide-Mural // Master's Manufactory",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Maul Splicer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Maverick Thopterist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mechanized Ninja Cavalry",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Merchant of Secrets",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Merrow Skyswimmer",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8348,10 +9484,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Messenger Hawk",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Meticulous Archive",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Meticulous Artisan",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8368,6 +9520,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mighty Mutanimals",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8396,10 +9556,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Mogg War Marshal",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Mourner's Shield",
     "TRIGGERED:0:0"
    ],
    "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b) (an enter trigger's target is its controller's pick, A36); no legacy path performed it, so the trigger resolved as nothing. The imprint link to the exiled card is not modelled (lead)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mouser Foundry",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8416,6 +9592,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Muster the Departed",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Myr Battlesphere",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8444,10 +9636,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "News Helicopter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Nezumi Freewheeler // Hideous Fleshwheeler",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the legacy self-mill branch milled only its controller; 'each player mills N cards' mills every player (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Night of the Sweets' Revenge",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8468,6 +9676,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Nimble Thopterist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Nimraiser Paladin",
     "TRIGGERED:0:1"
    ],
@@ -8476,10 +9692,66 @@
   {
    "pair": [
     "etb:dispatch",
+    "Noggle Robber",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Nurturing Bristleback",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Nurturing Presence",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Nylea's Presence",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Oath of Ajani",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Oath of Gideon",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Okoye, Dora Milaje Leader",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Oltec Cloud Guard",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8508,6 +9780,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Orchard Strider",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Orysa, Tide Choreographer",
     "TRIGGERED:0:1"
    ],
@@ -8520,6 +9800,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing (one mana of the colour its controller chooses)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Overlord of the Mistmoors",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8540,10 +9828,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Paladin of the Bloodstained",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Palani's Hatcher",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Paramecia Coloniex",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Party Dude",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Path of Annihilation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8556,10 +9876,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Peter Parker // Amazing Spider-Man",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pia Nalaar",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pia and Kiran Nalaar",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pia, Determined Rebuilder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Pillardrop Rescuer",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pizza Face, Gastromancer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8572,10 +9932,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Plundering Pirate",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Pond Prophet",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ponyback Brigade",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8588,6 +9964,30 @@
   {
    "pair": [
     "etb:dispatch",
+    "Precursor Golem",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Preening Champion",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Prideful Parent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Priest of Urabrask",
     "TRIGGERED:0:0"
    ],
@@ -8596,10 +9996,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Priest of the Blood Rite",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Proctor of Potential",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Professional Wrestler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8620,6 +10036,38 @@
   {
    "pair": [
     "etb:dispatch",
+    "Prosperous Innkeeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Prosperous Pirates",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Protector of Gondor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Provisions Merchant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Quantum Riddler",
     "TRIGGERED:0:1"
    ],
@@ -8628,10 +10076,82 @@
   {
    "pair": [
     "etb:dispatch",
+    "Raised by Wolves",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rakish Revelers",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rampage of the Valkyries",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ranger Class",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rapacious Dragon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Raucous Theater",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Redcap Thief",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Regal Caracal",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Regisaur Alpha",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Resolute Reinforcements",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8652,10 +10172,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ridgescale Tusker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "River Kelpie",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Robotics Mastery",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rosie Cotton of South Lane",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8708,10 +10252,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Rural Recruit",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "S.H.I.E.L.D. Deployment Drone",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "S.H.I.E.L.D. Helicarrier",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sage of Ancient Lore // Werewolf of Ancient Hunger",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sailor of Means",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8732,10 +10308,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sandstorm Salvager",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sanguine Evangelist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sanitation Automaton",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Saradoc, Master of Buckland",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8764,6 +10364,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Scrapwork Cohort",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Screeching Skaab",
     "TRIGGERED:0:0"
    ],
@@ -8788,6 +10396,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Searchlight Companion",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Security Blockade",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Seedship Broodtender",
     "TRIGGERED:0:0"
    ],
@@ -8796,10 +10420,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Seller of Songbirds",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Semester Foreseer // Peer Review",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sengir Autocrat",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sensor Splicer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Servo Schematic",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8876,10 +10532,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Siege-Gang Commander",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Silvergill Adept",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Silvergill Mentor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Skeletal Vampire",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Skullport Merchant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8892,6 +10580,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Slaughter Specialist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sleeper Dart",
     "TRIGGERED:0:0"
    ],
@@ -8900,10 +10596,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sling-Gang Lieutenant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Snooping Newsie",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Soul of Migration",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8956,6 +10668,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Spider-Ham, Peter Porker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Spirited Companion",
     "TRIGGERED:0:0"
    ],
@@ -8968,6 +10688,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Squire's Devotion",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Squirrel Sanctuary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -8988,6 +10724,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Stimulus Package",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Stitcher's Supplier",
     "TRIGGERED:0:0"
    ],
@@ -9000,6 +10744,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Stormchaser's Talent",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9036,10 +10788,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sweettooth Witch",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Syr Elenora, the Discerning",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Teeming Dragonstorm",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tempting Witch",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9060,6 +10836,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "The Earth King",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "The Everflowing Well // The Myriad Pools",
     "TRIGGERED:0:0"
    ],
@@ -9068,10 +10852,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "The Swarmweaver",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thieves' Guild Enforcer",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thieves' Tools",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thopter Engineer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9108,10 +10916,50 @@
   {
    "pair": [
     "etb:dispatch",
+    "Tinker's Tote",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tolls of War",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Tome Raider",
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tough Cookie",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tovolar's Huntmaster // Tovolar's Packleader",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trail of Crumbs",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9132,6 +10980,38 @@
   {
    "pair": [
     "etb:dispatch",
+    "Treetop Freedom Fighters",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trial of Strength",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Triceraton Commander",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the cost's X is 0 on the harness boards, so neither path creates a token (state and log identical); only the carrier's result differs"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trostani Discordant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Trusty Packbeast",
     "TRIGGERED:0:0"
    ],
@@ -9140,10 +11020,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Tunnel Surveyor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Turtle Blimp",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Twilight Diviner",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Twin-Silk Spider",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9172,10 +11076,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Underfoot Underdogs",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Underground Mortuary",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Unlucky Cabbage Merchant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9188,10 +11108,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Urbis Protector",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Valkyrie Aerial Unit",
     "TRIGGERED:0:2"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Valorous Steed",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9216,6 +11152,30 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Vinereap Mentor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Vital Splicer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Voice of the Provinces",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9268,10 +11228,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Watchful Giant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Weapons Vendor",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Web-Warriors",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
   },
   {
    "pair": [
@@ -9284,10 +11260,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Wedgelight Rammer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Whirler Rogue",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Whisper Agent",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wily Goblin",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wing Splicer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9300,10 +11308,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Woe Strider",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wolfkin Bond",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Woodland Acolyte // Mend the Wilds",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Wort, the Raidmother",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [
@@ -9328,6 +11360,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Yavimaya Sapherd",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
   },
   {
    "pair": [

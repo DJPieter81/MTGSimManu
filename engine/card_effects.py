@@ -814,17 +814,6 @@ def ocelot_pride_etb(game, card, controller, targets=None, item=None):
     pass
 
 
-@EFFECT_REGISTRY.register("Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
-                           EffectTiming.ETB,
-                           description="Create 2/1 Cat Warrior token")
-def ajani_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When Ajani enters, create a 2/1 white Cat Warrior creature token."
-    # NO energy production — oracle has 0 {E} symbols.
-    game.create_token(controller, "cat", count=1, power=2, toughness=1)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Ajani creates 2/1 Cat Warrior token")
-
-
 @EFFECT_REGISTRY.register("Seasoned Pyromancer", EffectTiming.ETB,
                            description="Discard 2, draw 2, create tokens for nonland discards")
 def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):

@@ -3114,6 +3114,11 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "has_artifact_or_enchantment_scaling": _AI,
     "lifegain_token_type": ("token subtype name a lifegain trigger "
                             "passes to the token owner (stage T payload)"),
+    "enter_watch_token": ("a 'whenever a <type> you control enters, create "
+                          "... token' watcher read from the ONE ability "
+                          "holding its clause (CR 603.1), fired by the "
+                          "legacy enter-watcher; the grammar's typed "
+                          "OTHER_ENTERS view is not compared yet"),
     # back face
     "back_face_oracle": _BACK, "back_face_loyalty": _BACK,
     "back_face_types": _BACK, "back_face_subtypes": _BACK,

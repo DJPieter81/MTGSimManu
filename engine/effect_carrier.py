@@ -352,12 +352,14 @@ def audit_loyalty_target(game: Any, pw: Any, controller: int, req: Any,
                       f"{sorted(types)} does not admit", game=game)
 
 
-# The families whose hosts the enter-trigger carrier takes. Card flow only:
-# an enter trigger whose target another family resolves (damage, removal)
-# is still chosen by its legacy resolver, which picks on entry; the
-# dispatcher's unbound slot would go to that owner's rule (A36), not to the
-# same object.
-ETB_FAMILIES = ("card_flow",)
+# The families whose hosts the enter-trigger carrier takes: card flow, and
+# tokens and counters (unit ET: "create <N> <token>" through the token owner
+# with its typed spec, CR 111.3). An enter trigger whose target another
+# family resolves (damage, removal) is still chosen by its legacy resolver,
+# which picks on entry; the dispatcher's unbound slot would go to that
+# owner's rule (A36), not to the same object. `_slots_picked_by_executors`
+# keeps a tokens-and-counters host with a slot its executor does not pick.
+ETB_FAMILIES = ("card_flow", "tokens_counters")
 
 
 def _slots_picked_by_executors(host: Any) -> bool:
