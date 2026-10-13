@@ -9087,4 +9087,42 @@ Hundreds of pool cards sacrifice creatures.
   - Azorius Control vs Ruby Storm s58500 g1 runs 6 → 8 turns, same winner, so g2 deals different hands and the match ends 2-0.
 - Anchor 29.
 
-**Measured:** the `fb-post` arm (pre = `ly-post`) follows.
+**Measured:** together with FB.2 below (`fb-post`).
+
+## Unit FB.2: a printed flashback is read from the card's typed cost, never from a text mention (2026-10-13)
+
+**Rule (CR 702.33a):** flashback is a keyword ability a card prints with its cost. A card that only names flashback ("... gains flashback until end of turn") has none of its own.
+
+**Defect:** the FB auditor (`611.2a/flashback_grant`) found Snapcaster Mage cast from a graveyard with flashback and no grant: 8 casts in 5 games of a Hollow One field run. Game setup gave a card innate flashback whenever its text tag said "flashback". So a card that only names flashback could be cast from its graveyard for its mana cost. That covers Snapcaster Mage's grant, Wrenn and Six's retrace emblem and 25 other pool cards. Snapcaster Mage recast itself after each death (digest: Dimir vs Domain Zoo s57000, T4 and T6).
+
+**Steps (`6011992`):**
+- `setup_game`, the printed-flashback cost path and the harmonize audit read `cast_manager.printed_flashback` (a flashback mana cost or sacrifice), the one owner.
+- The 2 cards printing a flashback cost the engine cannot pay (tap three creatures) are refused rather than cast for their mana cost.
+
+**Tests:** 3 more in the FB file, the 2 mention cases red first.
+
+**Pins:** digest, 2 Dimir games with the same winners (Dimir vs Domain Zoo s57000 10 → 9 turns; Ruby Storm vs Dimir s50500 12 → 10). Anchor 29.
+
+**Measured (same-seed n=20 Bo3, `fb-post` `01cb74b` covers FB and FB.2; pre = `ly-post`):**
+- 142 cells change. Two decks move by more than 5 pp, both down:
+  - **Ruby Storm 29.4 → 14.2 (−15.2).**
+  - **Dimir Midrange 46.2 → 36.9 (−9.4).**
+- Every other deck is within ±3.2 (4/5c Control −3.2, Boros Ponza +2.5).
+- 0 aborts, 0 violations; findings 314 → 306.
+- **Both movers were replayed cell-exact** (pre `ac11892`, post `6011992`, deadline neutralised). Each reproduces its arm cell and the removed line is illegal:
+  - **Ruby Storm vs Grixis Reanimator, 55 → 10.** Storm wins 11 of 20 pre and 2 of 20 post; 9 seeds flip, all to Grixis.
+    - In s52000 g1 pre, Storm casts Past in Flames on T6.
+    - On T7 it flashes back two Reckless Impulses before casting any Past in Flames that turn, on T6's grant.
+    - On T8 it flashes back four more spells.
+    - Post, those spells stay in the graveyard and Grixis wins on T8.
+  - **Dimir Midrange vs Azorius Control, 80 → 45.** Dimir wins 16 of 20 pre and 9 of 20 post; 8 seeds flip, all away from Dimir.
+    - In s51000 g1 pre, a Snapcaster Mage that died blocking on T7 is recast from the graveyard the same turn.
+    - Post it stays dead; the match goes to Azorius 2-1.
+- **Field bands:** 4 decks out of band, total miss 39.2 pp (ly-post: 3 decks, 16.7). Ruby Storm misses by 25.8, Dimir Midrange by 8.1, Domain Zoo by 4.9, Hollow One by 0.3.
+  - Both decks that fell had been winning on recursion the rules do not give.
+  - Their win rates are now what their AI earns without it. The leads below are where that play falls short.
+
+**Leads (not built):**
+- **Storm's cast triggers.** Artist's Talent's rummage (×2 in Ruby Storm) was never performed; unit CT below.
+- **Storm's expiring-permission hold.** Unit SC's replays saw Wish held at −12.6 while its mana was still open: `ai/combo_calc.card_combo_modifier` holds a tutor whose permission expires.
+- **Dimir's Snapcaster Mage.** The AI's grant picks are now the card's only value (a one-turn flashback on an instant or sorcery). Whether the pick and the cast that follows are worth the card is unmeasured.
