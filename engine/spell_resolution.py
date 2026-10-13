@@ -124,6 +124,7 @@ class ResolutionManager:
                 game, card, "exile", cause="flashback resolution (CR 702.33a)"
             )
             card.has_flashback = False  # no longer has flashback
+            card.flashback_granted_turn = None
         elif getattr(card, '_cast_with_harmonize', False):
             # Harmonize: exile instead of anywhere else (CR 702.180a)
             game.zone_mgr.move_card_from_stack(

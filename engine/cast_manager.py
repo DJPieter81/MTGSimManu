@@ -293,6 +293,54 @@ def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
                           f"{perm.name}'s printed restriction", game=game)
 
 
+def printed_flashback(template) -> bool:
+    """CR 702.33a: the card prints Flashback, for a mana cost or for a
+    sacrifice (Lava Dart). The card's own ability: it never ends."""
+    return (getattr(template, "flashback_cost", None) is not None
+            or getattr(template, "flashback_sacrifice_subtype", None)
+            is not None)
+
+
+def grant_flashback(game: "GameState", card) -> None:
+    """`card` gains flashback until end of turn (CR 611.2a): it has
+    flashback now, and the grant records the turn it was made. The one
+    owner every "gains flashback until end of turn" effect goes through."""
+    card.has_flashback = True
+    card.flashback_granted_turn = game.turn_number
+
+
+def end_flashback_grant(card) -> None:
+    """`card`'s granted flashback ends; a printed one stays (CR 702.33a)."""
+    if getattr(card, "flashback_granted_turn", None) is None:
+        return
+    card.flashback_granted_turn = None
+    card.has_flashback = printed_flashback(card.template)
+
+
+def end_flashback_grants(game: "GameState") -> None:
+    """CR 514.2: every flashback granted "until end of turn" ends in the
+    cleanup step. A granted card sits in a graveyard: a zone change ended
+    the grant of any card that left one (CR 400.7)."""
+    for player in game.players:
+        for card in player.graveyard:
+            end_flashback_grant(card)
+
+
+def _audit_flashback_grant(game: "GameState", card) -> None:
+    """Rules audit (CR 611.2a, 702.33a), restated from the raw fields: a
+    card cast with flashback prints it or was granted it this turn.
+    Observation only."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    granted = getattr(card, "flashback_granted_turn", None)
+    _audit_check("611.2a/flashback_grant",
+                 printed_flashback(card.template)
+                 or granted == game.turn_number,
+                 f"{card.name} cast with flashback granted on turn "
+                 f"{granted}, now turn {game.turn_number}", game=game)
+
+
 def _raw_fits(obj, req, caster=None) -> bool:
     """A requirement's raw fields admit this object: it lies in the
     requirement's zone, has one of its type words, is within its printed
@@ -2273,6 +2321,7 @@ class CastManager:
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
+                _audit_flashback_grant(game, card)
                 # Pay flashback additional cost (sacrifice a {subtype}) —
                 # typed `flashback_sacrifice_subtype` (parse-once; the AI
                 # prices the same land through ai/land_denial).

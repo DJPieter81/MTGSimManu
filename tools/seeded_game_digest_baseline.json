@@ -1,5 +1,5 @@
 {
-  "combined": "52c628994d96e7dd3f67506645f893fb7444b93b3a302ffa15ca387ea839c49b",
+  "combined": "f3abfdf12093df6d1b85681c42f95f8be4e744327dcfb77e9811188cea009de5",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -45,8 +45,8 @@
       "winner": "Grixis Reanimator"
     },
     "bo1|Dimir Midrange|Domain Zoo|57000": {
-      "lines": 647,
-      "sha256": "1af99328946298d0193a5df0a8117c6276ca97a1a438ad18c7837612c4be899b",
+      "lines": 659,
+      "sha256": "678a03277678415e278c40bea7a706dadb77a1302540df4babdd5f9d69e8abfe",
       "turns": 10,
       "winner": "Domain Zoo"
     },
@@ -93,27 +93,21 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 640,
-      "sha256": "870624b70ca2568f28d90673fb658cb7973c5f1e5f00ffb1f8826751fe816c9a",
+      "lines": 956,
+      "sha256": "513e8d77f83f94080266dc35c37bbb1ed871628d3af5990771e0c78b12319a4c",
+      "turns": 12,
+      "winner": "Dimir Midrange"
+    },
+    "bo3|Azorius Control|Ruby Storm|58500|g1": {
+      "lines": 703,
+      "sha256": "93d7b242ef44e3ea94d567fcb21c16e5ed24b085f8c66dc56912bddd7b0d5224",
       "turns": 8,
       "winner": "Ruby Storm"
     },
-    "bo3|Azorius Control|Ruby Storm|58500|g1": {
-      "lines": 544,
-      "sha256": "ec627dad1340e1351bff4dceb4d4e93f1bb3d4241cfabd1d668be71aefaf4a60",
-      "turns": 6,
-      "winner": "Ruby Storm"
-    },
     "bo3|Azorius Control|Ruby Storm|58500|g2": {
-      "lines": 1113,
-      "sha256": "3c7a2877b916f74abe472eb306d1204c5e4d424210c9ade5f294527aeeb810bb",
-      "turns": 16,
-      "winner": "Azorius Control"
-    },
-    "bo3|Azorius Control|Ruby Storm|58500|g3": {
-      "lines": 1044,
-      "sha256": "d6963ab8119513e93963004ebd3826a953d136ade6d58994b3d29040e7be1833",
-      "turns": 11,
+      "lines": 1409,
+      "sha256": "ca30e5de1e1f94ae0340cb49f2711d5f2945c691d80f2037c1bb4686f77d8707",
+      "turns": 18,
       "winner": "Ruby Storm"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {
@@ -159,5 +153,5 @@
       "winner": "Living End"
     }
   },
-  "n_games": 26
+  "n_games": 25
 }

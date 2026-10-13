@@ -115,6 +115,10 @@ class ZoneManager:
             # that named the exiled object (a permission to play it) no
             # longer names it.
             game.continuous_effects.forget_object(card.instance_id)
+        # CR 400.7: a card that changes zones is a new object; a flashback
+        # granted to the old one does not follow it.
+        from .cast_manager import end_flashback_grant
+        end_flashback_grant(card)
 
         # ── Clean up state when leaving battlefield ─────────────────
         if from_zone == "battlefield":

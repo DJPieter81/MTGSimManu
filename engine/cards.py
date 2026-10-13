@@ -1846,8 +1846,13 @@ class CardInstance:
     battlefield_entry_seq: int = 0
     # Energy counters (for energy decks)
     energy_produced: int = 0
-    # Flashback (granted by Past in Flames)
+    # Flashback: the card's printed keyword, or a grant "until end of turn"
+    # (Past in Flames, Snapcaster Mage). A grant records the turn it was made
+    # (`flashback_granted_turn`) and ends in the cleanup step or when the
+    # card changes zones (`cast_manager.grant_flashback`,
+    # `end_flashback_grants`; CR 611.2a, 514.2, 400.7).
     has_flashback: bool = False
+    flashback_granted_turn: Optional[int] = None
     # Targets (when on stack)
     targets: List[int] = field(default_factory=list)  # instance_ids
     # Instance-level tags (for equipment effects etc.)

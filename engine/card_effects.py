@@ -485,9 +485,10 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,
                            description="Give flashback to instants/sorceries in graveyard")
 def past_in_flames_resolve(game, card, controller, targets=None, item=None):
+    from .cast_manager import grant_flashback
     for c in game.players[controller].graveyard:
         if c.template.is_instant or c.template.is_sorcery:
-            c.has_flashback = True
+            grant_flashback(game, c)
     # Record the turn-scoped fact: a graveyard-wide static
     # flashback grant has resolved this turn. The grant is
     # until-end-of-turn and applies to all eligible graveyard
@@ -2077,7 +2078,8 @@ def snapcaster_mage_etb(game, card, controller, targets=None, item=None):
             if 'cantrip' in tags: return (1, c.template.cmc or 0)
             return (0, c.template.cmc or 0)
         best = max(candidates, key=snap_priority)
-        best.has_flashback = True
+        from .cast_manager import grant_flashback
+        grant_flashback(game, best)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Snapcaster gives flashback to {best.name}")
 

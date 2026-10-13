@@ -141,3 +141,10 @@ def _expire_end_of_turn(game, ev):
     # pump, keyword or added type outlives the cleanup step.
     game.continuous_effects.cleanup_end_of_turn()
     game.continuous_effects.recalculate(game)
+
+
+@subscribe(Clock.CLEANUP, "flashback_grants_expiry")
+def _expire_flashback_grants(game, ev):
+    # CR 514.2, 611.2a: a flashback granted "until end of turn" ends.
+    from . import cast_manager
+    cast_manager.end_flashback_grants(game)
