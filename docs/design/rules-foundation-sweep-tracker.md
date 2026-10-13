@@ -9126,3 +9126,39 @@ Hundreds of pool cards sacrifice creatures.
 - **Storm's cast triggers.** Artist's Talent's rummage (×2 in Ruby Storm) was never performed; unit CT below.
 - **Storm's expiring-permission hold.** Unit SC's replays saw Wish held at −12.6 while its mana was still open: `ai/combo_calc.card_combo_modifier` holds a tutor whose permission expires.
 - **Dimir's Snapcaster Mage.** The AI's grant picks are now the card's only value (a one-turn flashback on an instant or sorcery). Whether the pick and the cast that follows are worth the card is unmeasured.
+
+## Unit CT: a permanent's cast trigger is performed from its typed host; a rummage is performed when a draw likely improves on the card it gives up (2026-10-13)
+
+**Rule (CR 601.2i, 603.2, 608.2c):** "Whenever <player> casts a <kind> spell, <effect>" triggers when that player casts a spell of that kind, read from the spell as it is cast. The ability is performed as printed. A discard puts the card from its owner's hand into its graveyard (CR 701.9a).
+
+**Defect:** the legacy cast resolver read a few printed shapes and nothing else.
+- Artist's Talent's rummage (Ruby Storm ×2) never happened.
+- "Whenever you cast an instant or sorcery spell, draw a card" drew on every spell cast.
+
+**Class:** 906 pool cards carry a cast trigger.
+- 374 get a typed head (`TriggerHead.cast`: caster × spell kind, from a closed table). A head with a rider the table does not read stays untyped: "during your turn", "your second spell each turn".
+- 20 are carried whole by the cast family's closed shape: a plain draw, or "you may discard a card. If you do, draw a card".
+
+**Steps (`000941a`):**
+- `effect_carrier.dispatch_cast_triggers` performs a card's cast triggers when all are in the closed shape (`effect_views.strict_cast_trigger`). The legacy branches skip a card it takes.
+- A DISCARD executor goes through the discard funnel, with auditor `701.9a/discarded`. A typed cast head the carrier declines is counted by census `603.2/cast_trigger_unresolved`.
+- **AI (`ai/resolution_choices.perform_optional_effect`):**
+  - A discard whose "if you do" branch draws more cards than it costs is performed; one that draws fewer is not.
+  - A rummage is performed when, by the self-discard ranking's own order (`ai/discard_advisor.draw_improves_on_discard`), more library cards rank as worth keeping over the card it gives up than below it. Ties count for neither, and a drawn land is ranked among the lands left in hand.
+  - The ranking is extracted as `_self_discard_scorer`; its picks are unchanged.
+  - **Why not every rummage:** the first digest replay showed the card-count-only rule rummaging Wish away from a hand holding only Wish and Past in Flames.
+
+**Tests:** 17, including the carrier cases and the 2 decline cases red first: `tests/test_a_permanents_cast_trigger_is_performed_from_its_typed_host.py`. The auditor is tested both ways.
+
+**Pins:**
+- Harness: 16 new cast:dispatch pairs, verified board by board, recorded as intended.
+- Digest:
+  - Azorius Control vs Ruby Storm s58500 g2 flips to Azorius after different draws. The rummages resolve as printed and follow the rule; the AI declines two on T4.
+  - 4c Omnath vs Ruby Storm s57500 keeps its winner (6 → 8 turns).
+- Anchor 29.
+
+**Measured:** the `ct-post` arm (pre = `fb-post`) follows.
+
+**Leads (not built):**
+- **The self-discard ranking breaks ties by hand order.** Every card it gives no bonus scores 0 (Ral, Monsoon Mage, Hex Magic, the rituals), so a rummage discards the oldest of them. The card's worth while held (the strip value `choose_card_to_exile_from_hand` reads, keystones last) would order them.
+- **Class levels 2 and 3** (Artist's Talent's cost reduction and damage boost) are not typed.
