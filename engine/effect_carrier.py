@@ -213,6 +213,145 @@ def activation_family(ability: Any, host: Any) -> Optional[str]:
                  if STRICT[f](host) and er.can_execute(host, f)), None)
 
 
+# ── The loyalty carrier (unit LY, CR 606.1, 602.2b, 601.2c, 608.2c) ────
+
+# The legacy kinds whose loyalty lines the carrier takes. UNCLASSIFIED: a
+# line the legacy classifier does not read, which was refused, so nothing
+# can regress. DAMAGE: a line its legacy resolver read only as a number --
+# it dealt that many to the highest-mana-value creature it killed, else to
+# the opponent, whatever the line's own target admitted.
+LOYALTY_DISPATCH_KINDS = frozenset({"UNCLASSIFIED", "DAMAGE"})
+
+# The landed families a loyalty line's typed host may resolve in, first
+# match first.
+LOYALTY_FAMILIES = ("damage", "removal", "card_flow", "tokens_counters",
+                    "edict", "type_change")
+
+
+def loyalty_family(ability: Any, host: Any) -> Optional[str]:
+    """The family a loyalty line dispatches in (one owner, read by the
+    carrier, the walker's menu, the closure and the harness): for a line of
+    a `LOYALTY_DISPATCH_KINDS` kind, the first of `LOYALTY_FAMILIES` whose
+    strict shape takes its typed host and that the dispatcher can execute;
+    None otherwise (the line keeps its legacy kind's resolver)."""
+    from .effect_views import STRICT
+    kind = getattr(ability.effect_kind, "name", None)
+    if kind not in LOYALTY_DISPATCH_KINDS or host is None:
+        return None
+    return next((f for f in LOYALTY_FAMILIES
+                 if STRICT[f](host) and er.can_execute(host, f)), None)
+
+
+def loyalty_host(pw: Any, ability: Any) -> Optional[Any]:
+    """The typed host of the printed loyalty line `ability` of walker `pw`:
+    the LOYALTY host of the face and slot that print it."""
+    template = pw.template
+    effects = getattr(template, "effects", None)
+    if effects is None:
+        return None
+    for face, attr in ((0, "loyalty_abilities"),
+                       (1, "back_face_loyalty_abilities")):
+        for slot, a in (getattr(template, attr, None) or {}).items():
+            if a is ability:
+                return effects.loyalty(slot, face)
+    return None
+
+
+def loyalty_targets_exist(game: Any, pw: Any, controller: int,
+                          ability: Any) -> bool:
+    """Has every required target slot of a line the carrier takes a legal
+    choice now (`target_solver.legal_slot_choices`)? A line without one
+    cannot be activated (CR 602.2b, 601.2c), so it is not offered."""
+    from .target_solver import legal_slot_choices
+    host = loyalty_host(pw, ability)
+    for req in host.targets:
+        if req.count_min:
+            players, permanents = legal_slot_choices(game, controller, req,
+                                                     source=pw)
+            if not (players or permanents):
+                return False
+    return True
+
+
+def loyalty_targets(game: Any, pw: Any, controller: int,
+                    ability: Any) -> Optional[er.Chosen]:
+    """CR 602.2b, 601.2c: the targets a loyalty line the carrier takes is
+    activated with, per slot, as a trigger's are put on the stack
+    (`trigger_targets`: the controller's pick out of the legal choices).
+    None when the carrier does not take the line, or a required target has
+    no legal choice: the line cannot be activated."""
+    host = loyalty_host(pw, ability)
+    if loyalty_family(ability, host) is None:
+        return None
+    return trigger_targets(game, pw, controller, host)
+
+
+def dispatch_loyalty(game: Any, pw: Any, controller: int, ability: Any,
+                     chosen: Optional[Sequence[Any]] = None
+                     ) -> Optional[bool]:
+    """The loyalty carrier: walker `pw`'s line `ability` performed from its
+    typed host (CR 608.2c), with the targets it was activated with
+    (`chosen`, else chosen now by `loyalty_targets`). None when the carrier
+    does not take the line (the legacy kind's resolver runs); else whether
+    anything was performed."""
+    if not er.dispatch_enabled():
+        return None
+    host = loyalty_host(pw, ability)
+    family = loyalty_family(ability, host)
+    if family is None:
+        return None
+    if chosen is None:
+        chosen = trigger_targets(game, pw, controller, host)
+        if chosen is None:
+            return False
+    _audit_loyalty_targets(game, pw, controller, host, chosen)
+    return bool(er.resolve_ability(game, er.handle_of(pw), controller, host,
+                                   tuple(chosen), family=family,
+                                   source_object=pw))
+
+
+def _audit_loyalty_targets(game: Any, pw: Any, controller: int, host: Any,
+                           chosen: Sequence[Any]) -> None:
+    """Rules audit (CR 602.2b, 115.1): each target a dispatched loyalty
+    line was activated with is one its slot's requirement admits.
+    Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    for req, picked in zip(host.targets, chosen):
+        for v in picked:
+            target = v if isinstance(v, int) and not isinstance(v, bool) \
+                else game.get_card_by_id(getattr(v, "instance_id", None))
+            audit_loyalty_target(game, pw, controller, req, target)
+
+
+def audit_loyalty_target(game: Any, pw: Any, controller: int, req: Any,
+                         target: Any) -> None:
+    """Rules audit (CR 602.2b, 115.1), restated from the requirement's raw
+    fields: a player (an index) is a target only for a slot naming players
+    ("any target" names them too), and a permanent only for a slot naming
+    one of its card types, a permanent, or any target. Read by the carrier
+    and by the legacy damage resolver. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled() or req is None or target is None:
+        return
+    types = set(req.types or ())
+    if isinstance(target, int) and not isinstance(target, bool):
+        ok = bool(types & {"any", "player", "opponent"})
+        what = f"player {target}"
+    else:
+        names = {t.name.lower() for t in target.template.card_types}
+        if getattr(target, "effective_is_creature", False):
+            names.add("creature")
+        if getattr(target, "effective_is_planeswalker", False):
+            names.add("planeswalker")
+        ok = bool(types & ({"any", "permanent"} | names))
+        what = target.name
+    rules_audit.check("602.2b/loyalty_target", ok,
+                      f"{pw.name}'s line targets {what}, which "
+                      f"{sorted(types)} does not admit", game=game)
+
+
 # The families whose hosts the enter-trigger carrier takes. Card flow only:
 # an enter trigger whose target another family resolves (damage, removal)
 # is still chosen by its legacy resolver, which picks on entry; the

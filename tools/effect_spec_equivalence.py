@@ -1008,7 +1008,7 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         _resolve_path(COMBAT_DAMAGE_DISPATCH_APPLY))
     from engine.effect_carrier import (ETB_FAMILIES, activation_family,
                                        combat_damage_plan, draw_plan,
-                                       etb_plan)
+                                       etb_plan, loyalty_family)
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1051,7 +1051,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                     out.append(_pair(hd.name, family, t, h, label, part,
                                      on_path))
                     legacy_claimed |= not switched[hd.name]
-        # loyalty lines: kind branches, and CLAUSE through the registry
+        # loyalty lines: the loyalty carrier's (unit LY), kind branches, and
+        # CLAUSE through the registry
         for face, attr in ((0, "loyalty_abilities"),
                            (1, "back_face_loyalty_abilities")):
             for slot, ab in sorted((getattr(t, attr, None) or {}).items()):
@@ -1060,7 +1061,14 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                     continue
                 label = _host_label(h)
                 kind = ab.effect_kind.name
-                if ab.effect_kind is LoyaltyEffectKind.CLAUSE and \
+                carried = loyalty_family(ab, h)
+                if carried is not None:
+                    # the carrier performs the line from its typed host,
+                    # before the kind's branch (`PlaneswalkerManager._resolve`)
+                    out.append(_pair(f"planeswalker_manager:{kind}",
+                                     carried, t, h, label, part,
+                                     pw_switched))
+                elif ab.effect_kind is LoyaltyEffectKind.CLAUSE and \
                         ab.clause is not None:
                     src = CardInstance(template=ab.clause, owner=0,
                                        controller=0, instance_id=0,
@@ -1077,9 +1085,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                                 hd.name, "?"), t, h, label, part,
                                 switched[hd.name] and reached))
                 elif kind in LOYALTY_FAMILY:
+                    # a line the carrier declines keeps its kind's legacy
+                    # branch, which does not reach the dispatcher
                     out.append(_pair(f"planeswalker_manager:{kind}",
                                      LOYALTY_FAMILY[kind], t, h, label,
-                                     part, pw_switched))
+                                     part, False))
         # activated abilities by effect kind
         for ab in getattr(t, "activated_abilities", None) or ():
             kind = getattr(ab.effect_kind, "name", None)

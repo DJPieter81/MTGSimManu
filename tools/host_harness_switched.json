@@ -9200,6 +9200,214 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, Bold Pyromancer",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, Fire of Kaladesh // Chandra, Roaring Flame",
+    "LOYALTY:1:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, Flame's Fury",
+    "LOYALTY:0:0"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, Novice Pyromancer",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, Pyrogenius",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, Torch of Defiance",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Chandra, the Firebrand",
+    "LOYALTY:0:0"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Domri, City Smasher",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Jaya, Venerated Firemage",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Koth, Fire of Resistance",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Nahiri, Heir of the Ancients",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker. Its amount is the typed X (twice the Equipment its controller controls: none on these boards, so no damage is dealt, CR 120.8), where the legacy resolver dealt 1."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen",
+    "LOYALTY:1:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Ral Zarek",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Sarkhan, the Dragonspeaker",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Ugin, the Spirit Dragon",
+    "LOYALTY:0:0"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Wrenn and Six",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the loyalty carrier deals the line's damage to the target chosen as the line is activated, among what its requirement admits (CR 602.2b, 601.2c; on the harness's default callbacks, the opponent for a slot that admits players, else the first admitted permanent, an opponent's first). The legacy DAMAGE resolver read only a number from the text and dealt it to the highest-mana-value creature it killed, else to the opponent, whatever the line admitted: a creature-only line hit the face on a board without creatures, and 'any target' never reached a planeswalker."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Chandra, Fire Artisan",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): exiles the top card of its controller's library, playable this turn."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Chandra, Fire Artisan",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): exiles the top seven cards of its controller's library, playable this turn."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Chandra, Pyromaster",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): exiles the top card of its controller's library, playable this turn."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Jace Beleren",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): the target player mills twenty cards."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Jace Beleren // Jace Beleren",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): the target player mills twenty cards."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Jace, Memory Adept",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): the target player mills ten cards."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Liliana of the Veil",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): the target player sacrifices a creature of their choice."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Liliana, Dreadhorde General",
+    "LOYALTY:0:2"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): each player sacrifices two creatures of their choice."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Nissa, Voice of Zendikar",
+    "LOYALTY:0:1"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): a +1/+1 counter on each creature its controller controls."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Sorin of House Markov // Sorin, Ravenous Neonate",
+    "LOYALTY:1:1"
+   ],
+   "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): its controller creates a Food token."
   }
  ],
  "pairs": [

@@ -288,7 +288,7 @@ class HostCase:
 def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
     """(resolvable cases, skipped cases) of every host of `template`."""
     from engine.cards import ActivationEffectKind, CardType
-    from engine.effect_carrier import activation_family
+    from engine.effect_carrier import activation_family, loyalty_family
     from engine.effect_spec import EventHint, HostKind
     from engine.planeswalker_manager import EXECUTABLE_LOYALTY_KINDS
     ok, skipped = [], []
@@ -322,9 +322,12 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
             ok.append(HostCase(template.name, label, "ACTIVATED",
                                h.activation_index))
         elif h.kind is HostKind.LOYALTY and \
-                (h.face, h.loyalty_slot) in loyalty and \
-                loyalty[(h.face, h.loyalty_slot)].effect_kind in \
-                EXECUTABLE_LOYALTY_KINDS:
+                (h.face, h.loyalty_slot) in loyalty and (
+                    loyalty[(h.face, h.loyalty_slot)].effect_kind in
+                    EXECUTABLE_LOYALTY_KINDS
+                    or loyalty_family(loyalty[(h.face, h.loyalty_slot)], h)):
+            # an UNCLASSIFIED line is refused by its legacy apply, unless
+            # the loyalty carrier takes its typed host (unit LY)
             ok.append(HostCase(template.name, label, "LOYALTY",
                                (h.face, h.loyalty_slot)))
         elif h.kind is HostKind.TRIGGERED and h.face == 0 and \

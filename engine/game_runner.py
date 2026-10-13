@@ -1711,7 +1711,7 @@ class GameRunner:
             # activation per turn on a line that will be refused. The
             # lines are the typed ones of the face currently up.
             from .planeswalker_manager import PlaneswalkerManager
-            resolvable = PlaneswalkerManager.resolvable_ability_slots(pw)
+            resolvable = PlaneswalkerManager.resolvable_ability_slots(pw, game)
             pw_data = {k: v for k, v in PlaneswalkerManager.loyalty_abilities(pw).items()
                        if k in resolvable}
             if not pw_data:

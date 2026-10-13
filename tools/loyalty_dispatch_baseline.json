@@ -1,5 +1,6 @@
 {
-  "unclassified": 393,
+  "unclassified": 384,
   "description": "printed loyalty abilities whose effect the engine cannot execute (LoyaltyEffectKind.UNCLASSIFIED). Refused before any loyalty is paid. Must equal the actual count: growth (a mechanic stopped classifying) and a stale baseline (a family was implemented but not recorded) both fail CI. See tools/check_loyalty_dispatch.py.",
-  "pool_note": "2026-09-27: 564 -> 646 on the MTGJSON 5.3.0+20260926 card-pool refresh. The 564 unclassified abilities on cards present before the refresh are unchanged; all 82 new entries are on newly printed cards (new planeswalkers and the 'Way of the ...' cycle). Pool growth, not a classifier regression."
+  "pool_note": "2026-09-27: 564 -> 646 on the MTGJSON 5.3.0+20260926 card-pool refresh. The 564 unclassified abilities on cards present before the refresh are unchanged; all 82 new entries are on newly printed cards (new planeswalkers and the 'Way of the ...' cycle). Pool growth, not a classifier regression.",
+  "ly_note": "2026-10-13 (unit LY): 393 -> 384. Nine front-face unclassified lines the loyalty carrier performs from their typed instructions (effect_carrier.loyalty_family) no longer count: the edicts of Liliana of the Veil and Liliana, Dreadhorde General; Nissa, Voice of Zendikar's team counters; the mills of Jace Beleren (two printings) and Jace, Memory Adept; the impulse lines of Chandra, Fire Artisan (two) and Chandra, Pyromaster."
 }

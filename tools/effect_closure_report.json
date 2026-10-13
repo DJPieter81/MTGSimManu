@@ -2097,6 +2097,31 @@
    "MOVE": 2
   }
  },
+ "planeswalker_manager:UNCLASSIFIED": {
+  "deck_hosts": [],
+  "executable": 10,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 10,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 2,
+   "E3": 3,
+   "E4": 2,
+   "E5": 3
+  },
+  "strict": 10,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,EXILE": 3,
+   "CREATE_TOKEN": 1,
+   "MILL": 3,
+   "PUT_COUNTERS": 1,
+   "SACRIFICE": 2
+  }
+ },
  "reanimate_target": {
   "deck_hosts": [
    {

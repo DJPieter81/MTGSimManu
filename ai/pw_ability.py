@@ -148,11 +148,42 @@ def _replay_tempo(card, opp_snap_lands: int) -> float:
     return min(1.0, cmc / max(1.0, float(opp_snap_lands + 1)))
 
 
+def dispatched_damage_value(pw, ability, game: "GameState",
+                            player_idx: int) -> Optional[float]:
+    """What the damage of a loyalty line the carrier performs in the damage
+    family is worth: the value of the aim its targeted damage instruction
+    takes. That is the carrier's per-slot pick (`ai.resolution_choices.
+    pick_trigger_targets`, through `ai.damage_targets.
+    choose_damage_recipient`), on the scale an aimed damage activation is
+    valued on (the opponent's position lost). Damage that destroys nothing
+    worth declaring is worth 0. None for any other line: its clause is
+    projected."""
+    from engine.effect_carrier import loyalty_family, loyalty_host
+    from engine.effect_spec import Verb, iter_specs
+    host = loyalty_host(pw, ability)
+    if loyalty_family(ability, host) != "damage":
+        return None
+    spec = next((s for s in iter_specs(host.specs)
+                 if s.verb is Verb.DAMAGE and not s.replaces
+                 and s.target_slot is not None), None)
+    if spec is None:
+        return None
+    from ai.damage_targets import choose_damage_recipient
+    from engine.effect_conditions import amount_value
+    amount = amount_value(game, player_idx, spec.amount, 0)
+    aim = choose_damage_recipient(game, player_idx, pw, amount,
+                                  host.targets[spec.target_slot],
+                                  mana_committed=0)
+    return aim.value if aim is not None else 0.0
+
+
 def loyalty_line_value(pw, ability, game: "GameState", player_idx: int) -> float:
     """Value of activating `ability` now, in position-value units (the
     scale `compute_play_ev` uses for spells): the projected board after
     the line's clause resolves, plus the change in the walker's future
-    activation pool at its new loyalty, minus the board now."""
+    activation pool at its new loyalty, minus the board now. A line whose
+    damage the carrier deals is valued by where that damage goes
+    (`dispatched_damage_value`) instead of a projection of its clause."""
     from ai.ev_evaluator import (_project_spell, evaluate_board,
                                  expected_future_value, snapshot_from_game)
     from engine.cards import CardInstance
@@ -161,6 +192,9 @@ def loyalty_line_value(pw, ability, game: "GameState", player_idx: int) -> float
     current = evaluate_board(snap)
     projected = snap
     clause = getattr(ability, 'clause', None)
+    damage_value = dispatched_damage_value(pw, ability, game, player_idx)
+    if damage_value is not None:
+        clause = None
     if clause is not None:
         probe = CardInstance(template=clause, owner=player_idx, controller=player_idx,
                              instance_id=pw.instance_id, zone="stack")
@@ -176,6 +210,8 @@ def loyalty_line_value(pw, ability, game: "GameState", player_idx: int) -> float
     projected = projected.model_copy(update={
         'persistent_power': projected.persistent_power + pool_after - pool_now})
     value = evaluate_board(projected) - current
+    if damage_value is not None:
+        value += damage_value
 
     # A bounce of a noncreature permanent has no snapshot term: price it by
     # that permanent's marginal worth to its owner, for the tempo it costs.

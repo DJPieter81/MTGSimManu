@@ -84,20 +84,32 @@ class PlaneswalkerManager:
         return template.loyalty_abilities or {}
 
     @staticmethod
-    def resolvable_ability_slots(pw_card: CardInstance) -> set:
+    def resolvable_ability_slots(pw_card: CardInstance,
+                                 game: "GameState" = None) -> set:
         """The slots ("plus"/"zero"/"minus"/"ult") whose printed effect
-        this engine can execute.
+        this engine can execute: a line the loyalty carrier performs from
+        its typed instructions (`effect_carrier.loyalty_family`), else a
+        line of an executable legacy kind. With `game`, a line the carrier
+        takes is offered only while every target it requires has a legal
+        choice (CR 602.2b, 601.2c).
 
         `engine/game_runner.py` narrows the AI's menu to these before
         asking `ai.pw_ability.choose_pw_ability` to rank them: refusing
         an ability at resolution time is not enough, because the AI
         would still have spent its once-per-turn activation on it.
         """
-        return {
-            slot for slot, ability
-            in PlaneswalkerManager.loyalty_abilities(pw_card).items()
-            if ability.effect_kind in EXECUTABLE_LOYALTY_KINDS
-        }
+        from .effect_carrier import (loyalty_family, loyalty_host,
+                                     loyalty_targets_exist)
+        slots = set()
+        for slot, ability in PlaneswalkerManager.loyalty_abilities(
+                pw_card).items():
+            if loyalty_family(ability, loyalty_host(pw_card, ability)):
+                if game is None or loyalty_targets_exist(
+                        game, pw_card, pw_card.controller, ability):
+                    slots.add(slot)
+            elif ability.effect_kind in EXECUTABLE_LOYALTY_KINDS:
+                slots.add(slot)
+        return slots
 
     # ─── ACTIVATION ──────────────────────────────────────────────
 
@@ -123,8 +135,18 @@ class PlaneswalkerManager:
         if new_loyalty < 0:
             return False
 
+        # A line the loyalty carrier performs from its typed instructions
+        # is activated with its targets (CR 602.2b, 601.2c): a required
+        # target with no legal choice means it cannot be activated.
+        from .effect_carrier import (loyalty_family, loyalty_host,
+                                     loyalty_targets)
+        chosen = None
+        if loyalty_family(ability, loyalty_host(pw_card, ability)):
+            chosen = loyalty_targets(game, pw_card, controller, ability)
+            if chosen is None:
+                return False
         # Rule 9b (activation parity): refuse BEFORE charging the cost.
-        if ability.effect_kind not in EXECUTABLE_LOYALTY_KINDS:
+        elif ability.effect_kind not in EXECUTABLE_LOYALTY_KINDS:
             # Audit (observation-only): record the refused kind so a matrix
             # run ranks how many printed loyalty abilities are inert (the
             # planeswalker-loyalty no-op class). Reads the enum name, not
@@ -142,7 +164,8 @@ class PlaneswalkerManager:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"{pw_name} [{ability.cost:+d}] -> {ability.text}")
 
-        PlaneswalkerManager._resolve(game, controller, pw_card, ability)
+        PlaneswalkerManager._resolve(game, controller, pw_card, ability,
+                                     chosen=chosen)
         # The walker dies at 0 loyalty — SBA 704.5p catches that.
         return True
 
@@ -150,11 +173,19 @@ class PlaneswalkerManager:
 
     @staticmethod
     def _resolve(game: "GameState", controller: int,
-                 pw_card: CardInstance, ability: LoyaltyAbility) -> None:
-        """Dispatch a classified loyalty effect. Every branch here has a
+                 pw_card: CardInstance, ability: LoyaltyAbility,
+                 chosen=None) -> None:
+        """Resolve a loyalty line: first through the loyalty carrier, which
+        performs a line it takes from its typed instructions with the
+        targets it was activated with (`chosen`; CR 608.2c); otherwise by
+        its classified legacy kind. Every legacy branch here has a
         `LoyaltyEffectKind` in `EXECUTABLE_LOYALTY_KINDS`; the two sets
         are pinned to each other by
         `tests/test_loyalty_effect_dispatch_census.py`."""
+        from .effect_carrier import dispatch_loyalty
+        if dispatch_loyalty(game, pw_card, controller, ability,
+                            chosen) is not None:
+            return
         kind = ability.effect_kind
 
         if kind is LoyaltyEffectKind.RETURN_TO_HAND:
@@ -270,6 +301,12 @@ class PlaneswalkerManager:
             key=lambda c: (c.template.cmc, c.power or 0))
         PlaneswalkerManager._audit_damage_target(game, controller, pw_card,
                                                  target)
+        # CR 602.2b, 115.1: what the line's typed first slot admits.
+        from .effect_carrier import audit_loyalty_target, loyalty_host
+        host = loyalty_host(pw_card, ability)
+        if host is not None and host.targets:
+            audit_loyalty_target(game, pw_card, controller, host.targets[0],
+                                 target if target is not None else opponent)
         deal_damage_to(game, pw_card, controller, dmg,
                        target if target is not None else opponent)
 
