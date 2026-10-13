@@ -6,9 +6,11 @@ to a player makes that player lose that much life (CR 120.3a), which counts
 as life lost this turn. CR 115.4 / 702.11b: an effect picks its target
 among what its source may target.
 
-A planeswalker's "deals N damage" line picks its recipient on resolution
-(it chose none when activated): a killable opposing creature its source may
-target, by the shared resolution-time picker
+A planeswalker's "deals N damage" line the loyalty carrier performs from
+its typed instructions (unit LY) takes the target chosen as it was
+activated, the controller's pick (CR 602.2b). A line the carrier declines
+picks its recipient on resolution: a killable opposing creature its source
+may target, by the shared resolution-time picker
 (`target_solver.pick_resolution_target`), else the opponent. A land that
 deals damage to its controller for mana does it through
 `engine.damage.deal_damage` like every other damage.
@@ -66,6 +68,8 @@ def test_a_loyalty_ability_damage_goes_through_the_damage_owner_and_death_waits_
     walker = _put(game, card_db, 0, "Wrenn and Six")
     ability = _damage_line(card_db, "Wrenn and Six")
     pest = _put(game, card_db, 1, "Ragavan, Nimble Pilferer")   # a 2/1
+    game.callbacks.choose_trigger_targets = (            # the controller's pick
+        lambda g, p, src, spec, req, players, perms, x_value=0: [pest])
     _activate(game, walker, ability)
     assert calls == [(walker, pest, 1)]
     assert pest.zone == "battlefield" and pest.damage_marked == 1
@@ -112,11 +116,15 @@ def test_the_loyalty_damage_audit_sees_a_recipient_its_source_may_not_target(aud
     """CR 115.4 / 702.11b, restated at the seam: the creature a loyalty
     damage line picked on resolution is one its source may target.
     Silent when the pick is legal; it fires when the picker is broken
-    back to ignoring hexproof."""
+    back to ignoring hexproof. The carrier is a line the loyalty carrier
+    declines (divided damage), so its recipient is picked on resolution."""
     from engine import target_solver
+    from engine.effect_carrier import loyalty_family, loyalty_host
     game = _game()
-    walker = _put(game, card_db, 0, "Wrenn and Six")
-    ability = _damage_line(card_db, "Wrenn and Six")
+    walker = _put(game, card_db, 0, "Ral, Monsoon Mage // Ral, Leyline Prodigy")
+    walker.is_transformed = True
+    ability = walker.template.back_face_loyalty_abilities["minus"]
+    assert loyalty_family(ability, loyalty_host(walker, ability)) is None
     shielded = _put(game, card_db, 1, "Ragavan, Nimble Pilferer")
     shielded.temp_keywords.add(Keyword.HEXPROOF)
     _activate(game, walker, ability)

@@ -1762,7 +1762,10 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         # unit DW: a plain draw activation ("{T}: Draw a card")
         "activated_effects:DRAW_N",
         # unit PO: a team-counter activation (Leyline of Abundance)
-        "activated_effects:PUT_COUNTER_TEAM"}
+        "activated_effects:PUT_COUNTER_TEAM",
+        # unit LY: a loyalty line the loyalty carrier performs from its
+        # typed host (Wrenn and Six's -1)
+        "planeswalker_manager:DAMAGE"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

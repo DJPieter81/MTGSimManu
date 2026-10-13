@@ -725,6 +725,17 @@ LOYALTY_FAMILY = {
     "EMBLEM_EXILE_PERMANENT": "removal",
     "DRAW_AND_UNTAP_LANDS": "pump_restrict",
 }
+# The branch of `PlaneswalkerManager._resolve` that resolves a line of each
+# kind when the loyalty carrier declines it (unit LY): what `_is_switched`
+# inspects for such a line.
+LOYALTY_BRANCH = {
+    "DAMAGE": "_resolve_damage",
+    "GAIN_LIFE_AND_DRAW": "_resolve_gain_life_and_draw",
+    "RETURN_TO_HAND": "_resolve_return_to_hand",
+    "TUCK_TARGET_INTO_LIBRARY": "_resolve_tuck",
+    "EMBLEM_EXILE_PERMANENT": "_resolve_emblem_exile",
+    "DRAW_AND_UNTAP_LANDS": "_resolve_draw_and_untap_lands",
+}
 # The ETB carriers: legacy fields an enter trigger resolves from.
 ETB_CARRIERS = ("etb_targeted_removal_data", "etb_exile_returns_on_leave",
                 "etb_return_land")
@@ -998,6 +1009,10 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     oracle_handlers = {h.name for h in CR.HANDLERS}
     switched = {h.name: _is_switched(h.apply) for h in handlers}
     pw_switched = _is_switched(planeswalker_manager.PlaneswalkerManager._resolve)
+    pw_branch_switched = {
+        kind: _is_switched(getattr(planeswalker_manager.PlaneswalkerManager,
+                                   name))
+        for kind, name in LOYALTY_BRANCH.items()}
     act_switched = _is_switched(activated_effects.resolve_activated_ability)
     etb_switched = {f: _is_switched(_resolve_path(p))
                     for f, p in ETB_CARRIER_APPLY.items()}
@@ -1085,11 +1100,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                                 hd.name, "?"), t, h, label, part,
                                 switched[hd.name] and reached))
                 elif kind in LOYALTY_FAMILY:
-                    # a line the carrier declines keeps its kind's legacy
-                    # branch, which does not reach the dispatcher
+                    # a line the carrier declines is resolved by its kind's
+                    # branch (`LOYALTY_BRANCH`)
                     out.append(_pair(f"planeswalker_manager:{kind}",
                                      LOYALTY_FAMILY[kind], t, h, label,
-                                     part, False))
+                                     part, pw_branch_switched[kind]))
         # activated abilities by effect kind
         for ab in getattr(t, "activated_abilities", None) or ():
             kind = getattr(ab.effect_kind, "name", None)
