@@ -1,7 +1,7 @@
 ---
 title: Amulet Titan at 25% — its land-from-hand engine resolved as nothing
-status: active
-priority: primary
+status: archived
+priority: historical
 session: 2026-10-13
 supersedes: []
 depends_on:
@@ -16,6 +16,8 @@ summary: >
   Cultivator Colossus's enter trigger (x1) did nothing; only Arboreal Grazer
   worked, through a card-name registry handler. Fixed by unit SP (the
   card-flow MOVE executor for a land from hand, through the land-entry owner).
+  Resolved across units SP, SP.2, LE, KR and EM: Amulet Titan 25.0% ->
+  49.5% of the field (em-post), inside its band.
 ---
 
 # Amulet Titan at 25% — its land-from-hand engine resolved as nothing
@@ -102,7 +104,21 @@ Spelunking's draw and land. Amulet is still 10 pp under its band. Units SP.2
 triggers) follow, measured by `le-post`. Details are in the SP, SP.2 and LE
 entries of `docs/design/rules-foundation-sweep-tracker.md`.
 
-## Next subsystem (from the SP / LE replays)
+## Resolution
+
+| unit | what | Amulet Titan (field WR) |
+|---|---|---|
+| SP | a land card is put from hand onto the battlefield | 24.7 → 35.0 |
+| SP.2 + LE | the AI activates land puts; a put land enters by its own rules and triggers | 35.0 → 36.0 |
+| KR | a bounce land is a land only beside another land (keep, land drop) | 36.0 → 37.8 |
+| EM | an enter trigger that adds mana adds it (Crumbling Vestige ×4) | 37.8 → 49.5 |
+
+Each arm is same-seed n=20 Bo3 against the previous one; details are in the
+tracker. Remaining Amulet leads: Summoner's Pact's upkeep payment is not
+enforced (it is a free tutor in the sim, which flatters Amulet), Vesuva
+enters as itself, and Cultivator Colossus's loop is refused.
+
+## Next subsystem (from the SP / LE replays, built as unit KR)
 
 A **bounce land is a land only beside another land**. In Living End vs Amulet
 Titan s57500 game 3, Amulet kept two Gruul Turfs as its only lands and played
