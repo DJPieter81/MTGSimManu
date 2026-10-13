@@ -8926,3 +8926,50 @@ Hundreds of pool cards sacrifice creatures.
 - 70 of the 104 remaining backup-gate rejections hold no finisher. That is the deck's declared mulligan policy (`requires_combo_backup`), not a read, and it is left as it is.
 
 **Pins:** digest byte-identical; anchor 29; 538 mulligan, keep and colour tests pass.
+
+**Measured:** together with SC below (`sc-post`).
+
+## Unit SC: a storm copy may have new targets chosen for it; the AI plans where K copies of N damage go (2026-10-13)
+
+**Rule (CR 702.40a, 707.10c):** storm copies the spell once for each other spell cast before it this turn. A copy copies the spell's targets, and its controller may choose new ones, provided the spell could have chosen them.
+
+**Defect (Ruby Storm vs Boros Energy s50000, T4):** every copy re-ran the original's stack item, so all of them took its target. A Grapeshot with 6 copies sent all 7 damage to the face, while 6 of them would have killed Boros's four attackers (two 1/2s, a 2/1, a 1/1). Storm died the next turn.
+
+**Class:** 18 pool storm cards; Ruby Storm runs Grapeshot (main and sideboard) and Empty the Warrens.
+
+**Steps (`15c2456`):**
+- **Engine:** `CastManager._spell_copy`.
+  - Each copy is a new stack item, and its controller is asked for new targets (`callbacks.choose_copy_targets`, with the copies still to be made). The default keeps the original's.
+  - A choice the spell could not have made is refused (`copy_targets_legal`, through `target_solver.target_admitted`).
+  - Auditor `707.10c/copy_targets`.
+- **AI:** `ai/damage_targets.plan_copy_damage`, the one owner of where N damage goes.
+  - Lethal copies go to the face.
+  - Otherwise a 0/1 knapsack over the copies kills the opposing permanents worth most (`permanent_threat`; `copies_to_destroy`, so a 1/2 takes two), and the rest go to the face at the face value of what they deal together.
+  - A creature already holding lethal damage is skipped.
+  - `copy_targets` aims a spell whose one instruction deals N damage to one target; any other spell keeps its targets.
+
+**Tests:** 9, 6 red first, including the AI's callbacks clearing a board and the auditor both ways: `tests/test_a_storm_copy_may_have_new_targets_chosen.py`.
+
+**Pins:**
+- Digest: two Ruby Storm games change, same winners. vs Dimir Midrange s50500: a copy kills Snapcaster Mage and Storm wins a turn earlier. Azorius Control vs Ruby Storm s58500 g3: five copies kill Teferi, Time Raveler, which held Storm to sorcery speed.
+- Anchor 29.
+
+**Measured (same-seed n=20 Bo3, `sc-post` `61559fc` covers MK and SC; pre = `em-post`):**
+- **Ruby Storm 28.1 → 29.4 (+1.2).** Every other deck is within ±0.7.
+- 33 cells change, nearly all in Ruby Storm's row and column. For example:
+  - Storm vs Amulet Titan 25 → 45;
+  - Boros Energy vs Storm 95 → 75;
+  - Storm vs Instant Reanimator 30 → 15.
+
+  Each is a ±10–20 swing on a 20-match cell, mixed in sign.
+- No deck moves more than 5 pp, so no cell-exact replay is needed.
+- Violations 0. Findings 319 → 312.
+- Ruby Storm is still 10.6 pp under its band (40–55).
+
+**Leads (not built):**
+- **A copy made by another mechanic** (Twincast, Reverberate, replicate, casualty) goes through its own paths, not `_spell_copy`.
+- **Untimely Malfunction's retarget mode** (CR 115.7) is UNMODELLED; the AI's "choose one" filler picks it when nothing is worth anything (8 findings per arm).
+- **From three Storm replays on `sc-post`** (Storm vs Izzet Prowess, Boros Energy and Domain Zoo, s50000; Storm loses 5 of 6 games):
+  - **A play permission that ends this turn is not spent before it ends.** In Storm vs Boros Energy g2, Hex Magic exiles Wish on T4. Wish may be played until the end of T5, but the AI never casts it. On T6 Storm chains about 20 spells with Past in Flames and has no finisher left. This is AI combo planning: a finisher reachable only through an expiring permission.
+  - **A walker's future activations are valued as one average card each.** In Storm vs Izzet Prowess g1 T5, Ral, Leyline Prodigy's +1 (a cost reduction, with no spell in hand) scores +3.8, and the −2 that kills a hasty 1/2 flier scores −7.4. That flier then hits for 7. The pool (`ev_evaluator.expected_future_value` → `clock.loyalty_pool_value`) prices each loyalty counter at about 3.8 position units against 2.0 for the kill (`permanent_threat`). This is the miscalibrated primitive, its own unit. The −2's divided damage is also UNMODELLED, so its host has no typed target.
+  - **A flashback cost that sacrifices a land is underpriced once lands run out.** In Izzet Prowess vs Storm g2 T2, Prowess sacrifices both of its lands to flash back Lava Dart for 1 damage each. `land_denial.own_land_loss_value` charges one land's tempo per sacrifice, and nothing more as the count reaches zero.
