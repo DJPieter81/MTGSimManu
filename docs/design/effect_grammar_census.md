@@ -2,7 +2,7 @@
 title: "Clause-grammar census: UNMODELLED, residue and typed share"
 status: active
 priority: diagnostic
-session: 2026-10-12
+session: 2026-10-13
 depends_on: [docs/design/2026-09-29_clause_and_trigger_grammar.md]
 tags: [engine, oracle, grammar, effects, census, generated]
 summary: >
@@ -40,7 +40,7 @@ Section 17, exit criterion 3: E2 does not start while fewer than the gate share 
 
 | Clauses | Typed | Typed share | Ready | Ready share | Gate | Met |
 |---|---|---|---|---|---|---|
-| 258 | 225 | 87.2% | 44 | 17.1% | 85.0% | no |
+| 258 | 225 | 87.2% | 47 | 18.2% | 85.0% | no |
 
 ## UNMODELLED by stage
 

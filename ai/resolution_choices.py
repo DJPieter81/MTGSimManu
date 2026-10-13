@@ -136,6 +136,19 @@ def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
         from ai.graveyard_removal import pick_removals
         return pick_removals(game, ctx.controller, list(pool), n,
                              target.count_min)
+    from engine.effect_executors import land_from_hand
+    if land_from_hand(spec):
+        # The land the AI's one land valuation delivers (the land a land
+        # tutor or the land drop would choose).
+        from ai.activation_ev import _choose_land_delivery
+        lands = list(pool)
+        picked = []
+        while lands and len(picked) < n:
+            land = _choose_land_delivery(game, ctx.controller, lands,
+                                         batch=tuple(picked))
+            picked.append(land)
+            lands = [c for c in lands if c is not land]
+        return picked
     if not _to_own_hand(spec):
         return default_card_pick(pool, n)
     from ai.discard_advisor import serves_plan_from_graveyard

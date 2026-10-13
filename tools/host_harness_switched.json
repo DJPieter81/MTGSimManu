@@ -2532,6 +2532,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Gretchen Titchwillow",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy activation resolved nothing"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Grim Bauble",
     "ACTIVATED:0:1"
    ],
@@ -4228,6 +4236,14 @@
   {
    "pair": [
     "dispatched",
+    "Atarka's Command",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it); the legacy mode path resolved nothing"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Atlantis Attacks",
     "MODE:0:0:mode0"
    ],
@@ -4464,6 +4480,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cemetery Recruitment",
+    "SPELL:0:0"
+   ],
+   "reason": "unit SP: the chosen creature card returns to its owner's hand, and the draw reads it -- \"If it's a Zombie card, draw a card\" (CR 608.2c, the object test now reads subtypes); the legacy route always drew and returned nothing"
   },
   {
    "pair": [
@@ -4804,6 +4828,14 @@
   {
    "pair": [
     "dispatched",
+    "Embrace the Paradox",
+    "SPELL:0:0"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy route only drew"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Engulfing Eruption",
     "SPELL:0:0"
    ],
@@ -4816,6 +4848,14 @@
     "SPELL:0:0"
    ],
    "reason": "A type change on a chosen object (unit AT): the target becomes the printed type or subtype in addition to its other types, and gains the printed keywords / P/T, until end of turn, through the layer system's one-shot effects on that object only (CR 205.1b, 611.2c, 613.1d/f, 514.2); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Eureka Moment",
+    "SPELL:0:0"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy route only drew"
   },
   {
    "pair": [
@@ -5140,6 +5180,14 @@
   {
    "pair": [
     "dispatched",
+    "Growth Spiral",
+    "SPELL:0:0"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy route only drew"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Hammer of Bogardan",
     "SPELL:0:0"
    ],
@@ -5384,6 +5432,14 @@
     "SPELL:0:1"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Lessons from Life",
+    "SPELL:0:0"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy route only drew"
   },
   {
    "pair": [
@@ -7172,6 +7228,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Arboreal Grazer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it), tapped as printed; its card-name registry handler is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Armored Skaab",
     "TRIGGERED:0:0"
    ],
@@ -7280,6 +7344,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Carrion Imp",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SP: the life gain in the branch of \"you may exile target creature card from a graveyard. If you do, you gain 2 life\" now runs on the dispatcher with the exile (CR 701.13a, 608.2c); the legacy enter path resolved nothing"
   },
   {
    "pair": [
@@ -7804,6 +7876,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "H.E.R.B.I.E. Scout Unit",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy enter path resolved nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Haru-Onna",
     "TRIGGERED:0:0"
    ],
@@ -8072,6 +8152,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mardu Woe-Reaper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SP: the life gain in the branch of \"you may exile target creature card from a graveyard. If you do, you gain 1 life\" now runs on the dispatcher with the exile (CR 701.13a, 608.2c); the legacy enter path resolved nothing"
   },
   {
    "pair": [
@@ -8680,6 +8768,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spelunking",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SP: \"you may put a land card from your hand onto the battlefield\" is now performed through the land-entry owner (CR 305.4: not a land played; Amulet-style untap, a karoo's return, \"lands enter untapped\" and landfall all see it) after its draw; the legacy enter path resolved nothing, neither the draw nor the land"
   },
   {
    "pair": [
@@ -9784,6 +9880,11 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Llanowar Scout",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Lord of the Forsaken",
    "ACTIVATED:0:1"
   ],
@@ -9884,6 +9985,11 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "PuPu UFO",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Qasali Pridemage",
    "ACTIVATED:0:1"
   ],
@@ -9909,7 +10015,17 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Sakura-Tribe Scout",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Sands of Delirium",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Scaled Herbalist",
    "ACTIVATED:0:0"
   ],
   [
@@ -9960,6 +10076,11 @@
   [
    "activated_effects:UNCLASSIFIED",
    "Skull of Orm",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Skyshroud Ranger",
    "ACTIVATED:0:0"
   ],
   [
@@ -10069,6 +10190,11 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Walking Atlas",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Westfold Rider",
    "ACTIVATED:0:0"
   ],
@@ -10096,6 +10222,11 @@
    "activated_effects:UNCLASSIFIED",
    "Zacama, Primal Calamity",
    "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Zimone, Quandrix Prodigy",
+   "ACTIVATED:0:0"
   ],
   [
    "direct_damage",

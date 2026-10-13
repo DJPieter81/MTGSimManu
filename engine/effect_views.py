@@ -449,6 +449,13 @@ def _graveyard_target_exile(s) -> bool:
     return graveyard_target_exile(s)
 
 
+def _land_from_hand(s) -> bool:
+    """"Put a land card from your hand onto the battlefield" (unit SP):
+    the executor's own shape."""
+    from .effect_executors import land_from_hand
+    return land_from_hand(s)
+
+
 def strict_card_flow(h: AbilityEffects) -> bool:
     """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
     impulse shape: an EXILE of the top of the controller's library or of
@@ -458,9 +465,10 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     but such an exile) is switched too; whether its drawer and count are
     the DRAW executor's is `can_execute`'s question (A38). And the
     same-name search shape (`_same_name_exile`, unit SX). And the exile
-    of a card chosen in a graveyard (unit GX), which a life gain may ride
-    beside ("If it was a creature card, you gain 3 life. Otherwise, you
-    draw a card."); a life gain rides with nothing else here."""
+    of a card chosen in a graveyard (unit GX) and a land put from a hand
+    (unit SP), which a life gain may ride beside ("If it was a creature
+    card, you gain 3 life.", "If you put a Cave onto the battlefield this
+    way, you gain 4 life."); a life gain rides with nothing else here."""
     if _same_name_exile(h):
         return True
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS
@@ -468,7 +476,8 @@ def strict_card_flow(h: AbilityEffects) -> bool:
         return False
     exiled = {s.seq for s in iter_specs(h.specs)
               if _library_top_exile(s) or _hand_exile(s)}
-    graveyard = any(_graveyard_target_exile(s) for s in iter_specs(h.specs))
+    graveyard = any(_graveyard_target_exile(s) or _land_from_hand(s)
+                    for s in iter_specs(h.specs))
     for s in iter_specs(h.specs):
         if s.verb is Verb.EXILE and s.seq not in exiled \
                 and not _graveyard_target_exile(s):

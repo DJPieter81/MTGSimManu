@@ -253,9 +253,12 @@ execute_damage.supports = _damage_supported
 
 def _life_supported(s: EffectSpec) -> bool:
     """"<player(s)> lose / gain <amount> life", the acting players bound by
-    the dispatcher (the controller, a player set, or a chosen player)."""
+    the dispatcher (the controller, a player set, or a chosen player). An
+    "if you do" life gain sits in its named action's branch, which the
+    dispatcher runs only when that action was performed (CR 608.2c): the
+    flag says so and asks nothing more of this executor."""
     if s.verb not in (Verb.LOSE_LIFE, Verb.GAIN_LIFE) \
-            or not _plain_participants(s) or s.flags - {"each"}:
+            or not _plain_participants(s) or s.flags - {"each", "if_you_do"}:
         return False
     if s.subject is not None or s.ref is not None or s.other is not None:
         return False
@@ -503,18 +506,85 @@ def _put_searched(ctx: Resolution, s: EffectSpec,
     return Outcome(bool(moved), {p: tuple(v) for p, v in moved.items()})
 
 
+# "a land card from your hand": the one object group a land put from hand
+# names (unit SP).
+_LAND_IN_YOUR_HAND = CardFilter(zone="hand", types=frozenset({"land"}),
+                                owner="you").as_tuple()
+
+
+def land_from_hand(s: Any) -> bool:
+    """"[You may] put a land card from your hand onto the battlefield
+    [tapped]" (CR 305.4): one land of the controller's choice moves from
+    their hand to the battlefield through the land-entry owner. "You may"
+    is the dispatcher's question (A35), asked before this runs."""
+    d, f, a = s.dest, s.filter, s.amount
+    return (s.verb is Verb.MOVE and isinstance(d, Destination)
+            and dataclasses.replace(d, tapped=False)
+            == Destination(zone="battlefield")
+            and isinstance(f, CardFilter) and f.as_tuple() == _LAND_IN_YOUR_HAND
+            and (a is None or (a.kind is AmountKind.LITERAL and a.n == 1))
+            and s.target is None and s.target_slot is None
+            and s.ref is None and s.subject is None and s.other is None
+            and s.payload is None and s.duration is None
+            and s.group is None and not s.alternatives and not s.flags
+            and s.chooser is Chooser.CONTROLLER
+            and _acts_as_controller(s.actor))
+
+
+def _put_land_from_hand(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The land the controller picks (`choose_cards`, A35) out of the land
+    cards in their hand enters the battlefield under them, tapped or not
+    as printed, and its landfall triggers. Auditor `305.4/land_put`."""
+    from .land_manager import LandManager
+    player = ctx.game.players[ctx.controller]
+    pool = [c for c in player.hand if c.template.is_land]
+    if not pool:
+        return Outcome(False, {})
+    answer = ctx.game.callbacks.choose_cards(ctx, s, list(pool), 1) or ()
+    picked = [c for c in answer if any(c is p for p in pool)][:1]
+    if not picked:
+        return Outcome(False, {})
+    card = picked[0]
+    played = player.lands_played_this_turn
+    LandManager.put_land_onto_battlefield(
+        ctx.game, card, ctx.controller, "hand", s.dest.tapped,
+        getattr(_source_object(ctx), "name", ""))
+    _audit_land_put(ctx, card, played)
+    LandManager.trigger_landfall(ctx.game, ctx.controller)
+    return Outcome(True, {ctx.controller: (handle_of(card),)})
+
+
+def _audit_land_put(ctx: Resolution, card: Any, played: int) -> None:
+    """CR 305.4, restated from the zones and the land-drop count: the land
+    put is on the battlefield under the controller, and no land drop was
+    spent on it. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    player = ctx.game.players[ctx.controller]
+    ok = (card.zone == "battlefield" and card.controller == ctx.controller
+          and player.lands_played_this_turn == played)
+    rules_audit.check("305.4/land_put", ok,
+                      f"{card.name}: zone {card.zone}, lands played "
+                      f"{played} -> {player.lands_played_this_turn}",
+                      game=ctx.game)
+
+
 def execute_move(ctx: Resolution, s: EffectSpec,
                  actors: Tuple[int, ...]) -> Outcome:
     if self_return_transformed(s):
         return _return_self_transformed(ctx, s)
     if searched_to_battlefield(s):
         return _put_searched(ctx, s, actors)
+    if land_from_hand(s):
+        return _put_land_from_hand(ctx, s)
     return execute_move_to_hand(ctx, s, actors)
 
 
 execute_move.supports = (lambda s: _move_to_hand_supported(s)
                          or self_return_transformed(s)
-                         or searched_to_battlefield(s))
+                         or searched_to_battlefield(s)
+                         or land_from_hand(s))
 # An unbound slot is the controller's choice through `choose_cards`, so a
 # carrier with no targets to bind (the enter-trigger carrier) may take it.
 execute_move.picks_unbound_slots = True
@@ -1410,9 +1480,10 @@ _CARD_TYPE_VALUES = frozenset(t.value for t in CardType)
 
 
 def _object_condition_supported(cond: Condition) -> bool:
-    """"If it was a <type> card": the card an earlier instruction of this
-    resolution moved (its RESULT, CR 608.2c) has one of the filter's card
-    types. Any other object predicate is refused."""
+    """"If it was a <type> card" / "if you put a <subtype> ... this way":
+    the card an earlier instruction of this resolution moved (its RESULT,
+    CR 608.2c) has one of the filter's card types and one of its subtypes
+    (each where printed). Any other object predicate is refused."""
     r, f = cond.ref, cond.filter
     return (cond.kind is ConditionKind.OBJECT and cond.pred == "is"
             and isinstance(r, Ref) and r.kind is RefKind.RESULT
@@ -1420,23 +1491,33 @@ def _object_condition_supported(cond: Condition) -> bool:
             and r.n is None and r.of is None and not r.per_actor
             and cond.payer is None and cond.n is None and cond.cost is None
             and not cond.children and isinstance(f, CardFilter)
-            and f.zone == "" and bool(f.types) and f.types <= _CARD_TYPE_VALUES
-            and dataclasses.replace(f, types=frozenset(), raw="",
+            and f.zone == "" and bool(f.types or f.subtypes)
+            and f.types <= _CARD_TYPE_VALUES
+            and dataclasses.replace(f, types=frozenset(),
+                                    subtypes=frozenset(), raw="",
                                     zone=CardFilter().zone) == CardFilter())
 
 
+def _is_named_object(card: Any, f: CardFilter) -> bool:
+    t = card.template
+    if f.types and not f.types & {ct.value for ct in t.card_types}:
+        return False
+    return not f.subtypes or bool(
+        {st.lower() for st in f.subtypes}
+        & {st.lower() for st in (t.subtypes or ())})
+
+
 def evaluate_object(ctx: Resolution, cond: Condition) -> bool:
-    """True when a card the named instruction moved has one of the
-    filter's types, read from the card where it now is (its
-    characteristics are the same there, CR 400.7). An instruction that
-    moved nothing satisfies no "if it was"."""
+    """True when a card the named instruction moved is the filter's kind,
+    read from the card where it now is (its characteristics are the same
+    there, CR 400.7). An instruction that moved nothing satisfies no "if it
+    was"."""
     produced = ctx.results.get(cond.ref.index) or {}
     for handles in produced.values():
         for h in handles:
             card = ctx.game.get_card_by_id(h.instance_id) \
                 if isinstance(h, Handle) else None
-            if card is not None and cond.filter.types & {
-                    t.value for t in card.template.card_types}:
+            if card is not None and _is_named_object(card, cond.filter):
                 return True
     return False
 
@@ -1768,6 +1849,8 @@ EXECUTOR_FILTER_KEYS[Verb.PUT_COUNTERS] = frozenset(
        for i in range(len(("first", "second")))])
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
+# The move executor evaluates "a land card from your hand" itself (unit SP).
+EXECUTOR_FILTER_KEYS[Verb.MOVE] = frozenset(_LAND_IN_YOUR_HAND)
 # The search executor evaluates "a basic land card" in the searcher's own
 # library itself (unit LA).
 EXECUTOR_FILTER_KEYS[Verb.SEARCH] = frozenset(_BASIC_LAND_CARD.as_tuple())

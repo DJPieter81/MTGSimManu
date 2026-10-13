@@ -1,5 +1,5 @@
 {
-  "combined": "7a4e2a2dccdc4279815425ceeb43f6d2d9deaaac28afb44299b2140f3d03d18d",
+  "combined": "45f189ff926de77ab0f28a820c0446e89e0fe4b8a8bd8d17a707c9ccd10f560b",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -9,8 +9,8 @@
       "winner": "Ruby Storm"
     },
     "bo1|Amulet Titan|Eldrazi Tron|54500": {
-      "lines": 710,
-      "sha256": "f4267f38379202cbb9f1b8481bd84ef9408b326eefd8ce7b52b29a836ecf17aa",
+      "lines": 736,
+      "sha256": "06e17a85e2c81d9668f2ab1430cf08b18bf0ce2defa5f7f93b0bd8f29c6e0df9",
       "turns": 11,
       "winner": "Eldrazi Tron"
     },

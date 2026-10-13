@@ -147,6 +147,10 @@ class Frame(NamedTuple):
     connective: str = ""
     named_vp: Optional[Span] = None
     named_lemma: str = ""
+    # The object a named performed test prints, when it narrows the
+    # card types or subtypes ("if you put a Cave onto the battlefield
+    # this way"): the linker tests the named action's result for it.
+    named_object: Optional[Any] = None
     opener: Optional[Opener] = None
     condition: Optional[Condition] = None
     instead: bool = False
@@ -325,6 +329,42 @@ def _performed_test(t: str, a: int, b: int) -> Optional[str]:
     return "" if sp > a and _player_subject(t, a, sp) else None
 
 
+# Where a performed test's object ends: the verb's destination or source,
+# or the test's own "this way".
+_OBJECT_END_RE = re.compile(r" (?:onto|into|from|to|on|this way)\b")
+
+
+def _performed_object(t: str, a: int, b: int) -> Optional[Any]:
+    """The object a "<player> <VP> <object> ... this way" performed test
+    names, as a CardFilter, when it narrows the card types or subtypes
+    ("if you put a Cave onto the battlefield this way", "if you discard a
+    creature card this way"): the named action's result must be such a
+    card (CR 608.2c), so the linker tests it. None when the object narrows
+    nothing ("a card", "it") or the filter leaf cannot type it."""
+    import dataclasses
+    from engine.effect_grammar.sub import filter as _filter
+    from engine.effect_spec import CardFilter
+    v = _lexicon.find_verb(t, (a, b))
+    if v.value is None:
+        return None
+    oa = v.span[1]
+    while oa < b and t[oa] == " ":
+        oa += 1
+    m = _OBJECT_END_RE.search(t, oa, b)
+    ob = m.start() if m is not None else b
+    if ob <= oa:
+        return None
+    r = _filter.parse_filter(t, (oa, ob), zone="graveyard")
+    f = r.value
+    if f is None or not (f.types or f.subtypes):
+        return None
+    bare = dataclasses.replace(f, types=frozenset(), subtypes=frozenset(),
+                              zone=CardFilter().zone, raw="")
+    if bare != CardFilter():
+        return None
+    return dataclasses.replace(f, zone="", raw=t[oa:ob])
+
+
 def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
     """Consume leading frame phrases from `pos`; the new position, or None
     when the rest of the sentence was refused."""
@@ -395,6 +435,9 @@ def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
                     f.fields.setdefault("connective", "if_you_do")
                     f.fields["named_vp"] = (pos + 3, cut)
                     f.fields["named_lemma"] = v
+                    obj = _performed_object(t, pos + 3, cut)
+                    if obj is not None:
+                        f.fields["named_object"] = obj
                     f.consumed.append(("named_vp", (pos, cut + 1)))
                 else:
                     # A CR 614 "would" test (tested first: "if a creature
@@ -646,6 +689,7 @@ def _freeze(f: _F, span: Span, part: int, label: str,
     return Frame(span=span, part=part, label=label,
                  connective=x.get("connective", ""),
                  named_vp=x.get("named_vp"), named_lemma=x.get("named_lemma", ""),
+                 named_object=x.get("named_object"),
                  opener=x.get("opener"), condition=x.get("condition"),
                  instead=x.get("instead", False), duration=x.get("duration"),
                  for_each=x.get("for_each"), unless=x.get("unless"),

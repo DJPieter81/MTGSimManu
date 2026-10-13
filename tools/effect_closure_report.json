@@ -483,21 +483,28 @@
     "part": "sideboard",
     "step": "E5",
     "strict": true
+   },
+   {
+    "card": "Sakura-Tribe Scout",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
    }
   ],
-  "executable": 205,
+  "executable": 213,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 6,
-   "pool": 198,
+   "mainboard": 7,
+   "pool": 205,
    "sideboard": 1
   },
   "steps": {
-   "E2": 95,
-   "E3": 93,
+   "E2": 102,
+   "E3": 94,
    "E5": 17
   },
-  "strict": 205,
+  "strict": 213,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
@@ -508,7 +515,7 @@
    "DRAW,EXILE": 2,
    "EXILE": 5,
    "MILL": 40,
-   "MOVE": 22,
+   "MOVE": 29,
    "SURVEIL": 30
   }
  },
@@ -719,23 +726,23 @@
     "strict": false
    }
   ],
-  "executable": 100,
+  "executable": 101,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
-   "pool": 813,
+   "pool": 808,
    "sideboard": 0
   },
   "steps": {
    "E1": 2,
    "E2": 2,
-   "E3": 341,
+   "E3": 336,
    "E4": 53,
    "E5": 116,
    "E6": 34,
    "none": 275
   },
-  "strict": 90,
+  "strict": 85,
   "sub_kinds": {
    "DELAYED": 6,
    "REFLEXIVE": 2
@@ -746,7 +753,7 @@
    "DISCARD,DRAW": 48,
    "DRAW": 40,
    "DRAW,LOSE_LIFE": 18,
-   "DRAW,MOVE": 38,
+   "DRAW,MOVE": 33,
    "DRAW,SCRY": 17,
    "DRAW,UNMODELLED": 78,
    "MOVE,UNMODELLED": 27,
@@ -1148,21 +1155,21 @@
     "strict": true
    }
   ],
-  "executable": 481,
+  "executable": 487,
   "family": "damage",
   "hosts": {
    "mainboard": 20,
-   "pool": 458,
+   "pool": 464,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
-   "E2": 80,
-   "E3": 106,
+   "E2": 81,
+   "E3": 111,
    "E4": 121,
    "E5": 20
   },
-  "strict": 481,
+  "strict": 487,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 8,
@@ -1170,10 +1177,10 @@
    "CREATE_TOKEN": 114,
    "DAMAGE": 154,
    "DRAW": 68,
-   "DRAW,EXILE": 4,
+   "DRAW,MOVE": 7,
    "DRAW,SURVEIL": 6,
    "MILL": 16,
-   "MOVE": 51,
+   "MOVE": 52,
    "SACRIFICE": 25
   }
  },
@@ -1251,6 +1258,13 @@
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
     "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Arboreal Grazer",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
     "strict": true
    },
    {
@@ -1338,6 +1352,13 @@
     "strict": true
    },
    {
+    "card": "Spelunking",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Thought Monitor",
     "host": "TRIGGERED:0:2",
     "part": "mainboard",
@@ -1366,28 +1387,30 @@
     "strict": true
    }
   ],
-  "executable": 247,
+  "executable": 252,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 17,
-   "pool": 230,
+   "mainboard": 19,
+   "pool": 233,
    "sideboard": 0
   },
   "steps": {
-   "E2": 43,
-   "E3": 194,
+   "E2": 46,
+   "E3": 196,
    "E5": 10
   },
-  "strict": 247,
+  "strict": 252,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 10,
    "DRAW": 108,
+   "DRAW,GAIN_LIFE,MOVE": 1,
    "DRAW,MILL": 2,
+   "DRAW,MOVE": 1,
    "EXILE": 10,
-   "EXILE,GAIN_LIFE": 1,
+   "EXILE,GAIN_LIFE": 3,
    "MILL": 37,
-   "MOVE": 32,
+   "MOVE": 33,
    "SURVEIL": 47
   }
  },

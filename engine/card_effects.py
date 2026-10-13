@@ -1638,34 +1638,9 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
 # Amulet Titan package
 # ═══════════════════════════════════════════════════════════════════
 
-@EFFECT_REGISTRY.register("Arboreal Grazer", EffectTiming.ETB,
-                           description="Put a land from hand onto the battlefield tapped")
-def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
-    # single-owner-allow: not a target pick — puts a land from its controller's own hand
-    """Arboreal Grazer: ETB put a land from hand onto battlefield tapped."""
-    player = game.players[controller]
-    lands_in_hand = [c for c in player.hand if c.template.is_land]
-    if lands_in_hand:
-        # Pick the best land to put in (bounce lands > basics)
-        bounce_lands = [c for c in lands_in_hand
-                        if c.template.enters_tapped and c.template.produces_mana]
-        land = bounce_lands[0] if bounce_lands else lands_in_hand[0]
-        player.hand.remove(land)
-        land.enter_battlefield()
-        land.controller = controller
-        # Grazer puts the land onto the battlefield tapped, so it enters
-        # tapped regardless of the template's enters_tapped field.
-        land.tapped = True
-        player.battlefield.append(land)
-        # Apply Amulet-style untap triggers AND Spelunking-style "lands
-        # enter untapped" static abilities — both needed for Amulet Titan's
-        # mana chain. Previously only Amulet triggers applied, which left
-        # Spelunking's replacement-effect untap unapplied on Grazer lands.
-        game._apply_land_etb_static(land, controller)
-        game._apply_lands_enter_untapped(land, controller)
-        game._trigger_landfall(controller)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Arboreal Grazer puts {land.name} onto battlefield")
+# Arboreal Grazer's enter trigger ("you may put a land card from your hand
+# onto the battlefield tapped") resolves from its typed host on the
+# dispatcher (unit SP: `effect_executors.land_from_hand`).
 
 
 @EFFECT_REGISTRY.register("Primeval Titan", EffectTiming.ETB,

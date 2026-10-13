@@ -1189,6 +1189,19 @@ def _link_frames(ctx: _Ctx, root: _Host, items, host_state: dict) -> None:
             ct.mentions = []
 
 
+def _require_named_object(n: "_Node", anchor: "_Node", obj: Any) -> None:
+    """"If you <verb> <a Cave> ... this way": the instruction is performed
+    only when the named action's result is such a card (CR 608.2c), an
+    OBJECT test of the anchor's result, joined to any condition the
+    instruction already has."""
+    c = Condition(ConditionKind.OBJECT, pred="is",
+                  ref=Ref(RefKind.RESULT, anchor.seq), filter=obj,
+                  raw=obj.raw)
+    old = n.get("condition")
+    n.fields["condition"] = c if old is None else Condition(
+        ConditionKind.ALL_OF, children=(old, c), raw=old.raw + "; " + c.raw)
+
+
 def _delayed_target(ctx, delayed: _Host, parent: _Host, fm, fi) -> _Host:
     """A30: a later sentence joins the open delayed sub-ability only when
     it binds to the delayed specs' results."""
@@ -1294,6 +1307,8 @@ def _place_frame(ctx, target, fm, fi, ct, host_state) -> None:
             if conn == "if_you_do":
                 for n in nodes:
                     n.fields["flags"] = frozenset(n.get("flags") | {"if_you_do"})
+                    if f.named_object is not None:
+                        _require_named_object(n, anchor, f.named_object)
             for n in nodes:
                 n.bound.append(anchor)
     for n in nodes:

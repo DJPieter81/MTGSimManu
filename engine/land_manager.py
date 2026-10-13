@@ -316,18 +316,30 @@ class LandManager:
             f"Crack {fetch_name} (no valid land found)")
 
     @staticmethod
-    def put_land_from_library(game: "GameState", card, player_idx: int,
-                              tapped: bool, cause: str) -> None:
-        """A land a search found enters the battlefield under its searcher
-        (CR 701.19a): through the zone funnel, tapped or not as the
-        instruction says, with the land-entry statics (an untap-on-enter
-        watcher, "lands you control enter untapped"). Its caller fires
-        landfall and the search's own triggers in its printed order."""
-        game.zone_mgr.move_card(game, card, "library", "battlefield",
+    def put_land_onto_battlefield(game: "GameState", card, player_idx: int,
+                                  from_zone: str, tapped: bool,
+                                  cause: str) -> None:
+        """A land an instruction puts onto the battlefield -- one a search
+        found (CR 701.19a), one from a hand (CR 305.4) -- enters under
+        `player_idx` from `from_zone` through the zone funnel, tapped or not
+        as the instruction says, with the land-entry statics (an
+        untap-on-enter watcher, a karoo's return, "lands you control enter
+        untapped"). Putting a land is not playing one (CR 305.4): no land
+        drop is spent. Its caller fires landfall and its own triggers in
+        their printed order."""
+        game.zone_mgr.move_card(game, card, from_zone, "battlefield",
                                 cause=cause, controller_override=player_idx)
         card.tapped = bool(tapped)
         LandManager.apply_land_etb_static(game, card, player_idx)
         LandManager.apply_lands_enter_untapped(game, card, player_idx)
+
+    @staticmethod
+    def put_land_from_library(game: "GameState", card, player_idx: int,
+                              tapped: bool, cause: str) -> None:
+        """A land a search found enters the battlefield under its searcher
+        (`put_land_onto_battlefield` from the library)."""
+        LandManager.put_land_onto_battlefield(game, card, player_idx,
+                                              "library", tapped, cause)
 
     @staticmethod
     def note_library_search(game: "GameState", searcher_idx: int) -> None:
