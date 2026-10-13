@@ -9168,3 +9168,60 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **The self-discard ranking breaks ties by hand order.** Every card it gives no bonus scores 0 (Ral, Monsoon Mage, Hex Magic, the rituals), so a rummage discards the oldest of them. The card's worth while held (the strip value `choose_card_to_exile_from_hand` reads, keystones last) would order them.
 - **Class levels 2 and 3** (Artist's Talent's cost reduction and damage boost) are not typed.
+
+## Unit ET: an enter trigger creates the token its creator prints; a dies observer fires whatever the dying creature prints; a watch trigger reads only its own ability (2026-10-13)
+
+**Found by:** a Dimir Midrange vs Boros Energy replay (s50000 g1, at `da93a86`). Ajani's Cat Warrior token died blocking on T3, and Ajani never transformed.
+
+**Rules:**
+- **CR 111.3, 603.6a:** "When <this> enters, create <N> <token>" creates tokens with the characteristics the creator prints.
+- **CR 603.2, 603.10a:** "Whenever one or more other <subtype>s you control die, <effect>" is the observer's ability. It triggers on the death of any creature of that subtype its controller controls, whatever that creature's own text.
+- **CR 603.1, 113.1a, 207.2:** a watch trigger ("whenever a <type> you control enters, create … token") is one ability: the paragraph holding the clause, with the modal bullets it introduces. A clause in quotes (granted to another object) or in reminder text is not the card's trigger.
+
+**Defects:**
+1. Ajani's enter trigger was a name-keyed handler that created a "Cat Token" with no subtype and no colour.
+2. The subtype-death transform lived in the dying creature's own resolver (`resolve_dies_trigger`), behind a gate on that creature's text. A vanilla token's death never reached it, so in the current engine Ajani never transforms. Older replays in `replays/` show transforms; when that stopped was not bisected.
+3. The enter carrier took only the card-flow family. 259 pool enter triggers that create a token, and 6 that put counters on each creature, resolved as nothing.
+4. The enter-watcher (`engine/triggers.py`) matched its clause anywhere on the card and "create … token" anywhere else: 32 of the 67 pool cards it matched. Kiora's emblem, Nurturing Presence's granted trigger and Scurry Oak's evolve reminder each created a token per creature entering, and each token's entry created another, without end. Unit ET's Nurturing Presence Spirit exposed this as a RecursionError in the harness.
+
+**Class:**
+- 265 pool enter triggers newly carried by the tokens-and-counters family.
+- The creature dies observers (36+ pool cards) gain the self-transform kind (3 pool cards).
+- 67 watch triggers, 32 of them misread before.
+- Registered decks: Ajani (Boros Energy ×4), Generous Ent (Living End), Weapons Manufacturing (Affinity), Tireless Tracker (Amulet Titan).
+
+**Steps (`95197c8`):**
+- `effect_carrier.ETB_FAMILIES = ("card_flow", "tokens_counters")`.
+- Ajani's name-keyed enter handler is deleted; registry 77 → 76.
+- `oracle_parser.parse_creature_dies_observer` types "whenever one or more other <subtype>s you control die, you may exile ~, then return ~ transformed" as kind `transform_self`. `PermanentEffects._fire_creature_dies_observers` performs it through `_transform_permanent` (a new object, CR 400.7). The block in `resolve_dies_trigger` is deleted.
+- `oracle_parser.parse_enter_watch_token` types the watcher at load from its own ability (`_own_ability_span`), into `CardTemplate.enter_watch_token`. The watcher reads the field; the runtime oracle parse in `triggers.py` is gone.
+- New auditor `603.2/dies_observer`: a creature's death triggers every matching observer, restated from the raw fields.
+
+**Tests (11):**
+- `tests/test_an_enter_trigger_creates_the_token_its_creator_prints.py` (8, 6 red first, including the auditor both ways).
+- `tests/test_a_watch_trigger_creates_tokens_only_from_its_own_ability.py` (3, 2 red first with the RecursionError itself).
+
+**Ratchets:**
+- Card-name registry 77 → 76.
+- Effect-parser (b) 101 → 96.
+- Oracle-runtime-parse at 163.
+
+**Pins:**
+- Harness: 255 new etb:dispatch pairs, classified and verified, recorded as intended (1446 intended, 367 proven):
+  - 247 where legacy created no token;
+  - 6 where legacy placed no counters on each creature;
+  - Geist-Honored Monk, whose own power counts its new Spirits;
+  - Triceraton Commander, result-only (X = 0 on the boards, state and log identical).
+- The legacy self-check's no-op set loses Generous Ent's enter trigger (it now makes its Food): 257 hosts, 191 state-changing.
+- Digest: 4 games change log lines only, with the same winners and turns:
+  - Boros Energy's token is now a Cat Warrior Token;
+  - Generous Ent makes its Food when Living End returns it.
+- Anchor 29.
+
+**Measured:** the `et-post` arm (pre = `ct-post`) follows.
+
+**Leads (not built):**
+- **Legacy-built tokens carry no subtype.** `TOKEN_DEFS` and `parse_token_spec` name the token but set no subtype. So Ocelot Pride's end-step Cat (Boros Energy ×4) is not a Cat, and its death does not transform Ajani.
+- **Batched dies observers are refused:** Vengeful Townsfolk's counter, Vraan's drain. They need "one or more … die" as one event.
+- **The engine always performs Ajani's optional exile.** The transform is always worth it here (a 3-loyalty walker for a 1/2), but the choice belongs to the AI.
+- **A played land never reaches the enter-watcher,** so the land watchers it types do not fire through it. Checked directly: Tireless Tracker (Amulet Titan SB ×1) never investigates on a land drop. Landfall token makers are in the same position.
