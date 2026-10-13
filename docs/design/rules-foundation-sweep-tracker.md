@@ -6876,7 +6876,6 @@ Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Az
 
 **Defect:** `_project_spell` incremented the projected storm count by the held cards a cast spends. Since I.4, a card whose permission ends this turn spends none, so casting an impulse-exiled card counted for no storm (CR 702.40a) in every plan reading the projection. Fixed in `3932277`: the storm count is charged for every cast, and the hand only for a held card. Digest byte-identical.
 
-
 ## Unit V: evoke and costs that exile a card from hand, from the rules (2026-10-10)
 
 **Class:**
@@ -6924,7 +6923,6 @@ Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Az
 - Across the unit (R1's arm to V.2's): 4c Omnath −4.3, Instant Reanimator −2.3, Azorius Control (WST) +1.5. No deck crosses the 5 pp replay threshold.
 
 **Lead:** 4c Omnath's −4.3 is the unit's largest move. Its four Solitudes and one Endurance now follow the AI's evoke and pitch decisions instead of the engine's. Its worst cells (vs Eldrazi Ramp, Jeskai Blink, Azorius Control (WST v2)) are where to replay first.
-
 
 ## Unit R2: combat-damage-to-a-player triggers from text (2026-10-10)
 
@@ -8594,3 +8592,232 @@ Hundreds of pool cards sacrifice creatures.
 - **View drift:**
   - `can_target_player` reads only damage and discard targets;
   - the pump keyword views read no choice alternatives.
+
+## Unit WX: an X is the value its card binds (2026-10-12)
+
+**Rule (CR 107.3, 107.3a, 202.3e):**
+- An {X} in a cost binds the X its text prints, at the value chosen as the spell is cast.
+- ", where X is <quantity>" defines X for the whole instruction.
+- An X nothing binds has no value. The grammar's contract refuses it (UNMODELLED `x_unbound`) and never reads it as zero.
+
+**Defects (found while sizing GX, whose token riders read an X):**
+1. The grammar read a spell's {X} from `ManaCost.x_count`, a field mana costs did not have (only activation costs did). So every {X} spell's X was "unbound" and its instruction refused: 85 spell hosts, e.g. "Blaze deals X damage to any target.", had no typed instruction.
+2. The payload leaf typed a token count, or an X/X token's P/T, as the cost's X however X was defined.
+   - "Create X 1/1 green Saproling creature tokens, where X is the greatest power among creatures you control" created none on the dispatcher.
+   - Fungal Sprouting, Flurry of Wings, Storm Herd, Rise of the Varmints and Rise of the Dread Marn were switched and "proven", but only because the legacy route made none either.
+
+**Class:**
+- 339 pool cards have an {X} in their mana cost.
+- 57 create X tokens where X is defined in their text.
+- None is in a registered deck.
+
+**Steps (`13cbd8e`):**
+- `ManaCost.x_count` counts the cost's {X} pips (`parse_mana_cost_mtgjson`; X adds nothing to mana value). Loaded and synthetic templates read the same fact.
+- `patterns._bound_x` binds a payload "X" like every other amount:
+  - the frame's definition (X_DEFINED);
+  - else the cost's X;
+  - an X nothing binds is refused (`x_unbound`);
+  - a defined X under a sign or factor is refused too (`x_defined_scaled`).
+
+**Tests (6, red first):** `tests/test_an_x_is_the_value_its_card_binds.py`.
+
+**Pins:**
+- Harness (pool):
+  - 9 X spells newly proven identical to their legacy apply (Blaze, Heat Ray, Mind Spring, Devil's Play, Volcanic Geyser, ...).
+  - 7 intended: Invoke the Firemind and Mishra's Command modes, Fascination, Purphoros's Intervention, and Gadwick's enter trigger. Their legacy mode and enter paths resolved nothing.
+  - 5 leave the switched set. Their definition has no evaluator yet, so they keep the legacy path instead of making 0 tokens.
+- Census: pool typed share 0.7362 → 0.7383; AMOUNT refusals 788 → 688.
+- Spec equivalence re-recorded. Legacy fallback unchanged (3168).
+- Digest byte-identical; anchor 29.
+
+**Leads (not built):**
+- **Quantities with no evaluator yet:** greatest power, attacking creatures, life lost this turn, and an exiled card's toughness. They decide the 5 hosts that left the switched set, and Morbid Bloom.
+- **An X bound by a non-mana cost** ("remove X storage counters", "reveal X cards", "discard X cards"). These hosts are refused now. Their costs are already unpayable (`unrecognised`), so no play changes.
+- **A split card's second face** with {X} (Cut // Ribbons): the face-1 facts read no mana cost.
+
+## Unit GX: a card chosen in a graveyard and exiled leaves it; the instructions beside the exile read it (2026-10-12)
+
+**Rule (CR 701.13a, 400.7, 608.2b-c):**
+- "Exile target card from a graveyard" moves the chosen card from its owner's graveyard to exile. The card must still be a legal target on resolution.
+- A rider beside the exile is performed in printed order, e.g. "Draw a card.", "Create a 2/2 black Zombie creature token.", "You gain 3 life.".
+- A branch on "it" reads the card the exile moved: "If it was a creature card, ... Otherwise, ...".
+
+**Defect (found replaying SXT's anchor flip, Grixis Reanimator vs Azorius Blink s53000):** no executor and no legacy handler exiled a graveyard target.
+- Every spell of the class left its target where it was and performed only its riders. Cling to Dust (Grixis Reanimator main deck) always drew; Shadowfeed gained 6 life.
+- The class's enter triggers did nothing, e.g. Soul-Guide Lantern (Broodscale Bloodchief main deck), a recorded no-op host.
+
+**Class:**
+- 116 pool cards exile a target card from a graveyard.
+- By host: 46 triggered, 39 activated, 18 spells.
+- Bare activations already worked through the legacy activation kind.
+
+**Steps (`74926f6`):**
+- `graveyard_target_exile` / `_exile_graveyard_targets`:
+  - the slot's chosen cards that are still legal (`_bound_cards`);
+  - or, for an enter trigger's unbound slot, its controller's pick (`_owner_picks`, A36);
+  - moved through the zone funnel, with auditor `701.13/graveyard_target_exiled`.
+- `evaluate_object`: "if it was a <type> card" over the moved card, with its "otherwise" branch.
+- Families:
+  - card-flow takes the exile with a draw or a life gain beside it (a life gain rides with nothing else there);
+  - tokens/counters takes it beside a token or counter instruction.
+- AI: `ai.graveyard_removal.pick_removals` picks an enter trigger's card. It takes the opponents' cards worth most to their owner, never the caster's own while an opponent's is there, and its own only to fill a required target.
+
+**Tests:** 12 (red first; the auditor both ways), in `tests/test_exile_target_card_from_a_graveyard_is_performed.py`.
+
+**Pins:**
+- 26 intended pairs, each checked board by board: the exile is now performed; Cling to Dust's branch both ways; Shadowfeed's single 3 life; the printed token subtypes.
+- Legacy fallback 3168 → 3161.
+- The self-check drops Soul-Guide Lantern's enter trigger from its no-op hosts (floor 184 → 185).
+- Digest byte-identical; anchor 29. The full suite passed in the working tree (7606).
+
+## Unit SXT: a graveyard removal is aimed at the card worth most to its owner; an escape cast spends what its exiled cards are worth (2026-10-12)
+
+**Rule (AI, from CR 608.2c, 701.19, 702.138a):**
+- A spell that removes a card from a graveyard takes from the card's owner that card. For a same-name exile, it also takes every card of that name in the zones it searches.
+- That is worth something only when the owner would have used it: a keystone their published plan declares, or a card still a resource to them there.
+- An escape cast spends the caster's own graveyard cards, and that spending is a cost.
+
+**Defect:** no pick knew the shape, so the engine's printed-data default aimed at the first card in the graveyard.
+- 4/5c Control vs Living End s50000 game 3: Surgical Extraction exiled four Misty Rainforests while Living End sat in that graveyard.
+- The projection saw nothing in a graveyard, hand or library exile, so the cast scored as a loss. It was made only on a turn facing lethal, at that default.
+
+**Class:**
+- 18 spells remove their graveyard target.
+- In decks: Surgical Extraction in six sideboards, Cling to Dust in Grixis Reanimator.
+- Escape casts: every escape card.
+
+**Steps (`3a6b421`, module `ai/graveyard_removal.py`, landed with GX):**
+- The aim: `choose_removal_target`, by the hand attack's ranking `score_card_for_opponent_strip`.
+- A removal-only spell is held when nothing is worth aiming at; a spell with a rider keeps the default aim.
+- The value: `removal_value`, a `_score_spell` overlay in the hand-denial currency. It counts fuel copies, copies in the hidden pool by the chance they are in hand, and the plan-disruption premium once.
+- The same-turn signal: a card worth aiming at is one.
+- The escape cost: `own_cost_exile_value`, a `_score_spell` term over the cards `pick_cost_exile` takes.
+
+**Tests:** 13 (red first), in `tests/test_a_graveyard_removal_is_aimed_at_the_card_worth_most_to_its_owner.py`. One is a Storm-side case: Past in Flames over a spent ritual.
+
+**Seen:**
+- Before the cost term, Grixis Reanimator escaped Cling to Dust twice in one game (Creatures Toolbox s56000), the second time exiling its own Archon of Cruelty and two Psychic Frogs.
+- With the term it escapes once, at the opponent's Birds of Paradise, paying with cards that serve nothing there.
+- Digest re-recorded for that game: same winner and turns. Anchor 29; SXT's earlier flip is gone once Cling to Dust resolves by its rules.
+
+**Measured (same-seed n=20 Bo3, `gx-post` `9b9053a` covers PO.4, WX, GX and SXT; pre = `po-post`):**
+- Every deck is within ±0.7: Grixis Reanimator +0.7, Hollow One −0.6, Living End −0.5, Amulet Titan −0.3. No deck moves more than 5 pp, so no replay is required.
+- 69 cells change. The largest are ±15, all in Grixis Reanimator cells, which run Cling to Dust: Living End vs Grixis 50 → 65, Grixis vs Eldrazi Tron 0 → 15, Grixis vs Amulet Titan 70 → 85.
+- Findings: the Practiced Offense `unhandled/spell` finding is gone (PO.4 confirmed). Untimely Malfunction's `unhandled/mode` (9) remains. Audit findings 324 → 314, violations 0.
+
+## Unit SP: a land card is put from its owner's hand onto the battlefield (2026-10-13)
+
+**Rule (CR 305.4, 608.2c):**
+- "[You may] put a land card from your hand onto the battlefield [tapped]" moves a land of its controller's choice from their hand to the battlefield.
+- It is not a land played: no land drop is spent.
+- It enters like any land, so an untap-on-enter watcher, a "lands you control enter untapped" static and landfall all see it.
+- A performed test ("If you put a Cave onto the battlefield this way") reads the object the named action produced.
+
+**Defect (the Amulet Titan outlier: 25.0% of the field at `po-post`, band 45–60):** a Bo3 trace vs Boros Energy (s50000) named the subsystem. Root cause: `docs/diagnostics/2026-10-13_amulet_titan_land_engine_root_cause.md`.
+- No executor put a land from hand.
+- Spelunking's enter trigger (×4) neither drew nor put a land.
+- Sakura-Tribe Scout's activation (×2) did nothing.
+- Arboreal Grazer worked only through a card-name registry handler.
+- Spelunking's Cave test also dropped its object, so on the dispatcher any land would have gained the 4 life.
+
+**Class:** 33 pool cards; 30 put "a land card from your hand". Amulet Titan carries 11 copies: Spelunking 4, Grazer 4, Scout 2, Cultivator Colossus 1.
+
+**Steps (`1270436`, `b4d12d7`):**
+- `LandManager.put_land_onto_battlefield`: the land-entry owner for any zone. The library search put became a wrapper over it.
+- `effect_executors.land_from_hand` / `_put_land_from_hand`: the controller picks the land (A35). Auditor `305.4/land_put`.
+- The OBJECT evaluator reads subtypes; GAIN_LIFE accepts an if-you-do flag.
+- Grammar: `Frame.named_object` becomes an OBJECT condition on the named action's result (`link._require_named_object`). `b4d12d7` types the object through the participant leaf, the spine's declared edge (the leaf contract was red at `1270436`).
+- AI pick: `activation_ev._choose_land_delivery`, the AI's one land valuation.
+- Arboreal Grazer's registry handler is retired (registry 78 → 77).
+
+**Tests:** 11, red first, the auditor both ways: `tests/test_a_land_card_is_put_from_its_owners_hand_onto_the_battlefield.py`.
+
+**Pins:**
+- Harness: 7 hosts newly proven; 12 pairs intended (the legacy route put nothing).
+- Legacy fallback 3161 → 3156.
+- The noop fixture gains Scout's activation and loses Spelunking's trigger (floor 186).
+- Digest: Amulet Titan vs Eldrazi Tron s54500 changes, same winner and turns.
+- Anchor: Amulet Titan vs Living End s50000, turns 8 → 12, winner unchanged.
+
+**Measured (same-seed n=20 Bo3, `sp-post` `09ec14a` = SP; pre = `gx-post`):**
+- **Amulet Titan 24.7 → 35.0 (+10.3).** Every other deck is within ±1.0.
+- 44 cells change, all of them Amulet Titan's. For example:
+  - Amulet vs Boros Ponza 30 → 60;
+  - Goryo's Vengeance vs Amulet 85 → 55;
+  - Amulet vs Azorius Control (WST) 15 → 40;
+  - Amulet vs Boros Energy 0 → 15.
+- **Cell-exact replay** of Amulet vs Boros Ponza (pre `3a6b421`, the gx-post code; post `1270436`):
+  - 6/20 → 12/20, reproducing both arms.
+  - 10 seeds flip, 8 to Amulet and 2 to Ponza. The two replayed (s50500, s57000) turn on Spelunking's draw and land.
+  - Spelunking's own static enters its land untapped, so the land-entry defect (unit LE) did not inflate this.
+  - Scout was not yet activated (unit SP.2).
+- **Findings:** Untimely Malfunction `unhandled/mode` 8; audit findings 314 → 316.
+- **One violation, `305.4/land_put`** (Living End vs Amulet Titan s57500, T4): Living End returned Arboreal Grazer to a board on which Amulet had no land. Its put Simic Growth Chamber rightly returned itself (CR 603.2). The auditor checked after that trigger; the seam is fixed in LE (`5e8cbc7`).
+- Amulet still sits 10 pp under its band (45–60).
+
+## Unit SP.2: a land put from hand is valued as the land it delivers (2026-10-13)
+
+**Rule (AI, from CR 305.4):** a land put from hand is the land card's use, as its land drop would be.
+- It is worth one more land: its mana on every turn after (`ETB_LAND_FROM_HAND_MANA_VALUE`).
+- No card is charged.
+- It is counted only where the engine performs it.
+
+**Defect:** unit SP made Scout's activation resolve, but the AI never activated it. The activation scorer valued an UNCLASSIFIED card-flow activation only as an impulse draw. The cast-side credit had three faults of its own:
+- it read a text tag gated on creatures, so Spelunking and Growth Spiral went uncredited;
+- a trigger no executor performs (Cultivator Colossus's refused loop) was credited;
+- the land card was charged as a lost card, so Arboreal Grazer projected at −0.25, below its −0.125 with no credit at all.
+
+**Class:** 8 pool activations resolve on the dispatcher; 30 pool cards put a land card from a hand.
+
+**Steps (`4b76d09`, module `ai/land_put.py`):**
+- `lands_put`: the count over the hosts the carriers take (`spell_family`, `etb_plan`, `activation_family`), capped by the lands in hand.
+- `land_put_projection`: the snapshot deltas.
+- `_project_spell` credits one more land and its mana.
+- `activation_candidates` prices the mana at the per-mana clock rate of its untap and tutor branches.
+- The X-creature-tutor patience gate reads the same count.
+- The tag `etb_land_from_hand` is retired with the test that pinned it.
+
+**Tests:** 14, 12 red first: `tests/test_a_land_put_from_hand_is_valued_as_the_land_it_delivers.py`. They include the AI activating Scout after its land drop.
+
+**Pins:**
+- Digest: Amulet Titan vs Eldrazi Tron s54500 flips (Eldrazi Tron T11 → Amulet Titan T10). The replay shows Scout putting a land on T4, then Grazer, Spelunking, and a T5 Primeval Titan hasted by Hanweir Battlements.
+- Anchor unchanged. Magic numbers 13 (`ai/land_put.py` seeded at 0).
+- Suites at `4b76d09`: 4903 + 2716 passed.
+
+## Unit LE: a land put onto the battlefield enters as a land played does (2026-10-13)
+
+**Rule (CR 305.4, 614.1d, 614.12, 603.6a, 714.3a):** a land an effect puts onto the battlefield is not played, but it enters like any land.
+- Its own entry rules apply however it enters: "This land enters tapped"; "As this land enters, you may pay 2 life. If you don't, it enters tapped"; "... enters tapped unless you control two or fewer other lands".
+- The instruction's "tapped" adds to them, and an untap payment that could buy nothing is not offered.
+- Its enter abilities trigger, and a Saga gets its first lore counter and chapter I as it enters.
+
+**Defect (found in SP.2's seeded-digest replay, Amulet Titan vs Eldrazi Tron s54500):** `play_land` applied all of this; the four other entry paths each applied a part.
+- The instruction put (a search, unit SP's hand put) overwrote the land's own tapped state and fired no enter trigger. Scout put Gruul Turf, Crumbling Vestige and Valakut untapped.
+- Primeval Titan's handler fired no enter trigger.
+- Scapeshift's handler wrote the zone by hand, so its Sagas got no lore counter until the next turn's fallback.
+- The fetchland crack offered a shock land's payment even when the fetch put the land tapped.
+
+**Class:** every land an effect puts onto the battlefield: searches, hand puts, fetchlands, mass searches.
+
+**Steps (`5e8cbc7`, owner `engine/land_manager`):**
+- `settle_own_entry_tapped` is extracted from `play_land`, whose log lines stay byte-identical.
+- `enter_land`: the zone move, then the land's own rules or the instruction's "tapped". Auditor `614.1d/land_entry`, restated from the printed entry fields.
+- `land_entered`: the ETB fan-out a land played reaches (Saga, a registered handler, typed enter triggers), then the untap watcher, a karoo's return and "lands enter untapped". A land a co-entrant's trigger already returned is skipped.
+- `put_land_onto_battlefield` = `enter_land` + `land_entered`. The search executor, the hand put, the basic-land replacement, Primeval Titan, the fetchland crack and Scapeshift (enter every land, then each entry's triggers) all enter through it.
+- Unit SP's auditor `305.4/land_put` now checks the put between the entry and what it sets off; this resolves the sp-post violation.
+- Zone-mutation ratchet 42 → 41.
+
+**Tests (red first):**
+- `tests/test_a_land_put_onto_the_battlefield_enters_as_a_land_played_does.py` (15, the auditor both ways).
+- In SP's file, the land-put auditor silent on a bounce land that returns itself.
+
+**Pins:**
+- Harness unchanged (367 proven, 1144 intended).
+- Digest: s54500 changes, winner and turns unchanged. Amulet untaps the lands Scout put, and Scapeshift's Sagas get chapter I on entry.
+- Anchor: Amulet Titan vs Living End s50000, turns 12 → 7, winner unchanged. Grazer's T2 Urza's Saga now gets chapter I on entry, so its chapter III tutor comes a turn earlier.
+
+**Leads (not built), from the SP / SP.2 / LE replays:**
+- **A bounce land is a land only beside another land.** In Living End vs Amulet Titan s57500 g3, Amulet kept two Gruul Turfs as its only lands and played each one into a self-return (9 in one match). The mulligan and the land drop count a bounce land as a land with no other land there. 7 bounce lands in Amulet's list.
+- **Scapeshift with no payoff line:** four lands into four Crumbling Vestiges, sacrificing the only Valakut (anchor s50000).
+- **Cultivator Colossus's "repeat this process"** loop is refused by the grammar.
+- **"When this land enters, add one mana of any color"** (Crumbling Vestige) is not modelled, even for a land played.

@@ -94,4 +94,18 @@ The "lands you control enter untapped" static already worked, through
 
 ## Measurement
 
-See the unit SP entry in `docs/design/rules-foundation-sweep-tracker.md`.
+`sp-post` (unit SP alone, same seeds as `po-post`/`gx-post`): **Amulet Titan
+24.7 → 35.0 (+10.3)**, every other deck within ±1.0. A cell-exact replay of
+Amulet vs Boros Ponza (30 → 60) reproduces both arms; its flips turn on
+Spelunking's draw and land. Amulet is still 10 pp under its band. Units SP.2
+(the AI activates Scout) and LE (a put land enters by its own rules and
+triggers) follow, measured by `le-post`. Details are in the SP, SP.2 and LE
+entries of `docs/design/rules-foundation-sweep-tracker.md`.
+
+## Next subsystem (from the SP / LE replays)
+
+A **bounce land is a land only beside another land**. In Living End vs Amulet
+Titan s57500 game 3, Amulet kept two Gruul Turfs as its only lands and played
+each into a self-return (9 times in the match). The mulligan and the land
+drop count a bounce land as a land when no other land is on the battlefield.
+Amulet's list runs 7 bounce lands.
