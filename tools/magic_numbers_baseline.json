@@ -36,6 +36,7 @@
   "ai/permanent_threat.py": 0,
   "ai/playable_cards.py": 0,
   "ai/pw_ability.py": 0,
+  "ai/regrowth.py": 0,
   "ai/removal_reach.py": 0,
   "ai/resolution_choices.py": 0,
   "ai/response.py": 0,

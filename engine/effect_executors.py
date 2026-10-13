@@ -364,6 +364,14 @@ def _move_to_hand_supported(s: EffectSpec) -> bool:
             and bool(req.types) and set(req.types) <= _GRAVEYARD_CARD_TYPES)
 
 
+def graveyard_to_hand(s: Any) -> bool:
+    """"[You may] return [up to N] target <card> from your graveyard to
+    your hand": the shape the MOVE executor performs for a graveyard
+    return (`_move_to_hand_supported`). Public for the AI's count of the
+    cards such an instruction returns (`ai.regrowth`)."""
+    return _move_to_hand_supported(s)
+
+
 def _legal_graveyard_cards(ctx: Resolution, req: Any, source: Any) -> list:
     """The cards the slot may name now (CR 601.2c at the choice, 608.2b on
     resolution): the legality owner's enumeration."""

@@ -201,6 +201,17 @@ def loyalty_line_value(pw, ability, game: "GameState", player_idx: int) -> float
         probe._game_state = game
         projected = _project_spell(probe, snap, None, game, player_idx, as_ability=True)
 
+    # A card the line returns from its controller's graveyard to their hand
+    # is one more card in that hand (`ai.regrowth`, from the walker's own
+    # line host).
+    from ai.regrowth import cards_returned
+    from engine.effect_carrier import loyalty_host
+    returned = cards_returned(game, player_idx, (loyalty_host(pw, ability),),
+                              source=pw)
+    if returned:
+        projected = projected.model_copy(update={
+            'my_hand_size': projected.my_hand_size + returned})
+
     # The walker's own future activations at its new loyalty, through the
     # same channel a cast walker's pool uses (persistent_power, decayed by
     # position_value's urgency factor).

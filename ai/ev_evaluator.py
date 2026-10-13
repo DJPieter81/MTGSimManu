@@ -2254,6 +2254,13 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             lands_put_on_cast(game, player_idx, t)).items():
         setattr(projected, _field, getattr(projected, _field) + _delta)
 
+    # A card the cast returns from its caster's graveyard to their hand is
+    # one more card in that hand (`ai.regrowth`, the one owner of the count;
+    # a loyalty line counts it from the walker's own host instead).
+    if game is not None and not as_ability:
+        from ai.regrowth import cards_returned_on_cast
+        projected.my_hand_size += cards_returned_on_cast(game, player_idx, t)
+
     # Permanent-pool projection — composable across permanent types.
     # Today: planeswalker loyalty pools (loyalty × per-tick clock impact,
     # gated by oracle-classified "useful" abilities). Returns 0 for
