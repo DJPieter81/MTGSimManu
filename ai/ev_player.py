@@ -630,6 +630,12 @@ class EVPlayer:
                 or l.template.fetchland.life_cost == 0
                 or me.life > l.template.fetchland.life_cost
             ]
+            # A bounce land played onto a battlefield holding no land
+            # returns itself: it would spend the land drop and put no land
+            # (`predicates.staying_lands`), so it is not a land play there.
+            from ai.predicates import staying_lands
+            safe_lands = [l for l in safe_lands
+                          if staying_lands([l], me.battlefield)]
             for land in safe_lands:
                 ev = self._score_land(_as_its_land_face(land), me, spells,
                                       game)
@@ -2504,14 +2510,11 @@ class EVPlayer:
                     ev -= LAND_TAPPED_MINOR
 
         # Amulet + bounce-land mana loop: the bounce land returns a land, which
-        # re-triggers the Amulet untap → net +1 mana/turn. Detect via oracle.
+        # re-triggers the Amulet untap → net +1 mana/turn. Read from the
+        # land's typed entry clause (`predicates.bounces_a_land`).
         if has_untap_enabler:
-            land_oracle = (land.template.oracle_text or '').lower()
-            is_bounce_land = (
-                "return a land you control to its owner's hand" in land_oracle
-                or "return an untapped land you control to its owner's hand" in land_oracle
-            )
-            if is_bounce_land:
+            from ai.predicates import bounces_a_land
+            if bounces_a_land(land):
                 ev += BOUNCE_LAND_AMULET_MANA
 
         # High-CMC creature ramp priority: when a CMC 6+ creature is in hand

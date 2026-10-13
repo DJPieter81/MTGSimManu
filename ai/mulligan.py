@@ -234,8 +234,11 @@ class MulliganDecider:
         from ai.strategy_profile import ArchetypeStrategy
 
         # A modal double-faced card's land face is a land option (CR 712).
-        from ai.predicates import is_land_option
-        lands = [c for c in hand if is_land_option(c)]
+        # The lands are the ones that stay once played: a bounce land with
+        # no other land beside it returns itself, so it is neither a land
+        # nor a spell of the keep (`predicates.staying_lands`).
+        from ai.predicates import is_land_option, staying_lands
+        lands = staying_lands(hand)
         spells = [c for c in hand if not is_land_option(c)]
         # Legend rule (CR 704.5j): duplicate copies of the same legendary
         # permanent are dead on resolution — only one survives.  For

@@ -423,6 +423,30 @@ def is_land_option(card) -> bool:
     return bool(getattr(t, "is_land", False))
 
 
+def bounces_a_land(card) -> bool:
+    """Does this land option's land return a land its controller controls
+    to its owner's hand as it enters -- a bounce land (its own text,
+    typed at load as `etb_return_land`)?"""
+    t = card.template
+    face = getattr(t, "playable_land_face", None) or t
+    return bool(getattr(face, "etb_return_land", False))
+
+
+def staying_lands(cards, battlefield=()) -> list:
+    """The land options among `cards` that stay on the battlefield once
+    played: the keep's and the land drop's land count.
+
+    A bounce land ("When this land enters, return a land you control to
+    its owner's hand") returns itself when it is the only land its
+    controller controls. So it stays only beside another land: one already
+    on `battlefield`, or a land among `cards` that is no bounce land.
+    Without such a land, none of the bounce lands among `cards` stays."""
+    lands = [c for c in cards if is_land_option(c)]
+    anchored = (any(getattr(c.template, "is_land", False) for c in battlefield)
+                or any(not bounces_a_land(c) for c in lands))
+    return lands if anchored else []
+
+
 def graveyard_target_removal(host):
     """``(slot, by_name)`` when a typed host's resolution removes from its
     graveyard the card chosen for its target ``slot`` -- the target a
