@@ -421,6 +421,19 @@ def _permission_over(s, exiled) -> bool:
 _CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE, Verb.MILL})
 
 
+def _enter_trigger_mana(h: AbilityEffects) -> bool:
+    """An enter trigger whose one instruction adds mana ("When this
+    creature enters, add {R}{G}.", unit EM). Only an enter trigger: a
+    spell's mana (a ritual) and an activation's (a mana ability) stay with
+    their own owners. An intervening "if" is refused (`_strict_host`)."""
+    from .effect_spec import EventHint, HostKind
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or EventHint.SELF_ENTERS not in h.trigger.event_hints:
+        return False
+    return _strict_host(h, frozenset({Verb.ADD_MANA})) \
+        and len(list(iter_specs(h.specs))) == 1
+
+
 # The same-name search shape (unit SX): a chosen object, a search of its
 # owner's (or controller's) zones for the cards sharing its name, "exile
 # them", and "that player shuffles" (CR 701.19a, 701.20a).
@@ -468,8 +481,9 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     of a card chosen in a graveyard (unit GX) and a land put from a hand
     (unit SP), which a life gain may ride beside ("If it was a creature
     card, you gain 3 life.", "If you put a Cave onto the battlefield this
-    way, you gain 4 life."); a life gain rides with nothing else here."""
-    if _same_name_exile(h):
+    way, you gain 4 life."); a life gain rides with nothing else here.
+    And an enter trigger whose one instruction adds mana (unit EM)."""
+    if _same_name_exile(h) or _enter_trigger_mana(h):
         return True
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS
                         | {Verb.GAIN_LIFE}, durations=True, conditions=True):

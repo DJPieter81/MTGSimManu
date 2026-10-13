@@ -27,10 +27,6 @@
    "SPELL:0:1"
   ],
   [
-   "Crumbling Vestige",
-   "TRIGGERED:0:1"
-  ],
-  [
    "Cultivator Colossus",
    "TRIGGERED:0:2"
   ],
@@ -255,5 +251,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 186
+ "state_changing_floor": 187
 }

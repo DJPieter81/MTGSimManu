@@ -726,7 +726,7 @@
     "strict": false
    }
   ],
-  "executable": 101,
+  "executable": 102,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
@@ -1275,6 +1275,13 @@
     "strict": true
    },
    {
+    "card": "Crumbling Vestige",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E6",
+    "strict": true
+   },
+   {
     "card": "Elegant Parlor",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -1387,26 +1394,27 @@
     "strict": true
    }
   ],
-  "executable": 252,
+  "executable": 257,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 19,
-   "pool": 233,
+   "mainboard": 20,
+   "pool": 237,
    "sideboard": 0
   },
   "steps": {
    "E2": 46,
    "E3": 196,
-   "E5": 10
+   "E5": 10,
+   "E6": 5
   },
-  "strict": 252,
+  "strict": 257,
   "sub_kinds": {},
   "verb_sets": {
+   "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
    "DRAW": 108,
    "DRAW,GAIN_LIFE,MOVE": 1,
    "DRAW,MILL": 2,
-   "DRAW,MOVE": 1,
    "EXILE": 10,
    "EXILE,GAIN_LIFE": 3,
    "MILL": 37,

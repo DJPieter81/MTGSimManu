@@ -77,7 +77,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL, Verb.MOVE, Verb.EXILE,
                                          Verb.CONTINUOUS, Verb.DRAW,
                                          Verb.MILL, Verb.CHOOSE, Verb.SEARCH,
-                                         Verb.SHUFFLE, Verb.GAIN_LIFE}),
+                                         Verb.SHUFFLE, Verb.GAIN_LIFE,
+                                         Verb.ADD_MANA}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN,
                                                Verb.PUT_COUNTERS,
@@ -1578,6 +1579,81 @@ def execute_mill(ctx: Resolution, s: EffectSpec,
 execute_mill.supports = _mill_supported
 
 
+# ── ADD_MANA (family card_flow, an enter trigger's mana; unit EM) ─────
+
+# The five colours a "one mana of any color" choice ranges over (CR 105.1).
+_MANA_COLORS = ("W", "U", "B", "R", "G")
+# The symbols a printed "add" names: the colours and colorless (CR 106.1b).
+_MANA_SYMBOLS = frozenset(_MANA_COLORS) | {"C"}
+
+
+def mana_added(s: EffectSpec) -> bool:
+    """"Add {R}{G}." / "Add one mana of any color." (CR 106.1): the mana
+    its symbols name, or one mana of a colour its controller chooses, into
+    the controller's own pool, unconditionally and with no spending
+    restriction. Other shapes (one colour chosen for several mana, a
+    combination, a restriction, a mirrored colour) are refused."""
+    from .effect_spec import ManaSpec
+    p = s.payload
+    if s.verb is not Verb.ADD_MANA or not isinstance(p, ManaSpec):
+        return False
+    if p.restriction or p.choice or p.one_color or p.combination \
+            or p.chosen_color or p.mirror is not None or not p.symbols:
+        return False
+    fixed = all(c in _MANA_SYMBOLS for c in p.symbols)
+    any_one = p.any_color and p.symbols == ("*",)
+    return ((fixed and not p.any_color) or any_one) \
+        and s.amount is None and s.target is None and s.target_slot is None \
+        and s.ref is None and s.subject is None and s.other is None \
+        and s.duration is None and s.group is None and not s.alternatives \
+        and not s.flags and s.condition is None and not s.replaces \
+        and _acts_as_controller(s.actor)
+
+
+def execute_add_mana(ctx: Resolution, s: EffectSpec,
+                     actors: Tuple[int, ...]) -> Outcome:
+    """The mana goes into the controller's pool, where it stays until the
+    step or phase ends (CR 106.4). "One mana of any color" is the
+    controller's choice, asked of the colour callback every entry colour
+    choice uses (A35). Auditor `106.1/mana_added`."""
+    game, player = ctx.game, ctx.game.players[ctx.controller]
+    source = _source_object(ctx)
+    colors = []
+    for sym in s.payload.symbols:
+        if sym == "*":
+            options = list(_MANA_COLORS)
+            pick = game.callbacks.choose_mana_color(game, ctx.controller,
+                                                    source, options)
+            sym = pick if pick in options else options[0]
+        colors.append(sym)
+    before = player.mana_pool.total()
+    for color in colors:
+        player.mana_pool.add(color, 1)
+    _audit_mana_added(ctx, before, len(colors))
+    game.log.append(
+        f"T{game.display_turn} P{ctx.controller + 1}: "
+        f"{getattr(source, 'name', '')} adds "
+        + "".join("{%s}" % c for c in colors))
+    return Outcome(True, {})
+
+
+execute_add_mana.supports = mana_added
+# Proven in the card-flow family only (an enter trigger's mana, A38).
+execute_add_mana.allowed_families = lambda s: frozenset({FAMILY_CARD_FLOW})
+
+
+def _audit_mana_added(ctx: Resolution, before: int, n: int) -> None:
+    """CR 106.1, restated from the pool's size: an instruction that adds N
+    mana leaves the controller's pool N greater. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    after = ctx.game.players[ctx.controller].mana_pool.total()
+    rules_audit.check("106.1/mana_added", after - before == n,
+                      f"pool {before} -> {after}, {n} added",
+                      game=ctx.game)
+
+
 # ── Registration ──────────────────────────────────────────────────────
 
 EXECUTORS[Verb.DAMAGE] = execute_damage
@@ -1593,6 +1669,7 @@ EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTORS[Verb.PUT_COUNTERS] = execute_put_counters
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
+EXECUTORS[Verb.ADD_MANA] = execute_add_mana
 
 
 # ── DESTROY / SEARCH / SHUFFLE (family removal, unit LA) ──────────────

@@ -7180,6 +7180,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Akki Rockspeaker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing ({R})"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Alania's Pathmaker",
     "TRIGGERED:0:0"
    ],
@@ -7332,6 +7340,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Burning-Tree Emissary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing ({R}{G})"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Cadaver Imp",
     "TRIGGERED:0:1"
    ],
@@ -7456,6 +7472,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Crumbling Vestige",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing (one mana of the colour its controller chooses)"
   },
   {
    "pair": [
@@ -8364,6 +8388,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Outcaster Trailblazer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing (one mana of the colour its controller chooses)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Owlbear",
     "TRIGGERED:0:1"
    ],
@@ -8424,6 +8456,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Priest of Urabrask",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing ({R}{R}{R})"
   },
   {
    "pair": [
