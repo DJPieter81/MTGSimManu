@@ -8859,3 +8859,70 @@ Hundreds of pool cards sacrifice creatures.
 - **Vesuva enters as itself.** "You may have this land enter tapped as a copy of any land on the battlefield" is not modelled, so Vesuva taps for nothing. The class is every permanent that enters as a copy (Clone, Phantasmal Image, Echoing Deeps: about 39 pool cards). The MDFC face swap (`card.template`, restored on leaving) is a possible seam.
 - **An enter trigger that adds mana adds none.** "When this creature enters, add {R}{G}" (Burning-Tree Emissary), Crumbling Vestige's "add one mana of any color": 14 pool cards. The ETB host types as ADD_MANA, but no carrier takes it.
 - **Untimely Malfunction's retarget mode** (CR 115.7) is UNMODELLED. The AI's mode chooser uses it as the filler for "choose one" when no other mode is worth anything, so the card resolves as nothing: 8 findings per arm.
+
+## Unit EM: an enter trigger that adds mana adds it to its controller's pool (2026-10-13)
+
+**Rule (CR 106.1, 106.4, 603.6a, 605.5a):** "When this creature enters, add {R}{G}." and "When this land enters, add one mana of any color." are triggered abilities of the entering permanent, not mana abilities.
+- As they resolve, the mana goes into the controller's pool. It empties at the end of the step or phase.
+- "One mana of any color" is the controller's choice.
+
+**Defect:** the enter trigger typed as ADD_MANA, but no carrier took it. Burning-Tree Emissary added nothing, nor did Crumbling Vestige (Amulet Titan main deck ×4) however it entered.
+
+**Class:**
+- 14 pool cards add mana from an enter trigger.
+- 5 are performed: Burning-Tree Emissary, Crumbling Vestige, Priest of Urabrask, Akki Rockspeaker and Outcaster Trailblazer.
+- 9 are refused and recorded: an intervening "if" (Coal Stoker's "if you cast it from your hand", Raid), a spending restriction (Boommobile), and combination mana.
+
+**Steps (`ab601f6`):**
+- `effect_executors.mana_added` / `execute_add_mana`: the colour choice goes through the existing `choose_mana_color` callback (the AI's `analyze_mana_needs`). Auditor `106.1/mana_added`.
+- The executor is allowed in the card-flow family only (`allowed_families`). Without that, ADD_MANA became executable, though not strict, in the damage family (A38).
+- `effect_views._enter_trigger_mana`: card-flow's strict shape takes an enter trigger whose one instruction adds mana. A ritual and a mana ability stay with their owners.
+
+**Tests:** 8, 5 red first, including the AI casting with the mana its land added and the auditor both ways: `tests/test_an_enter_trigger_that_adds_mana_adds_it.py`.
+
+**Pins:**
+- Harness: exactly 5 new pairs, intended, checked board by board.
+- The self-check drops Crumbling Vestige's trigger from its no-op hosts (floor 186 → 187).
+- Digest: s54500, same winner, turns 10 → 9. Vestige's {G} casts Sakura-Tribe Scout on T1.
+- Anchor flip, accepted after replay: Eldrazi Tron vs Amulet Titan s50500 goes from Eldrazi Tron T15 to Amulet Titan T11. Scapeshift's two Vestiges, entered untapped by Spelunking (its ruling), add {G}{G} for a T4 Primeval Titan.
+- Suites at `ab601f6`: 4935 + 2716 passed.
+
+**Measured (same-seed n=20 Bo3, `em-post` `4bf4cc9` = EM; pre = `kr-post`):**
+- **Amulet Titan 37.8 → 49.5 (+11.7), now inside its band (45–60).** Every other deck is within ±1.4. 4/5c Control's −1.4 is its Amulet cell.
+- 43 cells change, nearly all of them Amulet's. For example:
+  - 4/5c Control vs Amulet 80 → 45;
+  - Amulet vs Creatures Toolbox 45 → 75;
+  - Amulet vs Domain Zoo 10 → 35.
+- **Cell-exact replay** of Amulet vs 4/5c Control (pre `0bdb501`, post `ab601f6`):
+  - 2/20 → 8/20, reproducing both arms; 6 seeds flip, all to Amulet.
+  - The replayed flip (s50500) is rules-correct throughout. Scapeshift fetches four Vestiges whose triggers add four mana (a colour the hand did not need: it pays generic costs), Amulet of Vigor untaps them, and Aftermath Analyst returns the seven sacrificed lands.
+  - The pool empties at each phase boundary (begin combat, main 2, cleanup), so no mana carries over.
+- Violations 0. Findings 311 → 319 (Untimely Malfunction 8).
+
+**Leads (not built):**
+- **An intervening "if" on any trigger** (CR 603.4) is refused by every strict view: 668 pool hosts. The top conditions are a STATE count (193), CAST_FACT kicked (58), cast (27) and cast from hand, and HISTORY attacked (27) and died (35). Only about 7 sit in registered decks.
+- **A Pact's upkeep payment is not enforced.** "At the beginning of your next upkeep, pay {2}{G}{G}. If you don't, you lose the game." types as a delayed PAY plus an UNMODELLED consequence, and the card-name handler only tutors. Amulet Titan casts Summoner's Pact on turn 1 with no way to pay on turn 2, which under the real rules loses the game. The shape is 7 cards ("pay …. If you don't, …"); with "sacrifice … unless you pay" it is 19. Building it needs a lose-the-game verb, PAY and consequence executors, and the AI pricing the delayed payment.
+
+## Unit MK: the keep reads a hand's lands and digs from their typed facts (2026-10-13)
+
+**Rule (AI, from CR 712 and CR 121.1):**
+- A modal double-faced card played as a land is its land face, so its colours are that face's.
+- A fetchland supplies the colours its typed search names.
+- A dig (a spell that draws for its caster, or exposes cards to play) finds the next piece.
+
+**Defect (a 24-game Ruby Storm audit: 42% mulligan rate):**
+- The colour check read an MDFC's spell face. Valakut Awakening's Stoneforge taps for {R}, yet hands whose only red source it was failed "lands miss colors ['R']".
+- The storm keep's dig test read a `cantrip`/`draw` tag that Hex Magic lacks.
+- The fetch colours were basic-type words matched in oracle text.
+
+**Steps (`e1e6cbd`):**
+- `_land_supplies_colors` reads `playable_land_face` and `template.fetchland.colors`. The unused type table is removed.
+- The dig test reads `spell_draws` / `has_draw_effect`, the facts `ev_evaluator._is_real_dig` reads.
+
+**Tests:** 5, 3 red first: `tests/test_the_keep_reads_a_hands_typed_lands_and_digs.py`.
+
+**Seen:**
+- Over 400 random Ruby Storm 7s, the keep rate moves 64.8% → 66.0%, and the colour rejections fall from 6 to 0.
+- 70 of the 104 remaining backup-gate rejections hold no finisher. That is the deck's declared mulligan policy (`requires_combo_backup`), not a read, and it is left as it is.
+
+**Pins:** digest byte-identical; anchor 29; 538 mulligan, keep and colour tests pass.
