@@ -551,9 +551,15 @@ class MulliganDecider:
                 if not (hand_names & reducer_names):
                     has_ritual = any('ritual' in getattr(c.template, 'tags', set())
                                      for c in spells)
-                    has_cantrip = any('cantrip' in getattr(c.template, 'tags', set())
-                                      or 'draw' in getattr(c.template, 'tags', set())
-                                      for c in spells)
+                    # A dig finds the next piece: a spell that draws for
+                    # its caster or exposes cards to play, read from its
+                    # typed effects (`predicates.spell_draws`,
+                    # `has_draw_effect`), never a tag.
+                    from ai.predicates import spell_draws
+                    has_cantrip = any(
+                        getattr(c.template, 'has_draw_effect', False)
+                        or spell_draws(c.template)
+                        for c in spells)
                     from engine.cards import Keyword
                     has_finisher = any(
                         Keyword.STORM in getattr(c.template, 'keywords', set())
@@ -1014,42 +1020,32 @@ class MulliganDecider:
     # be uncastable if the lands don't cover the union of pip
     # requirements.  This applies to every combo deck, not Goryo's
     # specifically (Living End cycler U/B + cascade R, Ruby Storm RR,
-    # Niv-Mizzet shells, etc.).  Implementation is oracle-driven:
+    # Niv-Mizzet shells, etc.).  Implementation reads typed fields:
     #   - lands with `produces_mana` populated → those colors directly
-    #   - fetchlands (sac-search basic land types) → colors of the
-    #     basic types named in their oracle text, since the deck
-    #     necessarily runs duals matching at least one such type
+    #     (a modal double-faced card's land face, CR 712, is the land)
+    #   - fetchlands (sac-search basic land types) → the colors of the
+    #     basic types their typed search names (`template.fetchland`),
+    #     since the deck necessarily runs duals matching such a type
     # Zero hardcoded card names; zero magic numbers.
-
-    _BASIC_TYPE_TO_COLOR = {
-        'Plains': 'W', 'Island': 'U', 'Swamp': 'B',
-        'Mountain': 'R', 'Forest': 'G',
-    }
 
     @classmethod
     def _land_supplies_colors(cls, land: "CardInstance") -> set:
         """Set of WUBRG colors the land can supply (directly or via
         fetch).  Empty for colorless / Wastes-style lands."""
-        t = land.template
+        # A modal double-faced card played as a land is its land face (CR
+        # 712), so its colours are that face's.
+        t = getattr(land.template, 'playable_land_face', None) or land.template
         # Direct producers — duals, basics, tri-lands, shock lands.
         direct = {c.upper() for c in (t.produces_mana or [])
                   if c.upper() in 'WUBRG'}
         if direct:
             return direct
-        # Fetchland heuristic: oracle text "Search your library for a
-        # <basic-type> ... card".  Detected by basic-land-type tokens
-        # present in the search clause.  This is a mechanic, not a
-        # cardname list — applies to every fetchland printed past or
-        # future (Modern fetches, Onslaught fetches, Mirage fetches,
-        # surveil lands with fetch riders, etc.).
-        oracle = (getattr(t, 'oracle_text', '') or '').lower()
-        if 'search your library' not in oracle:
+        # A fetchland: the colours of the basic land types its typed search
+        # may find (`CardTemplate.fetchland`, parsed at load).
+        profile = getattr(t, 'fetchland', None)
+        if profile is None:
             return set()
-        colors = set()
-        for basic, color in cls._BASIC_TYPE_TO_COLOR.items():
-            if basic.lower() in oracle:
-                colors.add(color)
-        return colors
+        return {c.upper() for c in profile.colors if c.upper() in 'WUBRG'}
 
     @classmethod
     def _hand_color_supply(cls, lands: List["CardInstance"]) -> set:
