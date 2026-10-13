@@ -8816,8 +8816,43 @@ Hundreds of pool cards sacrifice creatures.
 - Digest: s54500 changes, winner and turns unchanged. Amulet untaps the lands Scout put, and Scapeshift's Sagas get chapter I on entry.
 - Anchor: Amulet Titan vs Living End s50000, turns 12 → 7, winner unchanged. Grazer's T2 Urza's Saga now gets chapter I on entry, so its chapter III tutor comes a turn earlier.
 
+**Measured (same-seed n=20 Bo3, `le-post` `a332464` covers SP.2 and LE; pre = `sp-post`):**
+- Amulet Titan 35.0 → 36.0 (+1.0). Every other deck is within ±0.6.
+- 39 cells change, all of them Amulet's, by up to ±20. That is the spread of one n=20 cell; the moves cancel. For example, Amulet vs Eldrazi Tron 40 → 60 and Azorius Control (WST) vs Amulet 60 → 40.
+- Violations 1 → 0: the `305.4/land_put` seam fix holds. Findings 316 → 314; Untimely Malfunction `unhandled/mode` 8 remains.
+- SP.2 and LE are correctness fixes, near-neutral for Amulet's win rate. Amulet is still 9 pp under its band.
+
 **Leads (not built), from the SP / SP.2 / LE replays:**
 - **A bounce land is a land only beside another land.** In Living End vs Amulet Titan s57500 g3, Amulet kept two Gruul Turfs as its only lands and played each one into a self-return (9 in one match). The mulligan and the land drop count a bounce land as a land with no other land there. 7 bounce lands in Amulet's list.
 - **Scapeshift with no payoff line:** four lands into four Crumbling Vestiges, sacrificing the only Valakut (anchor s50000).
 - **Cultivator Colossus's "repeat this process"** loop is refused by the grammar.
 - **"When this land enters, add one mana of any color"** (Crumbling Vestige) is not modelled, even for a land played.
+
+## Unit KR: a bounce land is a land only beside another land (2026-10-13)
+
+**Rule (AI, from the bounce land's own text):** "When this land enters, return a land you control to its owner's hand" returns the bounce land itself when it is the only land its controller controls. So it stays on the battlefield only beside another land.
+- For the keep, a hand's bounce lands count as lands only when the hand also holds a land that is no bounce land.
+- For the land drop, a bounce land is not played onto a battlefield holding no land. It would spend the land drop and put no land.
+
+**Defect (found replaying SP's one auditor violation, Living End vs Amulet Titan s57500 game 3):**
+- The keep counted every land option. Amulet kept two Gruul Turfs as its only lands and played one into a self-return every turn: 9 times in the match.
+- With an untap watcher out, the land-drop scorer preferred a bounce land to a basic even onto an empty battlefield.
+
+**Class:** 11 pool lands bounce a land as they enter; Amulet Titan runs 7.
+
+**Steps (`0bdb501`):**
+- `ai/predicates.staying_lands` / `bounces_a_land`: one owner over the typed `etb_return_land`.
+- The mulligan's land list is the staying lands. A stranded bounce land is neither a land nor a spell of the keep.
+- The land-drop candidates exclude a bounce land that would return itself.
+- `_score_land` reads the typed clause instead of an oracle substring (the same 11 lands). Oracle-runtime-parse ratchet 165 → 163.
+
+**Tests:** 8, 6 red first: `tests/test_a_bounce_land_is_a_land_only_beside_another_land.py`.
+
+**Pins:** digest byte-identical; anchor 29. Suites at `0bdb501`: 4927 + 2716 passed.
+
+**Measured:** the `kr-post` arm (pre = `le-post`) is running.
+
+**Leads (not built), for Amulet Titan (36.0 at `le-post`, band 45–60):**
+- **Vesuva enters as itself.** "You may have this land enter tapped as a copy of any land on the battlefield" is not modelled, so Vesuva taps for nothing. The class is every permanent that enters as a copy (Clone, Phantasmal Image, Echoing Deeps: about 39 pool cards). The MDFC face swap (`card.template`, restored on leaving) is a possible seam.
+- **An enter trigger that adds mana adds none.** "When this creature enters, add {R}{G}" (Burning-Tree Emissary), Crumbling Vestige's "add one mana of any color": 14 pool cards. The ETB host types as ADD_MANA, but no carrier takes it.
+- **Untimely Malfunction's retarget mode** (CR 115.7) is UNMODELLED. The AI's mode chooser uses it as the filler for "choose one" when no other mode is worth anything, so the card resolves as nothing: 8 findings per arm.
