@@ -8850,7 +8850,10 @@ Hundreds of pool cards sacrifice creatures.
 
 **Pins:** digest byte-identical; anchor 29. Suites at `0bdb501`: 4927 + 2716 passed.
 
-**Measured:** the `kr-post` arm (pre = `le-post`) is running.
+**Measured (same-seed n=20 Bo3, `kr-post` `1db72d9` = KR; pre = `le-post`):**
+- **Amulet Titan 36.0 → 37.8 (+1.8).** Every other deck is within ±0.3.
+- 25 cells change, all of them Amulet's (±5–10). For example, Amulet vs Dimir Midrange 30 → 40 and vs Instant Reanimator 40 → 50.
+- Violations 0; findings 314 → 311.
 
 **Leads (not built), for Amulet Titan (36.0 at `le-post`, band 45–60):**
 - **Vesuva enters as itself.** "You may have this land enter tapped as a copy of any land on the battlefield" is not modelled, so Vesuva taps for nothing. The class is every permanent that enters as a copy (Clone, Phantasmal Image, Echoing Deeps: about 39 pool cards). The MDFC face swap (`card.template`, restored on leaving) is a possible seam.
