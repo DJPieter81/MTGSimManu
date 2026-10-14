@@ -9225,3 +9225,40 @@ Hundreds of pool cards sacrifice creatures.
 - **Batched dies observers are refused:** Vengeful Townsfolk's counter, Vraan's drain. They need "one or more … die" as one event.
 - **The engine always performs Ajani's optional exile.** The transform is always worth it here (a 3-loyalty walker for a 1/2), but the choice belongs to the AI.
 - **A played land never reaches the enter-watcher,** so the land watchers it types do not fire through it. Checked directly: Tireless Tracker (Amulet Titan SB ×1) never investigates on a land drop. Landfall token makers are in the same position.
+
+## Units RG0 and KS: a ritual is held only when its mana reaches neither a closer nor a dig; the keep counts a static cost reducer, creature or not (AI, 2026-10-14)
+
+**Source:** the loop-break root cause `docs/diagnostics/2026-10-13_ruby_storm_ritual_hold_root_cause.md` (Ruby Storm vs Living End, s50000, at `da93a86`).
+
+**RG0 rule (AI, from CR 500.4 and 106.4):** ritual mana empties at the end of the phase. A ritual cast with no finisher and no flashback line in reach is held, unless its mana pays for a dig the AI will make this turn. With such a dig it is admitted at the soft penalty for a chain without its closer. One owner, `ai/combo_calc._ritual_without_closer`, serves the storm-0 gate and the mid-chain gate.
+- A ritual is its own dig when it draws, or when its cast triggers a cast trigger the cast carrier performs that draws: `effect_carrier.performed_cast_triggers`, the same selection `dispatch_cast_triggers` resolves.
+- A tutor counts as a dig only when its pool holds a finisher (`_tutor_has_payoff_access`).
+
+**RG0 defect:** the storm-0 gate hard-held every such ritual without asking whether its mana reached a dig. At G1 T5, with Medallion and Artist's Talent in play, two rituals scored −990, and Storm passed facing lethal.
+
+**KS rule (AI, from CR 302.6 and 601.2f):** a card whose static ability reduces its controller's spell costs (typed `cost_reduction_rules`, unit CR) is an immediate reducer for the storm-chain backup gate, creature or not. Summoning sickness never stops a static ability.
+
+**KS defect:** the gate counted only non-creature reducers. In G2 it sent back a two-land seven holding Ral, Monsoon Mage, and kept a one-land six.
+
+**Class:**
+- RG0: every ritual a storm-zone gameplan casts. It also affects the mid-chain gate's dig count (tutors without a reachable finisher no longer count), and a cast trigger that draws is a dig at every storm count.
+- KS: every hand the storm-chain backup gate judges. Creature reducers with a static spell-cost reduction in the pool include Ral, Goblin Electromancer and Baral.
+
+**Steps (`5d1e12c`):** see the commit. Two pins encoded the old premises and were updated with their intent kept:
+- The mock combo test now declares the typed dig fields the gate reads.
+- The zone-derived backup test's no-reducer hand had used Ral as its non-reducer; Hex Magic stands there now.
+
+**Tests:** 10, 5 red first:
+- `tests/test_a_ritual_is_held_only_when_its_mana_reaches_no_closer_and_no_dig.py` (8);
+- `tests/test_a_static_cost_reducer_is_an_immediate_reducer_creature_or_not.py` (2).
+
+**Pins:**
+- Magic numbers 13, unchanged.
+- Digest: 3 Ruby Storm games change. Ruby Storm vs Dimir s50500 flips to Storm: on T5 a Manamorphose, a ritual that digs, is cast now.
+- Anchor 29.
+
+**Measured:** the `rg-post` arm (pre = `et-post`) follows.
+
+**Leads (not built):**
+- **Valakut Awakening's draw is UNMODELLED** ("draw that many cards plus one"). No AI path sees it as a dig; typing "that many plus N" in the grammar's amounts would.
+- **The rummage's discard picker breaks ties by hand order** (lead from unit CT).
