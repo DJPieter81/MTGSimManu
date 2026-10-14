@@ -907,27 +907,91 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
 def _digs_the_ai_will_make(card, me, snap, game, player_idx) -> list:
     """The digs the AI will make this turn once the ritual `card`
     resolves: `card` itself when it digs (a ritual that draws is its own
-    dig), and each other dig among the plan's cards that the main phase
-    does not defer (`cast_is_deferred`) and whose effective cost the mana
-    left after `card` pays -- ritual mana empties at the end of the phase
-    (CR 500.4, 106.4), so a dig it cannot fund this turn is no dig. A dig
-    puts new cards in hand or play (`ev_evaluator._is_real_dig`, the typed
-    draw / tutor fields), never a classifier tag."""
+    dig, and so is one whose cast triggers a cast trigger that draws,
+    `_cast_triggers_draw`), and each other dig among the plan's cards that
+    the main phase does not defer (`cast_is_deferred`) and whose effective
+    cost the mana left after `card` pays -- ritual mana empties at the end
+    of the phase (CR 500.4, 106.4), so a dig it cannot fund this turn is no
+    dig. A dig looks for the closer (`_digs_toward_closer`): it puts new
+    cards in hand or play from the typed draw / tutor fields, never a
+    classifier tag, and a tutor counts only when its pool holds a
+    finisher."""
     from ai.effective_cmc import effective_cmc
-    from ai.ev_evaluator import _is_real_dig, cast_is_deferred
+    from ai.ev_evaluator import cast_is_deferred
+    digs = [card] if (_digs_toward_closer(card, me)
+                      or _cast_triggers_draw(card, game, player_idx)) else []
+    others = [c for c in me.hand
+              if c.instance_id != card.instance_id
+              and not c.template.is_land
+              and _digs_toward_closer(c, me)]
+    if not others:
+        return digs
     rdata = getattr(card.template, 'ritual_mana', None)
     mana_after = (snap.my_mana
                   - effective_cmc(card, snap, game=game, player_idx=player_idx)
                   + (rdata[1] if rdata else 0))
-    digs = [card] if _is_real_dig(card) else []
-    digs += [c for c in me.hand
-             if c.instance_id != card.instance_id
-             and not c.template.is_land
-             and _is_real_dig(c)
-             and effective_cmc(c, snap, game=game,
-                               player_idx=player_idx) <= mana_after
+    digs += [c for c in others
+             if effective_cmc(c, snap, game=game,
+                              player_idx=player_idx) <= mana_after
              and not cast_is_deferred(c, snap, game, player_idx)]
     return digs
+
+
+def _digs_toward_closer(card, me) -> bool:
+    """Can `card` find the chain's closer? A spell that draws or exposes
+    cards to play (`ev_evaluator._is_real_dig`'s typed draw fields) may
+    find it in the library. A tutor finds it only when the pool it searches
+    holds a finisher (`_tutor_has_payoff_access`): a Wish whose sideboard
+    holds only utility closes nothing."""
+    from ai.ev_evaluator import _is_real_dig
+    if not _is_real_dig(card):
+        return False
+    t = card.template
+    from ai.predicates import spell_draws
+    if getattr(t, 'has_draw_effect', False) or spell_draws(t):
+        return True
+    return _tutor_has_payoff_access(card, me)
+
+
+def _cast_triggers_draw(card, game, player_idx) -> bool:
+    """Does casting `card` trigger a cast trigger the cast carrier performs
+    whose instructions draw (`effect_carrier.performed_cast_triggers`: a
+    plain draw, or a rummage's "if you do, draw", unit CT)? Read from the
+    typed hosts the engine would run, never from text."""
+    from engine.effect_carrier import performed_cast_triggers
+    from engine.effect_spec import Verb, iter_specs
+    return any(s.verb is Verb.DRAW
+               for _src, h in performed_cast_triggers(game, player_idx, card)
+               for s in iter_specs(h.specs))
+
+
+def _ritual_without_closer(card, me, snap, game, player_idx, storm,
+                           opp_life):
+    """A ritual cast with no finisher and no flashback line in reach: its
+    mana empties at the end of the phase (CR 500.4, 106.4), so it is held
+    (`STORM_HARD_HOLD`) unless that mana reaches a dig the AI will make
+    this turn (`_digs_the_ai_will_make`). With a dig it is admitted at the
+    soft penalty for a chain without its closer:
+    (A) storm-coverage escalation -- once storm/opp_life passes
+        COMBO_HALF_LETHAL_FRACTION most of the resources are invested and
+        missing the closer is increasingly catastrophic;
+    (B) draw-miss cascade risk -- at storm >= COMBO_MIN_CHAIN_DEPTH with
+        one dig left the chain is one bad top-deck from collapse.
+    One rule for the storm-0 gate and the mid-chain gate."""
+    digs = _digs_the_ai_will_make(card, me, snap, game, player_idx)
+    if not digs:
+        return STORM_HARD_HOLD
+    storm_coverage = storm / opp_life
+    escalation = 1.0 + max(0.0, storm_coverage - COMBO_HALF_LETHAL_FRACTION)
+    penalty = ((storm + 2) / opp_life
+               * COMBO_RITUAL_MISSED_FINISHER_SCALE
+               * escalation)
+    if storm >= COMBO_MIN_CHAIN_DEPTH and len(digs) <= COMBO_CASCADE_DRAW_FLOOR:
+        lethal_gap = max(0, opp_life - storm)
+        library_size = max(1, len(me.library))
+        miss_risk = min(1.0, lethal_gap / library_size)
+        penalty += (miss_risk * (storm / opp_life) * COMBO_CASCADE_RISK_SCALE)
+    return -penalty
 
 
 def card_combo_modifier(card, assessment, snap, me, game, player_idx):
@@ -1219,8 +1283,10 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             if (not has_finisher and pif_viability == 0.0
                     and not snap.am_dead_next):
                 # No finisher path and not under lethal pressure — this
-                # ritual's mana empties at phase end (CR 500.4).  Hard hold.
-                return STORM_HARD_HOLD
+                # ritual's mana empties at phase end (CR 500.4): held
+                # unless it reaches a dig (`_ritual_without_closer`).
+                return _ritual_without_closer(card, me, snap, game,
+                                              player_idx, storm, opp_life)
 
         # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
         # If no reducer deployed yet but one exists in hand and is castable,
@@ -1310,34 +1376,8 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         if not has_finisher and pif_viability == 0.0:
             opp_clock = getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
             if not snap.am_dead_next and opp_clock > 2:
-                digs = _digs_the_ai_will_make(card, me, snap, game,
-                                              player_idx)
-                if not digs:
-                    # No finisher, no flashback, no dig → hard hold.
-                    return STORM_HARD_HOLD
-                # Draws remain — soft penalty with two refinements.
-                # (A) Storm-coverage escalation: when storm/opp_life
-                #     > COMBO_HALF_LETHAL_FRACTION we've already invested
-                #     most of the resources in this chain; missing the
-                #     closer is increasingly catastrophic.
-                storm_coverage = storm / opp_life
-                escalation = 1.0 + max(0.0,
-                                       storm_coverage - COMBO_HALF_LETHAL_FRACTION)
-                penalty = ((storm + 2) / opp_life
-                           * COMBO_RITUAL_MISSED_FINISHER_SCALE
-                           * escalation)
-                # (B) Draw-miss cascade risk: at storm >= COMBO_MIN_CHAIN_DEPTH
-                #     and only one draw left, the chain is one bad top-deck
-                #     from collapse.  Penalty scales with library
-                #     miss probability times coverage.
-                if storm >= COMBO_MIN_CHAIN_DEPTH:
-                    if len(digs) <= COMBO_CASCADE_DRAW_FLOOR:
-                        lethal_gap = max(0, opp_life - storm)
-                        library_size = max(1, len(me.library))
-                        miss_risk = min(1.0, lethal_gap / library_size)
-                        penalty += (miss_risk * (storm / opp_life)
-                                    * COMBO_CASCADE_RISK_SCALE)
-                return -penalty
+                return _ritual_without_closer(card, me, snap, game,
+                                              player_idx, storm, opp_life)
 
     # ═══ FLIP-TRANSFORM STACK BATCHING ═══
     # When a creature with a "flip a coin" on-cast trigger is on the

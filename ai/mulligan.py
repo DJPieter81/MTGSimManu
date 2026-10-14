@@ -534,18 +534,19 @@ class MulliganDecider:
                     and cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
                     and self._policy().requires_combo_backup
                     and gameplan_has_storm_chain):
-                # Include only IMMEDIATE cost-reducers: the always_early
-                # list (curated per deck — e.g. Ruby Medallion) plus any
-                # non-creature cost_reducer-tagged card in hand.
-                # Creatures tagged as cost_reducer (e.g. Ral, Monsoon Mage)
-                # need to be cast AND flipped/attacked to actually reduce
-                # costs — they don't make a ritual-less hand playable.
-                # Rule: summoning-sick creatures don't contribute mana on
-                # their first turn, so they're not "immediate" mana engines.
+                # Immediate cost-reducers: the always_early list (the
+                # deck's declared early plays) plus any card whose static
+                # ability reduces its controller's spell costs (the typed
+                # `cost_reduction_rules`, unit CR). A static ability
+                # applies from the moment its permanent is on the
+                # battlefield; summoning sickness stops only attacking and
+                # {T} abilities (CR 302.6), so a creature reducer counts
+                # exactly as an artifact does.
                 reducer_names = gp.always_early | {
                     n for n in hand_names
-                    if any('cost_reducer' in getattr(c.template, 'tags', set())
-                           and not c.template.is_creature
+                    if any(any(rule.get('who') == 'you'
+                               for rule in (c.template.cost_reduction_rules
+                                            or ()))
                            for c in hand if c.name == n)
                 }
                 if not (hand_names & reducer_names):

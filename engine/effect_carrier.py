@@ -837,9 +837,34 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
     taken: set = set()
     if not er.dispatch_enabled():
         return taken
+    event = er.TriggerEvent(player=caster)
+    for src, hosts, plan in _cast_trigger_plans(game):
+        if plan is None:
+            _audit_unresolved_cast_trigger(game, src, hosts, caster, spell)
+            continue
+        taken.add(src.instance_id)
+        controller = src.controller
+        for h, family in plan:
+            if not cast_matches(h.trigger.cast, controller, caster, spell):
+                continue
+            chosen = trigger_targets(game, src, controller, h)
+            if chosen is None:
+                continue
+            er.resolve_ability(game, er.handle_of(src), controller, h,
+                               chosen, family=family, event=event,
+                               source_object=src)
+            if game.game_over:
+                return taken
+    return taken
+
+
+def _cast_trigger_plans(game: Any):
+    """Each battlefield permanent with its face's hosts and its cast plan
+    (`cast_plan`, None when the carrier does not take it), the non-active
+    player's permanents first (CR 603.3b). The one selection the carrier
+    and `performed_cast_triggers` read."""
     ap = game.active_player
     order = [p for p in range(len(game.players)) if p != ap] + [ap]
-    event = er.TriggerEvent(player=caster)
     for idx in order:
         for src in list(game.players[idx].battlefield):
             template = getattr(src, "template", None)
@@ -847,26 +872,20 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
                                            False):
                 continue
             hosts = _face_hosts(src)
-            plan = cast_plan(hosts)
-            if plan is None:
-                _audit_unresolved_cast_trigger(game, src, hosts, caster,
-                                               spell)
-                continue
-            taken.add(src.instance_id)
-            controller = src.controller
-            for h, family in plan:
-                if not cast_matches(h.trigger.cast, controller, caster,
-                                    spell):
-                    continue
-                chosen = trigger_targets(game, src, controller, h)
-                if chosen is None:
-                    continue
-                er.resolve_ability(game, er.handle_of(src), controller, h,
-                                   chosen, family=family, event=event,
-                                   source_object=src)
-                if game.game_over:
-                    return taken
-    return taken
+            yield src, hosts, cast_plan(hosts)
+
+
+def performed_cast_triggers(game: Any, caster: int, spell: Any) -> list:
+    """The (permanent, host) cast-triggered abilities the cast carrier
+    performs when `caster` casts `spell` (`dispatch_cast_triggers`), read
+    without resolving them -- what the AI asks of a cast before making it
+    (a ritual whose cast triggers a draw digs as it is cast)."""
+    if not er.dispatch_enabled():
+        return []
+    return [(src, h) for src, _hosts, plan in _cast_trigger_plans(game)
+            if plan is not None
+            for h, _family in plan
+            if cast_matches(h.trigger.cast, src.controller, caster, spell)]
 
 
 def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],

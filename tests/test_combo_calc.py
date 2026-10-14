@@ -67,6 +67,9 @@ class MockTemplate:
     toughness: Optional[int] = None
     x_cost_data: Optional[dict] = None
     deals_targeted_damage: bool = False
+    # The typed dig fields the ritual gate reads (`_digs_toward_closer`).
+    has_draw_effect: bool = False
+    is_tutor: bool = False
 
 
 @dataclass
@@ -312,7 +315,8 @@ class TestCardComboModifier:
         snap = _make_snap()
         me = type('', (), {'spells_cast_this_turn': 0, 'hand': [], 'library': [None]*30,
                            'graveyard': [], 'battlefield': []})()
-        game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
+        game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True,
+                             'active_player': 0})()
         mod = card_combo_modifier(card, a, snap, me, game, 0)
         assert mod < 0
 
