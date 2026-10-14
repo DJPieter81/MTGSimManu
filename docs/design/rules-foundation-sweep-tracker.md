@@ -9362,7 +9362,19 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
   - Refreshed.
 - Chunks at `db77f77`: both pass (5025 + 2721).
 
-**Measured:** the `pf-post` arm (pre = `drw-post`) follows.
+**Measured (same-seed n=20 Bo3, `pf-post` at `6b810c1`, dispatched by hand because the push's head commit was the tracker; pre = `drw-post`):**
+- **Boros Energy 71.2 → 66.0 (−5.2).** Every other deck is within ±0.9.
+- 34 cells change, all of them in Boros Energy's row or column. The largest:
+  - Boros Energy vs Creatures Toolbox 75 → 50;
+  - Boros Ponza vs Boros Energy 30 → 55;
+  - Boros Energy vs Boros Ponza 85 → 65.
+- **Replayed cell-exact** (Boros Energy vs Creatures Toolbox; pre `84d6d95`, post `db77f77`): 15/20 → 10/20, and five matches flip (s50500, 54000, 57500, 58500, 59500).
+  - **s50500 before:** the transformed Ajani uses his 0 line every turn. The legacy DAMAGE path reads it as 1 damage to the face, with no Cat.
+  - **s50500 after:** he uses his +2 every turn with no Cat in play, which only adds loyalty.
+  - +2 is legal. The AI values it by its loyalty pool's growth (2.47 on a two-Cat board) and values the 0 line at 0.0, because its clause projection sees nothing.
+  - **Reading:** the move is the AI choosing between two legal lines, one of which is still mis-performed and unvalued. That line is the reflexive-trigger lead: Ajani's 0 makes a Cat, and when it does, deals damage equal to his controller's creature count. Building it gives the AI the line's real value.
+- 0 aborts, 0 violations; findings 517 → 491.
+- **Field bands:** 4 decks out of band, 42.0 → 40.5 pp total miss. Boros Energy, at 66.0, is inside its band.
 
 **Leads (not built):**
 - **A count, a condition or an edict over a richer description still refuses it.** Each consumer keeps the shapes it took before; the owner now reads more. "If you control a red permanent other than ~" (Ajani's 0 line) needs the condition to read a colour and "other" through it.
