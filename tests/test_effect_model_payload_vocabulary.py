@@ -29,11 +29,13 @@ from engine.effect_model import (ANY_KEYWORD, APPLIED_MODKINDS,
 
 _PAYLOAD_ONLY = {"GRANT_ABILITY", "REMOVE_ALL_ABILITIES", "SWITCH_PT",
                  "SET_CONTROLLER", "REQUIRE"}
-# Applied by the layer system (CR 613: types, colours, keywords, P/T) or by
-# the rule gate that owns the action (rules_query).
+# Applied by the layer system (CR 613: types, colours, keywords, P/T), by
+# the rule gate that owns the action (rules_query), or by the draw owner
+# (REPLACE_DRAW, unit DRW: GameState.draw_cards through rules_query).
 _APPLIED = {"SET_TYPES", "ADD_TYPES", "SET_COLORS", "ADD_KEYWORDS",
             "REMOVE_KEYWORDS", "SET_BASE_PT", "MODIFY_PT", "PROHIBIT",
-            "PERMIT", "LIMIT", "COST_DELTA", "PREVENT_DAMAGE", "OBSERVE"}
+            "PERMIT", "LIMIT", "COST_DELTA", "PREVENT_DAMAGE", "OBSERVE",
+            "REPLACE_DRAW"}
 
 
 def test_payload_only_modification_kinds_exist_but_are_not_applied():

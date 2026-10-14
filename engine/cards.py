@@ -1248,6 +1248,10 @@ class CardTemplate:
     # is on the battlefield (CR 614.1a, 614.6).
     graveyard_exile_replacements: Optional[tuple] = None
     draw_limit: Optional[dict] = None
+    # A draw replacement that changes how many cards a draw draws (CR
+    # 614.1a): {'per', 'draw', 'plus', 'condition', 'lose_life'}
+    # (oracle_parser.parse_draw_replacement); applied by GameState.draw_cards.
+    draw_replacement: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
     # 'count'} (oracle_parser.parse_hand_attack). The caster-chosen
@@ -1567,6 +1571,9 @@ class CardTemplate:
             if self.draw_limit is None:
                 from .oracle_parser import parse_draw_limit as _pdl
                 self.draw_limit = _pdl(self.oracle_text)
+            if self.draw_replacement is None:
+                from .oracle_parser import parse_draw_replacement as _pdr
+                self.draw_replacement = _pdr(self.oracle_text)
             if self.hand_attack_data is None:
                 from .oracle_parser import parse_hand_attack as _pha
                 self.hand_attack_data = _pha(self.oracle_text)

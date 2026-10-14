@@ -6803,6 +6803,63 @@ def parse_draw_limit(oracle: str) -> "dict | None":
             'max': cap}
 
 
+# A draw replacement that changes how many cards a draw draws (CR 614.1a).
+# "if you would draw a card [condition], [instead] [you] draw two cards
+# [and you lose N life] [instead]" replaces each single draw (CR 121.2);
+# "[as long as you have one or fewer cards in hand,] if you would draw one
+# or more cards, you draw that many cards plus one instead" replaces the
+# whole draw once. Every other draw replacement (dredge, reveal, exile, a
+# win or a skip, or an ability under a "max speed" condition) is refused.
+_DRAW_REPLACEMENT_RE = re.compile(
+    r"^(?P<lead>as long as you have one or fewer cards in hand, )?"
+    r"if you would draw (?P<what>a card|one or more cards)"
+    r"(?P<cond> except the first one you draw in each of your draw steps"
+    r"| while you have no cards in hand)?, "
+    r"(?:instead )?(?:you )?draw (?P<draw>two cards|that many cards plus one)"
+    r"(?: and you lose (?P<life>\w+) life)?(?: instead)?\.$")
+
+
+def parse_draw_replacement(oracle: str) -> "dict | None":
+    """A static draw replacement that changes how many cards a draw draws
+    (CR 614.1a), typed for the draw owner (`GameState.draw_cards`).
+
+    Returns ``{'per': 'card'|'event', 'draw': int, 'plus': int,
+    'condition': None|'empty_hand'|'hand_at_most_one'|
+    'not_first_in_draw_step', 'lose_life': int}`` or None:
+    - per 'card': each single draw becomes `draw` draws;
+    - per 'event': the whole draw draws `plus` more cards.
+    The replacement covers its controller's draws ("you"). A paragraph with
+    anything before its "if" / "as long as" (an ability word that is a
+    condition, such as "Max speed —") is refused."""
+    if not oracle or "if you would draw" not in oracle.lower():
+        return None
+    for para in strip_reminder_text(oracle).lower().split("\n"):
+        m = _DRAW_REPLACEMENT_RE.match(para.strip())
+        if m is None:
+            continue
+        cond = {" except the first one you draw in each of your draw steps":
+                "not_first_in_draw_step",
+                " while you have no cards in hand": "empty_hand"}.get(
+                    m.group("cond") or "")
+        if m.group("lead"):
+            cond = "hand_at_most_one"
+        life = m.group("life")
+        lose = 0
+        if life:
+            lose = int(life) if life.isdigit() else _NUMBER_WORDS.get(life)
+            if lose is None:
+                return None
+        if m.group("what") == "a card" and m.group("draw") == "two cards":
+            return {"per": "card", "draw": 2, "plus": 0, "condition": cond,
+                    "lose_life": lose}
+        if m.group("what") == "one or more cards" \
+                and m.group("draw") == "that many cards plus one":
+            return {"per": "event", "draw": 1, "plus": 1, "condition": cond,
+                    "lose_life": lose}
+        return None
+    return None
+
+
 # CR 101.2 turn-scoped cast prohibition, typed by scope and spell filter.
 # Conditional scopes ("players dealt damage this way", "its controller",
 # "if mana was spent") are deliberately absent — refused, not half-applied.

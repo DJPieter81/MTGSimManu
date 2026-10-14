@@ -319,45 +319,121 @@ class GameState:
         matching on oracle text lives here. This owner counts the draw:
         `cards_drawn_this_turn`, and `cards_drawn_in_draw_step` for a draw
         in the drawer's own draw step.
+
+        It also applies the draw replacements covering the drawer (CR
+        614.1a, `rules_query.draw_replacements`): one replacing the whole
+        draw ("one or more cards ... that many plus one") adds its cards
+        once; one replacing "a card" turns each single draw (CR 121.2)
+        into its number of draws, its condition read as that draw is made.
+        Each applies once to an event (CR 614.5), all of them apply (CR
+        616.1), and the cards they draw are draws a draw limit counts.
         """
-        from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
         drawn: List[CardInstance] = []
         from . import rules_query
         draw_cap = rules_query.draw_limit(self, player_idx)
+        replacements = (rules_query.draw_replacements(self, player_idx)
+                        if count > 0 else [])
+        asked = count
+        hand_before = len(player.hand)
+        for rep in replacements:
+            if rep["per"] == "event" and self._draw_replacement_applies(
+                    player_idx, rep):
+                count += rep["plus"]
+        per_card = [r for r in replacements if r["per"] == "card"]
         for _ in range(count):
-            if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
-                # CR 101.2: a draw the player "can't" make does not happen
-                # (it is not a draw from an empty library).
-                return drawn
-            if not player.library:
-                self._lose_from_empty_library(player_idx)
-                # Audit (observation-only, CR 104.3c/704.5c): a draw from an
-                # empty library must flag the drawing player to lose. Recompute
-                # the flag state independently of the helper above.
-                from .rules_audit import check as _audit_check
-                _audit_check(
-                    "104.3c/empty_library_loss",
-                    self.game_over and self.winner == 1 - player_idx,
-                    f"P{player_idx+1} drew from an empty library", game=self)
-                return drawn
-            card = player.library.pop(0)
-            player.cards_drawn_this_turn += 1
-            if self.current_phase == Phase.DRAW and \
-                    player_idx == self.active_player:
-                player.cards_drawn_in_draw_step += 1    # CR 504.1: their draw step
-            drawn.append(card)
-            # The pop above already detached the card from library;
-            # transfer's `_remove_from_zone` is tolerant of that. The
-            # call places the card in hand and runs the DRAW fan-out.
-            transfer(self, card, src_zone="library", dst_zone="hand",
-                     kind=TransferKind.DRAW, controller=player_idx)
-            if self.game_over:
-                # A per-draw trigger's damage/life loss ended the game
-                # (CR 704.5a, checked inside the DRAW fan-out). The
-                # remaining draws of this effect never happen.
-                break
+            draws = 1
+            for rep in per_card:
+                if self._draw_replacement_applies(player_idx, rep):
+                    draws *= rep["draw"]
+                    if rep["lose_life"]:
+                        from .damage import lose_life
+                        lose_life(self, player_idx, rep["lose_life"])
+            for _ in range(draws):
+                if not self._draw_one(player_idx, draw_cap, drawn):
+                    return drawn
+        self._audit_draw_replaced(player_idx, asked, hand_before,
+                                  draw_cap, drawn)
         return drawn
+
+    def _draw_replacement_applies(self, player_idx: int, rep: dict) -> bool:
+        """Does a draw replacement's printed condition hold for the draw
+        about to be made (CR 614.1a)?"""
+        player = self.players[player_idx]
+        cond = rep["condition"]
+        if cond is None:
+            return True
+        if cond == "empty_hand":
+            return not player.hand
+        if cond == "hand_at_most_one":
+            return len(player.hand) <= 1
+        if cond == "not_first_in_draw_step":
+            return not (self.current_phase == Phase.DRAW
+                        and player_idx == self.active_player
+                        and player.cards_drawn_in_draw_step == 0)
+        return False
+
+    def _draw_one(self, player_idx: int, draw_cap, drawn: list) -> bool:
+        """One draw (CR 121.2). False when no further draw happens: a draw
+        limit stops it (CR 101.2), the library is empty (CR 704.5b), or the
+        game ended in its triggers."""
+        from .zone_transfer import TransferKind, transfer
+        player = self.players[player_idx]
+        if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
+            # CR 101.2: a draw the player "can't" make does not happen
+            # (it is not a draw from an empty library).
+            return False
+        if not player.library:
+            self._lose_from_empty_library(player_idx)
+            # Audit (observation-only, CR 104.3c/704.5c): a draw from an
+            # empty library must flag the drawing player to lose. Recompute
+            # the flag state independently of the helper above.
+            from .rules_audit import check as _audit_check
+            _audit_check(
+                "104.3c/empty_library_loss",
+                self.game_over and self.winner == 1 - player_idx,
+                f"P{player_idx+1} drew from an empty library", game=self)
+            return False
+        card = player.library.pop(0)
+        player.cards_drawn_this_turn += 1
+        if self.current_phase == Phase.DRAW and \
+                player_idx == self.active_player:
+            player.cards_drawn_in_draw_step += 1    # CR 504.1: their draw step
+        drawn.append(card)
+        # The pop above already detached the card from library;
+        # transfer's `_remove_from_zone` is tolerant of that. The
+        # call places the card in hand and runs the DRAW fan-out.
+        transfer(self, card, src_zone="library", dst_zone="hand",
+                 kind=TransferKind.DRAW, controller=player_idx)
+        # A per-draw trigger's damage/life loss ended the game (CR
+        # 704.5a, checked inside the DRAW fan-out): the remaining draws
+        # of this effect never happen.
+        return not self.game_over
+
+    def _audit_draw_replaced(self, player_idx: int, asked: int,
+                             hand_before: int, draw_cap, drawn: list) -> None:
+        """CR 614.1a, restated from the printed fields of the drawer's own
+        permanents (not from `rules_query`): with no per-card replacement
+        and no draw limit in play, a draw of `asked` cards made with one or
+        fewer cards in hand draws `asked` plus each "that many plus N" its
+        permanents print. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled() or draw_cap is not None or asked < 1 \
+                or self.game_over:
+            return
+        specs = [getattr(p.template, "draw_replacement", None)
+                 for p in self.players[player_idx].battlefield]
+        specs = [s for s in specs if s]
+        if not specs or any(s["per"] == "card" for s in specs):
+            return
+        expected = asked + sum(s["plus"] for s in specs
+                               if s["condition"] != "hand_at_most_one"
+                               or hand_before <= 1)
+        rules_audit.check(
+            "614.1a/draw_replaced", len(drawn) == expected,
+            f"P{player_idx+1} asked to draw {asked} with {hand_before} in "
+            f"hand drew {len(drawn)}; the replacements give {expected}",
+            game=self)
 
     def surveil(self, player_idx: int, n: int) -> List[CardInstance]:
         """CR 701.42 — Surveil N.

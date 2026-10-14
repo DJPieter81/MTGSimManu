@@ -192,6 +192,7 @@ class ModKind(Enum):
     COST_DELTA = "cost_delta"
     PREVENT_DAMAGE = "prevent_damage"
     OBSERVE = "observe"                 # "whenever <event>, <effect>"
+    REPLACE_DRAW = "replace_draw"       # a draw draws more cards (CR 614.1a)
     # Payload vocabulary for the clause grammar (design doc 2026-09-29).
     # Typed at load, applied by nothing yet: absent from APPLIED_MODKINDS, so
     # a dispatcher refuses them until an owner applies each one.
@@ -204,7 +205,7 @@ class ModKind(Enum):
 
 _RULE_KINDS = frozenset({ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT,
                          ModKind.COST_DELTA, ModKind.PREVENT_DAMAGE, ModKind.OBSERVE,
-                         ModKind.REQUIRE})
+                         ModKind.REQUIRE, ModKind.REPLACE_DRAW})
 
 # The kinds some owner applies today, listed member by member and never
 # derived from ModKind: a kind added later is unapplied (refused by a
@@ -218,6 +219,8 @@ APPLIED_MODKINDS: FrozenSet[ModKind] = frozenset({
     # the rule gate that owns the action (rules_query)
     ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT, ModKind.COST_DELTA,
     ModKind.PREVENT_DAMAGE, ModKind.OBSERVE,
+    # the draw owner (GameState.draw_cards, through rules_query)
+    ModKind.REPLACE_DRAW,
 })
 
 
@@ -322,6 +325,17 @@ def draw_limit_effect(controller: int, who: str, cap: int, duration: Duration,
     return Effect(selector,
                   Modification(ModKind.LIMIT, action="draw",
                                data=(("max", cap),)),
+                  duration, origin, source_id=source_id, controller=controller)
+
+
+def draw_replacement_effect(controller: int, spec: dict, duration: Duration,
+                            source_id: int = 0,
+                            origin: "OriginKind" = OriginKind.RESOLVED) -> Effect:
+    """A draw replacement covering its controller's draws (CR 614.1a): the
+    `parse_draw_replacement` shape, applied by the draw owner."""
+    return Effect(Selector(SelectorKind.PLAYER, player=controller),
+                  Modification(ModKind.REPLACE_DRAW, action="draw",
+                               data=tuple(sorted(spec.items()))),
                   duration, origin, source_id=source_id, controller=controller)
 
 

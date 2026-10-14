@@ -217,6 +217,15 @@ def draw_limit(game: "GameState", player_idx: int) -> Optional[int]:
     return min(caps) if caps else None
 
 
+def draw_replacements(game: "GameState", player_idx: int) -> list:
+    """Every draw replacement covering this player's draws (CR 614.1a), as
+    its typed spec (`parse_draw_replacement`), one per effect: each
+    applies once to an event (CR 614.5) and all of them apply (CR 616.1)."""
+    from engine.effect_model import ModKind
+    return [dict(e.modification.data)
+            for e in _covering(game, player_idx, ModKind.REPLACE_DRAW, "draw")]
+
+
 # ── Combat ───────────────────────────────────────────────────────────
 
 def attack_prohibited(game: "GameState", player_idx: int) -> bool:

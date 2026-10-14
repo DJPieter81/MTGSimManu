@@ -2281,6 +2281,8 @@ class CardDatabase:
         from .oracle_parser import parse_hand_refill, parse_draw_limit
         template.hand_refill = parse_hand_refill(oracle)
         template.draw_limit = parse_draw_limit(oracle)
+        from .oracle_parser import parse_draw_replacement
+        template.draw_replacement = parse_draw_replacement(oracle)
         from .oracle_parser import parse_until_next_turn
         template.next_turn_effect = parse_until_next_turn(oracle)
         from .oracle_parser import parse_object_restriction

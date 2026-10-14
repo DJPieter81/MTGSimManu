@@ -846,6 +846,14 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                 out.append(observe_attacks(controller, obs, WHILE_SOURCE,
                                            source_id=perm.instance_id,
                                            origin=OriginKind.STATIC))
+            rep = getattr(perm.template, 'draw_replacement', None)
+            if rep:
+                # CR 614.1a: a printed draw replacement covers its
+                # controller's draws while the permanent is there.
+                from .effect_model import draw_replacement_effect
+                out.append(draw_replacement_effect(
+                    controller, rep, WHILE_SOURCE,
+                    source_id=perm.instance_id, origin=OriginKind.STATIC))
             lim = getattr(perm.template, 'draw_limit', None)
             if lim:
                 # CR 101.2: "<players> can't draw more than N cards each
