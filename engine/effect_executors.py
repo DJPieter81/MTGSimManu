@@ -53,10 +53,11 @@ from typing import Any, Tuple
 
 from . import effect_conditions as conditions
 from .cards import CardType, Keyword
-from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_FILTER_KEYS,
-                              EXECUTORS, Handle, Outcome, Resolution,
-                              event_player, handle_of, is_event_player,
-                              names_target_player, target_players)
+from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_DESCRIPTIONS,
+                              EXECUTOR_FILTER_KEYS, EXECUTORS, Handle,
+                              Outcome, Resolution, event_player, handle_of,
+                              is_event_player, names_target_player,
+                              target_players)
 from .effect_model import (DurationKind, Modification, ModKind, Selector,
                            SelectorKind)
 from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
@@ -1193,15 +1194,15 @@ def _audit_tokens(ctx: Resolution, s: EffectSpec, made: dict) -> None:
 execute_create_token.supports = _create_token_supported
 
 
-# ── PUT_COUNTERS: +1/+1 counters on each creature (family tokens_counters,
-# unit PO) ─────────────────────────────────────────────────────────────
+# ── PUT_COUNTERS: +1/+1 counters on each permanent a description admits
+# (family tokens_counters, units PO and PF) ──────────────────────────────
 
 _PLUS_ONE = ("+1/+1",)
 _CREATURE_ENTRY = ("types", ("creature",))
 
 
 def _counter_recipient_players(ctx: Resolution, controller_ref: Any) -> set:
-    """The player whose creatures a team counter covers: the controller
+    """The player whose permanents a team counter covers: the controller
     ("you control") or the player chosen for a target slot ("target
     player controls")."""
     if controller_ref == "you":
@@ -1215,23 +1216,25 @@ def _counter_recipient_players(ctx: Resolution, controller_ref: Any) -> set:
 
 
 def team_counters_supported(s: EffectSpec) -> bool:
-    """"Put N +1/+1 counter(s) on each [other] creature <you control |
-    target player controls>" (CR 122.1): every creature that player
-    controls as the instruction resolves gets N."""
+    """"Put N +1/+1 counter(s) on each <description> <you control | target
+    player controls>" (CR 122.1, 608.2h): every permanent that player
+    controls that the description admits as the instruction resolves
+    (`effect_conditions.permanent_described`, unit PF) gets N. N is one
+    per counter noun ("two +1/+1 counters" is typed as two) times a printed
+    amount. A description the owner cannot read is refused whole."""
     from .effect_spec import CounterSpec
-    p, subj, a = s.payload, s.subject, s.amount
+    p, subj, a, f = s.payload, s.subject, s.amount, s.filter
     if not (s.verb is Verb.PUT_COUNTERS and isinstance(p, CounterSpec)
-            and tuple(p.kinds) == _PLUS_ONE and not p.choice
+            and p.kinds and set(p.kinds) == set(_PLUS_ONE) and not p.choice
             and (a is None or (isinstance(a, Amount)
                                and a.kind is AmountKind.LITERAL
                                and a.n > 0))
-            and isinstance(subj, Selector) and subj.kind is SelectorKind.FILTER):
+            and isinstance(subj, Selector) and subj.kind is SelectorKind.FILTER
+            and isinstance(f, CardFilter)
+            and dict(subj.filter or ()) == dict(f.as_tuple())
+            and conditions.description_supported(f)):
         return False
-    entries = dict(subj.filter or ())
-    if entries.get("types") != _CREATURE_ENTRY[1] \
-            or set(entries) - {"types", "controller", "other"}:
-        return False
-    who = entries.get("controller")
+    who = f.controller
     return ((who == "you" or (isinstance(who, Ref)
                               and who.kind is RefKind.TARGET
                               and isinstance(who.index, int)))
@@ -1243,17 +1246,19 @@ def team_counters_supported(s: EffectSpec) -> bool:
 
 def execute_put_counters(ctx: Resolution, s: EffectSpec,
                          actors: Tuple[int, ...]) -> Outcome:
-    """Each creature the named player controls (the source too, unless
-    "other") gets the counters, through the counter owner
-    (`CardInstance.add_plus_counters`: the counter replacements apply)."""
-    entries = dict(s.subject.filter or ())
-    n = s.amount.n if s.amount is not None else 1
+    """Each permanent the named player controls that the description admits
+    now (the source too, unless "other") gets the counters, through the
+    counter owner (`CardInstance.add_plus_counters`: the counter
+    replacements apply)."""
+    f = s.filter
+    n = len(s.payload.kinds) * (s.amount.n if s.amount is not None else 1)
     source = _source_object(ctx)
-    covered = [c for p in sorted(_counter_recipient_players(
-                   ctx, entries.get("controller")))
+    players = sorted(_counter_recipient_players(ctx, f.controller))
+    seen = [(c, c.plus_counters) for p in players
+            for c in ctx.game.players[p].battlefield]
+    covered = [c for p in players
                for c in list(ctx.game.players[p].battlefield)
-               if c.effective_is_creature
-               and not (entries.get("other") and c is source)]
+               if conditions.permanent_described(c, f, source=source)]
     before = [(c, c.plus_counters) for c in covered]
     for c in covered:
         c.add_plus_counters(n, ctx.game, source)
@@ -1262,8 +1267,48 @@ def execute_put_counters(ctx: Resolution, s: EffectSpec,
             f"{getattr(source, 'name', '')} puts {n} +1/+1 counter"
             f"{'s' if n > 1 else ''} on {c.name}")
     _audit_counters_placed(ctx, before)
+    _audit_described_counters(ctx, f, source, seen)
     return Outcome(bool(covered),
                    {ctx.controller: tuple(handle_of(c) for c in covered)})
+
+
+# The description fields the auditor restates from printed characteristics;
+# a description with any other field set is not restated.
+_RESTATED_FIELDS = frozenset({"types", "all_types", "not_types", "subtypes",
+                              "not_subtypes", "controller", "other",
+                              "token"})
+
+
+def _audit_described_counters(ctx: Resolution, f: CardFilter, source: Any,
+                              seen: list) -> None:
+    """CR 122.1, 608.2h, restated from the printed card types and subtypes
+    of each permanent the named player controlled: every one the
+    description admits got its counters. A permanent showing another face
+    or whose types an effect changed is not restated. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    if {k for k, _v in f.as_tuple()} - _RESTATED_FIELDS:
+        return
+    missed = []
+    for perm, was in seen:
+        if perm.zone != "battlefield" or perm.is_transformed \
+                or perm.cem_types_added or perm.cem_subtypes_added:
+            continue
+        types = {t.value for t in perm.template.card_types}
+        subtypes = {str(st).lower() for st in perm.template.subtypes or ()}
+        described = ((not f.types or bool(types & f.types))
+                     and f.all_types <= types and not types & f.not_types
+                     and f.subtypes <= subtypes
+                     and not subtypes & f.not_subtypes
+                     and not (f.other and perm is source)
+                     and (f.token is None
+                          or bool(getattr(perm, "is_token", False)) == f.token))
+        if described and perm.plus_counters <= was:
+            missed.append(perm.name)
+    rules_audit.check("122.1/described_counters", not missed,
+                      f"{getattr(source, 'name', '?')} put no counter on "
+                      f"{missed}", game=ctx.game)
 
 
 execute_put_counters.supports = team_counters_supported
@@ -1477,18 +1522,10 @@ def _sacrifice_supported(s: EffectSpec) -> bool:
 
 
 def edict_victims(game: Any, player: int, f: CardFilter) -> list:
-    """The permanents `player` controls that an edict's filter admits, by
-    their current types (CR 613)."""
-    types = set(f.types or ())
-    out = []
-    for perm in game.players[player].battlefield:
-        if types and not any(t.value in types
-                             for t in perm.effective_card_types):
-            continue
-        if f.token is not None and bool(perm.is_token) != f.token:
-            continue
-        out.append(perm)
-    return out
+    """The permanents `player` controls that an edict's description admits
+    now (`effect_conditions.permanent_described`, CR 613)."""
+    return [perm for perm in game.players[player].battlefield
+            if conditions.permanent_described(perm, f)]
 
 
 def _sacrifice(ctx: Resolution, perm: Any) -> None:
@@ -2013,6 +2050,10 @@ EXECUTOR_FILTER_KEYS[Verb.PUT_COUNTERS] = frozenset(
     [_CREATURE_ENTRY, ("controller", "you"), ("other", True)]
     + [("controller", Ref(RefKind.TARGET, i))
        for i in range(len(("first", "second")))])
+# ... and hands any description the description owner reads to it whole
+# (unit PF): "each Cat", "each other artifact creature", "each attacking
+# creature".
+EXECUTOR_DESCRIPTIONS[Verb.PUT_COUNTERS] = conditions.description_supported
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
 # The move executor evaluates "a land card from your hand" itself (unit SP).

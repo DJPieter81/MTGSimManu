@@ -295,7 +295,8 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                     root = root.value
                 own_table = (isinstance(t, ast.Subscript) and isinstance(root, ast.Name)
                              and root.id in ("EXECUTORS", "CONDITION_EVALUATORS",
-                                             "EXECUTOR_FILTER_KEYS"))
+                                             "EXECUTOR_FILTER_KEYS",
+                                             "EXECUTOR_DESCRIPTIONS"))
                 # an executor's declarations: the shapes it binds, that it
                 # picks an unbound slot itself, and the families a shape is
                 # switched in

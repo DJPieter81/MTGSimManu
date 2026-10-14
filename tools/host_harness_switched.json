@@ -2267,6 +2267,14 @@
   },
   {
    "pair": [
+    "activated_effects:PUT_COUNTER_TEAM",
+    "Steel Overseer",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit PF: the same counter on the same artifact creatures by both paths (state identical); only the log line's wording differs"
+  },
+  {
+   "pair": [
     "activated_effects:UNCLASSIFIED",
     "Asmodeus the Archfiend",
     "ACTIVATED:0:1"
@@ -5172,6 +5180,14 @@
   {
    "pair": [
     "dispatched",
+    "Germination Practicum",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Ghostfire Slice",
     "SPELL:0:2"
    ],
@@ -6748,6 +6764,14 @@
   {
    "pair": [
     "dispatched",
+    "Strength of the Pack",
+    "SPELL:0:0"
+   ],
+   "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Struggle // Survive",
     "SPELL:0:0"
    ],
@@ -6912,6 +6936,14 @@
     "MODE:0:2:mode2"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Titania's Command",
+    "MODE:0:3:mode3"
+   ],
+   "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
   },
   {
    "pair": [
@@ -7436,6 +7468,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Arcbound Shikari",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Argivian Cavalier",
     "TRIGGERED:0:1"
    ],
@@ -7608,6 +7648,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Biomathematician",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit PF: the enter trigger creates its printed 0/0 Fractal token and puts a +1/+1 counter on each Fractal its controller controls (CR 111.3, 122.1, 603.6a); the legacy enter resolver did neither"
   },
   {
    "pair": [
@@ -8028,6 +8076,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Cytoplast Root-Kin",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit PF: no permanent on the harness boards matches the description (another Shaman, another Soldier, a creature with a +1/+1 counter), so neither path places a counter (state and log identical); only the carrier's result differs"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Daring Archaeologist",
     "TRIGGERED:0:0"
    ],
@@ -8200,6 +8256,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Earth King's Lieutenant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
   },
   {
    "pair": [
@@ -9868,6 +9932,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Patron of the Valiant",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit PF: no permanent on the harness boards matches the description (another Shaman, another Soldier, a creature with a +1/+1 counter), so neither path places a counter (state and log identical); only the carrier's result differs"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Pentarch Ward",
     "TRIGGERED:0:2"
    ],
@@ -10076,6 +10148,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Rage Forger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit PF: no permanent on the harness boards matches the description (another Shaman, another Soldier, a creature with a +1/+1 counter), so neither path places a counter (state and log identical); only the carrier's result differs"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Raised by Wolves",
     "TRIGGERED:0:1"
    ],
@@ -10144,6 +10224,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rescue Retriever",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit PF: no permanent on the harness boards matches the description (another Shaman, another Soldier, a creature with a +1/+1 counter), so neither path places a counter (state and log identical); only the carrier's result differs"
   },
   {
    "pair": [
@@ -10824,6 +10912,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thalia's Lieutenant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
   },
   {
    "pair": [
@@ -13046,6 +13142,11 @@
   ],
   [
    "dispatched",
+   "Fuss // Bother",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Galvanic Blast",
    "SPELL:0:0"
   ],
@@ -13413,6 +13514,11 @@
    "dispatched",
    "Winged Words",
    "SPELL:0:1"
+  ],
+  [
+   "planeswalker_manager:UNCLASSIFIED",
+   "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+   "LOYALTY:1:0"
   ]
  ],
  "seeds": [

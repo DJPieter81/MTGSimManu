@@ -1766,6 +1766,9 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         # unit LY: a loyalty line the loyalty carrier performs from its
         # typed host (Wrenn and Six's -1)
         "planeswalker_manager:DAMAGE",
+        # unit PF: an unclassified loyalty line whose team counters the
+        # description owner reads (Ajani, Nacatl Avenger's +2: "each Cat")
+        "planeswalker_manager:UNCLASSIFIED",
         # unit CT: a permanent's cast trigger the cast carrier performs
         # from its typed host (Artist's Talent's rummage)
         "cast:dispatch"}

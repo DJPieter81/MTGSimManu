@@ -20,7 +20,7 @@ from __future__ import annotations
 import operator
 from typing import Any, Callable, Optional
 
-from .cards import CardType
+from .cards import CardType, Keyword, Supertype
 from .effect_spec import (Amount, AmountKind, CardFilter, Condition,
                           ConditionKind, Quantity, QuantityKind)
 
@@ -109,11 +109,115 @@ def _controlled_count_filter(f: Optional[CardFilter]) -> bool:
 
 
 def _counted(perm: Any, f: CardFilter) -> bool:
-    """The permanent is of one of the filter's card types or has its
-    subtype, by its current characteristics (CR 613)."""
-    if f.types:
-        return any(t.value in f.types for t in perm.effective_card_types)
-    return any(st.lower() in f.subtypes for st in perm.effective_subtypes)
+    """The permanent is one the count's description admits now
+    (`permanent_described`)."""
+    return permanent_described(perm, f)
+
+
+# ── Descriptions of permanents (one owner, unit PF) ───────────────────
+#
+# "each Cat you control", "each other artifact creature you control",
+# "creatures you control with flying": a typed battlefield description
+# (`CardFilter`) admits a permanent by what is true of it now -- the face it
+# shows and the types, colours and keywords effects give it (CR 613), its
+# state (CR 110.5, 506.4) and its counters (CR 122). Every consumer that
+# asks which permanents a description admits reads `permanent_described`;
+# each still decides which descriptions it takes, never more than
+# `description_supported`. The description's controller is the consumer's
+# to bind (a count's "you", a team counter's target player): it is not
+# read here.
+
+_SUPERTYPE_VALUES = frozenset(s.value for s in Supertype)
+_KEYWORD_VALUES = frozenset(k.value for k in Keyword)
+_COLOR_LETTERS = frozenset("WUBRG")
+# The object states a permanent records (CR 110.5, 506.4).
+_DESCRIBED_STATES = frozenset({"tapped", "untapped", "attacking", "blocking"})
+# The derived classes (A19): historic (CR 700.6) and the colour counts of
+# CR 105.2.
+_DESCRIBED_CLASSES = frozenset({"historic", "colored", "multicolored",
+                                "monocolored"})
+
+
+def description_supported(f: Any) -> bool:
+    """Can `permanent_described` read every part of this description? A
+    battlefield description whose values are in the vocabulary it compares.
+    A name, a characteristic bound, a position, an owner or another zone is
+    refused, so the instruction holding it is refused whole (fail closed)."""
+    if not isinstance(f, CardFilter) or f.zone != "battlefield" or f.zones:
+        return False
+    if f.stat_bounds or f.named is not None or f.position is not None \
+            or f.different_names or f.owner != "any":
+        return False
+    return (f.types <= _CARD_TYPE_VALUES and f.all_types <= _CARD_TYPE_VALUES
+            and f.not_types <= _CARD_TYPE_VALUES
+            and f.supertypes <= _SUPERTYPE_VALUES
+            and f.not_supertypes <= _SUPERTYPE_VALUES
+            and f.colors <= _COLOR_LETTERS and f.not_colors <= _COLOR_LETTERS
+            and f.classes <= _DESCRIBED_CLASSES
+            and f.state <= _DESCRIBED_STATES
+            and f.with_keywords <= _KEYWORD_VALUES
+            and f.without_keywords <= _KEYWORD_VALUES
+            and all(isinstance(kind, str) and isinstance(has, bool)
+                    for kind, has in f.counters))
+
+
+def _in_state(perm: Any, state: str) -> bool:
+    if state == "tapped":
+        return bool(perm.tapped)
+    if state == "untapped":
+        return not perm.tapped
+    if state == "attacking":
+        return bool(perm.attacking)
+    return perm.blocking is not None                     # "blocking"
+
+
+def _in_class(perm: Any, cls: str, types: set, colors: set) -> bool:
+    if cls == "historic":                                # CR 700.6
+        return ("artifact" in types
+                or Supertype.LEGENDARY in perm.template.supertypes
+                or any(st.lower() == "saga" for st in perm.effective_subtypes))
+    n = len(colors)
+    return {"colored": n >= 1, "multicolored": n >= 2,
+            "monocolored": n == 1}[cls]
+
+
+def permanent_described(perm: Any, f: CardFilter, source: Any = None) -> bool:
+    """Does the description admit this permanent now? A union of card types
+    admits any of them, a joined type ("artifact creature") all of them;
+    colours and states are a union, every other listed value must hold.
+    "Other" leaves out `source`, the instruction's own object. Only a
+    supported description is asked (`description_supported`)."""
+    types = {t.value for t in perm.effective_card_types}
+    if f.types and not types & f.types:
+        return False
+    if not f.all_types <= types or types & f.not_types:
+        return False
+    supertypes = {s.value for s in perm.template.supertypes}
+    if not f.supertypes <= supertypes or supertypes & f.not_supertypes:
+        return False
+    subtypes = {str(st).lower() for st in perm.effective_subtypes}
+    if not f.subtypes <= subtypes or subtypes & f.not_subtypes:
+        return False
+    colors = {c.value for c in perm.colors} & _COLOR_LETTERS
+    if f.colors and not colors & f.colors:
+        return False
+    if colors & f.not_colors:
+        return False
+    if f.colorless is not None and f.colorless != (not colors):
+        return False
+    if not all(_in_class(perm, c, types, colors) for c in f.classes):
+        return False
+    if f.other and source is not None and perm is source:
+        return False
+    if f.token is not None and bool(getattr(perm, "is_token", False)) != f.token:
+        return False
+    keywords = {k.value for k in perm.keywords}
+    if not f.with_keywords <= keywords or keywords & f.without_keywords:
+        return False
+    if f.state and not any(_in_state(perm, s) for s in f.state):
+        return False
+    return all((perm.counter_count(kind) > 0) == has
+               for kind, has in f.counters)
 
 
 def state_condition_supported(cond: Condition) -> bool:

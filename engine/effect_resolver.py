@@ -168,6 +168,12 @@ EXECUTORS: Dict[Verb, Executor] = {}
 # Per verb: FILTER (key, value) entries its executor hands to an owner that
 # evaluates them, beyond effect_model.SUPPORTED_FILTER_VALUES (F5, A22).
 EXECUTOR_FILTER_KEYS: Dict[Verb, FrozenSet[Tuple[str, Any]]] = {}
+# Per verb: the battlefield descriptions (a spec's own `CardFilter`) its
+# executor hands whole to the description owner, `effect_conditions.
+# permanent_described` (unit PF). Every entry of a description the
+# predicate admits is that owner's; the values of an open vocabulary
+# (subtypes) cannot be listed in EXECUTOR_FILTER_KEYS.
+EXECUTOR_DESCRIPTIONS: Dict[Verb, Callable[[Any], bool]] = {}
 # family -> residue codes its legacy apply already resolves the same way
 # (F4, M4). UNPARSED codes are never tolerable, listed or not.
 LEGACY_RESIDUE_TOLERATED: Dict[str, FrozenSet[str]] = {}
@@ -317,9 +323,14 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
     if s.mod_kind is not None and s.mod_kind not in APPLIED_MODKINDS:
         return False
     extra = EXECUTOR_FILTER_KEYS.get(verb, frozenset())
+    described = EXECUTOR_DESCRIPTIONS.get(verb)
+    own = (frozenset(_hashable(s.filter.as_tuple()))
+           if described is not None and isinstance(s.filter, CardFilter)
+           and described(s.filter) else frozenset())
     for key, value in _filter_entries(s):
         if not (is_supported_filter_entry(key, value)
-                or _contains(extra, (key, value))):
+                or _contains(extra, (key, value))
+                or _contains(own, (key, value))):
             return False
     if s.condition is not None:
         if not _condition_executable(s.condition):
@@ -328,6 +339,17 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
                 and not getattr(executor, "evaluates_members", False):
             return False
     return _actor_bindable(s.actor)
+
+
+def _hashable(entries: Tuple[Tuple[str, Any], ...]) -> Iterator[Tuple[str, Any]]:
+    """The entries a frozenset can hold (an unhashable value is in no
+    table)."""
+    for entry in entries:
+        try:
+            hash(entry)
+        except TypeError:
+            continue
+        yield entry
 
 
 def _contains(entries: FrozenSet[Tuple[str, Any]], entry: Tuple[str, Any]) -> bool:

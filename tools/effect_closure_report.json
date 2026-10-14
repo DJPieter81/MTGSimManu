@@ -363,7 +363,7 @@
     "strict": true
    }
   ],
-  "executable": 10,
+  "executable": 11,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
@@ -1182,21 +1182,21 @@
     "strict": true
    }
   ],
-  "executable": 487,
+  "executable": 491,
   "family": "damage",
   "hosts": {
    "mainboard": 20,
-   "pool": 464,
+   "pool": 468,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
    "E2": 81,
    "E3": 111,
-   "E4": 121,
+   "E4": 125,
    "E5": 20
   },
-  "strict": 487,
+  "strict": 491,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 8,
@@ -1205,9 +1205,9 @@
    "DAMAGE": 154,
    "DRAW": 68,
    "DRAW,MOVE": 7,
-   "DRAW,SURVEIL": 6,
    "MILL": 16,
    "MOVE": 52,
+   "PUT_COUNTERS": 7,
    "SACRIFICE": 25
   }
  },
@@ -1435,21 +1435,21 @@
     "strict": true
    }
   ],
-  "executable": 512,
+  "executable": 520,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 490,
+   "pool": 498,
    "sideboard": 0
   },
   "steps": {
    "E2": 46,
    "E3": 196,
-   "E4": 255,
+   "E4": 263,
    "E5": 10,
    "E6": 5
   },
-  "strict": 512,
+  "strict": 520,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
@@ -1460,7 +1460,7 @@
    "EXILE,GAIN_LIFE": 3,
    "MILL": 37,
    "MOVE": 33,
-   "PUT_COUNTERS": 6,
+   "PUT_COUNTERS": 13,
    "SURVEIL": 47
   }
  },
@@ -1912,7 +1912,7 @@
     "strict": true
    }
   ],
-  "executable": 10,
+  "executable": 11,
   "family": "removal",
   "hosts": {
    "mainboard": 6,
@@ -2140,27 +2140,35 @@
   }
  },
  "planeswalker_manager:UNCLASSIFIED": {
-  "deck_hosts": [],
-  "executable": 10,
-  "family": "card_flow",
+  "deck_hosts": [
+   {
+    "card": "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+    "host": "LOYALTY:1:0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   }
+  ],
+  "executable": 11,
+  "family": "tokens_counters",
   "hosts": {
-   "mainboard": 0,
+   "mainboard": 1,
    "pool": 10,
    "sideboard": 0
   },
   "steps": {
    "E2": 2,
    "E3": 3,
-   "E4": 2,
+   "E4": 3,
    "E5": 3
   },
-  "strict": 10,
+  "strict": 11,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 3,
    "CREATE_TOKEN": 1,
    "MILL": 3,
-   "PUT_COUNTERS": 1,
+   "PUT_COUNTERS": 2,
    "SACRIFICE": 2
   }
  },

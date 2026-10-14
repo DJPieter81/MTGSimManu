@@ -208,8 +208,8 @@ NOOP_FIXTURE = REPO / "tests" / "fixtures" / "host_harness_noop_hosts.json"
 
 
 # The E0 self-check over every registered-deck MB and SB host with a
-# legacy apply: 257 hosts (enter triggers since unit E, draw triggers
-# since unit D, cast triggers since unit CT) x 6
+# legacy apply: 258 hosts (enter triggers since unit E, draw triggers
+# since unit D, cast triggers since unit CT, Ajani's +2 since unit PF) x 6
 # boards x 2 seeds x 2 sides, plus one placed-only copy per (host, board)
 # for the no-op report. Measured 2026-10-09: ~95 s on a quiet 4-core box
 # (2026-10-02, 175 hosts: ~53 s CPU), plus ~18 s when first in the process
