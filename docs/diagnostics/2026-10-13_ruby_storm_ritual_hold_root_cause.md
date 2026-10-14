@@ -125,3 +125,15 @@ Changes:
 - **Rules:** 0 violations in this match with the auditor on. The rummage, the flashback grant and the storm copies resolve as printed.
 - **The mulligan in game 1:** the kept hand has three lands, a ritual, Ral, Talent and Wrenn's Resolve. In game 2 the keep is the cause; see the second unit.
 - **Living End's speed:** it cascaded on T4, a normal speed for it. Storm's goldfish should still win the race on T4 or T5 with this board.
+
+## Outcome (2026-10-14)
+
+Both units this document licensed were built:
+- RG0: one rule for both ritual gates, plus the cast-trigger dig;
+- KS: the keep counts a static cost reducer.
+
+They are in `5d1e12c` and measured by `rg-post`: **Ruby Storm 12.9 → 12.7**. The T5 decision in this replay now differs: the rituals are no longer hard-held when a dig is in reach. The game is still lost, and so is the field.
+
+So the named subsystems were real defects but not the cause of Storm's miss. Four Storm-targeted changes have now not moved it: SC, CT, RG0 and KS.
+
+**Next diagnostic** (before any further Storm code): measure Storm's goldfish speed, the turn its AI kills an opponent that does nothing, against the deck's real-world kill turn (T3–T4). Then read where the turns are lost: mana sequencing, holding the chain for a payoff it never assembles, or the payoff count. A goldfish removes the opponent's interaction from the measurement, so the gap it shows is the AI's own.

@@ -9266,7 +9266,13 @@ Hundreds of pool cards sacrifice creatures.
 - Digest: 3 Ruby Storm games change. Ruby Storm vs Dimir s50500 flips to Storm: on T5 a Manamorphose, a ritual that digs, is cast now.
 - Anchor 29.
 
-**Measured:** the `rg-post` arm (pre = `et-post`) follows.
+**Measured (same-seed n=20 Bo3, `rg-post` `aceafac`, pre = `et-post`):**
+- **Ruby Storm 12.9 → 12.7 (−0.2).** Every deck is within ±0.6.
+- 33 cells change, all in Storm's row and column, mixed in sign (Ruby Storm vs 4c Omnath 0 → 15; Ruby Storm vs Domain Zoo 20 → 10).
+- 0 aborts, 0 violations.
+- **Chunks at `5d1e12c`:** both pass (5004 + 2721).
+- **Reading:** both defects the root cause named are fixed and tested, and Storm's field win rate does not move. This is the fourth Storm-targeted change in a row without movement (SC, CT, RG0, KS; FB moved it down, rules-correct). The loop-break rule halts Storm code until a deeper diagnostic names where its kill turn is lost; see the root-cause doc's outcome section.
+- A first build of this comparison read a stale extraction of an older arm under the same file prefix (from unit RG). Its cells matched that arm 563/600, not this one. The local row replay (Amulet Titan's row at `et-post` and `rg-post`, identical outside Storm's cell) exposed it, and the comparison above is rebuilt from this run's own 25 shards.
 
 **Leads (not built):**
 - **Valakut Awakening's draw is UNMODELLED** ("draw that many cards plus one"). No AI path sees it as a dig; typing "that many plus N" in the grammar's amounts would.
