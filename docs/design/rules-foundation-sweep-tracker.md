@@ -9319,3 +9319,52 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **The AI does not price a draw replacement.** Holding one or fewer cards with Riddler in play is worth an extra card per draw, and nothing in the projection or the hand-dump decisions sees it.
 - **Valakut Awakening's "draw that many cards plus one"** still reads "that many" as unbound: it counts the previous instruction's cards.
+
+## Unit PF: a description of permanents admits exactly the permanents it describes, by what is true of them now (2026-10-14)
+
+**Found by:** the Ajani package in Boros Energy. Ajani, Nacatl Avenger's +2 ("Put a +1/+1 counter on each Cat you control") was never offered.
+
+**Rule (CR 122.1, 608.2h, 613, 110.5, 702):** an instruction over "each <description> <player> controls" reaches every permanent that player controls that the description admits as the instruction is performed, and no other. It reads what is true of the permanent then:
+- the types, subtypes and colours it has (the face it shows, what effects give it);
+- its state (tapped, untapped, attacking, blocking);
+- its counters and its keywords.
+A union of card types admits any of them; a joined type ("artifact creature") admits only permanents with all of them.
+
+**Defect:** the team-counter instruction ran only for "each [other] creature you control" with one counter. Every other description was refused, and its carrier fell back:
+- Ajani's +2 (UNCLASSIFIED) was never offered.
+- Enter triggers such as "each other Ally creature you control", "each other Human you control" and "each Fractal you control" resolved as nothing.
+- "Put two +1/+1 counters on each creature you control" (Strength of the Pack, Titania's Command) did nothing.
+
+**Class:** 177 pool team-counter instructions over a description; 72 were supported. Now 136 are (none lost), and 85 more hosts are executable in some family. 14 hosts are newly carried: Ajani's +2, Steel Overseer's activation, 4 spells and modes, and 8 enter triggers. Registered decks: Ajani (Boros Energy ×4).
+
+**Steps:**
+- **One owner:** `effect_conditions.permanent_described(perm, f, source)`, and `description_supported(f)` for the descriptions it reads. A name, a characteristic bound, a position, an owner or another zone is refused, so the instruction is refused whole.
+- **Readers:** the team-counter executor reads it. So do the count (`_counted`) and the edict's victims (`edict_victims`), byte-identical for the shapes those consumers already took.
+- **The dispatcher:** a per-verb hook, `effect_resolver.EXECUTOR_DESCRIPTIONS`, hands a whole supported description to its executor. The open vocabulary of subtypes cannot be listed in `EXECUTOR_FILTER_KEYS`.
+- **Counter count:** "two +1/+1 counters" is typed once per counter noun, and that many are put on each permanent.
+- **Auditor `122.1/described_counters`:** restated from the printed card types and subtypes of every permanent the named player controlled, each one the description admits got its counters. Permanents showing another face, or whose types an effect changed, are not restated.
+
+**Tests:** 9, all red first, including the auditor both ways: `tests/test_a_description_of_permanents_admits_what_it_describes.py`.
+
+**Pins:**
+- Harness: 12 new pairs, each verified board by board and recorded as intended (1458 intended, 369 proven):
+  - 6 where legacy placed no counters: Germination Practicum, Strength of the Pack and Titania's Command's fourth mode (two on each creature); Arcbound Shikari (each other artifact creature: the two artifact creatures, not the others); Earth King's Lieutenant (the Ally); Thalia's Lieutenant (the two Humans);
+  - Biomathematician, whose 0/0 Fractal token is now made and gets its counter;
+  - Steel Overseer, log-only (the same counter by both paths);
+  - Cytoplast Root-Kin, Patron of the Valiant, Rage Forger and Rescue Retriever, result-only (no permanent on the boards matches their descriptions).
+  - Ajani's +2 and Fuss are proven identical (the boards hold no Cat and no attacker).
+- Gate parity: 1813 → 1827 new path; legacy fallback (f) 3140 → 3139, ratchet lowered.
+- The legacy self-check's no-op set gains Ajani's +2, whose legacy apply did nothing: 258 hosts, floor 191.
+- Two pins name the new owner: the executors' own-table list gains `EXECUTOR_DESCRIPTIONS`, and the registered-deck closure gains `planeswalker_manager:UNCLASSIFIED`.
+- Digest: byte-identical.
+- Anchor: Boros Ponza vs Boros Energy s51000 is two turns longer, with the same winner.
+  - Replayed pre (`84d6d95`) and post: Ajani's 0 line had dealt 1 to the face each turn; now his +2 puts a counter on Ocelot Pride, a Cat, each turn.
+  - Refreshed.
+- Chunks at `db77f77`: both pass (5025 + 2721).
+
+**Measured:** the `pf-post` arm (pre = `drw-post`) follows.
+
+**Leads (not built):**
+- **A count, a condition or an edict over a richer description still refuses it.** Each consumer keeps the shapes it took before; the owner now reads more. "If you control a red permanent other than ~" (Ajani's 0 line) needs the condition to read a colour and "other" through it.
+- **The other counter kinds:** −1/−1 counters on each creature, and loyalty counters on each planeswalker, need their own counter owners' funnels.
+- **Activated team counters stay off the activated carrier** (15 hosts), except for the PUT_COUNTER_TEAM kind it already took.
