@@ -9305,7 +9305,16 @@ Hundreds of pool cards sacrifice creatures.
   - That shifts g2's deal, and the match flips.
 - Anchor: two turn-only drifts refreshed, with the same winners.
 
-**Measured:** the `drw-post` arm (pre = `rg-post`) follows.
+**Measured (same-seed n=20 Bo3, `drw-post` `37b6f73`, pre = `rg-post`):**
+- Every deck is within ±3.4. The decks holding a draw replacement (all six are Quantum Riddler decks) move most:
+  - Azorius Blink 38.0 → 41.5 (+3.4), 4c Omnath 60.9 → 63.8 (+2.8), Jeskai Blink 53.0 → 55.8 (+2.8);
+  - Domain Zoo +0.3, Instant Reanimator +0.2, 4/5c Control −0.2.
+- 146 cells change, every one in the row or column of one of those six decks. The largest are ±25: Living End vs Azorius Blink 90 → 65, 4c Omnath vs Jeskai Blink 50 → 75, Jeskai Blink vs Grixis Reanimator 45 → 70, Broodscale Bloodchief vs Azorius Blink 80 → 55, Eldrazi Tron vs 4c Omnath 65 → 40.
+- No deck moves more than 5 pp, so nothing was replayed.
+- 0 aborts, 0 violations; findings 493 → 517.
+- **Field bands:** 5 decks out of band, 42.3 → 42.0 pp total miss (Dimir Midrange 7.8 → 7.6, Domain Zoo 5.2 → 5.5, Boros Energy 1.6 → 1.2, Hollow One 0.4 → 0.3; Ruby Storm 27.3 unchanged).
+- **Chunks at `84d6d95`:** both pass (5016 + 2721).
+- **Audit ranking:** the arm's largest census is `603.2/cast_trigger_unresolved`: matching cast-trigger heads the cast carrier does not take (Vexing Bauble, Ugin, Pinnacle Emissary, Slickshot Show-Off, Dragon's Rage Channeler, Glaring Fleshraker, Vengevine). It is a lead for widening the cast carrier's shapes beyond draw and rummage.
 
 **Leads (not built):**
 - **The AI does not price a draw replacement.** Holding one or fewer cards with Riddler in play is worth an extra card per draw, and nothing in the projection or the hand-dump decisions sees it.
