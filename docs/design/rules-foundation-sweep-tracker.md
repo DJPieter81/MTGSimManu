@@ -9271,3 +9271,36 @@ Hundreds of pool cards sacrifice creatures.
 **Leads (not built):**
 - **Valakut Awakening's draw is UNMODELLED** ("draw that many cards plus one"). No AI path sees it as a dig; typing "that many plus N" in the grammar's amounts would.
 - **The rummage's discard picker breaks ties by hand order** (lead from unit CT).
+
+## Unit DRW: a draw replacement changes how many cards a draw draws (2026-10-14)
+
+**Rule (CR 614.1a, 614.5, 616.1, 121.2, 101.2):**
+- "If you would draw a card, draw two cards instead" replaces each single draw. Drawing N cards is N draws.
+- "If you would draw one or more cards, you draw that many cards plus one instead" replaces the whole draw once.
+- Each replacement applies once to an event, and all of them apply.
+- The cards a replacement draws are draws a draw limit counts.
+
+**Defect:** no draw replacement was applied anywhere. Quantum Riddler (six registered decks ×4: Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control, Instant Reanimator and Azorius Blink) drew one card where the rules give two whenever its controller held one or fewer cards. The grammar types the static as UNMODELLED, and the old name-keyed handler had covered only its enter draw.
+
+**Class:** 33 pool draw replacements. 8 change the count and are applied: Quantum Riddler, Thought Reflection, Alhammarret's Archive, Bard King of Dale, Teferi's Ageless Insight, Phial of Galadriel and Blood Scrivener (with its life loss). The dredge, reveal, exile, win and skip shapes, and Vnwxt's "max speed" condition, are refused.
+
+**Steps (`84d6d95`):**
+- `oracle_parser.parse_draw_replacement` types the shape into `CardTemplate.draw_replacement`, with a lazy fallback in `cards.py`.
+- A new rule kind, `ModKind.REPLACE_DRAW`, is derived as a static rule effect while the permanent is there (CR 611.3a). It is read by `rules_query.draw_replacements` and applied in `GameState.draw_cards`. Each single draw is now `_draw_one`, so a replacement's draws meet the draw limit and the empty library as any draw does.
+- New auditor `614.1a/draw_replaced`, restated from the drawer's permanents' printed fields.
+
+**Tests:** 12, 8 red first, including the auditor both ways: `tests/test_a_draw_replacement_changes_how_many_cards_a_draw_draws.py`. Two pins move with the rule:
+- the Riddler enter-draw test's empty hand now draws two;
+- the applied rule-kind set gains REPLACE_DRAW.
+
+**Pins:**
+- Digest: 8 games in Riddler decks.
+  - Jeskai Blink vs Eldrazi Tron s59500 g1 is one turn shorter: two Riddlers draw 3 on an Ephemerate blink with one card in hand, each draw checked against the hand at that moment.
+  - That shifts g2's deal, and the match flips.
+- Anchor: two turn-only drifts refreshed, with the same winners.
+
+**Measured:** the `drw-post` arm (pre = `rg-post`) follows.
+
+**Leads (not built):**
+- **The AI does not price a draw replacement.** Holding one or fewer cards with Riddler in play is worth an extra card per draw, and nothing in the projection or the hand-dump decisions sees it.
+- **Valakut Awakening's "draw that many cards plus one"** still reads "that many" as unbound: it counts the previous instruction's cards.
