@@ -9218,7 +9218,16 @@ Hundreds of pool cards sacrifice creatures.
   - Generous Ent makes its Food when Living End returns it.
 - Anchor 29.
 
-**Measured:** the `et-post` arm (pre = `ct-post`) follows.
+**Measured (same-seed n=20 Bo3, `et-post` `ab4bd29`, pre = `ct-post`):**
+- **Boros Energy 69.9 → 71.5 (+1.6).** Ajani's Cat Warrior now counts as a Cat and Ajani transforms.
+  - The largest cells are Boros Energy vs Affinity 55 → 70 and vs Living End 20 → 35.
+  - Some Boros cells fall: vs Eldrazi Tron 90 → 80, vs 4c Omnath 75 → 65.
+- Every other deck is within ±0.3. Living End's cells move slightly, because Generous Ent now makes its Food.
+- 39 cells change. No deck moves by more than 5 pp, so nothing was replayed.
+- 0 aborts, 0 violations; findings 492 → 504.
+- **Field bands:** 5 decks out of band, 41.7 pp total miss (ct-post 39.9). Boros Energy joins at 71.5 against a band top of 70, a 1.5 pp miss.
+- **Reading:** the gain is the rules applying to Boros's own creature. Its excess is now inside the field's calibration question (three weak decks, Creatures Toolbox, Hollow One and Azorius Blink, feed the top decks), not a rules lead.
+- **Chunks at `95197c8`:** both pass (4995 + 2721).
 
 **Leads (not built):**
 - **Legacy-built tokens carry no subtype.** `TOKEN_DEFS` and `parse_token_spec` name the token but set no subtype. So Ocelot Pride's end-step Cat (Boros Energy ×4) is not a Cat, and its death does not transform Ajani.
