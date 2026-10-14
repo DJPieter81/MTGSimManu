@@ -9380,3 +9380,45 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 - **A count, a condition or an edict over a richer description still refuses it.** Each consumer keeps the shapes it took before; the owner now reads more. "If you control a red permanent other than ~" (Ajani's 0 line) needs the condition to read a colour and "other" through it.
 - **The other counter kinds:** −1/−1 counters on each creature, and loyalty counters on each planeswalker, need their own counter owners' funnels.
 - **Activated team counters stay off the activated carrier** (15 hosts), except for the PUT_COUNTER_TEAM kind it already took.
+
+## Unit EI: an edict is interaction this turn, worth what its victim gives up (AI, 2026-10-14)
+
+**Source:** the Dimir Midrange root cause, subsystem 1 (`docs/diagnostics/2026-10-14_dimir_midrange_root_cause.md`): Dimir vs Boros Energy s50000 at `db77f77`.
+
+**Rule (AI, from CR 701.21a):**
+- An edict makes each player it names sacrifice permanents of their choice. The AI models that choice as it makes its own sacrifices: a player gives up the permanents whose loss costs them least, by `permanent_threat`, planeswalker loyalty included.
+- The edict is worth to its caster what those permanents are worth to their owner, net of the caster's own share when it names every player. That value is in the removal threat premium's position-value units.
+- It removes those permanents as it resolves, so it is interaction this turn.
+
+**Defects:**
+- The deferral gate (`ai/ev_evaluator._is_immediate_interaction`) read no SACRIFICE instruction. Every edict was scored at the deferral's exposure cost (−0.1) for as long as it sat in hand.
+- The board projection removed nothing for an edict, and the snapshot holds no planeswalker term.
+- In the replay, Sheoldred's Edict is held from T2 to T7 while Ajani's walker climbs. It is cast on T7, facing lethal.
+
+**Class:** 71 pool instants and sorceries make an opponent, every player or a target player sacrifice; 59 carried no this-turn signal. Field: Sheoldred's Edict (Dimir Midrange MB ×1, Eldrazi Ramp SB ×2).
+
+**Steps (`c2479ec`):**
+- **One owner:** `ai/edict_value.py` (`is_edict`, `victims`, `edict_value`).
+  - It reads typed SACRIFICE instructions by an opposing actor.
+  - The description owner says what each instruction admits (unit PF).
+  - A modal edict is valued by the modes `select_modal_modes` chooses.
+- **Readers:**
+  - `_is_immediate_interaction` reads it.
+  - `EVPlayer._score_spell` adds `edict_value` for an edict the projection does not already remove for (removal or sweep tags).
+- New module seeded at 0 in the magic-number baseline.
+
+**Tests:** 11, all red first: `tests/test_an_edict_is_interaction_valued_by_what_its_victim_gives_up.py`. The replay board's edict scores above passing.
+
+**Pins:**
+- **Digest:** two Dimir games change, with the same winners.
+  - Dimir vs Domain Zoo s57000: the edict is cast on T3 and takes Ragavan. Before, it was held to T8.
+  - Ruby Storm vs Dimir s50500: the edict is cast on T3 and takes Ral, Monsoon Mage. Before, it was never cast.
+- **Anchor:** Izzet Prowess vs Dimir s50500 is one turn longer, with the same winner. The edict now takes Monastery Swiftspear on T4. Refreshed.
+- **Replay:** at the root-cause seed, G1, the edict scores +1.8 on T3 and is cast.
+- **Chunks at `c2479ec`:** both pass (5036 + 2721).
+
+**Measured:** the `ei-post` arm (pre = `pf-post`) follows.
+
+**Leads (not built):**
+- `ai/modal` values a sacrifice by mana value (`_perm_worth`), so mode choice and the spell score use different currencies.
+- An instant edict is still cast at sorcery speed: there is no window on the opponent's turn for it.
