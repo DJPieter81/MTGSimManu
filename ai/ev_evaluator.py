@@ -981,6 +981,15 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     # (Goryo's Vengeance vs Domain Zoo s50000: Thoughtseize held T1–T5).
     if getattr(template, 'hand_attack_data', None):
         return True
+    # An edict (typed SACRIFICE by an opposing player, unit EI): the
+    # permanent its victim gives up leaves as it resolves (CR 701.21a), so
+    # each turn it waits is a turn of that permanent's value spent against
+    # its caster. Without this the gate held every edict forever (Dimir
+    # Midrange vs Boros Energy s50000: Sheoldred's Edict held T2-T7 while
+    # the opponent's planeswalker climbed).
+    from ai.edict_value import is_edict
+    if is_edict(template):
+        return True
     return False
 
 

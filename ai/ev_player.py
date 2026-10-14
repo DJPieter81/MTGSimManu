@@ -1992,6 +1992,19 @@ class EVPlayer:
                     # Add it directly — no halving / no tier remapping.
                     ev += tv
 
+        # ── Edict overlay (unit EI) ──
+        # The projection removes nothing for an edict -- the opponent, not
+        # the caster, chooses what is sacrificed (CR 701.21a) -- and the
+        # snapshot holds no planeswalker term. The edict is worth what its
+        # victims give up net of its caster's own share (`ai.edict_value`),
+        # in the position-value units of the removal premium above. A
+        # spell the projection already removes for (removal, sweep) keeps
+        # its projection.
+        if game is not None and not ({'removal', 'board_wipe'} & tags):
+            from ai.edict_value import edict_value, is_edict
+            if is_edict(t):
+                ev += edict_value(game, self.player_idx, card)
+
         # ── Mana holdback (Bundle 3 A1, A3, A4) ──
         # Scaled, color-aware penalty for tapping out while holding
         # instant-speed interaction. Implemented in _holdback_penalty so
