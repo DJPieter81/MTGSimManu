@@ -9908,3 +9908,62 @@ Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now 
 - **A token payoff against a damage closer below lethal:** both fire as the same kill fraction (storm + 1). The tokens' damage arrives a turn later (CR 302.6): value the kill they threaten next turn.
 - **Mode A (across turns):** the develop reach is 0 once a spell is cast this turn, so a non-lethal chain is cashed rather than held for a bigger turn.
 - **Pace before the chain:** the first lethal reach comes on T5–T8 (subsystem (b) of the root cause). The keep is not the gap. Over the FS goldfish dumps, the 52 kept hands with at most one land killed 38 times, and the 56 with two killed 35. Kills by T6 are low at every land count (5, 4, 6 and 2 of 52, 56, 39 and 12).
+
+## Unit CC: the chain projection costs a spell as the AI's cost estimate does; it casts what the mana pays, and its residue is what that chain leaves (CR 601.2f; AI, 2026-10-15)
+
+**Source:** unit CM's follow-through, found while sizing mode A (unit FS's lead). A second owner of the AI's cost estimate.
+
+**Rule (AI, from CR 601.2f):**
+- A cost reduction reduces the generic part of a spell's cost and nothing else: every coloured, colourless and hybrid pip stays owed.
+- It reduces the spells its rule names: "red spells you cast", "instant and sorcery spells you cast".
+- The AI's cost estimate has one owner, `ai/effective_cmc`.
+- A chain projection prices each spell through it. It casts what the mana pays, passing over what it cannot, and its residue is what that castable chain leaves.
+
+**Defect:**
+- The storm chain projection kept its own arithmetic, `max(0, cmc - medallions)` for red instants and sorceries, in seven places:
+  - `combo_chain`'s classify and simulate;
+  - `combo_calc`'s residue, flashback viability and ritual gates;
+  - `ev_evaluator`'s chain estimate;
+  - the finisher simulators, through `find_all_chains`.
+- Under two Ruby Medallions it read a {1}{R} ritual as free, and it read no reducer but a counted `cost_reducer` tag: not a planeswalker's cost rule, not a reducer of instants and sorceries.
+- Two more defects in the same projection, each seen while tracing the goldfish:
+  - The greedy chain (more fuel than the exhaustive search takes) ended at the first spell the mana could not pay. So the storm assessment's best chain was empty for every large hand: `best_dmg=0` at every storm count.
+  - The residue summed every card's cost in the plan's hand, alternatives never all cast included (two Wishes, two Past in Flames).
+
+**Class:** every spell a chain projection prices (the storm-zone assessment, the reducer's value, the PiF viability, the ritual gates, the finisher simulators), under every reducer: Ruby Medallion, Ral, Goblin Electromancer and every typed `cost_reduction_rules` in the pool.
+
+**Steps (`707aeb6`):**
+- `effective_cmc`:
+  - `chain_cost`: the estimate now, less what each reducer the projection casts first takes off by its typed rule, matched by the one matcher (`oracle_resolver._cost_rule_applies`) and floored at the pips;
+  - `with_reducers`: a reducer cast mid-chain;
+  - `generic_reduction`: the splice cost.
+- `combo_chain` prices each spell once per projection and applies the reducers a sequence casts incrementally. Callers pass the game, or with no game the reducers in play.
+- The greedy chain passes over a spell the mana cannot pay and keeps what its payoff needs.
+- The residue is what the longest castable chain leaves.
+
+**Tests:** 6, in `tests/test_the_chain_projection_costs_a_spell_as_the_ai_cost_estimate_does.py`. Each is red at the pre-unit code; the old API gives a free ritual, an empty greedy chain and a residue of −5.
+- Two pins move with the API:
+  - the colour test read Lightning Bolt as free under one Medallion; its pip makes it 1;
+  - `test_combo_calc`'s chain fakes take the new signature.
+
+**Pins:**
+- **Digest:** two Ruby Storm games change, winners unchanged; each was replayed.
+  - 4c Omnath vs Ruby Storm s57500: Wish first, then Empty the Warrens at storm 4 for ten Goblins (six before). Storm wins T7 as before.
+  - Ruby Storm vs Dimir Midrange s50500: with Ral's reduction read, a T3 ritual chain starts and the closer is cashed below lethal at storm 4 (mode A). Storm wins T10 instead of T8.
+- Anchor 29; all ratchets pass.
+- **Speed:** a projection's cost reads are made once per call. Pricing every permutation through the estimate had made Storm games several times slower, and the splice cost was the hot path.
+- **Chunks at `707aeb6`:**
+  - Chunk 1: 5098 passed, 3 failed. All three are the CPU-ceiling tests that fail the same way on this container under load.
+  - Chunk 2: 2766 passed.
+
+**Goldfish (the 160 seeds):**
+- Kills 108 → 101 (play 52 → 51, draw 56 → 50).
+- 27 seeds change, 16 later and 11 earlier: not separable from noise (a sign test).
+- The greedy and residue steps alone moved nothing: CC with them gives 101, without them 101.
+- The arithmetic is right. What the truer projection exposes is mode A, a closer cashed below lethal once a spell is cast.
+
+**Measured:** by the `cc-post` arm (pre = `fs-post`).
+
+**Leads, not built:**
+- **Mode A:** the storm and tutor fallbacks cash a closer below lethal once a spell is cast (the develop reach is 0 when storm > 0). A sound hold needs a next-turn reach that sees flashback (Past in Flames) and the opponent's clock; the chain projection does not model graveyard flashback.
+- **The storm assessment's draw projection** adds `int(expected_extra * 2)` when the residue passes its divergence point: a literal multiplier, calibrated on the old arithmetic.
