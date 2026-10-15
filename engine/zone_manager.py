@@ -511,20 +511,17 @@ class ZoneManager:
     def _get_zone_list(
         self, game: "GameState", player_idx: int, zone_name: str
     ) -> List["CardInstance"]:
-        """Get the list representing a player's zone."""
-        player = game.players[player_idx]
-        zone_map = {
-            "library": player.library,
-            "hand": player.hand,
-            "battlefield": player.battlefield,
-            "graveyard": player.graveyard,
-            "exile": player.exile,
-            # Outside the game is not a zone (CR 400.11); the cards a player
-            # owns outside it are its sideboard (CR 400.11a), from where an
-            # effect brings one into the game (CR 400.11b).
-            "sideboard": player.sideboard,
-        }
-        return zone_map.get(zone_name, [])
+        """Get the list representing a player's zone. Only the zone named
+        is read."""
+        if zone_name not in self._ZONE_LISTS:
+            return []
+        return getattr(game.players[player_idx], zone_name)
+
+    # Outside the game is not a zone (CR 400.11); the cards a player owns
+    # outside it are its sideboard (CR 400.11a), from where an effect brings
+    # one into the game (CR 400.11b).
+    _ZONE_LISTS = frozenset(("library", "hand", "battlefield", "graveyard",
+                             "exile", "sideboard"))
 
     def _find_card_zone(
         self, game: "GameState", card: "CardInstance"
