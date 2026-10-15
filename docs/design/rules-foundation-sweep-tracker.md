@@ -9818,7 +9818,7 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 | Median kill turn | 9 / 7 | 9 / 7 |
 | Lost to an empty library | 47 / 49 | 47 / 43 |
 
-**Measured:** with unit FS, by the `fs-post` arm (pre = `cm-post`).
+**Measured (`fs-post`, with unit FS and the OB follow-up; run 38758680537 at `8af0760`, n=20 Bo3, pre = `cm-post`):** Ruby Storm 14.3 → 17.6 (+3.3); every other deck within ±0.8. All 39 changed cells are Ruby Storm's. Band miss 39.8 → 36.5. The audit records no violation: the 193 of `cm-post` are gone with `b2b8d18`.
 
 **Leads, not built:**
 - Glittering Wish's self-exile ("Exile Glittering Wish"), refused with its host.
@@ -9896,7 +9896,12 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 
 Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now ends on its finishers. The median kill turn rises by one because games that decked now end in late kills. Kills by T6 do not move: the pace before the chain (subsystem (b)) is untouched.
 
-**Measured:** with unit OG, by the `fs-post` arm (pre = `cm-post`).
+**Measured (`fs-post`, with unit OG and the OB follow-up; run 38758680537 at `8af0760`, n=20 Bo3, pre = `cm-post`):**
+- **Ruby Storm 14.3 → 17.6 (+3.3); every other deck within ±0.8.**
+- All 39 changed cells are Ruby Storm's. The largest: vs Boros Ponza and vs Broodscale Bloodchief +25 each, Affinity vs Storm −20.
+- Band miss 39.8 → 36.5; audit violations 193 → 0.
+- No deck moved more than 5 pp, so no mover replay is owed.
+- The goldfish's 70 → 108 kills become +3.3 in the matrix: kills by T6 did not move, and the field kills Storm first.
 
 **Leads, not built:**
 - **The damage planner reads one closer, not the turn's sum.** Unit SC's `plan_copy_damage` aimed five Grapeshot copies at Murktide Regent while the turn's sum was lethal at the face (Ruby Storm vs Dimir Midrange s50500 T8).

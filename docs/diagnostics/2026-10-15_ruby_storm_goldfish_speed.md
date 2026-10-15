@@ -181,7 +181,7 @@ The units this document licensed and found, each measured on the same 160 seeds:
 
 - FS took 38 more kills than OG, above the observer's bound of 35. CM's real costs and OG's Wish permission each changed the reach FS reads.
 - Kills by T6 did not move (7 / 12 → 6 / 11). The pace before the chain, the next measurement above, is the remaining gap.
-- Matrix: the `cm-post` arm (OB and CM) measured Ruby Storm 12.5 → 14.3. The `fs-post` arm measures OG and FS.
+- Matrix: the `cm-post` arm (OB and CM) measured Ruby Storm 12.5 → 14.3, and the `fs-post` arm (OG and FS) 14.3 → 17.6. Every other deck stayed within ±0.8 in both.
 
 ### The next measurement, taken cheaply (FS goldfish dumps, `b7ee1fe`)
 
