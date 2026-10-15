@@ -3177,7 +3177,7 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
 
     Models:
     - Rituals: spend CMC, gain 3R (net +1)
-    - Cost reducers on battlefield: -1 to instant/sorcery costs
+    - Costs: the AI's cost estimate (`effective_cmc.chain_cost`, unit CC)
     - Draw spells: draw 2 cards (may find more rituals)
     - Finishers: Grapeshot (storm copies), Empty the Warrens (tokens)
 
@@ -3195,9 +3195,7 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
     # The chain's cards: the hand and the exiled cards a permission names.
     me = plan_view(game, player_idx)
 
-    # Count cost reducers on battlefield
-    reducers = sum(1 for c in me.battlefield
-                   if getattr(c.template, 'is_cost_reducer', False))
+    from ai.effective_cmc import chain_cost
 
     # Available mana
     mana = len(me.untapped_lands) + me.mana_pool.total()
@@ -3218,7 +3216,8 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
             continue
         tags = getattr(c.template, 'tags', set())
         name = c.name
-        cmc = max(0, (c.template.cmc or 0) - reducers)
+        # The AI's cost estimate (unit CC, `effective_cmc.chain_cost`).
+        cmc = chain_cost(c, game, player_idx)
         # Per-cast self-damage from the spell itself (Phyrexian-mana-shape).
         self_cast_dmg = (_parse_event_amount(c.template.oracle_text,
                                              r"lose\s+(\d+)\s+life")

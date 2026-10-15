@@ -266,12 +266,13 @@ def build_combo_distribution(card, snap, game, me, opp, bhi,
                     if goal_engine is not None else set())
 
     # ── Probability primitives ───────────────────────────────────
-    medallions = sum(1 for c in me.battlefield
-                     if 'cost_reducer' in getattr(c.template, 'tags', set()))
     mana = snap.my_mana
     storm = me.spells_cast_this_turn
 
-    chains = find_all_chains(me.hand, mana, medallions, payoff_names, storm)
+    # Each spell costs the AI's cost estimate under the reductions in play
+    # (unit CC, `effective_cmc.chain_cost`).
+    chains = find_all_chains(me.hand, mana, payoff_names, storm, game=game,
+                             player_idx=game.players.index(me))
     chains_with_payoff = [c for c in chains if c.payoff_name is not None]
     fuel_only_chains = [c for c in chains if c.payoff_name is None]
 

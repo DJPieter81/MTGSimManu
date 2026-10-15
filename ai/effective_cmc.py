@@ -413,6 +413,60 @@ def effective_cmc(
     return int(paid)
 
 
+def reducer_reduction(reducer: "CardInstance",
+                      template: "CardTemplate") -> int:
+    """The generic reduction a reducer permanent's own typed rules give a
+    spell its controller casts ("red spells you cast cost {1} less"): every
+    `cost_reduction_rules` rule for its controller that names the spell,
+    matched by the one matcher (`oracle_resolver._cost_rule_applies`, CR
+    601.2f)."""
+    from engine.oracle_resolver import _cost_rule_applies
+    return sum(rule['amount']
+               for rule in (getattr(reducer.template, 'cost_reduction_rules',
+                                    None) or ())
+               if rule.get('who') == 'you'
+               and _cost_rule_applies(rule, template))
+
+
+def generic_reduction(template: "CardTemplate", game: "GameState" = None,
+                      player_idx: int = 0, reducers=()) -> int:
+    """The generic reduction a spell of `template` gets: the reductions in
+    play (`rules_query.cost_delta`, as `effective_cmc` reads them) and what
+    each reducer in `reducers` takes off it by its rule."""
+    return (_count_cost_reducers(game, player_idx, template)
+            + sum(reducer_reduction(r, template) for r in reducers))
+
+
+def chain_cost(card: "CardInstance", game: "GameState" = None,
+               player_idx: int = 0, reducers=()) -> int:
+    """The mana a chain projection pays for `card`: the AI's cost estimate
+    now (`effective_cmc`, with the reductions in play and the pip floor),
+    less what each reducer in `reducers` -- a reducer permanent the
+    projection casts first -- takes off it by its rule, never below the
+    card's coloured, colourless and hybrid pips (CR 601.2f). A stand-in
+    with no mana cost to read pays its printed value."""
+    if getattr(card.template, 'mana_cost', None) is None:
+        return int(card.template.cmc or 0)
+    if getattr(game, 'continuous_effects', None) is None:
+        game = None            # a stand-in that shows no reductions
+    return with_reducers(effective_cmc(card, game=game,
+                                       player_idx=player_idx),
+                         card, reducers)
+
+
+def with_reducers(paid: int, card: "CardInstance", reducers) -> int:
+    """`paid` less what each reducer in `reducers` takes off `card` by its
+    rule, never below the card's non-generic pips (CR 601.2f). The step a
+    chain takes when it casts a reducer before the card."""
+    extra = sum(reducer_reduction(r, card.template) for r in reducers)
+    if extra <= 0:
+        return paid
+    paid = max(0, paid - extra)
+    if getattr(card.template, 'mana_cost', None) is not None:
+        paid = max(paid, card.template.mana_cost.non_generic_pips)
+    return paid
+
+
 def cast_mode_of(card: "CardInstance", snap=None, *,
                  game: "GameState" = None, player_idx: int = 0) -> str:
     """How a cast of `card` now is paid: `CAST_MODE_EVOKE` when its
@@ -435,6 +489,10 @@ def cast_mode_of(card: "CardInstance", snap=None, *,
 
 __all__ = [
     "effective_cmc",
+    "chain_cost",
+    "with_reducers",
+    "generic_reduction",
+    "reducer_reduction",
     "cast_mode_of",
     "CAST_MODE_NORMAL",
     "CAST_MODE_EVOKE",

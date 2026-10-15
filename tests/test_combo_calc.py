@@ -517,10 +517,10 @@ class TestCardComboModifier:
         class _FakeChain:
             def __init__(self, dmg): self.storm_damage = dmg
         calls = {'count': 0}
-        def fake_find(hand, mana, medallions, payoff_names, storm):
+        def fake_find(hand, mana, payoff_names, storm, **kwargs):
             calls['count'] += 1
-            # First call (with): medallions+1 → 14 dmg
-            # Second call (without): medallions → 8 dmg
+            # First call (with): the reducer in play → 14 dmg
+            # Second call (without) → 8 dmg
             return [_FakeChain(14)] if calls['count'] == 1 else [_FakeChain(8)]
         monkeypatch.setattr('ai.combo_calc.find_all_chains', fake_find,
                              raising=False)

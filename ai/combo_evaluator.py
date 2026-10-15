@@ -332,16 +332,14 @@ def _project_baseline(snap, hand, battlefield, graveyard,
             for c in hand:
                 if 'tutor' in getattr(c.template, 'tags', set()):
                     payoff_names.add(c.template.name)
-        medallions = sum(
-            1 for c in battlefield
-            if 'cost_reducer' in getattr(c.template, 'tags', set())
-        )
+        # No game here: the reducers in play are counted by their rules
+        # (unit CC, `effective_cmc.chain_cost`).
         chains = find_all_chains(
             hand=hand,
             available_mana=snap.my_mana,
-            medallion_count=medallions,
             payoff_names=payoff_names,
             base_storm=storm_count,
+            reducers=tuple(battlefield),
         )
         if chains:
             best = max(chains, key=lambda c: (c.storm_damage, c.storm_count))

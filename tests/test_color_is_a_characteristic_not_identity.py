@@ -165,14 +165,16 @@ def test_the_ais_pitch_response_reads_the_engines_alternative_cost(card_db):
 
 def test_the_storm_chains_colour_restricted_discount_reads_the_spells_colour(
         card_db):
-    from ai.combo_calc import _compute_r_res
     from ai.combo_chain import classify_card
     g = _game(active=0)
+    _put(g, card_db, "Ruby Medallion", 0, "battlefield")
+    g.continuous_effects.recalculate(g)
     devoid = _put(g, card_db, "Kozilek's Return", 0, "hand")
     red = _put(g, card_db, "Lightning Bolt", 0, "hand")
-    assert classify_card(devoid, 5, 1, set()).effective_cost == 3
-    assert classify_card(red, 5, 1, set()).effective_cost == 0
-    assert _compute_r_res([devoid], 3, 1) == 0
+    costing = dict(game=g, player_idx=0)
+    assert classify_card(devoid, 5, set(), **costing).effective_cost == 3
+    # A red {R}: the reduction reaches no pip (CR 601.2f; unit CC).
+    assert classify_card(red, 5, set(), **costing).effective_cost == 1
 
 
 # ── Auditor (CR 105.2) ──────────────────────────────────────────────

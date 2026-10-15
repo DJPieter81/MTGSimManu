@@ -221,13 +221,17 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
     """
     from ai.combo_chain import find_all_chains, what_is_missing
 
+    from ai.effective_cmc import chain_cost
     payoff_names = _collect_payoff_names(goal_engine)
-    medallions = sum(1 for c in me.battlefield
-                     if 'cost_reducer' in getattr(c.template, 'tags', set()))
+    reducer_deployed = any('cost_reducer' in getattr(c.template, 'tags', set())
+                           for c in me.battlefield)
     mana = snap.my_mana
     storm = me.spells_cast_this_turn
+    # Each spell costs the AI's cost estimate under the reductions in play
+    # (unit CC: `effective_cmc.chain_cost`, the one owner).
+    costing = dict(game=game, player_idx=player_idx)
 
-    chains = find_all_chains(me.hand, mana, medallions, payoff_names, storm)
+    chains = find_all_chains(me.hand, mana, payoff_names, storm, **costing)
     best = max(chains, key=lambda c: c.storm_damage, default=None)
     opp_life = max(1, snap.opp_life)
     best_damage = best.storm_damage if best else 0
@@ -240,24 +244,33 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
                        if 'cost_reducer' in getattr(c.template, 'tags', set())
                        and not c.template.is_instant and not c.template.is_sorcery]
     if reducer_in_hand:
-        cheapest_cmc = min(c.template.cmc or _CMC_UNREACHABLE for c in reducer_in_hand)
+        cheapest = min(reducer_in_hand,
+                       key=lambda c: chain_cost(c, game, player_idx))
+        cheapest_cmc = chain_cost(cheapest, game, player_idx)
         if mana >= cheapest_cmc:
-            # Remove the cheapest reducer from hand, subtract its cost, add 1 medallion
-            cheapest = min(reducer_in_hand, key=lambda c: c.template.cmc or _CMC_UNREACHABLE)
+            # Cast the cheapest reducer first: its cost is spent and its
+            # rule reduces what the chain casts after it.
             hand_after = [c for c in me.hand if c.instance_id != cheapest.instance_id]
             mana_after = mana - cheapest_cmc
-            chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
-                                          payoff_names, storm + 1)
+            chains_with = find_all_chains(hand_after, mana_after,
+                                          payoff_names, storm + 1,
+                                          reducers=[cheapest], **costing)
             best_with = max(chains_with, key=lambda c: c.storm_damage, default=None)
             if best_with and best_with.storm_damage > best_damage:
                 best = best_with
                 best_damage = best_with.storm_damage
 
-    missing = what_is_missing(me.hand, mana, medallions, payoff_names)
+    missing = what_is_missing(me.hand, mana, payoff_names,
+                              reducer_deployed=reducer_deployed, **costing)
 
     # ── R_res: chain-reaction residue ──
-    # Compute available resources vs costs for the entire hand
-    r_res = _compute_r_res(me.hand, mana, medallions)
+    # The mana the castable chain leaves: what the longest chain the hand
+    # can cast has left at its end -- the surplus drawn fuel is cast from.
+    # Alternatives that are never all cast (two tutors, two flashback
+    # granters) are not each charged (unit CC). No chain: the mana unspent.
+    longest = max(chains, key=lambda c: (c.storm_count, c.final_mana),
+                  default=None)
+    r_res = longest.final_mana if longest else mana
 
     # ── Projected damage including expected draws ──
     # If chain draws cards (cantrips), estimate additional storm from drawn fuel
@@ -307,38 +320,6 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
                f"r_res={r_res:.1f} opp_life={opp_life}",
         r_res=r_res,
     )
-
-
-def _compute_r_res(hand, mana, medallions):
-    """Chain-Reaction Residue: available mana minus costs after reduction.
-
-    R_res = (M_pool + Σ ritual_mana) - Σ (spell_cost - η)
-    Positive means mana surplus (chain can sustain).
-    """
-    available = mana
-    total_cost = 0
-    for c in hand:
-        if c.template.is_land:
-            continue
-        tags = getattr(c.template, 'tags', set())
-        cmc = c.template.cmc or 0
-
-        # Ritual mana production (from template, set by oracle parser)
-        ritual_data = getattr(c.template, 'ritual_mana', None)
-        if ritual_data:
-            available += ritual_data[1]  # (color, amount) → add amount
-
-        # Effective cost after reducer discount
-        from engine.cards import Color
-        reduction = 0
-        if (c.template.is_instant or c.template.is_sorcery):
-            # The spell's colour (CR 105.2), not its colour identity.
-            if Color.RED in c.template.colors:
-                reduction = medallions
-        effective_cost = max(0, cmc - reduction)
-        total_cost += effective_cost
-
-    return available - total_cost
 
 
 def _assess_graveyard_zone(game, player_idx, goal_engine, snap, zone, target,
@@ -819,8 +800,16 @@ def unbounded_mana_sink_reachable(me) -> bool:
     return False
 
 
+def _chain_cost_now(card, game, player_idx):
+    """A spell's cost now, as the AI's cost estimate reads it (unit CC:
+    `effective_cmc.chain_cost`)."""
+    from ai.effective_cmc import chain_cost
+    return chain_cost(card, game, player_idx)
+
+
 def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
-                           after_cast_ritual_net=0) -> float:
+                           after_cast_ritual_net=0, *, game=None,
+                           player_idx=0) -> float:
     """Viability score (storm coverage) for a PiF-style flashback chain.
 
     Replaces the boolean `_has_viable_pif` (audit M14 / F6).  Past in
@@ -849,11 +838,16 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
     if not granters or not _has_storm_finisher(card, me):
         return 0.0
 
-    granter = min(granters,
-                  key=lambda c: c.template.cmc or _CMC_UNREACHABLE)
-    reducers = sum(1 for c in me.battlefield
-                   if 'cost_reducer' in getattr(c.template, 'tags', set()))
-    granter_cost = max(0, (granter.template.cmc or 0) - reducers)
+    # Each cost is the AI's cost estimate (unit CC): the reductions the
+    # game shows, or with no game the reducers in play by their rules.
+    from ai.effective_cmc import chain_cost
+    in_play = () if game is not None else tuple(me.battlefield)
+
+    def _cost(c):
+        return chain_cost(c, game, player_idx, in_play)
+
+    granter = min(granters, key=_cost)
+    granter_cost = _cost(granter)
 
     # `card` resolves first.  Spend its cmc, gain its ritual net.
     chain_mana = max(0, snap.my_mana - after_cast_card_cmc
@@ -876,7 +870,7 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
         0 if 'ritual' in getattr(c.template, 'tags', set()) else 1,
         c.template.cmc or 0))
     for c in pre_pif:
-        cost = max(0, (c.template.cmc or 0) - reducers)
+        cost = _cost(c)
         if cost > chain_mana:
             continue
         chain_mana -= cost
@@ -1264,22 +1258,25 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         return 0.0
 
     # ═══ COST REDUCER: value from actual chain improvement ═══
-    # Run find_all_chains with medallions vs medallions+1 — the storm damage
-    # difference IS the reducer's value. No magic numbers.
+    # Run find_all_chains with and without this reducer in play — the
+    # storm damage difference IS the reducer's value. No magic numbers.
+    # Costs are the AI's cost estimate; the reducer adds what its own
+    # rule takes off the spells after it (unit CC).
     if role == 'engine' and a.resource_zone == "storm":
         from ai.combo_chain import find_all_chains
-        medallions = sum(1 for c in me.battlefield
-                         if 'cost_reducer' in getattr(c.template, 'tags', set()))
         hand_after = [c for c in me.hand if c.instance_id != card.instance_id]
-        mana_after = max(0, snap.my_mana - (card.template.cmc or 0))
+        mana_after = max(0, snap.my_mana - _chain_cost_now(card, game,
+                                                           player_idx))
+        costing = dict(game=game, player_idx=player_idx)
 
         # Chain WITH the extra reducer deployed
-        chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
-                                      a.payoff_names, storm)
+        chains_with = find_all_chains(hand_after, mana_after,
+                                      a.payoff_names, storm,
+                                      reducers=[card], **costing)
         best_with = max(chains_with, key=lambda c: c.storm_damage, default=None)
         # Chain WITHOUT (current state, same hand minus the reducer card)
-        chains_without = find_all_chains(hand_after, mana_after, medallions,
-                                         a.payoff_names, storm)
+        chains_without = find_all_chains(hand_after, mana_after,
+                                         a.payoff_names, storm, **costing)
         best_without = max(chains_without, key=lambda c: c.storm_damage, default=None)
 
         dmg_with = best_with.storm_damage if best_with else 0
@@ -1309,13 +1306,15 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # speculative-chain mana-burn (CR 500.4).
     if role == 'fuel' and storm == 0 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
-        ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
+        own_cost = _chain_cost_now(card, game, player_idx)
+        ritual_net = max(0, (rdata[1] - own_cost)) if rdata else 0
         if not a.has_payoff:
             has_finisher = _has_storm_finisher(card, me)
             pif_viability = flashback_chain_viable(
                 card, me, snap,
-                after_cast_card_cmc=(card.template.cmc or 0),
+                after_cast_card_cmc=own_cost,
                 after_cast_ritual_net=ritual_net,
+                game=game, player_idx=player_idx,
             )
             if (not has_finisher and pif_viability == 0.0
                     and not snap.am_dead_next):
@@ -1403,12 +1402,14 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # STORM-profile fuel thresholds, not tuning weights.
     if role == 'fuel' and storm >= 1 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
-        ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
+        own_cost = _chain_cost_now(card, game, player_idx)
+        ritual_net = max(0, (rdata[1] - own_cost)) if rdata else 0
         has_finisher = _has_storm_finisher(card, me)
         pif_viability = flashback_chain_viable(
             card, me, snap,
-            after_cast_card_cmc=(card.template.cmc or 0),
+            after_cast_card_cmc=own_cost,
             after_cast_ritual_net=ritual_net,
+            game=game, player_idx=player_idx,
         )
         if not has_finisher and pif_viability == 0.0:
             opp_clock = getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
@@ -1494,11 +1495,10 @@ def _card_marginal_value(card, me, snap, assessment):
     a = assessment
     opp_life = max(1, snap.opp_life)
     hand_without = [c for c in me.hand if c.instance_id != card.instance_id]
-    medallions = sum(1 for c in me.battlefield
-                     if 'cost_reducer' in getattr(c.template, 'tags', set()))
-
-    chains_without = find_all_chains(hand_without, snap.my_mana, medallions,
-                                     a.payoff_names, me.spells_cast_this_turn)
+    # No game here: the reducers in play are counted by their rules.
+    chains_without = find_all_chains(hand_without, snap.my_mana,
+                                     a.payoff_names, me.spells_cast_this_turn,
+                                     reducers=tuple(me.battlefield))
     best_without = max(chains_without, key=lambda c: c.storm_damage, default=None)
 
     dmg_with = a.best_chain.storm_damage if a.best_chain else 0
