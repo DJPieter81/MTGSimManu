@@ -115,7 +115,8 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
 - **Subsystem 2, unit CP** (`ba2d33e`, tracker): a creature's own pump is used in combat when it changes the fight, and the block counts it.
   - After blockers, both players now hold priority (CR 509.4).
   - Of the digest's 27 games, one changes: Domain Zoo's Frog survives its block and kills the attacker.
-  - The `cp-post` arm (pre = `ei-post`) measures it.
+  - **Measured (`cp-post`):** Dimir Midrange 36.5 → 39.7 (+3.2), toward the band. The other Frog decks rise as well (Instant Reanimator +7.3, Domain Zoo +4.1, Grixis Reanimator +3.2).
+  - **Loop-break count:** reset; CP moved Dimir toward its band.
 - **Subsystem 3 (Engineered Explosives) is wider than the replay showed:**
   - Its entry handler counts the colours of the controller's lands, not the colours of mana spent (CR 702.44a).
   - The runner adds a charge counter to it every turn, though it has no ability that does.

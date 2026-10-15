@@ -9486,7 +9486,23 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
   - Chunk 1: 5049 passed, 2 failed. The two are the effect-grammar pool pass's CPU-ceiling tests (8.1 s against 6.8, and 4.6 against 4.0).
   - Both fail the same way at the pre-unit commit `c2479ec` on this container now, though they passed there earlier in the session. That is machine speed, not the unit.
 
-**Measured:** the `cp-post` arm follows (pre = `ei-post`).
+**Measured (same-seed n=20 Bo3, `cp-post` at `0d38bfa`, pre = `ei-post`):**
+- **The four Psychic Frog decks move up:**
+  - Instant Reanimator 47.9 → 55.2 (+7.3);
+  - Domain Zoo 70.7 → 74.8 (+4.1);
+  - Grixis Reanimator 42.0 → 45.2 (+3.2);
+  - Dimir Midrange 36.5 → 39.7 (+3.2).
+- Every other deck is within ±2.2. 142 cells change; 0 aborts, 0 violations; findings 502 → 497.
+- **Replayed cell-exact** (Instant Reanimator, the one deck past 5 pp):
+  - Boros Energy vs Instant Reanimator goes 17 → 10 of 20, and Instant Reanimator vs Amulet Titan 8 → 14, matching the arm.
+  - In Boros Energy vs Instant Reanimator s50000, both changed games diverge at a Frog block of Ragavan. The Frog discards to survive as a 2/3 and kill it, where before both died: Teferi, Time Raveler in G2, and in G3 Griselbrand, which the deck reanimates. G3 flips to Instant Reanimator.
+- **Field bands:** 4 decks out of band, 41.9 → 43.1 pp total miss.
+  - Dimir Midrange's miss falls 8.5 → 5.3.
+  - Domain Zoo's rises 5.7 → 9.8; it is a Frog deck that was already above its band.
+- **Reading:**
+  - The rule works where the replay pointed: a block the Frog wins with its own pump is now won.
+  - Dimir moves toward its band (+3.2, about one and a half times the arm's per-deck noise), so the loop-break count resets.
+  - Domain Zoo's rise past its band is the same rule applied to its Frogs; no tuning follows.
 
 **Leads (not built):**
 - **A second path for this rule:** the attack declaration still pumps a discard-pump attacker before attackers are declared (`decide_attackers`, "Pre-combat pump"). The AI moves the card and puts the counter itself, without activating the ability, keyed off a runtime oracle substring. Retiring it first needs the attack side to count the attacker's own pump, with `fight_plan` against each possible blocker.
