@@ -182,3 +182,28 @@ The units this document licensed and found, each measured on the same 160 seeds:
 - FS took 38 more kills than OG, above the observer's bound of 35. CM's real costs and OG's Wish permission each changed the reach FS reads.
 - Kills by T6 did not move (7 / 12 → 6 / 11). The pace before the chain, the next measurement above, is the remaining gap.
 - Matrix: the `cm-post` arm (OB and CM) measured Ruby Storm 12.5 → 14.3. The `fs-post` arm measures OG and FS.
+
+### The next measurement, taken cheaply (FS goldfish dumps, `b7ee1fe`)
+
+Before a full search, two cheaper reads of the 160 dumped games:
+
+- **The keep is not the gap.** The 52 kept hands with at most one land killed 38 times; the 56 with two killed 35. Kills by T6 are low at every land count (5, 4, 6 and 2 of 52, 56, 39 and 12).
+- **The fuel is spent before the kill turn.** Per killed game (108):
+
+  | Cast | Before the kill turn | On the kill turn |
+  |---|---|---|
+  | Digs | 6.7 | 2.6 |
+  | Rituals | 3.2 | 1.8 |
+  | Past in Flames | 1.8 | 0.7 |
+  | Closers (Grapeshot, Wish, Empty the Warrens) | 2.8 | 1.9 |
+  | Engines (Medallion, Ral, Artist's Talent) | 4.7 | 0.7 |
+
+  About 12 fuel spells and 3 closers go into turns that do not kill. The kill comes from several medium turns, not one big one.
+
+  Play 70007 shows the shape. It kept three lands with Ruby Medallion, Past in Flames, Grapeshot and Hex Magic, and played a Medallion on T2. From T3 to T9 it cast a dig or two each turn and Past in Flames on T6, T7, T8 and T9, killing on T10.
+
+**What this names:** across turns, the storm finisher timing is still per spell.
+- A closer below lethal is cashed once a spell is cast this turn: the develop reach is 0 when storm > 0 (mode A in unit FS's leads).
+- Nothing holds chain fuel for the turn that can kill.
+
+The full search remains the way to measure the earliest kill each seeded draw allows.
