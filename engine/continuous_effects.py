@@ -47,6 +47,17 @@ from .oracle_parser import COLOR_SET_SELF, COLOR_SET_YOUR_NONLAND
 ALL_COLORS = frozenset({Color.WHITE, Color.BLUE, Color.BLACK,
                         Color.RED, Color.GREEN})
 
+# Every characteristic this layer writes on a permanent (`CardInstance.cem_*`)
+# with the value that means "no effect applies". The layer writes them on
+# battlefield objects only; an object off the battlefield is a new object
+# (CR 400.7) and holds these values. Read by `_audit_off_battlefield`.
+_EFFECT_CHARACTERISTIC_DEFAULTS = (
+    ("cem_power_mod", 0), ("cem_toughness_mod", 0),
+    ("cem_keywords", frozenset()), ("cem_colors_set", None),
+    ("cem_land_type_set", None), ("cem_land_types_added", frozenset()),
+    ("cem_types_added", frozenset()), ("cem_subtypes_added", frozenset()),
+)
+
 
 class Layer(Enum):
     """CR 613.1: The seven layers."""
@@ -300,6 +311,32 @@ class ContinuousEffectsManager:
                 # turns the guardrail red instead of mis-playing in silence.
                 from .effect_diagnostics import record_unhandled_effect
                 record_unhandled_effect(effect.source_name, "static")
+        if _audit:
+            self._audit_off_battlefield(game)
+
+    @staticmethod
+    def _audit_off_battlefield(game: "GameState") -> None:
+        """CR 400.7, 611.3a, restated from raw fields: an object off the
+        battlefield -- a card in a hand, graveyard or exile, a spell on the
+        stack -- carries no characteristic a continuous effect gave it as a
+        permanent: no power or toughness change, keyword, colour or land
+        type set, land type or type added. The layer writes them on
+        battlefield objects only, so one off it holds them only when they
+        followed it out. Observation only."""
+        from .rules_audit import check as _audit_check
+        objects = [(zone, card) for player in game.players
+                   for zone in ("hand", "graveyard", "exile")
+                   for card in getattr(player, zone, ())]
+        objects += [("stack", item.source) for item in game.stack.items
+                    if getattr(item, "source", None) is not None
+                    and getattr(item.source, "zone", None) == "stack"]
+        for zone, card in objects:
+            kept = [name for name, default in _EFFECT_CHARACTERISTIC_DEFAULTS
+                    if getattr(card, name, default) != default]
+            _audit_check("400.7/effect_characteristic_off_battlefield",
+                         not kept,
+                         f"{card.name} in {zone} keeps {', '.join(kept)} "
+                         f"from its time as a permanent", game=game)
 
     def _derive_static_effects(self, game: "GameState") -> List[ContinuousEffect]:
         """Build the continuous effects that permanents currently on the

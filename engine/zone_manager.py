@@ -600,7 +600,17 @@ class ZoneManager:
         # (CR 712.8a); a later entry shows the face that entry names.
         card.is_transformed = False
 
-        # Types an effect added named the object that left (CR 400.7).
+        # Every characteristic a continuous effect gave the permanent named
+        # the object that left (CR 400.7, 611.3a): the layer writes them on
+        # battlefield objects only, so nothing else clears them -- power and
+        # toughness changes, keywords, a colour or land type set, land types
+        # and types added.
+        card.cem_power_mod = 0
+        card.cem_toughness_mod = 0
+        card.cem_keywords = set()
+        card.cem_colors_set = None
+        card.cem_land_type_set = None
+        card.cem_land_types_added = set()
         card.cem_types_added = set()
         card.cem_subtypes_added = set()
 
