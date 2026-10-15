@@ -332,8 +332,9 @@ def effective_cmc(
     # ── Step 3: on-board cost reducers ──────────────────────────────
     reducers = _count_cost_reducers(game, player_idx, template)
     if reducers > 0:
-        # Cost reducers can drive a spell to {0} (Storm rituals
-        # become free under enough medallions).  Clamp at 0.
+        # A generic reduction reaches the generic component only; the
+        # pip floor below keeps every coloured, colourless and hybrid
+        # pip owed (CR 601.2f).
         paid = max(0, paid - reducers)
 
     # ── Step 3b: self-scaling own-cost reduction ────────────────────
@@ -343,6 +344,13 @@ def effective_cmc(
     own_reduction = _self_cost_reduction(game, player_idx, template)
     if own_reduction > 0:
         paid = max(0, paid - own_reduction)
+
+    # CR 601.2f: no generic reduction touches a coloured, colourless or
+    # hybrid pip -- the floor the engine charges (`CastManager.can_cast`
+    # floors its quantity at `ManaCost.non_generic_pips`). Without it a
+    # {1}{R} ritual read as free under two reducers.
+    if template.mana_cost is not None:
+        paid = max(paid, template.mana_cost.non_generic_pips)
 
     # Recompute the generic-portion-remaining after reducers ate
     # into it.  Delve/affinity/improvise can't drive paid below
