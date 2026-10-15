@@ -167,3 +167,18 @@ The storm finisher timing in `ai/combo_calc.card_combo_modifier`: the STORM FINI
 The pace before the chain. Even with every lethal reach taken, 1 of 160 games kills by T4.
 
 Measure the earliest turn a full search over the same seeded draws could kill. That splits the remaining gap between the list as the engine implements it and the AI's sequencing of turns 2–4: digs cast where a Medallion and rituals would build the chain.
+
+## Outcome (2026-10-15)
+
+The units this document licensed and found, each measured on the same 160 seeds:
+
+| | Kills (play / draw) | Killed by T8 | Lost to an empty library |
+|---|---|---|---|
+| Root cause (`3e71f87`) | 30 / 28 | 13 / 16 | 50 / 52 |
+| Unit CM (`f37d731`) | 33 / 31 | 13 / 21 | 47 / 49 |
+| Unit OG (`03ae413`) | 33 / 37 | 15 / 27 | 47 / 43 |
+| Unit FS (`b7ee1fe`) | 52 / 56 | 17 / 31 | 28 / 24 |
+
+- FS took 38 more kills than OG, above the observer's bound of 35. CM's real costs and OG's Wish permission each changed the reach FS reads.
+- Kills by T6 did not move (7 / 12 → 6 / 11). The pace before the chain, the next measurement above, is the remaining gap.
+- Matrix: the `cm-post` arm (OB and CM) measured Ruby Storm 12.5 → 14.3. The `fs-post` arm measures OG and FS.

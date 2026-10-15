@@ -9711,7 +9711,14 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
   - Chunk 1: 5082 passed, 2 failed. The two are the CPU-ceiling tests that fail the same way at the pre-unit commit on this container.
   - Chunk 2: 2736 passed.
 
-**Measured:** with unit CM, by the `cm-post` arm (pre = `td-post`).
+**Measured (`cm-post`, with unit CM; run 38732837640 at `fe73604`, n=20 Bo3, pre = `td-post`):**
+- OB moved no cell. All 40 changed cells are Ruby Storm's (unit CM).
+- The audit recorded 193 violations of OB's own auditor, all in the Domain Zoo (133) and Broodscale Bloodchief (60) shards.
+  - The first replay found the source (Domain Zoo vs Broodscale Bloodchief s50000, game 3 T3, trapped at the first violation). Haywire Mite's "Sacrifice: exile target noncreature artifact or noncreature enchantment" resolved through the runner's residual sacrifice-ability heuristic (`GameRunner._resolve_sac_effect`). It exiled Leyline of the Guildpact with raw list writes, so in exile the card stayed all colours, and no permanent was counted as having left (CR 702.139).
+  - **Follow-up (`b2b8d18`):** that exile goes through the zone funnel. The test is red first; the zone-mutation baseline is lowered (game_runner 12 → 11; card_effects 16 → 15, the write unit OG's retired Wish handler freed). The digest is byte-identical.
+- **Leads:**
+  - The heuristic still picks its own target in the engine (the highest mana value) and admits a permanent the text's target cannot be, such as a planeswalker or a hexproof permanent. It should be retired for typed activations, as unit U3 retired the runner's other shortcuts.
+  - Legend of Roku's chapter III removes the Saga with raw writes; no registered deck carries it.
 
 ## Unit CM: the AI's cost estimate never reduces coloured pips (CR 601.2f; AI, 2026-10-15)
 
@@ -9752,4 +9759,147 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 | Median kill turn | 9.5 / 8 | 9 / 7 |
 | Lost to an empty library | 50 / 52 | 47 / 49 |
 
-**Measured:** with unit OB, by the `cm-post` arm (pre = `td-post`).
+**Chunks:** run at `03ae413` (unit OG), which carries CM beneath it; recorded under unit OG.
+
+**Measured (`cm-post`, with unit OB; run 38732837640 at `fe73604`, n=20 Bo3, pre = `td-post`):**
+- **Ruby Storm 12.5 → 14.3 (+1.8). Every other deck within ±0.6.**
+- All 40 changed cells are Ruby Storm's: CM's chain arithmetic. Storm vs Jeskai Blink and vs Eldrazi Tron each move +20; the rest move by 5–15.
+- Band miss 41.4 → 39.8.
+- No deck moved more than 5 pp, so no mover replay is owed.
+
+## Unit OG: a card brought from outside the game is one its owner chooses from its sideboard (CR 400.11, 400.11a, 400.11b; 2026-10-15)
+
+**Source:** the Ruby Storm goldfish root cause (`docs/diagnostics/2026-10-15_ruby_storm_goldfish_speed.md`), secondary finding: the name-keyed Wish handler.
+
+**Rule (CR 400.11, 400.11a, 400.11b):**
+- Outside the game is not a zone. In a sanctioned game the cards a player owns outside it are its sideboard, and a card brought into the game stays in it.
+- "You may play a card you own from outside the game this turn" (Wish): one play, this turn, of any such card, chosen as it is played. The play spends the permission; the permission ends with the turn.
+- "You may reveal a <description> card you own from outside the game and put it into your hand": its controller chooses one card the description admits, and it goes to their hand.
+- Never a card from the library.
+
+**Defect:**
+- The name-keyed Wish handler chose the card in the engine, from a list of card names and literals (an engine-to-AI import among them).
+- It fell back to the library, and put the card into the hand for good.
+- A reveal from outside the game was not performed at all.
+
+**Class:** 40 pool cards bring a card from outside the game. Wish (Ruby Storm ×2) and Vivien, Arkbow Ranger's ultimate now resolve from their typed hosts.
+
+**Steps (`03ae413`, `a970b5a`):**
+- **Typed at load:** the filter leaf reads "from outside the game" as the sideboard zone; the permission payload reads a description.
+- **Engine:**
+  - A one-play permission over the sideboard: `permit_play(zone, plays)`, spent by `ContinuousEffectsManager.spend_play`.
+  - `can_cast`, the cast path, `rules_query.permitted_cards`, the zone map and `get_card_by_id` read the sideboard.
+  - The card-flow executors perform the permission (`outside_permit`) and the reveal with its move (`execute_reveal`, `revealed_to_hand`); the card-flow shape admits both hosts.
+- **Retired:** the Wish handler (card-name registry 75 → 74).
+- **AI:** the reveal's choice is the hand-delivery choice (`_deliver`). A tutor's finisher access reads its typed pool: the sideboard alone for a card from outside the game (`brings_from_outside_the_game`).
+- **Follow-up (`a970b5a`):** the zone lookup reads only the zone it names. The chunk run at `03ae413` caught it: the lookup read `player.sideboard` up front, and two tests in `tests/test_effect_diagnostics_reachability.py` move a card through a player stand-in that has none.
+
+**Auditors:** `400.11a/play_from_outside_the_game` (the cast) and `400.11a/brought_from_the_sideboard` (the reveal), restated from raw fields.
+
+**Tests:** 12 in `tests/test_a_card_from_outside_the_game_is_one_its_owner_chooses.py`, 8 red at the pre-unit commit (the one-play, library and audit-silent pins pass there). Unit FS adds a 13th (the cards a one-play permission names share its play).
+
+**Pins:**
+- Loyalty ratchet 382 → 381 (Vivien's ultimate). Harness: 2 new pairs, proven identical (1842 pairs: 373 proven, 1469 intended).
+- Spec equivalence re-recorded: `is_tutor` reads a description of the sideboard as a tutor (AGREE +6). One UNEXPLAINED was exposed on `has_discard_effect` (Fae of Wishes // Granted, a discard cost): a lead.
+- Census re-recorded (FILTER refusals 1536 → 1528).
+- **Digest:** 4 Ruby Storm games change. Wish now permits a sideboard card this turn instead of putting one into the hand. One match flips to Azorius Control: Silence answered the play the permission needed. Replayed through the digest's sequence; re-recorded (27 games).
+- Anchor 29; all ratchets pass.
+- **Chunks at `03ae413`:**
+  - Chunk 1: 5095 passed, 4 failed. Two are the CPU-ceiling tests that fail the same way on this container. The other two are the stand-in lookups `a970b5a` fixes.
+  - Chunk 2: 2745 passed.
+
+**Goldfish (`tools/goldfish.py`, the root cause's 160 seeds, at `03ae413`):**
+
+| | After CM (play / draw) | After OG (play / draw) |
+|---|---|---|
+| Kills | 33 / 31 | 33 / 37 |
+| Killed by T6 | 4 / 10 | 7 / 12 |
+| Killed by T8 | 13 / 21 | 15 / 27 |
+| Median kill turn | 9 / 7 | 9 / 7 |
+| Lost to an empty library | 47 / 49 | 47 / 43 |
+
+**Measured:** with unit FS, by the `fs-post` arm (pre = `cm-post`).
+
+**Leads, not built:**
+- Glittering Wish's self-exile ("Exile Glittering Wish"), refused with its host.
+- Karn, the Great Creator's "or choose a face-up card you own in exile": a choice across two zones.
+- The bare "put a card you own from outside the game into your hand" and the named and learn variants.
+- `has_discard_effect` reads Fae of Wishes // Granted's discard cost as a discard effect (the spec-equivalence UNEXPLAINED).
+
+## Unit FS: a storm finisher fires when the casts the mana pays sum to lethal; it is held only for a play that keeps what its cast needs (CR 702.40a, 106.4, 500.4, 400.11a; AI, 2026-10-15)
+
+**Source:** the Ruby Storm goldfish root cause (`docs/diagnostics/2026-10-15_ruby_storm_goldfish_speed.md`), subsystem (a): finisher timing. The loop-break document licensed it.
+
+**Rule (AI, from CR 702.40a, 106.4, 500.4, 400.11a):**
+- A storm spell is copied once for each spell cast before it this turn. A closer cast with S spells before it is S + 1 instances of its damage, and a second closer cast after it S + 2. A tutor that brings a closer adds one spell before it. So a turn's finishers sum their damage, and a sequence the mana pays fires when the sum is lethal, its first cast first.
+- Mana empties between steps. A held finisher waits only for a play that keeps what its cast needs after it:
+  - the mana: a play that spends it strands the finisher for the turn;
+  - the one play a permission allows them both: a card Wish lets its controller play spends the play another such card needs.
+- A finisher the mana does not pay now is stranded by no play, and a play not castable this turn stays the next turn's fuel: the hold reads both as before.
+- A tutor whose closer the mana cannot follow deals nothing this turn. It is held for a turn whose mana pays both: Wish's play from outside the game is this turn or never.
+
+**Defect:**
+- Lethal was one finisher (storm + 1, storm + 2), and the hold counted fuel by its kind.
+- In the goldfish, 57% of the turns that cast ten spells cast no closer, and a lethal sum of castable finisher casts went untaken in 61 of 160 games.
+- Draw seed 70048 T7 is the clearest case: at storm 8 with 3 mana and two Ruby Medallions, Wish, the sideboard Grapeshot and a Grapeshot in hand deal 21 into 20. The AI cast a third Ruby Medallion with its last mana and passed.
+- Since unit OG, the plan's hand holds every sideboard card a live Wish names. The hold counted them as fuel for one another:
+  - Azorius Control vs Ruby Storm s58500 g3: the AI cast Wish, then held the sideboard Grapeshot for the sideboard Past in Flames, and the play lapsed;
+  - and it cast Wish with no mana left for its closer.
+
+**Class:**
+- Every storm payoff (17 pool cards, the storm branch's domain) and every tutor that reaches one (393 tutor-tagged cards).
+- The lethal sum reads each closer's per-instance damage off its typed host: one DAMAGE instruction with a literal amount, aimed at a slot that admits a player (`target_solver.slot_admits_player`). Grapeshot in today's pool. A variable amount is refused: Ignite Memories deals a revealed card's mana value and is unmodelled.
+- The shared play: the 17 pool cards whose permission allows one play of several cards ("a card you own from outside the game", "one of them"); Wish is the typed member.
+
+**Steps (`b7ee1fe`):**
+- `ai/finisher_reach.py` (new) owns the reach:
+  - `per_copy_damage`;
+  - `finisher_casts`: closers castable from wherever a cast reaches (hand, a permission, flashback), and tutors claiming distinct closers from their pools;
+  - `reach` over the sequences the mana pays, never casting two cards that share one play;
+  - `keeps_finisher`, `pays` and `finisher_cost`. Only a tutor adds the closer it brings.
+- `engine/rules_query.share_one_play` is the rules read: every permission that lets a player play one object names the other and allows a single play.
+- The storm and tutor branches of `ai/combo_calc.card_combo_modifier` fire on the lethal sum and count only fuel that keeps the finisher's mana and play. The tutor fallback's fire-now damage is what the mana pays: 0 when its closer cannot follow.
+
+**Tests:**
+- 15 in `tests/test_storm_finishers_fire_on_the_sum_their_mana_pays.py`, each seen red before its step:
+  - the reach arithmetic, including per-copy damage, the mana bound and the shared play;
+  - the typed closer read;
+  - the fuel rules;
+  - end to end through the main phase: the 70048 turn kills, a tutor whose closer the mana cannot follow is held (library of lands, and of rituals), and a dig is fuel for a tutor the mana does not pay.
+- One in the OG file: the cards a one-play permission names share it.
+
+**Pins:**
+- **Digest:** two games change, winners unchanged; each was replayed.
+  - bo1 Ruby Storm vs Dimir Midrange s50500 T8: at storm 4 against 11 the sum is lethal (Wish, the sideboard Grapeshot, a flashback Grapeshot), and Wish fires first. The planner then aimed five copies at Murktide Regent (lead below); the chain still wins T8.
+  - bo3 Azorius Control vs Ruby Storm s58500 g3: the sideboard Grapeshot is now cast after Wish, where the play had lapsed. Azorius wins T12 instead of T13.
+- **Anchor 29.** Mid-unit, before the shared play was read, the Ruby Storm vs Dimir Midrange s50000 anchor flipped to Storm. Two defects of this unit caused it, not a strategy gain:
+  - Empty the Warrens' finisher cost wrongly included a Grapeshot, as if it were a tutor;
+  - the sideboard Past in Flames counted as fuel for the sideboard finishers.
+
+  Together they held Grapeshot but not Empty the Warrens. With both fixed, the two sideboard finishers score alike (+67.6), and the anchor stands.
+- All ratchets pass; `ai/finisher_reach.py` is seeded at 0 in the magic-number baseline.
+- **Chunks at `b7ee1fe`:**
+  - Chunk 1: 5097 passed, 3 failed. All three are the CPU-ceiling tests that fail the same way on this container under load.
+  - Chunk 2: 2760 passed.
+  - The OB follow-up (`b2b8d18`) on top was run against its own and 158 sacrifice-, zone- and revolt-path tests; digest byte-identical; anchor 29.
+
+**Goldfish (`tools/goldfish.py`, the root cause's 160 seeds, at `b7ee1fe`):**
+
+| | After OG (play / draw) | After FS (play / draw) |
+|---|---|---|
+| Kills | 33 / 37 | 52 / 56 |
+| Killed by T6 | 7 / 12 | 6 / 11 |
+| Killed by T8 | 15 / 27 | 17 / 31 |
+| Killed by T10 | 19 / 33 | 28 / 46 |
+| Median kill turn | 9 / 7 | 10 / 8 |
+| Lost to an empty library | 47 / 43 | 28 / 24 |
+
+Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now ends on its finishers. The median kill turn rises by one because games that decked now end in late kills. Kills by T6 do not move: the pace before the chain (subsystem (b)) is untouched.
+
+**Measured:** with unit OG, by the `fs-post` arm (pre = `cm-post`).
+
+**Leads, not built:**
+- **The damage planner reads one closer, not the turn's sum.** Unit SC's `plan_copy_damage` aimed five Grapeshot copies at Murktide Regent while the turn's sum was lethal at the face (Ruby Storm vs Dimir Midrange s50500 T8).
+- **A token payoff against a damage closer below lethal:** both fire as the same kill fraction (storm + 1). The tokens' damage arrives a turn later (CR 302.6): value the kill they threaten next turn.
+- **Mode A (across turns):** the develop reach is 0 once a spell is cast this turn, so a non-lethal chain is cashed rather than held for a bigger turn.
+- **Pace before the chain:** the first lethal reach comes on T5–T8 (subsystem (b) of the root cause). The keep is not the gap. Over the FS goldfish dumps, the 52 kept hands with at most one land killed 38 times, and the 56 with two killed 35. Kills by T6 are low at every land count (5, 4, 6 and 2 of 52, 56, 39 and 12).
