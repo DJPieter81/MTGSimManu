@@ -124,6 +124,29 @@ def test_a_card_returned_to_hand_from_under_an_anthem_has_its_printed_power_and_
     assert Keyword.FLYING not in bears.keywords
 
 
+def test_a_permanent_a_sacrifice_effect_exiles_leaves_through_the_funnel(
+        card_db):
+    """The runner's residual sacrifice-ability path ("exile target
+    noncreature artifact or noncreature enchantment") exiles the permanent
+    through the zone funnel: in exile it keeps no characteristic an effect
+    gave it, and it counts as a permanent that left the battlefield (CR
+    702.139). The cm-post arm's 193 violations were this path: Haywire
+    Mite exiling an all-colours Leyline of the Guildpact."""
+    from engine.game_runner import GameRunner
+    game = _game()
+    leyline = _add(game, card_db, "Leyline of the Guildpact", 1)
+    game.continuous_effects.recalculate(game)
+    assert leyline.colors == set(ALL_COLORS), "it sets its own colour"
+    mite = _add(game, card_db, "Haywire Mite", 0, "graveyard")
+    runner = GameRunner.__new__(GameRunner)
+    runner._resolve_sac_effect(
+        game, 0, mite,
+        "exile target noncreature artifact or noncreature enchantment")
+    assert leyline.zone == "exile" and leyline in game.players[1].exile
+    assert leyline.cem_colors_set is None
+    assert game.players[1].permanents_left_battlefield_this_turn == 1
+
+
 def test_a_recast_spell_is_its_printed_colour_for_a_target_discount(card_db):
     """End to end, the defect's shape: a green creature that was all
     colours as a permanent is cast again; "costs {2} less if it targets a

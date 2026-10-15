@@ -2691,9 +2691,11 @@ class GameRunner:
                        if not c.template.is_creature and not c.template.is_land]
             if targets:
                 t = max(targets, key=lambda c: c.template.cmc or 0)
-                opp.battlefield.remove(t)
-                t.zone = "exile"
-                opp.exile.append(t)
+                # Through the zone funnel, the one owner of a permanent
+                # leaving the battlefield (CR 400.7: it keeps nothing an
+                # effect gave the permanent; CR 702.139: it left).
+                game.zone_mgr.move_card(game, t, "battlefield", "exile",
+                                        cause=f"{sacrificed.name} exile")
         elif re.search(r'(\d+) damage', effect_text):
             dmg = int(re.search(r'(\d+) damage', effect_text).group(1))
             opp.life -= dmg
