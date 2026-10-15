@@ -9613,3 +9613,50 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
   - a free-cast offer (Lady Octopus);
   - Engineered Explosives' sunburst reminder text read as a charge-counter ability.
 - A search's bound ("search ... with mana value less than or equal to <quantity>") is not handed a quantity reader: patterns and the condition leaf still refuse it (Bring to Light, Hibernation's End).
+
+## Unit TD: a spell's cost reduction for a target applies when a chosen target fits its description (CR 601.2c, 601.2f; 2026-10-15)
+
+**Source:** the Dimir Midrange root cause, subsystem 4, widened to its rule. The root cause named the sideboard plan bringing Mystical Dispute in against a deck with no blue spells. The discount it needs against a blue spell was never applied anywhere.
+
+**Rule (CR 601.2c, 601.2f):**
+- A spell's targets are chosen before its total cost is determined.
+- So "This spell costs {N} less to cast if it targets <description>" discounts N generic mana when a chosen target fits.
+- The cast is legal when the discounted cost can be paid with a fitting legal target to choose.
+- A reduction never touches coloured pips.
+
+**Defect:** no part of the engine read the discount. Mystical Dispute cost {2}{U} against a blue spell.
+
+**Class:**
+- 38 pool spells print the discount. 34 descriptions are typed; 4 are refused (damage history, graveyard counts, a card in a graveyard, "a spell or ability that targets").
+- **Field:** Mystical Dispute in nine registered sideboards: Jeskai Blink, Affinity, Domain Zoo, Living End ×4, Dimir Midrange ×2, 4/5c Control ×4, Azorius Control ×3, Instant Reanimator ×2, Grixis Reanimator ×2.
+
+**Steps (`966f762`):**
+- **Typed at load:** `CardTemplate.target_cost_reduction = (N, CardFilter)`.
+  - `oracle_parser.parse_target_cost_reduction` reads the sentence; the effect grammar's filter leaf types its description: spells on the stack, permanents by colours, types, state, subtypes, token, keywords, counters, mana-value bounds and "you control" / "you don't control".
+  - The field is accounted in `effect_views.NON_EFFECT_FIELDS`.
+- **One owner (`oracle_resolver`):**
+  - `target_fits`: zone, controller, then the description owner;
+  - `target_cost_reduction`: the chosen targets;
+  - `best_target_cost_reduction`: a fitting legal target to choose.
+  - Both are capped at the generic portion.
+- **Legality:** `CastManager.can_cast` counts the best discount for an instant or sorcery.
+- **Payment:** `cast_spell` hands payment the chosen targets' discount.
+- **Auditor** `601.2f/target_cost_reduction`, restated from raw fields (colours, types, state, controller).
+- **AI:** a counter's cost (`ResponseDecider._effective_counter_cost`) reads the discount for the spell it counters.
+
+**Tests:** 7, in `tests/test_a_discount_for_a_target_applies_when_a_chosen_target_fits.py`. 5 are red at the pre-unit commit; the full-payment and audit-silent pins pass there.
+
+**Pins:**
+- Digest byte-identical; anchor 29; spec equivalence unchanged.
+- The effect-parser ratchet's (e) field is accounted.
+- **Chunks at `966f762`:**
+  - Chunk 1: 5075 passed, 2 failed. The two are the CPU-ceiling tests that fail the same way at the pre-unit commit on this container.
+  - Chunk 2: 2736 passed.
+
+**Measured:** the `td-post` arm follows (pre = `ee-post`).
+
+**Leads (not built):**
+- The sideboard solver counts no counter's cost. A counter whose discount needs a blue target is valued the same against a deck with no blue spells; this is the root cause's subsystem 4 proper.
+- The AI's main-phase cost estimate (`ai/effective_cmc`) does not read the discount; it would need a runtime target parse.
+- A removal spell's target picker does not prefer a target its discount names when only the discounted cost is payable.
+- A spell with the discount that is neither instant nor sorcery (an Aura) gets no best-case discount in the cast's legality.
