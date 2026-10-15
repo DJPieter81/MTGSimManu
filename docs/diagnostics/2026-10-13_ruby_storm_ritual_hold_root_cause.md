@@ -1,9 +1,10 @@
 ---
 title: Ruby Storm at 13% — the storm-0 ritual gate holds the rituals that would dig for the payoff
-status: active
+status: superseded
 priority: primary
 session: 2026-10-13
 supersedes: []
+superseded_by: docs/diagnostics/2026-10-15_ruby_storm_goldfish_speed.md
 depends_on:
   - docs/design/rules-foundation-sweep-tracker.md
 tags: [diagnostic, outlier, ruby-storm, ai, combo-calc, ritual-gate, root-cause, loop-break]
