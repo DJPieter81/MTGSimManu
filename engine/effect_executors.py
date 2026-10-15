@@ -1823,11 +1823,118 @@ def _audit_destroyed(ctx: Resolution, perm: Any) -> None:
             f"{perm.name} on the battlefield", game=ctx.game)
 
 
+def destroy_each_supported(s: EffectSpec) -> bool:
+    """"Destroy each <description>" (CR 701.8a): every permanent the
+    description admits as the instruction applies -- its characteristic
+    bounds evaluated once (CR 608.2h, `effect_conditions.bound_values`) --
+    is destroyed. Every player's permanents are covered, or only the
+    instruction's controller's when it names "you control"; a description
+    the owner cannot read is refused whole."""
+    f, subj = s.filter, s.subject
+    return (s.verb is Verb.DESTROY and s.target is None
+            and s.target_slot is None and isinstance(f, CardFilter)
+            and isinstance(subj, Selector) and subj.kind is SelectorKind.FILTER
+            and dict(subj.filter or ()) == dict(f.as_tuple())
+            and conditions.description_supported(f, bounds=True)
+            and f.controller in ("any", "you")
+            and s.ref is None and s.other is None and s.actor is None
+            and s.amount is None and s.dest is None and s.payload is None
+            and s.duration is None and s.group is None
+            and not s.alternatives and not s.flags and not s.optional
+            and s.chooser is Chooser.CONTROLLER)
+
+
+def _destroy_each(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The permanents the description admits, fixed as the instruction
+    applies, each destroyed through the destroy owner unless it is
+    indestructible (CR 701.8a, 702.12b)."""
+    source = _source_object(ctx)
+    f = s.filter
+    bounds = conditions.bound_values(ctx.game, ctx.controller, f, source,
+                                     ctx.source_lki, ctx.x_value)
+    players = (range(len(ctx.game.players)) if f.controller == "any"
+               else (ctx.controller,))
+    covered = [c for p in players for c in ctx.game.players[p].battlefield
+               if conditions.permanent_described(c, f, source=source,
+                                                 bounds=bounds)]
+    out = {}
+    for perm in covered:
+        if perm.zone != "battlefield" \
+                or Keyword.INDESTRUCTIBLE in perm.keywords:
+            continue
+        controller, h = perm.controller, handle_of(perm)
+        ctx.game.log.append(
+            f"T{ctx.game.display_turn} P{ctx.controller+1}: "
+            f"{getattr(source, 'name', '')} destroys {perm.name}")
+        ctx.game._permanent_destroyed(perm)
+        _audit_destroyed(ctx, perm)
+        out.setdefault(controller, []).append(h)
+    _audit_destroyed_each(ctx, f, bounds)
+    return Outcome(bool(out), {p: tuple(v) for p, v in out.items()})
+
+
+# The description fields `_audit_destroyed_each` restates; a description
+# with any other is not audited.
+_RESTATED_DESCRIPTION = frozenset({"types", "not_types", "all_types",
+                                   "stat_bounds", "controller"})
+
+
+def _audit_destroyed_each(ctx: Resolution, f: CardFilter,
+                          bounds: tuple) -> None:
+    """CR 701.8a, restated from raw fields: after "destroy each <noun>
+    [with <characteristic> <op> <value>]", no permanent that is not
+    indestructible, has a card type the description names and none it
+    excludes, and meets every bound is left on the battlefield. Each bound
+    is re-read here -- a printed number, X, or the source's counters, from
+    what it last had when it left (CR 608.2h). Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled() \
+            or not {k for k, _ in f.as_tuple()} <= _RESTATED_DESCRIPTION:
+        return
+    ops = {"==": lambda a, b: a == b, "<=": lambda a, b: a <= b,
+           ">=": lambda a, b: a >= b, "<": lambda a, b: a < b,
+           ">": lambda a, b: a > b}
+    source = _source_object(ctx)
+    want = []
+    for stat, op, a in f.stat_bounds:
+        q = a.quantity
+        if q is None:
+            n = ctx.x_value if a.kind is AmountKind.X else a.n
+        elif q.ref.lki and ctx.source_lki is not None:
+            n = dict(ctx.source_lki.counters).get(q.counter_kind, 0)
+        elif source is not None and source.zone == "battlefield":
+            n = source.counter_count(q.counter_kind)
+        else:
+            n = 0
+        want.append((stat, op, n))
+    players = (range(len(ctx.game.players)) if f.controller == "any"
+               else (ctx.controller,))
+    left = []
+    for p in players:
+        for perm in ctx.game.players[p].battlefield:
+            types = {t.value for t in perm.effective_card_types}
+            if Keyword.INDESTRUCTIBLE in perm.keywords \
+                    or (f.types and not types & f.types) \
+                    or types & f.not_types or not f.all_types <= types:
+                continue
+            stats = {"mana_value": perm.template.cmc or 0,
+                     "power": perm.power or 0,
+                     "toughness": perm.toughness or 0}
+            if all(ops[op](stats[stat], n) for stat, op, n in want):
+                left.append(perm.name)
+    rules_audit.check("701.8a/destroyed_each", not left,
+                      f"{left} still on the battlefield after "
+                      f"'destroy {f.raw}'", game=ctx.game)
+
+
 def execute_destroy(ctx: Resolution, s: EffectSpec,
                     actors: Tuple[int, ...]) -> Outcome:
     """Each chosen permanent still a legal target (CR 608.2b) is destroyed
     -- put into its owner's graveyard through the destroy owner (CR
-    701.8a) -- unless it is indestructible (CR 702.12b)."""
+    701.8a) -- unless it is indestructible (CR 702.12b). "Destroy each
+    <description>" destroys every permanent the description admits."""
+    if s.target_slot is None:
+        return _destroy_each(ctx, s)
     source = _source_object(ctx)
     slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
     out = {}
@@ -1846,7 +1953,8 @@ def execute_destroy(ctx: Resolution, s: EffectSpec,
     return Outcome(bool(out), {p: tuple(v) for p, v in out.items()})
 
 
-execute_destroy.supports = destroy_supported
+execute_destroy.supports = (lambda s: destroy_supported(s)
+                            or destroy_each_supported(s))
 
 _BASIC_LAND_CARD = CardFilter(zone="library", types=frozenset({"land"}),
                               supertypes=frozenset({"basic"}))
@@ -2054,6 +2162,10 @@ EXECUTOR_FILTER_KEYS[Verb.PUT_COUNTERS] = frozenset(
 # (unit PF): "each Cat", "each other artifact creature", "each attacking
 # creature".
 EXECUTOR_DESCRIPTIONS[Verb.PUT_COUNTERS] = conditions.description_supported
+# "Destroy each <description>": any description the owner reads, its
+# characteristic bounds included (`destroy_each_supported`).
+EXECUTOR_DESCRIPTIONS[Verb.DESTROY] = (
+    lambda f: conditions.description_supported(f, bounds=True))
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
 # The move executor evaluates "a land card from your hand" itself (unit SP).

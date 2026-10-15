@@ -457,6 +457,13 @@
     "strict": true
    },
    {
+    "card": "Engineered Explosives",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
     "card": "Field of Ruin",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
@@ -490,26 +497,33 @@
     "part": "mainboard",
     "step": "E2",
     "strict": true
+   },
+   {
+    "card": "The Filigree Sylex",
+    "host": "ACTIVATED:0:1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
    }
   ],
-  "executable": 213,
+  "executable": 224,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 7,
-   "pool": 205,
-   "sideboard": 1
+   "mainboard": 8,
+   "pool": 214,
+   "sideboard": 2
   },
   "steps": {
-   "E2": 102,
+   "E2": 113,
    "E3": 94,
    "E5": 17
   },
-  "strict": 213,
+  "strict": 224,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
    "CONTINUOUS,EXILE": 12,
-   "DESTROY": 67,
+   "DESTROY": 78,
    "DESTROY,MOVE,SEARCH,SHUFFLE": 3,
    "DRAW": 14,
    "DRAW,EXILE": 2,
@@ -590,7 +604,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 4,
   "family": "removal",
   "hosts": {
    "mainboard": 1,
@@ -1767,7 +1781,7 @@
     "strict": false
    }
   ],
-  "executable": 0,
+  "executable": 10,
   "family": "removal",
   "hosts": {
    "mainboard": 1,
@@ -2149,24 +2163,25 @@
     "strict": true
    }
   ],
-  "executable": 11,
+  "executable": 13,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
-   "pool": 10,
+   "pool": 12,
    "sideboard": 0
   },
   "steps": {
-   "E2": 2,
+   "E2": 4,
    "E3": 3,
    "E4": 3,
    "E5": 3
   },
-  "strict": 11,
+  "strict": 13,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 3,
    "CREATE_TOKEN": 1,
+   "DESTROY": 2,
    "MILL": 3,
    "PUT_COUNTERS": 2,
    "SACRIFICE": 2

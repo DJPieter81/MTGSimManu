@@ -317,9 +317,28 @@ def test_a_characteristic_bound_is_a_stat_bound(phrase, bound):
     assert _ok(phrase, zone="library").value.stat_bounds == (bound,)
 
 
+def test_a_bound_read_off_a_quantity_is_typed_through_the_callers_reader():
+    """Unit EE: "with <stat> equal to <quantity>" is a bound the caller's
+    quantity reader reads (CR 202.3, 608.2h); without one it is refused."""
+    from engine.effect_grammar.sub import quantity as Q
+    from engine.effect_spec import AmountKind, QuantityKind
+    text = ("each nonland permanent with mana value equal to the number of "
+            "charge counters on ~")
+    assert _f(text).unmodelled.detail == "filter.stat"
+    r = _ok(text, operand=Q.parse_quantity)
+    ((stat, op, n),) = r.value.stat_bounds
+    assert (stat, op, n.kind) == ("mana_value", "==", AmountKind.EQUAL_TO)
+    assert n.quantity.kind is QuantityKind.COUNTERS_ON
+    assert n.quantity.counter_kind == "charge"
+
+
 def test_a_bound_the_stat_table_cannot_read_is_unmodelled_stat():
-    r = _f("each nonland permanent with mana value equal to the number of "
-           "charge counters on ~")
+    from engine.effect_grammar.sub import quantity as Q
+    r = _f("each creature with the greatest power", operand=Q.parse_quantity)
+    assert r.unmodelled.detail == "filter.stat"
+    # A quantity that leaves a reference for the linker to bind is refused.
+    r = _f("each creature with power equal to that creature's power",
+           operand=Q.parse_quantity)
     assert r.unmodelled.detail == "filter.stat"
 
 

@@ -22,7 +22,7 @@ from typing import Any, Callable, Optional
 
 from .cards import CardType, Keyword, Supertype
 from .effect_spec import (Amount, AmountKind, CardFilter, Condition,
-                          ConditionKind, Quantity, QuantityKind)
+                          ConditionKind, Quantity, QuantityKind, Ref, RefKind)
 
 
 # Thresholds of the two ability-word conditions legacy burn upgrades carry
@@ -138,14 +138,19 @@ _DESCRIBED_CLASSES = frozenset({"historic", "colored", "multicolored",
                                 "monocolored"})
 
 
-def description_supported(f: Any) -> bool:
+def description_supported(f: Any, bounds: bool = False) -> bool:
     """Can `permanent_described` read every part of this description? A
     battlefield description whose values are in the vocabulary it compares.
-    A name, a characteristic bound, a position, an owner or another zone is
-    refused, so the instruction holding it is refused whole (fail closed)."""
+    A name, a position, an owner or another zone is refused, so the
+    instruction holding it is refused whole (fail closed). A characteristic
+    bound is read only by a consumer that evaluates its values as it applies
+    (`bounds`: `bound_values`, CR 608.2h), and only over the bounds
+    `bounds_supported` takes."""
     if not isinstance(f, CardFilter) or f.zone != "battlefield" or f.zones:
         return False
-    if f.stat_bounds or f.named is not None or f.position is not None \
+    if f.stat_bounds and not (bounds and bounds_supported(f)):
+        return False
+    if f.named is not None or f.position is not None \
             or f.different_names or f.owner != "any":
         return False
     return (f.types <= _CARD_TYPE_VALUES and f.all_types <= _CARD_TYPE_VALUES
@@ -159,6 +164,73 @@ def description_supported(f: Any) -> bool:
             and f.without_keywords <= _KEYWORD_VALUES
             and all(isinstance(kind, str) and isinstance(has, bool)
                     for kind, has in f.counters))
+
+
+# Characteristic bounds ("with mana value 2 or less", "with power equal to
+# the number of charge counters on ~"): the characteristic, read as the
+# permanent has it now (CR 202.3 mana value; 208.1 power and toughness),
+# compared with a value determined once as the instruction applies (CR
+# 608.2h).
+_BOUND_OPS = {"==": operator.eq, "<=": operator.le, ">=": operator.ge,
+              "<": operator.lt, ">": operator.gt}
+_BOUND_STATS = frozenset({"mana_value", "power", "toughness"})
+
+
+def _characteristic(perm: Any, stat: str) -> int:
+    if stat == "mana_value":
+        return perm.template.cmc or 0
+    return (perm.power if stat == "power" else perm.toughness) or 0
+
+
+def bound_amount_supported(a: Any) -> bool:
+    """The values a characteristic bound compares with: a printed number, X
+    (the value chosen as it was cast or activated, CR 107.3), and the
+    number of counters of one kind on the instruction's own source (CR
+    122.1) -- read from the counters it last had when it left the
+    battlefield as part of the cost (CR 608.2h)."""
+    if not isinstance(a, Amount) or a.ref is not None or a.inner is not None \
+            or a.rounding or a.evenly:
+        return False
+    if a.kind in (AmountKind.LITERAL, AmountKind.X):
+        return amount_supported(a)
+    q = a.quantity
+    return (a.kind is AmountKind.EQUAL_TO and isinstance(q, Quantity)
+            and q.kind is QuantityKind.COUNTERS_ON and q.filter is None
+            and isinstance(q.counter_kind, str) and q.stat is None
+            and q.event is None and isinstance(q.ref, Ref)
+            and q.ref.kind is RefKind.SELF and q.ref.of is None)
+
+
+def bounds_supported(f: CardFilter) -> bool:
+    """Is every characteristic bound of the description one
+    `bound_values` evaluates?"""
+    return all(stat in _BOUND_STATS and op in _BOUND_OPS
+               and bound_amount_supported(a)
+               for stat, op, a in f.stat_bounds)
+
+
+def bound_values(game: Any, controller: int, f: CardFilter,
+                 source: Any = None, source_lki: Any = None,
+                 x_value: int = 0) -> tuple:
+    """Each bound of a supported description as (characteristic, operator,
+    value), the value determined once as the instruction applies (CR
+    608.2h). Counters on the source are its last-known counters
+    (`source_lki`, a `LastKnown`) when the reference reads last-known
+    information and the source left; else those it has now."""
+    out = []
+    for stat, op, a in f.stat_bounds:
+        if a.kind is AmountKind.EQUAL_TO:
+            q = a.quantity
+            if q.ref.lki and source_lki is not None:
+                n = source_lki.count(q.counter_kind)
+            elif source is not None and source.zone == "battlefield":
+                n = source.counter_count(q.counter_kind)
+            else:
+                n = 0
+        else:
+            n = amount_value(game, controller, a, x_value)
+        out.append((stat, op, n))
+    return tuple(out)
 
 
 def _in_state(perm: Any, state: str) -> bool:
@@ -181,12 +253,19 @@ def _in_class(perm: Any, cls: str, types: set, colors: set) -> bool:
             "monocolored": n == 1}[cls]
 
 
-def permanent_described(perm: Any, f: CardFilter, source: Any = None) -> bool:
+def permanent_described(perm: Any, f: CardFilter, source: Any = None,
+                        bounds: Optional[tuple] = None) -> bool:
     """Does the description admit this permanent now? A union of card types
     admits any of them, a joined type ("artifact creature") all of them;
     colours and states are a union, every other listed value must hold.
-    "Other" leaves out `source`, the instruction's own object. Only a
-    supported description is asked (`description_supported`)."""
+    "Other" leaves out `source`, the instruction's own object. A
+    description with characteristic bounds admits a permanent only against
+    their values (`bounds`, from `bound_values`); without them it admits
+    none. Only a supported description is asked (`description_supported`)."""
+    if f.stat_bounds and (bounds is None or not all(
+            _BOUND_OPS[op](_characteristic(perm, stat), n)
+            for stat, op, n in bounds)):
+        return False
     types = {t.value for t in perm.effective_card_types}
     if f.types and not types & f.types:
         return False

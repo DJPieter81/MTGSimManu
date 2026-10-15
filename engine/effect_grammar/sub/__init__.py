@@ -217,8 +217,10 @@ LEAF_EDGES = {
     "lexicon": frozenset({"payload", "keywords", "dest"}),
     "quantity": frozenset({"filter", "payload", "duration"}),
     # Participants: object groups are the filter leaf's CardFilter, and a
-    # counted "target" word is routed by the target leaf's count (F11).
-    "participant": frozenset({"filter", "target"}),
+    # counted "target" word is routed by the target leaf's count (F11); a
+    # group's characteristic bound reads its quantity operand through the
+    # quantity leaf, handed to the filter leaf (which reads none itself).
+    "participant": frozenset({"filter", "target", "quantity"}),
     # Amount reads "for each <Q>" / "equal to <Q>" through the quantity
     # leaf (one quantity table).
     "amount": frozenset({"quantity"}),

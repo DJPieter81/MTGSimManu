@@ -1276,21 +1276,6 @@ def meltdown_resolve(game, card, controller, targets=None, item=None):
                     f"Meltdown (X={x_val}) destroys artifacts with MV <= {x_val}")
 
 
-@EFFECT_REGISTRY.register("Engineered Explosives", EffectTiming.ETB,
-                           description="Enters with sunburst counters")
-def engineered_explosives_etb(game, card, controller, targets=None, item=None):
-    # Count colors of mana spent (simplified: count unique colors in lands)
-    player = game.players[controller]
-    colors = set()
-    for land in player.lands:
-        for c in (land.template.produces_mana or []):
-            colors.add(c)
-    # Set charge counters = number of colors (max 5)
-    card.other_counters["charge"] = min(len(colors), 5)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Engineered Explosives enters with {card.other_counters['charge']} charge counters")
-
-
 # Modal spells' modes resolve by shape (engine/modal_spell.py): chosen as
 # the spell is cast, each performed by the owner of its shape. The modal
 # path resolves before the registry, so the name-keyed handlers of modal

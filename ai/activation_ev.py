@@ -1002,7 +1002,9 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                         _land_destruction_plan(game, player_idx, perm,
                                                _host, snap, base, updates),
                         _destroy_plan(game, player_idx, perm, ability,
-                                      _host, snap, base, updates))
+                                      _host, snap, base, updates),
+                        _sweep_plan(game, player_idx, perm, _host, snap,
+                                    base, updates))
                         if p is not None]
                     if plans:
                         out.append((perm, ability.index)
@@ -1115,6 +1117,27 @@ def _destroy_plan(game, player_idx, perm, ability, host, snap, base,
         return None
     return ([aim.target_id], ev,
             f"activate: {perm.name} destroys {aim.permanent.name}")
+
+
+def _sweep_plan(game, player_idx, perm, host, snap, base, updates):
+    """(targets, ev, reason) for a removal-family activation whose
+    instructions are all sweeps -- "destroy each <description>" (CR 701.8a)
+    -- else None. Worth what it takes from the opponent less what it takes
+    from its controller (`ai.sweep_value`, the removal scorer's currency),
+    its bound read from the counters the source has now, which are the
+    ones it will last have had as its cost removes it (CR 608.2h); net of
+    the activation's cost terms."""
+    from ai.clock import position_value
+    from ai.sweep_value import host_value, sweeps
+    from engine.effect_spec import iter_specs
+    specs = list(iter_specs(getattr(host, "specs", ()) or ()))
+    if not specs or len(list(sweeps(host))) != len(specs):
+        return None
+    ev = ((position_value(snap.fast_replace(**updates)) - base)
+          + host_value(game, player_idx, host, perm))
+    if ev <= 0.0:
+        return None
+    return ([], ev, f"activate: {perm.name} sweeps")
 
 
 def _pays_only_victim_and_mana(cost) -> bool:

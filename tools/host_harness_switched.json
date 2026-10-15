@@ -2292,6 +2292,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Blast Zone",
+    "ACTIVATED:0:3"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Blood Fountain",
     "ACTIVATED:0:1"
    ],
@@ -2460,6 +2468,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Engineered Explosives",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Excavated Wall",
     "ACTIVATED:0:1"
    ],
@@ -2588,6 +2604,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Karn's Sylex",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Kishla Village",
     "ACTIVATED:0:2"
    ],
@@ -2616,6 +2640,14 @@
     "ACTIVATED:0:0"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Magus of the Disk",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
   },
   {
    "pair": [
@@ -2660,10 +2692,34 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Myojin of Cleansing Fire",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Myojin of Infinite Rage",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Mystic Forge",
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Nevinyrral's Disk",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
   },
   {
    "pair": [
@@ -2720,6 +2776,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Ratchet Bomb",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
   },
   {
    "pair": [
@@ -2888,6 +2952,22 @@
     "ACTIVATED:0:0"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "The Echoverse Fulcrum",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "The Filigree Sylex",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
   },
   {
    "pair": [
@@ -11652,6 +11732,14 @@
   {
    "pair": [
     "planeswalker_manager:UNCLASSIFIED",
+    "Liliana, Death's Majesty",
+    "LOYALTY:0:2"
+   ],
+   "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
     "Liliana, Dreadhorde General",
     "LOYALTY:0:2"
    ],
@@ -12218,6 +12306,11 @@
   [
    "activated_effects:UNCLASSIFIED",
    "Curious Farm Animals",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
+   "Dauntless Dismantler",
    "ACTIVATED:0:1"
   ],
   [
@@ -13519,6 +13612,11 @@
    "planeswalker_manager:UNCLASSIFIED",
    "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
    "LOYALTY:1:0"
+  ],
+  [
+   "planeswalker_manager:UNCLASSIFIED",
+   "Elspeth, Sun's Champion",
+   "LOYALTY:0:1"
   ]
  ],
  "seeds": [

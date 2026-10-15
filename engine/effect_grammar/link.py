@@ -876,6 +876,7 @@ def _mark_lki(ctx: _Ctx, node: _Node) -> None:
         if isinstance(v, Ref) and v.kind is RefKind.SELF and not v.lki:
             return _copy_with(v, lki=True)
         return None
+    was = node.get("filter")
     for slot in ("ref", "other", "actor", "condition", "amount", "filter",
                  "dest", "payload"):
         v = node.get(slot)
@@ -884,6 +885,13 @@ def _mark_lki(ctx: _Ctx, node: _Node) -> None:
         nv = _map(v, fn)
         if nv is not v:
             node.fields[slot] = nv
+    # A FILTER subject is its filter's view (`CardFilter.as_selector`):
+    # rebuilt from the marked filter, so both read the same source.
+    subj, f = node.get("subject"), node.get("filter")
+    if f is not was and isinstance(subj, Selector) \
+            and subj.kind is SelectorKind.FILTER and isinstance(was, CardFilter) \
+            and isinstance(f, CardFilter) and subj.filter == was.as_tuple():
+        node.fields["subject"] = _copy_with(subj, filter=f.as_tuple())
 
 
 def _refused(node: _Node) -> bool:

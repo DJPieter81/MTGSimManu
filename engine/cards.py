@@ -60,6 +60,7 @@ class Keyword(Enum):
     ANNIHILATOR = "annihilator"
     IMPROVISE = "improvise"
     MODULAR = "modular"
+    SUNBURST = "sunburst"
 
 
 # value -> Keyword, for resolving parsed keyword strings (e.g. equipment
@@ -115,6 +116,18 @@ class Ability:
 COUNTER_KIND_PLUS = "+1/+1"
 COUNTER_KIND_MINUS = "-1/-1"
 COUNTER_KIND_LOYALTY = "loyalty"
+
+
+@dataclass(frozen=True)
+class LastKnown:
+    """What a permanent last had on the battlefield (CR 608.2h): the
+    counters, by kind, an ability reads when its source left as part of its
+    cost (`CardInstance.last_known`). A count of the source's counters after
+    it left reads this, never the card it has become."""
+    counters: Tuple[Tuple[str, int], ...] = ()
+
+    def count(self, kind: str) -> int:
+        return dict(self.counters).get(kind, 0)
 
 # Effect shapes a counter-placement trigger ("whenever one or more +1/+1
 # counters are put on this creature, …") can resolve to. Parsed once by
@@ -878,9 +891,6 @@ class CardTemplate:
     # ('whenever ...' or 'at the beginning of ...').
     # Populated by oracle_parser.parse_has_recurring_trigger.
     has_recurring_trigger: bool = False
-    # Charge-counter board wipe -- True for Ratchet Bomb / EE pattern.
-    # Populated by oracle_parser.parse_has_charge_counter_wipe.
-    has_charge_counter_wipe: bool = False
     # Mana-value wipe -- True for X-cost wipes that destroy by mana value.
     # Populated by oracle_parser.parse_has_mana_value_wipe.
     has_mana_value_wipe: bool = False
@@ -2015,6 +2025,16 @@ class CardInstance:
         if kind == COUNTER_KIND_LOYALTY:
             return self.loyalty_counters
         return self.other_counters.get(kind, 0)
+
+    def last_known(self) -> LastKnown:
+        """This permanent's counters now, kept for an ability that reads
+        them after the permanent leaves (CR 608.2h): taken as a cost
+        removes it, before its counters cease to exist (CR 122.2)."""
+        counts = dict(self.other_counters)
+        counts.update({COUNTER_KIND_PLUS: self.plus_counters,
+                       COUNTER_KIND_MINUS: self.minus_counters,
+                       COUNTER_KIND_LOYALTY: self.loyalty_counters})
+        return LastKnown(tuple(sorted((k, n) for k, n in counts.items() if n)))
 
     def add_plus_counters(self, n: int, game=None, source=None) -> None:
         """Put `n` +1/+1 counters on this permanent — the ONE funnel for

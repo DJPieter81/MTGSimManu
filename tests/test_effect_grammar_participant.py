@@ -373,10 +373,12 @@ def test_a_group_compared_against_a_characteristic_is_the_filter_leafs(text):
     """Only a slot that is itself a characteristic is refused
     ``characteristic``; a group whose comparison operand is one reaches the
     filter leaf, which types or refuses it with its own code -- the same
-    bucket whichever possessive the operand prints."""
+    bucket whichever possessive the operand prints. The participant hands
+    the filter leaf the quantity leaf's reader for the operand (unit EE)."""
     from engine.effect_grammar.sub import filter as F
+    from engine.effect_grammar.sub import quantity as Q
     r = _p(text)
-    f = F.parse_filter(text, (0, len(text)))
+    f = F.parse_filter(text, (0, len(text)), operand=Q.parse_quantity)
     if f.value is None:
         assert r.unmodelled.stage is Stage.FILTER, r
         assert r.unmodelled.detail == f.unmodelled.detail, (r, f)
@@ -585,7 +587,10 @@ def test_the_participant_leaf_imports_only_its_declared_edges():
             elif node.module == "engine.effect_grammar.sub":
                 out.update(a.name for a in node.names
                            if (LEAF_PATH.parent / (a.name + ".py")).exists())
-    assert out == set(LEAF_EDGES["participant"]) == {"filter", "target"}
+    # Unit EE: a group's characteristic bound reads its quantity operand
+    # through the quantity leaf, handed to the filter leaf.
+    assert out == set(LEAF_EDGES["participant"]) == {"filter", "target",
+                                                     "quantity"}
 
 
 def _acyclic(edges):

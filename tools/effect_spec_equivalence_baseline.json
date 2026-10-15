@@ -358,8 +358,8 @@
   },
   "has_charge_counter_ability": {
    "AGREE": 22678,
-   "UNEXPLAINED": 22,
-   "UNMODELLED_CLAUSE": 38
+   "UNEXPLAINED": 23,
+   "UNMODELLED_CLAUSE": 37
   },
   "has_combat_damage_player_trigger": {
    "AGREE": 22608,
@@ -384,11 +384,11 @@
    "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
-   "AGREE": 20816,
+   "AGREE": 20821,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
    "UNEXPLAINED": 923,
-   "UNMODELLED_CLAUSE": 962
+   "UNMODELLED_CLAUSE": 957
   },
   "has_discard_effect": {
    "AGREE": 22255,
@@ -400,8 +400,8 @@
    "AGREE": 20900,
    "DERIVED_COVERAGE_GROWTH": 290,
    "LEGACY_DRAW_SCOPE": 162,
-   "UNEXPLAINED": 651,
-   "UNMODELLED_CLAUSE": 735
+   "UNEXPLAINED": 652,
+   "UNMODELLED_CLAUSE": 734
   },
   "has_dual_land_search": {
    "AGREE": 22682,
@@ -433,8 +433,8 @@
    "AGREE": 21475,
    "DERIVED_COVERAGE_GROWTH": 29,
    "LEGACY_GRAVEYARD_RECURSION": 4,
-   "UNEXPLAINED": 712,
-   "UNMODELLED_CLAUSE": 518
+   "UNEXPLAINED": 713,
+   "UNMODELLED_CLAUSE": 517
   },
   "has_graveyard_target": {
    "AGREE": 22121,
@@ -464,16 +464,16 @@
    "UNMODELLED_CLAUSE": 88
   },
   "has_mana_value_wipe": {
-   "AGREE": 22711,
-   "DERIVED_COVERAGE_GROWTH": 26,
+   "AGREE": 22706,
+   "DERIVED_COVERAGE_GROWTH": 31,
    "UNMODELLED_CLAUSE": 1
   },
   "has_may_play_or_cast": {
    "AGREE": 21363,
    "DERIVED_COVERAGE_GROWTH": 3,
    "REMINDER_TEXT": 4,
-   "UNEXPLAINED": 650,
-   "UNMODELLED_CLAUSE": 718
+   "UNEXPLAINED": 651,
+   "UNMODELLED_CLAUSE": 717
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -502,8 +502,8 @@
   },
   "has_recurring_trigger": {
    "AGREE": 17533,
-   "UNEXPLAINED": 4172,
-   "UNMODELLED_CLAUSE": 1033
+   "UNEXPLAINED": 4173,
+   "UNMODELLED_CLAUSE": 1032
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -760,13 +760,13 @@
  },
  "gate_parity": {
   "legacy_fallback": 3139,
-  "new_path": 1827,
-  "pairs": 4966
+  "new_path": 1840,
+  "pairs": 4979
  },
  "templates": 22738,
  "totals": {
   "AGREE": 2813813,
-  "DERIVED_COVERAGE_GROWTH": 7835,
+  "DERIVED_COVERAGE_GROWTH": 7840,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 6,
@@ -779,7 +779,7 @@
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 202,
-  "UNEXPLAINED": 18095,
-  "UNMODELLED_CLAUSE": 9365
+  "UNEXPLAINED": 18100,
+  "UNMODELLED_CLAUSE": 9355
  }
 }

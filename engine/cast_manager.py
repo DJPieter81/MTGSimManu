@@ -2454,6 +2454,16 @@ class CastManager:
                     game, player_idx, int(x_value), template
                 )
                 x_value = best_x
+            elif Keyword.SUNBURST in template.keywords:
+                # CR 107.3, 702.44a: X is mana spent, and sunburst counts its
+                # colours; the caster chooses it (the X channel), within
+                # what it can pay. No choice leaves the most it can pay.
+                _choose = getattr(game.callbacks, 'choose_x', None)
+                chosen = (_choose(game, player_idx, card, int(x_value))
+                          if _choose is not None else None)
+                if chosen is not None:
+                    x_value = max(int(x_info.get('min_x', 0) or 0),
+                                  min(int(x_value), int(chosen)))
             elif (getattr(template, 'has_converge', False)
                   and (getattr(template, 'can_destroy_nonland_permanent', False)
                        or getattr(template, 'can_exile_permanent', False))):
@@ -2506,7 +2516,10 @@ class CastManager:
             # For non-Converge X-spells this reduces to arbitrary selection
             # (same as the old behavior because set-difference is 0-or-more).
             xpay_colors = set(getattr(game, '_last_colors_spent', set()))
-            is_converge = getattr(template, 'has_converge', False)
+            # A spell that counts the colours spent on it -- converge,
+            # sunburst (CR 702.44a) -- is paid with new colours first.
+            is_converge = (getattr(template, 'has_converge', False)
+                           or Keyword.SUNBURST in template.keywords)
             lands_pool = list(player.untapped_lands)
             while remaining > 0 and lands_pool:
                 if is_converge:
@@ -2516,11 +2529,13 @@ class CastManager:
                     # metalcraft) feed Converge correctly.
                     lands_pool.sort(
                         key=lambda l: -len(
-                            set(game._effective_produces_mana(player_idx, l) or []) - xpay_colors
+                            (set(game._effective_produces_mana(player_idx, l) or [])
+                             & set("WUBRG")) - xpay_colors
                         )
                     )
                 land = lands_pool.pop(0)
                 land.tapped = True
+                coloured = False
                 # E1: one tap yields every unit the land produces.
                 from .mana_payment import ManaPayment as _MP
                 for options in _MP.land_mana_units(game, player_idx, land):
@@ -2528,14 +2543,22 @@ class CastManager:
                         break
                     remaining -= 1
                     if is_converge:
+                        # A new COLOUR: colourless is none (CR 105.1).
                         new_cols = [c for c in options
-                                    if c not in xpay_colors]
+                                    if c in "WUBRG" and c not in xpay_colors]
                         pick = new_cols[0] if new_cols else (
                             options[0] if options else 'C')
                     else:
                         pick = options[0] if options else 'C'
                     if pick and pick != 'C':
                         xpay_colors.add(pick)
+                        coloured = True
+                # A land that deals damage when tapped for coloured mana
+                # deals it here as in every payment (`ManaPayment.
+                # tap_lands_for_mana`), through the damage owner.
+                if coloured and land.template.tap_damage > 0:
+                    from .damage import deal_damage
+                    deal_damage(land, player, land.template.tap_damage)
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
 

@@ -2394,8 +2394,7 @@
       "filter_stat_ref": "SELF:lki"
      }
     ]
-   },
-   "known_gap": "'with mana value equal to the number of ... counters on ~' is filter.stat; a printed-name sacrifice ('Sacrifice <name>') is read by the cost owner as unpayable, not sacrifice_self"
+   }
   },
   {
    "card": "The Filigree Sylex",
@@ -2416,7 +2415,7 @@
      }
     ]
    },
-   "known_gap": "'with mana value equal to the number of ... counters on ~' is filter.stat; a printed-name sacrifice ('Sacrifice <name>') is read by the cost owner as unpayable, not sacrifice_self"
+   "known_gap": "a printed-name sacrifice ('Sacrifice <name>') is read by the cost owner as unpayable, not sacrifice_self"
   },
   {
    "card": "Ugin, Eye of the Storms",

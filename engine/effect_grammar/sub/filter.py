@@ -360,6 +360,18 @@ _STAT_RE = re.compile(
     r"(?:(?P<n>%s) or (?P<cmp>less|greater|more)"
     r"|(?P<cmp2>less|greater) than (?P<eq>or equal to )?(?P<n2>%s)"
     r"|(?P<n3>%s))(?![\w/'])" % (_N, _N, _N))
+# "with <stat> equal to <quantity>" (and the inequalities): a bound read off
+# a quantity -- "the number of charge counters on ~" -- whose value is
+# determined once, as the effect applies (CR 202.3, 208, 608.2h). The
+# caller's quantity reader (`parse_filter`'s ``operand``) reads it; one that
+# leaves a reference to bind, or does not close the slot, is refused.
+_STAT_EXPR_RE = re.compile(
+    r"with (?P<stat>power|toughness|mana value) "
+    r"(?P<cmp>equal to|less than or equal to|greater than or equal to"
+    r"|less than|greater than) ")
+_STAT_EXPR_OPS = {"equal to": "==", "less than or equal to": "<=",
+                  "greater than or equal to": ">=", "less than": "<",
+                  "greater than": ">"}
 _STAT_SHAPE_RE = re.compile(
     r"with (?:(?:total |base |the greatest |the least |converted )?"
     r"(?:power|toughness|mana value|mana cost)|an? (?:even|odd|lesser|greater)"
@@ -590,7 +602,7 @@ def _library_top(t: str) -> Optional[_Rel]:
 
 
 @lru_cache(maxsize=CACHE_SIZE)
-def _filter_rel(t: str, zone: str) -> _Rel:
+def _filter_rel(t: str, zone: str, operand: Any = None) -> _Rel:
     if not t:
         return _fail("empty")
     top = _library_top(t)
@@ -744,6 +756,17 @@ def _filter_rel(t: str, zone: str) -> _Rel:
             else:
                 op, n = "==", _number(m.group("n3"))
             stat_bounds.append((stat, op, n))
+        elif operand is not None and _STAT_EXPR_RE.match(t, pos):
+            m = _STAT_EXPR_RE.match(t, pos)
+            q = operand(t, (m.end(), len(t)))
+            if q.value is None or q.pending or q.rest_spans \
+                    or q.span[1] != len(t):
+                return _fail("stat")
+            stat_bounds.append((m.group("stat").replace(" ", "_"),
+                                _STAT_EXPR_OPS[m.group("cmp")],
+                                Amount(AmountKind.EQUAL_TO, quantity=q.value)))
+            pos = len(t)
+            continue
         elif _STAT_SHAPE_RE.match(t, pos):
             return _fail("stat")
         elif _COUNTER_RE.match(t, pos):
@@ -907,7 +930,7 @@ def _um(code: str, param: str, lemma: str) -> Unmodelled:
 
 
 def parse_filter(host: str, span: Optional[Span] = None, *, lemma: str = "",
-                 zone: str = "") -> SlotResult:
+                 zone: str = "", operand: Any = None) -> SlotResult:
     """The CardFilter of the untargeted object description ``host[span]``
     (default: the whole host).
 
@@ -920,14 +943,21 @@ def parse_filter(host: str, span: Optional[Span] = None, *, lemma: str = "",
     ``span`` nor ``rest_spans`` (the payload rule), ``amount`` the determiner's count, ``flags`` holds
     ``each`` / ``all``, and ``pending`` the anaphoric players and "from
     among" results the linker binds. Any token the tables cannot place
-    makes the slot ``UNMODELLED(FILTER)`` over the whole trimmed slot."""
+    makes the slot ``UNMODELLED(FILTER)`` over the whole trimmed slot.
+
+    ``operand`` is the caller's quantity reader (``(host, span) ->
+    SlotResult``, the quantity leaf's ``parse_quantity``): with it a bound
+    "with <stat> equal to <quantity>" is typed; without it the bound is
+    refused (``filter.stat``). The filter leaf reads no quantity itself --
+    the quantity leaf counts filter descriptions -- so a caller that may
+    import the quantity leaf hands it in."""
     a, b = (0, len(host)) if span is None else span
     slot = host[a:b]
     lead = len(slot) - len(slot.lstrip())
     trimmed = slot.strip()
     body = trimmed.rstrip(" .,;")
     start = a + lead
-    value, failure, amount, flags, pending = _filter_rel(body, zone)
+    value, failure, amount, flags, pending = _filter_rel(body, zone, operand)
     if value is None:
         code, param = failure
         return SlotResult(unmodelled=_um(code, param, lemma),

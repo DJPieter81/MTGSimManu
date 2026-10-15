@@ -1,8 +1,8 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.1822,
-  "deck_removal_typed_share": 0.8721,
+  "deck_removal_ready_share": 0.2016,
+  "deck_removal_typed_share": 0.8798,
   "deck_residue_by_code": {
    "target.colored": 3,
    "target.exclude_source": 4,
@@ -20,13 +20,13 @@
    "target.union:triggered": 1,
    "target.unparsed": 4
   },
-  "deck_typed_share": 0.769,
+  "deck_typed_share": 0.7724,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 6,
    "CLAUSE": 23,
    "CONDITION": 19,
    "DURATION": 3,
-   "FILTER": 28,
+   "FILTER": 25,
    "ITERATION": 2,
    "NO_LEMMA": 14,
    "RECOGNIZED_UNSUPPORTED": 6,
@@ -95,9 +95,9 @@
    "UNPARSED": 294,
    "WIDENING": 813
   },
-  "typed_share": 0.7383,
+  "typed_share": 0.7386,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7979,
+   "ACTIVATED": 0.7988,
    "ALTERNATIVE_COST": 0.0,
    "CHAPTER": 0.7511,
    "KEYWORD": 0.0,
@@ -106,8 +106,8 @@
    "MODE": 0.7935,
    "REPLACEMENT": 0.0,
    "SPELL": 0.7468,
-   "STATIC": 0.6223,
-   "TRIGGERED": 0.7972,
+   "STATIC": 0.6227,
+   "TRIGGERED": 0.7974,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
@@ -116,7 +116,7 @@
    "CONDITION": 1163,
    "DELAY": 16,
    "DURATION": 53,
-   "FILTER": 1547,
+   "FILTER": 1536,
    "ITERATION": 110,
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
@@ -132,9 +132,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7979,
+    "share": 0.7988,
     "specs": 6669,
-    "typed": 5321
+    "typed": 5327
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -177,14 +177,14 @@
     "typed": 7467
    },
    "STATIC": {
-    "share": 0.6223,
+    "share": 0.6227,
     "specs": 5377,
-    "typed": 3346
+    "typed": 3348
    },
    "TRIGGERED": {
-    "share": 0.7972,
+    "share": 0.7974,
     "specs": 15290,
-    "typed": 12189
+    "typed": 12192
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -213,9 +213,9 @@
   "deck": {
    "by_host_kind": {
     "ACTIVATED": {
-     "share": 0.8141,
+     "share": 0.8269,
      "specs": 156,
-     "typed": 127
+     "typed": 129
     },
     "CHAPTER": {
      "share": 0.9333,
@@ -248,9 +248,9 @@
      "typed": 166
     },
     "STATIC": {
-     "share": 0.4156,
+     "share": 0.4286,
      "specs": 77,
-     "typed": 32
+     "typed": 33
     },
     "TRIGGERED": {
      "share": 0.878,
@@ -268,13 +268,13 @@
     "clauses": 258,
     "gate": 0.85,
     "met": false,
-    "ready": 47,
-    "ready_share": 0.1822,
-    "typed": 225,
-    "typed_share": 0.8721
+    "ready": 52,
+    "ready_share": 0.2016,
+    "typed": 227,
+    "typed_share": 0.8798
    },
    "specs": 870,
-   "typed": 669
+   "typed": 672
   },
   "keyword_lines": [
    [
@@ -1233,8 +1233,8 @@
     2
    ]
   ],
-  "typed": 32766,
-  "unmodelled": 11613,
+  "typed": 32777,
+  "unmodelled": 11602,
   "unmodelled_row_count": 1977,
   "unmodelled_rows": [
    [
@@ -1599,5 +1599,5 @@
    ]
   ]
  },
- "session": "2026-10-13"
+ "session": "2026-10-15"
 }

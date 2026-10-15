@@ -763,6 +763,10 @@ class ActivationManager:
                 cause=f"activation cost ({perm.name})",
                 life_note=f"{perm.name} activation")
 
+            # CR 608.2h: what the source last had on the battlefield, kept
+            # for an effect that reads it after its cost removes it.
+            source_lki = (perm.last_known() if ability.cost.sacrifice_self
+                          or ability.cost.exile_self else None)
             if ability.cost.sacrifice_self:
                 # CR 602.2b: the sacrifice is part of the COST — the source
                 # leaves the battlefield at activation time; the ability on
@@ -786,7 +790,8 @@ class ActivationManager:
                 targets=list(targets or []),
                 effect=functools.partial(resolve_activated_ability,
                                          ability=ability,
-                                         x_value=chosen_x),
+                                         x_value=chosen_x,
+                                         source_lki=source_lki),
                 ability=None,
                 target_zones=target_zones,
                 target_entry_seqs=target_entry_seqs,

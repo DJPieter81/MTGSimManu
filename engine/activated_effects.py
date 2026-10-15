@@ -13,7 +13,7 @@ nothing would happen.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
 from .cards import ActivationEffectKind
 
@@ -445,8 +445,13 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
                               controller: int,
                               targets: Optional[List[int]] = None,
                               *, ability: "ActivatedAbility",
-                              x_value: int = 0) -> bool:
+                              x_value: int = 0,
+                              source_lki: Any = None) -> bool:
     """Resolve one activated ability. Returns True when an effect applied.
+
+    ``source_lki`` is what the source last had on the battlefield when its
+    cost removed it (`CardInstance.last_known`, CR 608.2h), for an effect
+    that reads the source's counters.
 
     ``game._activation_depth`` is incremented here as well as on the push
     side. Guarding only the push misses re-entry that begins during
@@ -493,7 +498,8 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
         # the effect dispatcher; any other takes its branch below.
         from .effect_carrier import dispatch_activation
         dispatched = dispatch_activation(game, source, controller, ability,
-                                         targets, x_value=x_value)
+                                         targets, x_value=x_value,
+                                         source_lki=source_lki)
         if dispatched is not None:
             return dispatched
 

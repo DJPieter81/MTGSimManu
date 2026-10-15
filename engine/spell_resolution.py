@@ -35,6 +35,50 @@ if TYPE_CHECKING:
     from .game_state import GameState
 
 
+# The colours of mana sunburst counts (CR 702.44a, 105.1): colourless mana
+# is no colour.
+_MANA_COLOURS = frozenset("WUBRG")
+
+
+def _enter_with_sunburst(game: "GameState", card: "CardInstance",
+                         item: StackItem) -> None:
+    """Sunburst (CR 702.44a): a permanent entering from the stack gets a
+    counter for each colour of mana spent to cast it -- +1/+1 counters if
+    it enters as a creature, charge counters otherwise. The colours are the
+    ones its cast recorded (`StackItem.colors_spent`)."""
+    colours = len(set(item.colors_spent or ()) & _MANA_COLOURS)
+    if card.effective_is_creature:
+        kind = "+1/+1"
+        if colours:
+            card.add_plus_counters(colours, game)
+    else:
+        kind = "charge"
+        if colours:
+            card.other_counters["charge"] = (
+                card.other_counters.get("charge", 0) + colours)
+    game.log.append(f"T{game.display_turn} P{item.controller+1}: "
+                    f"{card.name} enters with {colours} {kind} counter(s) "
+                    f"(sunburst)")
+
+
+def _audit_sunburst(game: "GameState", card: "CardInstance",
+                    item: StackItem) -> None:
+    """CR 702.44a, restated from the stack item's raw record of the mana
+    spent: a sunburst permanent that entered from the stack carries at
+    least one counter of its kind (+1/+1 as a creature, charge otherwise)
+    per colour spent to cast it. Observation only."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    spent = {c for c in (item.colors_spent or ()) if c in "WUBRG"}
+    creature = CardType.CREATURE in card.effective_card_types
+    have = card.plus_counters if creature \
+        else card.other_counters.get("charge", 0)
+    _audit_check("702.44a/sunburst", have >= len(spent),
+                 f"{card.name} entered with {have} counter(s) for "
+                 f"{len(spent)} colour(s) spent", game=game)
+
+
 class ResolutionManager:
     """Stack resolution + permanent ETB + spell-effect dispatch."""
 
@@ -414,9 +458,6 @@ class ResolutionManager:
                 # 614.1c), so the engine places them here for every such
                 # permanent; a dedicated ETB handler runs afterwards and may
                 # READ or SPEND the counters but never places them again.
-                # The one exception is the charge-counter branch: a
-                # sunburst permanent's charge count is the colours spent,
-                # not X, and its handler computes that itself.
                 if item.x_value > 0 and template.x_cost_data:
                     has_dedicated_etb = EFFECT_REGISTRY.has_handler(
                         template.name, EffectTiming.ETB)
@@ -439,6 +480,9 @@ class ResolutionManager:
                                      f"{card.name} cast for X={item.x_value} carries "
                                      f"{card.plus_counters} +1/+1 counter(s) on entry",
                                      game=game)
+                if Keyword.SUNBURST in template.keywords:
+                    _enter_with_sunburst(game, card, item)
+                    _audit_sunburst(game, card, item)
                 game._handle_permanent_etb(card, item.controller, item=item)
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):

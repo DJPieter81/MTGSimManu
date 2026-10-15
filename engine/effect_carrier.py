@@ -38,7 +38,8 @@ def dispatching() -> bool:
 
 def dispatch(game: Any, source: Any, controller: int, host: Any,
              legacy_targets: Optional[Sequence[Any]], *, family: str,
-             x_value: int = 0, face_hosts: Iterable[Any] = ()) -> Optional[bool]:
+             x_value: int = 0, face_hosts: Iterable[Any] = (),
+             source_lki: Any = None) -> Optional[bool]:
     """Resolve `host` through the dispatcher if the carrier may.
 
     `face_hosts` are the other hosts whose targets share the legacy list
@@ -57,7 +58,7 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
         return None
     return er.resolve_ability(game, er.handle_of(source), controller, host,
                               chosen, family=family, x_value=x_value,
-                              source_object=source)
+                              source_object=source, source_lki=source_lki)
 
 
 # The families whose spell hosts the family-generic clause handler
@@ -166,7 +167,8 @@ def mode_family(template: Any, index: int,
 
 def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
                         legacy_targets: Optional[Sequence[Any]], *,
-                        x_value: int = 0) -> Optional[bool]:
+                        x_value: int = 0,
+                        source_lki: Any = None) -> Optional[bool]:
     """An activated ability's switch. Its host is its source template's
     ACTIVATED host at the ability's index (`ActivatedAbility.index` is the
     host's `activation_index`); its family is the one its effect kind's
@@ -181,7 +183,7 @@ def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
     if family is None:
         return None
     return dispatch(game, source, controller, host, legacy_targets,
-                    family=family, x_value=x_value)
+                    family=family, x_value=x_value, source_lki=source_lki)
 
 
 # The families an UNCLASSIFIED activation -- one the legacy classifier does

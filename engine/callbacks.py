@@ -85,6 +85,16 @@ class GameCallbacks(Protocol):
         """Should this creature be dashed instead of hardcast?"""
         ...
 
+    def choose_x(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        max_x: int
+    ) -> Optional[int]:
+        """The value of X for this spell as it is cast (CR 107.3, 601.2b),
+        at most `max_x` (what the caster can pay); None to leave the
+        engine's default. Uniform per kind: any X the engine asks the
+        caster for."""
+        ...
+
     def choose_discard(
         self, game: GameState, player_idx: int,
         hand: List[CardInstance], self_discard: bool
@@ -318,6 +328,12 @@ class DefaultCallbacks:
         can_normal: bool, can_dash: bool
     ) -> bool:
         return can_dash and not can_normal
+
+    def choose_x(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        max_x: int
+    ) -> Optional[int]:
+        return None
 
     def choose_discard(
         self, game: GameState, player_idx: int,

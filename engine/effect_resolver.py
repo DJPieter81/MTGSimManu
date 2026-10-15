@@ -144,6 +144,9 @@ class Resolution:
     # executor that hands the source to an owner (a damage source) reads
     # this. A sub-ability has none and looks its source up by Handle.
     source_object: Any = None
+    # What the source last had on the battlefield when its cost removed it
+    # (`CardInstance.last_known`, CR 608.2h); None while it never left.
+    source_lki: Any = None
 
     def snapshot(self) -> Snapshot:
         return Snapshot(
@@ -460,7 +463,8 @@ def resolve_ability(game: Any, source: Handle, controller: int,
                     cast_facts: FrozenSet[str] = frozenset(),
                     modes: Tuple[int, ...] = (),
                     division: Optional[Dict[int, Tuple[int, ...]]] = None,
-                    source_object: Any = None) -> bool:
+                    source_object: Any = None,
+                    source_lki: Any = None) -> bool:
     """Resolve `ability` (with its chosen `modes`) in printed order.
 
     Returns False without raising -- and without touching the game -- when
@@ -476,7 +480,7 @@ def resolve_ability(game: Any, source: Handle, controller: int,
                      division=dict(division or {}), x_value=x_value,
                      event=event, cast_facts=frozenset(cast_facts),
                      modes=tuple(modes), family=family,
-                     source_object=source_object)
+                     source_object=source_object, source_lki=source_lki)
     if not _intervening_if_holds(ctx, ability):
         return False
     specs = ability.specs + tuple(s for i in modes for s in ability.modes[i].specs)

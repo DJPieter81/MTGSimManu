@@ -261,6 +261,12 @@ class AICallbacks(GameCallbacks):
             Action(ActionType.DASH, {'card': card, 'can_normal': can_normal, 'can_dash': can_dash})
         ) > 0
 
+    def choose_x(self, game, player_idx, card, max_x):
+        # CR 107.3, 702.44a: a sunburst sweep's X buys the colours of its
+        # counters -- the mana value it will sweep (ai.sweep_value).
+        from ai.sweep_value import sunburst_sweep_x
+        return sunburst_sweep_x(game, player_idx, card.template, max_x)
+
     def choose_discard(self, game, player_idx, hand, self_discard):
         from ai.discard_advisor import choose_discard as _choose
         return _choose(game, player_idx, hand, self_discard)
@@ -2256,7 +2262,13 @@ class GameRunner:
 
     def _activate_utility_artifacts(self, game: GameState, active: int):
         # single-owner-allow: not a target pick — library searches and the controller's own lands
-        """Activate utility artifacts: Expedition Map (find Tron piece), Ratchet Bomb."""
+        """Activate utility artifacts: Expedition Map (find Tron piece).
+
+        A charge-counter sweep (CR 701.8a) is no longer popped here: it was
+        given a counter it had no ability to put, popped without its cost
+        and aimed at one player. It is an activated ability like any other,
+        activated through the activation owner when its controller chooses
+        (`ai.activation_ev`)."""
         player = game.players[active]
 
         for perm in list(player.battlefield):
@@ -2317,37 +2329,6 @@ class GameRunner:
                                 f"T{game.display_turn} P{active+1}: "
                                 f"{perm.name} finds {target_name}")
 
-            # Charge counter artifact that ticks up and pops to destroy
-            # (Ratchet Bomb, Engineered Explosives, etc.)
-            if getattr(perm.template, 'has_charge_counter_wipe', False):
-                charges = perm.other_counters.get("charge", 0)
-                # Tick up
-                perm.other_counters["charge"] = charges + 1
-                new_charges = charges + 1
-                # Check if we should pop it (opponent has valuable permanents at this CMC)
-                opp = game.players[1 - active]
-                targets_at_cmc = [c for c in opp.battlefield
-                                  if not c.template.is_land
-                                  and (c.template.cmc or 0) == new_charges]
-                if len(targets_at_cmc) >= 2 or (
-                    len(targets_at_cmc) >= 1 and any(
-                        'stax' in getattr(c.template, 'tags', set()) or
-                        'Equipment' in getattr(c.template, 'subtypes', [])
-                        for c in targets_at_cmc)):
-                    # Pop it
-                    game.zone_mgr.move_card(game, perm, "battlefield",
-                                            "graveyard")
-                    from engine.cards import Keyword
-                    for c in list(targets_at_cmc):
-                        if Keyword.INDESTRUCTIBLE not in c.keywords:
-                            if c.template.is_creature:
-                                game._creature_dies(c)
-                            else:
-                                game._permanent_destroyed(c)
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: "
-                        f"Ratchet Bomb ({new_charges}) destroys "
-                        f"{len(targets_at_cmc)} permanents")
 
     def _activate_granted_token_ability(self, game: GameState, active: int,
                                         perm: CardInstance) -> bool:

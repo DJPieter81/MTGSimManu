@@ -80,6 +80,7 @@ from engine.effect_grammar.sub import (COUNT_WORDS, NUMBER_WORDS,
                                        SELF_NOUNS, SlotResult, Span,
                                        rest_spans_after, unmodelled)
 from engine.effect_grammar.sub import filter as _filter
+from engine.effect_grammar.sub import quantity as _quantity
 from engine.effect_grammar.sub import target as _target
 from engine.effect_model import Selector, SelectorKind
 from engine.effect_spec import (Amount, AmountKind, Chooser, Ref, RefKind,
@@ -531,7 +532,11 @@ def _single(t: str) -> Optional[_Rel]:
 
 
 def _group(t: str, zone: str) -> _Rel:
-    f = _filter.parse_filter(t, (0, len(t)), zone=zone)
+    # A group's characteristic bound may read a quantity ("each nonland
+    # permanent with mana value equal to the number of charge counters on
+    # ~"): the filter leaf reads it through the quantity leaf's reader.
+    f = _filter.parse_filter(t, (0, len(t)), zone=zone,
+                             operand=_quantity.parse_quantity)
     if f.value is None:
         return _fail(f.unmodelled)          # refusal propagation
     return _ok(f.value, f.flags | {GROUP}, f.amount, f.pending)

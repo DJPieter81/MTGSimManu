@@ -12,9 +12,8 @@ parse_has_recurring_trigger fires for 'whenever ...' or
 # Mechanic: opponent spell timing restriction -- moved to the effect grammar
 (tests/test_cast_timing_restrictions_from_text.py).
 
-# Mechanic: charge-counter board wipe (rule, not a card)
-
-parse_has_charge_counter_wipe fires for Ratchet Bomb / EE pattern.
+# Mechanic: charge-counter board wipe -- moved to the effect grammar
+(tests/test_a_sweep_destroys_each_permanent_its_description_admits.py).
 
 # Mechanic: mana-value wipe (rule, not a card)
 
@@ -31,7 +30,6 @@ import pytest
 from engine.oracle_parser import (
     parse_has_cast_trigger,
     parse_has_recurring_trigger,
-    parse_has_charge_counter_wipe,
     parse_has_mana_value_wipe,
     parse_has_sacrifice_for_damage,
 )
@@ -92,28 +90,6 @@ class TestParseHasRecurringTrigger:
     def test_empty_oracle_is_false(self):
         assert parse_has_recurring_trigger("") is False
         assert parse_has_recurring_trigger(None) is False
-
-
-class TestParseHasChargeCounterWipe:
-    def test_ratchet_bomb_pattern_is_wipe(self):
-        # Ratchet Bomb
-        assert parse_has_charge_counter_wipe(
-            "At the beginning of your upkeep, put a charge counter on Ratchet Bomb. "
-            "{2}, {T}, Sacrifice Ratchet Bomb: Destroy each nonland permanent with "
-            "mana value equal to the number of charge counters on Ratchet Bomb."
-        ) is True
-
-    def test_chalice_not_wipe(self):
-        # Chalice of the Void -- charge counter but counters spells, not destroys
-        assert parse_has_charge_counter_wipe(
-            "Chalice of the Void enters with X charge counters on it. "
-            "Whenever a player casts a spell with mana value equal to the "
-            "number of charge counters on Chalice of the Void, counter that spell."
-        ) is False
-
-    def test_empty_oracle_is_false(self):
-        assert parse_has_charge_counter_wipe("") is False
-        assert parse_has_charge_counter_wipe(None) is False
 
 
 class TestParseHasManaValueWipe:

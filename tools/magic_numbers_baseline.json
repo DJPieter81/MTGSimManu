@@ -46,6 +46,7 @@
   "ai/sideboard_solver.py": 0,
   "ai/stax_ev.py": 0,
   "ai/strategic_logger.py": 2,
+  "ai/sweep_value.py": 0,
   "ai/temporary_exile.py": 0,
   "ai/turn_planner.py": 0,
   "ai/ward_targeting.py": 0,

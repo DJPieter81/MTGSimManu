@@ -364,7 +364,10 @@ def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Di
     # this does NOT affect the cost-X predicate, which is mana-cost-only).
     oracle_lower = oracle.lower()
     effect = ""
-    if 'charge counter' in oracle_lower:
+    # "enters with X charge counters" (CR 107.3); a charge counter the text
+    # puts some other way -- sunburst's, one per colour of mana spent (CR
+    # 702.44a) -- is not X's.
+    if re.search(r"enters with x charge counters?\b", oracle_lower):
         effect = "charge_counters"
     elif '+1/+1 counter' in oracle_lower:
         effect = "plus1_counters"
@@ -4695,22 +4698,6 @@ def parse_has_recurring_trigger(oracle: str) -> bool:
     if 'at the beginning of' in lo:
         return True
     return bool(re.search(r'whenever ', lo))
-
-
-def parse_has_charge_counter_wipe(oracle: str) -> bool:
-    """Return True for charge-counter permanents that destroy by mana value.
-
-    Matches Ratchet Bomb / Engineered Explosives pattern: 'charge counter'
-    + 'destroy' + 'mana value'.  Distinct from the Chalice pattern (which
-    counters spells rather than destroying permanents).
-
-    Class size: ~5 Modern cards (Ratchet Bomb, Engineered Explosives,
-    and variants).
-    """
-    if not oracle:
-        return False
-    lo = oracle.lower()
-    return 'charge counter' in lo and 'destroy' in lo and 'mana value' in lo
 
 
 def parse_prevents_graveyard_etb(oracle: str) -> bool:
