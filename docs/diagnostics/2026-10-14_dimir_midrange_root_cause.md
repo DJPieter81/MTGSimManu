@@ -109,4 +109,8 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
 
 ## Outcome
 
-(To be filled as the units land.)
+- **Subsystem 1, unit EI** (`c2479ec`, tracker): an edict is interaction this turn, worth what its victim gives up.
+  - **Measured (`ei-post`):** Dimir Midrange 37.6 → 36.5. That is inside the arm's noise, with no movement toward the band.
+  - In the replay seed's G1, the edict is cast on T3 where it had waited to T7.
+- **Subsystem 2, unit CP:** a creature's own pump is used in combat when it changes the fight, and the block counts it. It is in progress.
+- **Loop-break count:** one Dimir-targeted unit without movement. If CP is the second and a third follows without movement, Dimir code halts and a deeper Bo3 root cause comes first.

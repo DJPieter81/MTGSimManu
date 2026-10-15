@@ -9417,7 +9417,15 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 - **Replay:** at the root-cause seed, G1, the edict scores +1.8 on T3 and is cast.
 - **Chunks at `c2479ec`:** both pass (5036 + 2721).
 
-**Measured:** the `ei-post` arm (pre = `pf-post`) follows.
+**Measured (same-seed n=20 Bo3, `ei-post` at `bd68b58`, pre = `pf-post`):**
+- **Dimir Midrange 37.6 → 36.5 (−1.1).** Every deck is within ±1.1; Eldrazi Ramp is +0.5.
+- 63 cells change, every one in the row or column of a deck that holds an edict: Dimir Midrange, Eldrazi Ramp, Eldrazi Tron, Hollow One and Living End. The largest are ±20:
+  - Jeskai Blink vs Dimir Midrange 60 → 80;
+  - Eldrazi Tron vs Hollow One 85 → 65.
+- No deck moves more than 5 pp, so nothing was replayed.
+- 0 aborts, 0 violations; findings 491 → 502.
+- **Field bands:** 4 decks out of band, 40.5 → 41.9 pp total miss. Dimir Midrange misses by 7.4 → 8.5.
+- **Reading:** the edict is now cast as interaction, and the field does not move outside the arm's noise (about 2 pp per deck at n=20 over 24 opponents). This is the first Dimir-targeted unit without movement toward the band. The loop-break count runs from here: unit CP is the second.
 
 **Leads (not built):**
 - `ai/modal` values a sacrifice by mana value (`_perm_worth`), so mode choice and the spell score use different currencies.
