@@ -9653,10 +9653,103 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
   - Chunk 1: 5075 passed, 2 failed. The two are the CPU-ceiling tests that fail the same way at the pre-unit commit on this container.
   - Chunk 2: 2736 passed.
 
-**Measured:** the `td-post` arm follows (pre = `ee-post`).
+**Measured (same-seed n=20 Bo3, `td-post` at `3e71f87`, pre = `ee-post`):**
+- **Dimir Midrange 40.4 → 41.2 (+0.8); every deck is within ±0.8.**
+- 23 cells change. Every one involves a deck holding Mystical Dispute.
+- 0 aborts; findings 505 → 510.
+- **Two violations,** both `601.2f/target_cost_reduction`, in Domain Zoo vs 4/5c Control (s51000 game 2 T3; s53500 game 3 T10). Both were replayed. They are a pre-existing engine defect that the new auditor surfaced, not a fault in the discount:
+  - a dashed Ragavan, and a Territorial Kavu bounced by Teferi, Time Raveler, left the battlefield from under Leyline of the Guildpact;
+  - each was still all colours in its owner's hand, so recast it was blue on the stack, and the discount applied.
+  - The auditor read the printed colour and was right. Unit OB fixes the defect (below).
+- **Field bands:** 41.4 pp total miss (42.5 before); Dimir Midrange's miss 4.6 → 3.8.
+- No deck moves more than 5 pp, so no cell was replayed beyond the two violation seeds.
+- **Reading:** the discount lands in its class without moving the field. Dimir's +0.8 is inside the arm's noise. That makes two Dimir-targeted units (EE, TD) without movement since CP reset the loop-break count; a third without movement halts Dimir code.
 
 **Leads (not built):**
 - The sideboard solver counts no counter's cost. A counter whose discount needs a blue target is valued the same against a deck with no blue spells; this is the root cause's subsystem 4 proper.
 - The AI's main-phase cost estimate (`ai/effective_cmc`) does not read the discount; it would need a runtime target parse.
 - A removal spell's target picker does not prefer a target its discount names when only the discounted cost is payable.
 - A spell with the discount that is neither instant nor sorcery (an Aura) gets no best-case discount in the cast's legality.
+
+## Unit OB: a card that leaves the battlefield keeps no characteristic an effect gave the permanent (CR 400.7, 611.3a; 2026-10-15)
+
+**Source:** the two `601.2f/target_cost_reduction` violations in the `td-post` arm (Domain Zoo vs 4/5c Control, s51000 game 2 T3 and s53500 game 3 T10), replayed at `3e71f87`.
+
+**Symptom:**
+- A Ragavan dashed, and a Territorial Kavu bounced by Teferi, Time Raveler, left the battlefield from under Leyline of the Guildpact ("each nonland permanent you control is all colors").
+- Each was still all colours in its owner's hand.
+- Recast, each was blue on the stack, so Mystical Dispute was discounted for a "blue spell" target.
+
+**Rule (CR 400.7, 611.3a):**
+- A continuous effect from a static ability applies to the permanents it names.
+- A card that leaves the battlefield is a new object with no memory of its previous existence.
+- Off the battlefield, its colour, power, toughness, keywords and land types are its printed ones until an effect that names it there says otherwise.
+
+**Defect:**
+- `ContinuousEffectsManager.recalculate` writes and clears the `cem_*` characteristics on battlefield objects only.
+- The zone funnel cleared the types an effect added (unit AT) and nothing else the layer writes.
+- So a colour set, a power or toughness change, a granted keyword or a land type followed the card into a hand, a graveyard, exile and the stack.
+
+**Class:**
+- Every characteristic the layer writes, on every card that leaves the battlefield: power and toughness changes, keywords, a colour or land-type set, land types and types added.
+- In the field: Domain Zoo's Leyline of the Guildpact with its Dash and the opponents' bounce. Beyond it, every anthem, lord, equipment grant and colour or land-type setter in the pool.
+- Every off-battlefield reader is in reach: a spell's colour for a counter or a discount, a hand card's power in the AI's projections, a recast creature's keywords until the next recalculation.
+
+**Step (`9bda2eb`):** the zone funnel (`ZoneManager._cleanup_leaving_battlefield`, the one owner of battlefield-only state) clears every characteristic the layer writes as a permanent leaves.
+
+**Auditor:** `400.7/effect_characteristic_off_battlefield`, at each recalculation. Every object in a hand, a graveyard or exile, or on the stack, holds the layer's no-effect values, restated from raw fields.
+
+**Tests:** 6, in `tests/test_a_card_that_leaves_the_battlefield_keeps_no_characteristic_an_effect_gave_it.py`. 5 are red at the pre-unit commit; the audit-silent pin passes there.
+- The funnel drops every field.
+- The all-colours static, and an anthem with a keyword grant, through the real layer.
+- A recast spell's colour for a target discount: the defect's shape.
+- The auditor, silent and firing (the funnel patched back to clearing types only).
+
+**Pins:**
+- Seeded-game digest byte-identical (27 games); all ratchets pass.
+- **Chunks at `9bda2eb`:**
+  - Chunk 1: 5082 passed, 2 failed. The two are the CPU-ceiling tests that fail the same way at the pre-unit commit on this container.
+  - Chunk 2: 2736 passed.
+
+**Measured:** with unit CM, by the `cm-post` arm (pre = `td-post`).
+
+## Unit CM: the AI's cost estimate never reduces coloured pips (CR 601.2f; AI, 2026-10-15)
+
+**Source:** the Ruby Storm goldfish root cause (`docs/diagnostics/2026-10-15_ruby_storm_goldfish_speed.md`), secondary findings, AI.
+
+**Rule (CR 601.2f):**
+- A generic cost reduction ("red spells you cast cost {1} less") reduces only the generic component of a spell's total cost.
+- Its coloured, colourless and hybrid pips stay owed.
+- The engine charges exactly that: `CastManager.can_cast` floors its quantity at `ManaCost.non_generic_pips`.
+
+**Defect:**
+- `ai/effective_cmc`, the owner of the AI's cost reads, subtracted on-board and self reductions from the whole mana value.
+- A {1}{R} ritual read as free under two reducers, and a {R} spell under one.
+- So the chain arithmetic counted mana that does not exist.
+
+**Class:** every spell with pips, cast under generic reductions that exceed its generic part: every reducer and every one-pip spell in the pool. In the field: Ruby Storm's rituals and cantrips under Ruby Medallion and Ral; every deck's cheap spells under a reducer.
+
+**Step (`f37d731`):** the estimate is floored at the printed non-generic pips after the reductions, as the engine does.
+
+**Tests:** 9, in `tests/test_the_ai_cost_estimate_never_reduces_coloured_pips.py`; 6 are red at the pre-unit commit.
+- The reduction stops at the pips: {1}{R} and {R} and a hybrid pip under reducers; a reduction within the generic part is unchanged.
+- The estimate is what the engine charges: one land fewer cannot cast the spell.
+- Two older pins encoded the defect (Lightning Bolt under one Medallion read as free). They now use a red spell with a generic part, whose reduction is real.
+
+**Pins:**
+- **Digest:** 3 Ruby Storm games change their chain order (which ritual or cantrip first, now ranked by the mana each really nets).
+  - The Azorius Control vs Ruby Storm s58500 match ends 2-0 for Storm: g2 was Azorius's on T11, now Storm's on T9.
+  - Replayed through the digest's sequence: each divergence is a chain-order choice the engine pays as before. Re-recorded (26 games).
+- Anchor 29; ratchets pass.
+
+**Goldfish (`tools/goldfish.py`, the root cause's 160 seeds, at `f37d731`):**
+
+| | Before (play / draw) | After (play / draw) |
+|---|---|---|
+| Kills | 30 / 28 | 33 / 31 |
+| Killed by T6 | 4 / 8 | 4 / 10 |
+| Killed by T8 | 13 / 16 | 13 / 21 |
+| Median kill turn | 9.5 / 8 | 9 / 7 |
+| Lost to an empty library | 50 / 52 | 47 / 49 |
+
+**Measured:** with unit OB, by the `cm-post` arm (pre = `td-post`).

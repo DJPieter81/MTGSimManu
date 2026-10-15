@@ -125,5 +125,7 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
 - **Subsystem 3, unit EE** (`c82832a`, tracker): a sweep destroys each permanent its description admits, read off what its source last had; sunburst counts the colours spent; the runner's shortcut is retired.
   - At the replay seed's G3, Dimir casts the Explosives for X=1 and pops it on T5 for three creatures, and wins the match 2-1.
   - **Measured (`ee-post`):** Dimir Midrange 39.7 → 40.4, inside the arm's noise. The loop-break count is one since CP.
-- **Subsystem 4, unit TD:** the engine never read a spell's discount for its target. Mystical Dispute cost {2}{U} against a blue spell, and that is now fixed. The sideboard solver still counts no counter's cost (lead).
-- **Loop-break count:** one Dimir-targeted unit without movement. If CP is the second and a third follows without movement, Dimir code halts and a deeper Bo3 root cause comes first.
+- **Subsystem 4, unit TD** (`966f762`, tracker): the engine never read a spell's discount for its target. Mystical Dispute cost {2}{U} against a blue spell, and that is now fixed. The sideboard solver still counts no counter's cost (lead).
+  - **Measured (`td-post`):** Dimir Midrange 40.4 → 41.2, inside the arm's noise; every deck is within 0.8.
+  - Its auditor surfaced a pre-existing engine defect: a permanent that left the battlefield kept the colour an effect gave it (unit OB, `9bda2eb`).
+- **Loop-break count:** two Dimir-targeted units (EE, TD) without movement since CP. A third without movement halts Dimir code. Before one is built, the WST v2 control-mirror trace (Dimir decking itself by T21–23) is the deeper Bo3 root cause.
