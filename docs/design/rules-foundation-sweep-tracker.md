@@ -9509,3 +9509,100 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 - An activation in the window resolves at once: the other player gets no priority while it is on the stack.
 - The defending player still casts no combat trick after blockers. `_combat_trick_window` is the active player's alone.
 - The block evaluation does not count a death trigger's value to the attacker's controller (in the replay, the Cat token's death transformed Ajani).
+
+## Unit EE: a sweep destroys each permanent its description admits, read off what its source last had; sunburst counts the colours spent (CR 701.8a, 608.2h, 702.44a, 107.3; 2026-10-15)
+
+**Source:** the Dimir Midrange root cause, subsystem 3 (`docs/diagnostics/2026-10-14_dimir_midrange_root_cause.md`). Engineered Explosives is cast for X=3 into two charge counters and never activated in six turns against a board of mana value 2.
+
+**Rules:**
+- **CR 701.8a, 608.2h:** "destroy each <description>" destroys every permanent the description admits as it applies. A characteristic bound ("with mana value equal to the number of charge counters on ~") is determined once. When the source left as part of the cost, it is read from the counters the source last had.
+- **CR 702.44a:** sunburst puts one counter per colour of mana spent to cast the permanent: +1/+1 counters as a creature, charge counters otherwise. Colourless mana is no colour (CR 105.1).
+- **CR 107.3:** X is mana spent, and its caster chooses it.
+- **AI:**
+  - A sweep is activated when what it takes from the opponent is worth more than what it takes from its controller.
+  - A sunburst sweep's X buys the colour count whose sweep is worth most.
+
+**Defects:**
+- The grammar refused "with <stat> equal to <quantity>" (`filter.stat`), so the sweep activations were refused.
+- A runner shortcut (`_activate_utility_artifacts`) did the work instead. Each turn it:
+  - put a charge counter on every charge-counter sweep, Engineered Explosives included, though it has no ability that does;
+  - popped it without paying its cost;
+  - destroyed the opponent's permanents only;
+  - decided all of this in the engine.
+- A name-keyed entry handler counted the colours of the controller's lands, not the mana spent.
+- The X-cost parser read the sunburst reminder text as "enters with X charge counters".
+- The X payment for a colour-counting spell took {C} as a "new colour", and took a painland's colour without its damage.
+
+**Class:**
+- 24 pool activations and loyalty lines destroy each or all permanents a description admits. 16 pool cards have sunburst. 82 pool instructions carried a characteristic bound the grammar refused.
+- **Field:** Engineered Explosives (Affinity MB ×4, Dimir Midrange SB ×2, both WST SB ×2), Oblivion Stone and The Filigree Sylex (Eldrazi Tron SB).
+
+**Steps (`c82832a`, pin `5eb1e69`):**
+- **Grammar:**
+  - The filter leaf types "with <power|toughness|mana value> <equal to | less/greater than [or equal to]> <quantity>" through a quantity reader its caller hands it (`parse_filter(..., operand=)`).
+  - The participant leaf hands it the quantity leaf's reader for object groups (new edge participant → quantity). The leaves stay acyclic: the quantity leaf already reads filters.
+  - A caller that hands no reader still refuses the bound (`filter.stat`).
+  - `link._mark_lki` rebuilds a FILTER subject from the marked filter, so both views read the source's last-known information.
+- **Description owner (`effect_conditions`):** `description_supported(f, bounds=True)`, `bound_values` (CR 608.2h) and `permanent_described(..., bounds=)`. A consumer that evaluates no bound still refuses one.
+- **Last-known information:**
+  - `CardInstance.last_known()` → `LastKnown`, taken by the activation owner before a sacrifice or exile-self cost.
+  - It is carried on the stack item and through the carrier to `Resolution.source_lki`.
+- **Destroy owner:** `destroy_each_supported` and "destroy each" in `execute_destroy`, every player's permanents or its controller's.
+- **Auditors:** `701.8a/destroyed_each`, restated from raw fields and last-known counters, and `702.44a/sunburst`.
+- **Sunburst:**
+  - `Keyword.SUNBURST` is typed from the keyword line.
+  - `spell_resolution._enter_with_sunburst` reads `StackItem.colors_spent`.
+  - The X payment takes new colours first: colourless is none, and a painland's colour deals its damage through the damage owner.
+- **Retired:**
+  - the runner's charge-counter branch;
+  - the name-keyed Engineered Explosives handler (registry 76 → 75);
+  - the dead `has_charge_counter_wipe` field and its parser.
+- **AI:**
+  - `ai/sweep_value.py` holds `sweeps`, `victims`, `sweep_value` (`permanent_threat`, both sides), `colours_reachable` (a matching of sources to colours) and `sunburst_sweep_x`.
+  - `activation_ev._sweep_plan` values a sweep activation.
+  - The X channel `GameCallbacks.choose_x` (uniform per kind) asks the caster for X; the AI answers for a sunburst sweep.
+  - The new module is seeded at 0 in the magic-number baseline.
+
+**Tests:** 35 in three files, red first at the pre-unit commit except the hold, refusal and audit-silent pins:
+- `tests/test_a_sweep_destroys_each_permanent_its_description_admits.py` (14);
+- `tests/test_sunburst_counts_the_colours_of_mana_spent.py` (15);
+- `tests/test_a_sweep_is_activated_when_the_opponent_loses_more.py` (6).
+
+**Pins:**
+- **Grammar pins:**
+  - `tests/test_effect_grammar_filter.py`: the stat-bound refusal pin now types the counter quantity through a reader, and keeps the refusals ("the greatest power", and an operand that leaves a reference to bind).
+  - `tests/test_effect_grammar_participant.py`: the participant's edges gain `quantity`, and a group compared with "~'s power" is typed.
+  - Witness fixture: Engineered Explosives' A27 known gap is removed. The Filigree Sylex's is narrowed to its printed-name sacrifice.
+  - `tests/test_batch11_typed_fields.py`: the dead wipe flag's tests are removed.
+- **Harness:** 13 new pairs.
+  - 11 are intended, pre-unit no-ops: the UNCLASSIFIED line resolved nothing.
+  - 2 are proven identical: Elspeth, Sun's Champion's −3 and Dauntless Dismantler.
+  - Gate parity: 1840 pairs, 371 proven, 1469 intended.
+  - The self-check covers 260 deck hosts (was 258); the no-op set is unchanged.
+- **Ratchets:** loyalty 384 → 382 (Elspeth, Sun's Champion; Liliana, Death's Majesty); card-name registry 76 → 75.
+- **Spec equivalence and census, re-recorded:** FILTER refusals fall, and five UNEXPLAINED are recorded as leads (below).
+- **Digest:** byte-identical; none of its games casts a sweep. **Anchor:** 29.
+- **Chunks at `c82832a`:**
+  - Chunk 1: 5068 passed, 2 failed. The two are the CPU-ceiling tests that fail the same way at the pre-unit commit on this container.
+  - Chunk 2: 2735 passed, 1 failed: the self-check's pinned host count, fixed in `5eb1e69`.
+
+**Replay (root-cause seed, Dimir vs Boros Energy s50000 Bo3):**
+- In G3, Dimir casts Engineered Explosives on T4 for X=1 against a board of mana value 1, and it enters with one counter.
+- On T5 Dimir pops it, destroying Ocelot Pride ×2 and Guide of Souls.
+- Dimir wins the match 2-1; before the unit, Boros Energy won it 2-1.
+
+**Measured:** the `ee-post` arm follows (pre = `cp-post`).
+
+**Leads (not built):**
+- The legacy text tagger gives a permanent whose sweep is an activated ability the `board_wipe` tag, so casting it is projected as a symmetric creature wipe.
+- A legendary permanent's cost that names itself ("Sacrifice The Filigree Sylex", "Exile Karn's Sylex") is unpayable to the cost parser, so the activation is refused.
+- Oblivion Stone's rider ("then remove all fate counters") has no executor, so the sweep is refused whole.
+- The AI never values a charge-counter tick (Ratchet Bomb's "{T}: put a charge counter").
+- A sweep is popped only at sorcery timing.
+- A sunburst creature's base cost is not paid with new colours first.
+- Spec equivalence: four cards whose last refused clause now parses expose pre-existing derivation gaps on other fields, five UNEXPLAINED in all:
+  - dredge (Necroplasm: draw effect, graveyard recursion);
+  - a "becomes tapped" trigger (Zar Ojanen);
+  - a free-cast offer (Lady Octopus);
+  - Engineered Explosives' sunburst reminder text read as a charge-counter ability.
+- A search's bound ("search ... with mana value less than or equal to <quantity>") is not handed a quantity reader: patterns and the condition leaf still refuse it (Bring to Light, Hibernation's End).
