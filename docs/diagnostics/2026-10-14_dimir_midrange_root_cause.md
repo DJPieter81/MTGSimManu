@@ -122,4 +122,8 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
   - The runner adds a charge counter to it every turn, though it has no ability that does.
   - The runner pops it without paying its cost, against the opponent's permanents only.
   - Affinity plays it main deck ×4, so the unit measures Affinity as well.
+- **Subsystem 3, unit EE** (`c82832a`, tracker): a sweep destroys each permanent its description admits, read off what its source last had; sunburst counts the colours spent; the runner's shortcut is retired.
+  - At the replay seed's G3, Dimir casts the Explosives for X=1 and pops it on T5 for three creatures, and wins the match 2-1.
+  - **Measured (`ee-post`):** Dimir Midrange 39.7 → 40.4, inside the arm's noise. The loop-break count is one since CP.
+- **Subsystem 4, unit TD:** the engine never read a spell's discount for its target. Mystical Dispute cost {2}{U} against a blue spell, and that is now fixed. The sideboard solver still counts no counter's cost (lead).
 - **Loop-break count:** one Dimir-targeted unit without movement. If CP is the second and a third follows without movement, Dimir code halts and a deeper Bo3 root cause comes first.

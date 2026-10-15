@@ -9591,7 +9591,14 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 - On T5 Dimir pops it, destroying Ocelot Pride ×2 and Guide of Souls.
 - Dimir wins the match 2-1; before the unit, Boros Energy won it 2-1.
 
-**Measured:** the `ee-post` arm follows (pre = `cp-post`).
+**Measured (same-seed n=20 Bo3, `ee-post` at `d75eda0`, pre = `cp-post`):**
+- **Dimir Midrange 39.7 → 40.4 (+0.7); every deck is within ±0.7.**
+- 22 cells change. Every one is in a deck holding Engineered Explosives (Affinity, Dimir Midrange, both WST) or a converge spell paid through the colour pick (Azorius Control's Prismatic Ending).
+- 0 aborts; findings 497 → 505.
+- **One violation:** `701.8a/destroyed_each`, in the Broodscale Bloodchief row. It is an auditor false positive: a token a death trigger made during the sweep is a new object (CR 400.7). The audit is fixed in `46e7522`, with a test red against the old one.
+- **Field bands:** 42.5 pp total miss (43.1 before); Dimir Midrange's miss 5.3 → 4.6.
+- No deck moves more than 5 pp, so nothing was replayed cell-exact.
+- **Reading:** the rules fixes land without moving the field. A sweep and a sunburst X are rare plays; Affinity's main-deck ×4 is the only heavy carrier. Dimir moves +0.7, inside the arm's noise: one Dimir-targeted unit without movement since CP reset the count.
 
 **Leads (not built):**
 - The legacy text tagger gives a permanent whose sweep is an activated ability the `board_wipe` tag, so casting it is projected as a symmetric creature wipe.
