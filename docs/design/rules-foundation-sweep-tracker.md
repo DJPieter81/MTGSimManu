@@ -9430,3 +9430,66 @@ A union of card types admits any of them; a joined type ("artifact creature") ad
 **Leads (not built):**
 - `ai/modal` values a sacrifice by mana value (`_perm_worth`), so mode choice and the spell score use different currencies.
 - An instant edict is still cast at sorcery speed: there is no window on the opponent's turn for it.
+
+## Unit CP: a creature's own pump is used in combat when it changes the fight, and the block counts it (CR 509.4, 117.3b, 117.4, 602.2; AI, 2026-10-15)
+
+**Source:** the Dimir Midrange root cause, subsystem 2 (`docs/diagnostics/2026-10-14_dimir_midrange_root_cause.md`): Dimir vs Boros Energy s50000.
+
+**Rules:**
+- **Engine (CR 509.4, 602.2, 117.3b, 117.4):** after blockers are declared, the active player and then the defending player receive priority before combat damage, and either may activate abilities. After an ability resolves, the active player receives priority again. The step ends when both players pass in succession.
+- **AI:** a creature's own pump is activated when a number of activations its controller can pay for changes the fight, and the projected position, cost included, beats making none. "Changes the fight" means a creature dies or survives, or a player loses this combat. Damage to a player who lives through the combat is not a changed fight.
+- **AI:** a block is worth what it is worth after the pumps its controller can pay for.
+
+**Defects:**
+- Only the active player had a window after blockers, and only for instants. Neither player ever activated a creature's own pump in combat; the defending player had no window at all.
+- The block evaluation (`_score_block_lifespan_delta`) read printed power and toughness. In the replay, Psychic Frog blocked three times and died three times, each time holding cards that would have kept it alive and killed its attacker.
+
+**Class:** 260 pool creatures carry a typed instant-speed self pump whose cost gives up no permanent.
+- 183 are until-end-of-turn bonuses paid with mana; 24 are +1/+1 counters paid with mana; discard, life and other costs make up the rest.
+- **Field:** Psychic Frog ×4 (Dimir Midrange, Domain Zoo, Instant Reanimator, Grixis Reanimator), Blazing Rootwalla ×4 (Hollow One), Walking Ballista (Eldrazi Tron SB ×1).
+
+**Steps (`ba2d33e`):**
+- **Engine:** `GameRunner._combat_pump_window` runs after the active player's combat tricks.
+  - Priority alternates from the active player until both pass in succession.
+  - Each activation goes through `ActivationManager.can_activate` and `activate`, and resolves before damage.
+  - `GameState.after_blockers_offered` records the offer; `declare_blockers` resets it.
+- **Auditor** `509.4/priority_after_blockers`, in `CombatManager.resolve_combat_damage`: it records combat damage dealt before both players were offered the window.
+- **One AI owner:** `ai/combat_pump.py`.
+  - `self_pumps`: a typed PUMP_SELF_UEOT, or a PUT_COUNTER_SELF of +1/+1 counters on itself, at instant speed, with no sacrifice or exile cost.
+  - `pump_step`, `pump_cost`.
+  - `affordable_steps`: cards in hand, life above lethal, untapped sources, once each turn.
+  - `fight_plan`: the best fight the controller can pay for, at the fewest steps.
+- **Decision:** `EVPlayer.decide_combat_pump`.
+  - It projects the declared combat with every affordable number of activations. `_post_combat_snapshot` now takes a per-creature bonus and reads the defender's side.
+  - The fight must change, and the position is priced with `position_value`, cost included.
+- **Block:** `_score_block_lifespan_delta` fights at `fight_plan`'s stats.
+  - Each card spent is charged at `card_clock_impact`; a life payment comes off life.
+  - A lasting counter stays on a survivor.
+- The new module is seeded at 0 in the magic-number baseline.
+
+**Tests:** 15, in `tests/test_a_creatures_own_pump_is_used_when_it_changes_the_combat.py`.
+- Every one fails on the pre-unit tree, the auditor's two among them.
+- Four were added during verification and seen red against the first draft:
+  - the best fight at the fewest steps;
+  - an unblocked attacker that buys only face damage;
+  - a second activation that alone wins the fight;
+  - priority returning to the active player.
+
+**Pins:**
+- `tests/test_rules_audit.py`: two direct-combat helpers now offer the window, as the runner does.
+- **Digest:** one game changes, with the same winner. In Dimir vs Domain Zoo s57000 (bo1, 10 → 9 turns), Domain Zoo's Frog blocks Snapcaster Mage on T6 and discards to survive and kill it; before, both died.
+  - The first draft also pumped an unblocked Frog for face damage: Living End vs Dimir s59000 discarded Force of Negation and Kaito for 2 damage. The fight gate removed that play, and that match is byte-identical again.
+- **Anchor:** 29, unchanged.
+- **Cost:** the window is 1.3% of match time (profiled on Dimir vs Boros Energy, n=4).
+- **Chunks at `ba2d33e`:**
+  - Chunk 2: 2721 passed.
+  - Chunk 1: 5049 passed, 2 failed. The two are the effect-grammar pool pass's CPU-ceiling tests (8.1 s against 6.8, and 4.6 against 4.0).
+  - Both fail the same way at the pre-unit commit `c2479ec` on this container now, though they passed there earlier in the session. That is machine speed, not the unit.
+
+**Measured:** the `cp-post` arm follows (pre = `ei-post`).
+
+**Leads (not built):**
+- **A second path for this rule:** the attack declaration still pumps a discard-pump attacker before attackers are declared (`decide_attackers`, "Pre-combat pump"). The AI moves the card and puts the counter itself, without activating the ability, keyed off a runtime oracle substring. Retiring it first needs the attack side to count the attacker's own pump, with `fight_plan` against each possible blocker.
+- An activation in the window resolves at once: the other player gets no priority while it is on the stack.
+- The defending player still casts no combat trick after blockers. `_combat_trick_window` is the active player's alone.
+- The block evaluation does not count a death trigger's value to the attacker's controller (in the replay, the Cat token's death transformed Ajani).

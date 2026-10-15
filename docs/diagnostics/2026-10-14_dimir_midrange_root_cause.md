@@ -112,5 +112,13 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
 - **Subsystem 1, unit EI** (`c2479ec`, tracker): an edict is interaction this turn, worth what its victim gives up.
   - **Measured (`ei-post`):** Dimir Midrange 37.6 → 36.5. That is inside the arm's noise, with no movement toward the band.
   - In the replay seed's G1, the edict is cast on T3 where it had waited to T7.
-- **Subsystem 2, unit CP:** a creature's own pump is used in combat when it changes the fight, and the block counts it. It is in progress.
+- **Subsystem 2, unit CP** (`ba2d33e`, tracker): a creature's own pump is used in combat when it changes the fight, and the block counts it.
+  - After blockers, both players now hold priority (CR 509.4).
+  - Of the digest's 27 games, one changes: Domain Zoo's Frog survives its block and kills the attacker.
+  - The `cp-post` arm (pre = `ei-post`) measures it.
+- **Subsystem 3 (Engineered Explosives) is wider than the replay showed:**
+  - Its entry handler counts the colours of the controller's lands, not the colours of mana spent (CR 702.44a).
+  - The runner adds a charge counter to it every turn, though it has no ability that does.
+  - The runner pops it without paying its cost, against the opponent's permanents only.
+  - Affinity plays it main deck ×4, so the unit measures Affinity as well.
 - **Loop-break count:** one Dimir-targeted unit without movement. If CP is the second and a third follows without movement, Dimir code halts and a deeper Bo3 root cause comes first.
