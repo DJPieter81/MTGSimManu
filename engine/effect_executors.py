@@ -83,7 +83,7 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                          Verb.CONTINUOUS, Verb.DRAW,
                                          Verb.MILL, Verb.CHOOSE, Verb.SEARCH,
                                          Verb.SHUFFLE, Verb.GAIN_LIFE,
-                                         Verb.ADD_MANA}),
+                                         Verb.ADD_MANA, Verb.REVEAL}),
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN,
                                                Verb.PUT_COUNTERS,
@@ -588,6 +588,132 @@ def _audit_land_put(ctx: Resolution, card: Any, played: int) -> None:
                       game=ctx.game)
 
 
+# ── Outside the game (CR 400.11; unit OG) ─────────────────────────────
+
+def outside_description(f: Any) -> bool:
+    """A description of cards its player owns outside the game -- in a
+    sanctioned game its sideboard (CR 400.11a, 100.4a) -- that the
+    description owner reads: "a <description> card you own from outside the
+    game"."""
+    if not isinstance(f, CardFilter) or f.zone != "sideboard" or f.zones \
+            or f.owner != "you" or f.controller != "any" or f.stat_bounds:
+        return False
+    return conditions.description_supported(
+        dataclasses.replace(f, zone="battlefield", owner="any"))
+
+
+def outside_the_game_cards(game: Any, player: int, f: CardFilter) -> list:
+    """The cards `player` owns outside the game that the description
+    admits, in sideboard order. Never a card in the library or any other
+    zone (CR 400.11a)."""
+    g = dataclasses.replace(f, zone="battlefield", owner="any")
+    return [c for c in game.players[player].sideboard
+            if conditions.permanent_described(c, g)]
+
+
+def brings_from_outside_the_game(template: Any) -> bool:
+    """Does the spell bring a card from outside the game -- its typed host
+    a permission or a reveal over its controller's sideboard (CR 400.11a)?
+    Such a tutor reaches the sideboard and nothing else."""
+    effects = getattr(template, "effects", None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    from .effect_spec import iter_specs
+    return any(outside_permit(s) or reveal_supported(s)
+               for s in iter_specs(host.specs))
+
+
+def reveal_supported(s: EffectSpec) -> bool:
+    """"[You may] reveal a <description> card you own from outside the
+    game": its controller chooses one card the description admits among the
+    cards it owns outside the game; an instruction after it ("put it into
+    your hand") reads the chosen card (CR 608.2c)."""
+    a = s.amount
+    return (s.verb is Verb.REVEAL and outside_description(s.filter)
+            and isinstance(a, Amount) and a.kind is AmountKind.LITERAL
+            and a.n == 1 and s.target is None and s.target_slot is None
+            and s.ref is None and s.dest is None and s.payload is None
+            and s.duration is None and s.group is None
+            and not s.alternatives and not s.flags and s.subject is None
+            and s.other is None and s.chooser is Chooser.CONTROLLER
+            and _acts_as_controller(s.actor))
+
+
+def execute_reveal(ctx: Resolution, s: EffectSpec,
+                   actors: Tuple[int, ...]) -> Outcome:
+    """The controller chooses the card (`callbacks.choose_cards`) among the
+    cards it owns outside the game that the description admits; a required
+    choice the answer leaves short takes the first (the callbacks
+    contract). None to choose from: nothing is revealed."""
+    pool = outside_the_game_cards(ctx.game, ctx.controller, s.filter)
+    if not pool:
+        return Outcome(False, {})
+    picked = ctx.game.callbacks.choose_cards(ctx, s, pool, 1) or ()
+    chosen = [c for c in pool if any(c is p for p in picked)][:1]
+    if not chosen and not s.optional:
+        chosen = pool[:1]
+    if not chosen:
+        return Outcome(False, {})
+    card = chosen[0]
+    _audit_brought_from_outside(ctx, card)
+    ctx.game.log.append(
+        f"T{ctx.game.display_turn} P{ctx.controller + 1}: reveals "
+        f"{card.name} from outside the game")
+    return Outcome(True, {ctx.controller: (handle_of(card),)})
+
+
+execute_reveal.supports = reveal_supported
+
+
+def _audit_brought_from_outside(ctx: Resolution, card: Any) -> None:
+    """CR 400.11a, restated from raw fields: a card brought from outside the
+    game is one its player owns in its sideboard. Observation only."""
+    from .rules_audit import enabled as _on, check as _check
+    if not _on():
+        return
+    _check("400.11a/brought_from_the_sideboard",
+           card.owner == ctx.controller
+           and card in ctx.game.players[ctx.controller].sideboard,
+           f"{card.name} brought from outside the game by "
+           f"P{ctx.controller + 1} from {card.zone} (owner P{card.owner + 1})",
+           game=ctx.game)
+
+
+def revealed_to_hand(s: Any) -> bool:
+    """"Put it into your hand": the card an earlier reveal of this host
+    brought from outside the game goes to its owner's hand (CR 400.11b)."""
+    d, r = s.dest, s.ref
+    return (s.verb is Verb.MOVE and isinstance(d, Destination)
+            and d == Destination(zone="hand")
+            and isinstance(r, Ref) and r.kind is RefKind.RESULT
+            and isinstance(r.index, int) and r.part is RefPart.ALL
+            and r.of is None and r.n is None
+            and s.target is None and s.target_slot is None
+            and s.filter is None and s.amount is None and s.payload is None
+            and s.duration is None and s.group is None
+            and not s.alternatives and not s.optional
+            and s.flags <= {"may_scope"} and s.subject is None
+            and s.chooser is Chooser.CONTROLLER)
+
+
+def _put_revealed(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The cards the reveal named that are still outside the game go to
+    their owner's hand through the zone funnel."""
+    if not _took_the_may(ctx, s):
+        return Outcome(False, {})
+    moved = []
+    for per in (ctx.results.get(s.ref.index) or {}).values():
+        for h in per:
+            card = ctx.game.get_card_by_id(getattr(h, "instance_id", None))
+            if card is None or card.zone != "sideboard":
+                continue
+            if ctx.game.zone_mgr.move_card(ctx.game, card, "sideboard",
+                                           "hand", cause="from outside the game"):
+                moved.append(handle_of(card))
+    return Outcome(bool(moved), {ctx.controller: tuple(moved)})
+
+
 def execute_move(ctx: Resolution, s: EffectSpec,
                  actors: Tuple[int, ...]) -> Outcome:
     if self_return_transformed(s):
@@ -596,13 +722,16 @@ def execute_move(ctx: Resolution, s: EffectSpec,
         return _put_searched(ctx, s, actors)
     if land_from_hand(s):
         return _put_land_from_hand(ctx, s)
+    if revealed_to_hand(s):
+        return _put_revealed(ctx, s)
     return execute_move_to_hand(ctx, s, actors)
 
 
 execute_move.supports = (lambda s: _move_to_hand_supported(s)
                          or self_return_transformed(s)
                          or searched_to_battlefield(s)
-                         or land_from_hand(s))
+                         or land_from_hand(s)
+                         or revealed_to_hand(s))
 # An unbound slot is the controller's choice through `choose_cards`, so a
 # carrier with no targets to bind (the enter-trigger carrier) may take it.
 execute_move.picks_unbound_slots = True
@@ -926,12 +1055,34 @@ _PERMIT_DURATIONS = frozenset({DurationKind.THIS_TURN,
                                DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN})
 
 
+def outside_permit(s: EffectSpec) -> bool:
+    """"You may play a card you own from outside the game this turn" (CR
+    400.11a, 601.2a): one play, this turn, of a card its controller owns
+    outside the game that the description admits -- any of them, chosen as
+    it is played."""
+    m, a = s.payload, s.amount
+    return (s.verb is Verb.CONTINUOUS and isinstance(m, Modification)
+            and m.kind is ModKind.PERMIT and m.action in ("play", "cast")
+            and not m.data and outside_description(s.filter)
+            and isinstance(a, Amount) and a.kind is AmountKind.LITERAL
+            and a.n == 1 and s.duration is not None
+            and s.duration.kind is DurationKind.THIS_TURN
+            and s.ref is None and not s.flags and not s.optional
+            and not s.alternatives and s.group is None and s.dest is None
+            and s.chooser is Chooser.CONTROLLER and s.subject is None
+            and s.other is None and s.target is None
+            and s.target_slot is None and _acts_as_controller(s.actor))
+
+
 def _permit_supported(s: EffectSpec) -> bool:
     """"You may play / cast those cards <duration>" (CR 305.1, 601.2a): the
     controller may play (or cast) the objects an earlier spec of the host
     produced, while the bound duration lasts, through the one rule-effect
     owner (`continuous_effects.register_effect`, read by
-    `rules_query.play_permitted`)."""
+    `rules_query.play_permitted`). Or one card it owns outside the game
+    (`outside_permit`)."""
+    if outside_permit(s):
+        return True
     m = s.payload
     if s.verb is not Verb.CONTINUOUS or not isinstance(m, Modification) \
             or m.kind is not ModKind.PERMIT or m.action not in ("play", "cast") \
@@ -956,6 +1107,18 @@ def execute_permit(ctx: Resolution, s: EffectSpec,
                    actors: Tuple[int, ...]) -> Outcome:
     from .effect_model import THIS_TURN as _THIS_TURN
     from .effect_model import permit_play, until_end_of_your_next_turn
+    if outside_permit(s):
+        # Every card the description admits is playable, and one play
+        # spends the permission (`ContinuousEffectsManager.spend_play`).
+        cards = [c.instance_id for c in outside_the_game_cards(
+            ctx.game, ctx.controller, s.filter)]
+        if not cards:
+            return Outcome(False, {})
+        ctx.game.continuous_effects.register_effect(permit_play(
+            ctx.controller, cards, s.payload.action, _THIS_TURN,
+            source_id=ctx.source.instance_id, zone="sideboard",
+            plays=s.amount.n))
+        return Outcome(True, {ctx.controller: tuple(cards)})
     produced = [v for per in (ctx.results.get(s.ref.index) or {}).values()
                 for v in per]
     objects = []
@@ -1793,6 +1956,7 @@ EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
 EXECUTORS[Verb.ADD_MANA] = execute_add_mana
 EXECUTORS[Verb.DISCARD] = execute_discard
+EXECUTORS[Verb.REVEAL] = execute_reveal
 
 
 # ── DESTROY / SEARCH / SHUFFLE (family removal, unit LA) ──────────────
@@ -2179,6 +2343,11 @@ EXECUTOR_DESCRIPTIONS[Verb.DESTROY] = (
     lambda f: conditions.description_supported(f, bounds=True))
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
     ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
+# A card its player owns outside the game (unit OG): the reveal and the
+# permission read the description of the sideboard cards themselves
+# (`outside_description`, CR 400.11a).
+EXECUTOR_DESCRIPTIONS[Verb.REVEAL] = outside_description
+EXECUTOR_DESCRIPTIONS[Verb.CONTINUOUS] = outside_description
 # The move executor evaluates "a land card from your hand" itself (unit SP).
 EXECUTOR_FILTER_KEYS[Verb.MOVE] = frozenset(_LAND_IN_YOUR_HAND)
 # The discard executor evaluates "a card" in its discarder's hand itself

@@ -187,6 +187,36 @@ class ContinuousEffectsManager:
             kept.append(e)
         self._rule_effects = kept
 
+    def permits_zone(self, zone: str) -> bool:
+        """A stored permission names objects in `zone` (a resolved "you may
+        play ..." -- permissions are resolved effects, never statics)."""
+        from .effect_model import ModKind
+        return any(e.modification.kind is ModKind.PERMIT
+                   and e.modification.get("zone") == zone
+                   for e in self._rule_effects)
+
+    def spend_play(self, instance_id: int) -> None:
+        """An object was played under a permission that names it: a
+        permission bounded to `plays` plays ("you may play a card you own
+        from outside the game this turn": one) spends one, and ends when
+        none is left; then the object, now a new object (CR 400.7), leaves
+        every permission (`forget_object`)."""
+        import dataclasses
+        kept = []
+        for e in self._rule_effects:
+            objects = e.modification.get("objects")
+            plays = e.modification.get("plays")
+            if plays is not None and objects and instance_id in objects:
+                if plays <= 1:
+                    continue
+                data = tuple((k, plays - 1 if k == "plays" else v)
+                             for k, v in e.modification.data)
+                e = dataclasses.replace(e, modification=dataclasses.replace(
+                    e.modification, data=data))
+            kept.append(e)
+        self._rule_effects = kept
+        self.forget_object(instance_id)
+
     def rule_effects(self, game: "GameState") -> list:
         """Stored resolved effects plus the static ones permanents have
         right now (derived fresh, never stored — CR 611.3a)."""

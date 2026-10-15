@@ -164,7 +164,11 @@ def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
         from ai.graveyard_removal import pick_removals
         return pick_removals(game, ctx.controller, list(pool), n,
                              target.count_min)
-    from engine.effect_executors import land_from_hand
+    from engine.effect_executors import land_from_hand, reveal_supported
+    if reveal_supported(spec):
+        # A card brought from outside the game into the hand (unit OG):
+        # the hand-delivery choice, as a tutor's (`_deliver`).
+        return _deliver(game, ctx.controller, list(pool), n)
     if land_from_hand(spec):
         # The land the AI's one land valuation delivers (the land a land
         # tutor or the land drop would choose).

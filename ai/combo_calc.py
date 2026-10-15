@@ -746,19 +746,31 @@ def _has_storm_finisher(card, me) -> bool:
     )
     if has_direct:
         return True
-    has_tutor = any(
-        'tutor' in getattr(c.template, 'tags', set())
-        for c in me.hand if c.instance_id != card.instance_id
-    )
-    if not has_tutor:
+    tutors = [c for c in me.hand if c.instance_id != card.instance_id
+              and 'tutor' in getattr(c.template, 'tags', set())]
+    return any(_is_storm_payoff(c) for t in tutors for c in _tutor_pool(t, me))
+
+
+def _is_storm_payoff(c) -> bool:
+    """A STORM-keyword card or a token-spawning finisher."""
+    from engine.cards import Keyword as Kw
+    tmpl = getattr(c, 'template', None)
+    if tmpl is None:
         return False
-    sb = getattr(me, 'sideboard', None) or []
-    for c in list(sb) + list(me.library):
-        if Kw.STORM in getattr(c.template, 'keywords', set()):
-            return True
-        if getattr(c.template, 'has_scaling_token_finisher', False):
-            return True
-    return False
+    return (Kw.STORM in getattr(tmpl, 'keywords', set())
+            or getattr(tmpl, 'has_scaling_token_finisher', False))
+
+
+def _tutor_pool(tutor, me) -> list:
+    """The cards a tutor reaches. One that brings a card from outside the
+    game reaches its owner's sideboard and nothing else (CR 400.11a,
+    `effect_executors.brings_from_outside_the_game`); any other reaches the
+    library and, as before, the sideboard."""
+    from engine.effect_executors import brings_from_outside_the_game
+    sb = list(getattr(me, 'sideboard', None) or [])
+    if brings_from_outside_the_game(getattr(tutor, 'template', None)):
+        return sb
+    return sb + list(me.library)
 
 
 def _tutor_has_payoff_access(card, me) -> bool:
@@ -776,22 +788,11 @@ def _tutor_has_payoff_access(card, me) -> bool:
     STORM keyword OR `create … tokens` + `for each` (the printed
     Empty-the-Warrens template).
     """
-    from engine.cards import Keyword as Kw
     if 'tutor' not in getattr(card.template, 'tags', set()):
         return False
-    sb = getattr(me, 'sideboard', None) or []
-    for c in list(sb) + list(me.library):
-        # Defensive: in test scaffolds (and real scenarios such as a
-        # transformed face-down library), an entry may be missing its
-        # template — skip those rather than crash.
-        tmpl = getattr(c, 'template', None)
-        if tmpl is None:
-            continue
-        if Kw.STORM in getattr(tmpl, 'keywords', set()):
-            return True
-        if getattr(tmpl, 'has_scaling_token_finisher', False):
-            return True
-    return False
+    # Defensive: in test scaffolds (and real scenarios such as a transformed
+    # face-down library), an entry may be missing its template -- skipped.
+    return any(_is_storm_payoff(c) for c in _tutor_pool(card, me))
 
 
 def unbounded_mana_sink_reachable(me) -> bool:

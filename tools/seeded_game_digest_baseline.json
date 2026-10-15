@@ -1,11 +1,11 @@
 {
-  "combined": "092e71bf0ad86a287ba8ce82ff4398d83be75bbcd676e5c1b67e034a2afed4cd",
+  "combined": "731c5df7e5886ce323f4ae542eaef5ccc68fb9d98f8a478dcbf7789f1804b433",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
-      "lines": 820,
-      "sha256": "160a909488472345f66f1ac3a91049ed241a12acb3c81468c508dd81ae073f31",
-      "turns": 8,
+      "lines": 768,
+      "sha256": "8d7a803f29c4cc57819f3bacb5d32436dde23447e65ed9fcce67dbdbda3b7ddf",
+      "turns": 7,
       "winner": "Ruby Storm"
     },
     "bo1|Amulet Titan|Eldrazi Tron|54500": {
@@ -93,22 +93,28 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 695,
-      "sha256": "4e519af463a92039aad63d3231974e3d2d136334378ba181f98fb0da3d197a96",
+      "lines": 694,
+      "sha256": "fe6f3aecf2928e50c26f6d5c1d1f8b167b0e5d6c0dfc854e8f2fbd83079d2a89",
       "turns": 8,
       "winner": "Ruby Storm"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
-      "lines": 733,
-      "sha256": "6cc9d336ae651fa460b3835cb46e353065f44a21a4ae423adda9f5454f817523",
+      "lines": 731,
+      "sha256": "4ab1c797bb3e44471dc5c9944807900a19576b317573172dd35e7777670a2bee",
       "turns": 8,
       "winner": "Ruby Storm"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g2": {
-      "lines": 805,
-      "sha256": "b9c252940b9303164d67b3c38934b2ad6b967f7276808ad45a481619548c6dd6",
-      "turns": 9,
-      "winner": "Ruby Storm"
+      "lines": 995,
+      "sha256": "868232e9c4dc494e560297b5ed2ae51f629068acc8dcb14c96d226d6638718c7",
+      "turns": 12,
+      "winner": "Azorius Control"
+    },
+    "bo3|Azorius Control|Ruby Storm|58500|g3": {
+      "lines": 1008,
+      "sha256": "b5e0def50e7e4c137b052adc8f853a88c9bbd0bf560381f4cfe647bfcb25fa12",
+      "turns": 13,
+      "winner": "Azorius Control"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {
       "lines": 636,
@@ -159,5 +165,5 @@
       "winner": "Living End"
     }
   },
-  "n_games": 26
+  "n_games": 27
 }

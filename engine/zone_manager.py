@@ -519,6 +519,10 @@ class ZoneManager:
             "battlefield": player.battlefield,
             "graveyard": player.graveyard,
             "exile": player.exile,
+            # Outside the game is not a zone (CR 400.11); the cards a player
+            # owns outside it are its sideboard (CR 400.11a), from where an
+            # effect brings one into the game (CR 400.11b).
+            "sideboard": player.sideboard,
         }
         return zone_map.get(zone_name, [])
 

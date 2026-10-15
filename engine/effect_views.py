@@ -473,6 +473,26 @@ def _land_from_hand(s) -> bool:
     return land_from_hand(s)
 
 
+def _outside_the_game_host(h: AbilityEffects) -> bool:
+    """A card brought from outside the game (CR 400.11a-b, unit OG): "you
+    may play a card you own from outside the game this turn", or "[you may]
+    reveal a <description> card you own from outside the game and put it
+    into your hand" -- the move reading the card the reveal chose."""
+    from .effect_executors import (outside_permit, reveal_supported,
+                                   revealed_to_hand)
+    if not _strict_host(h, frozenset({Verb.CONTINUOUS, Verb.REVEAL,
+                                      Verb.MOVE}), durations=True):
+        return False
+    specs = list(iter_specs(h.specs))
+    if len(specs) == 1:
+        return outside_permit(specs[0])
+    if len(specs) == 2:
+        reveal, move = specs
+        return (reveal_supported(reveal) and revealed_to_hand(move)
+                and move.ref.index == reveal.seq)
+    return False
+
+
 def strict_card_flow(h: AbilityEffects) -> bool:
     """The switched card-flow verbs (`_CARD_FLOW_SWITCHED`), and the
     impulse shape: an EXILE of the top of the controller's library or of
@@ -487,7 +507,8 @@ def strict_card_flow(h: AbilityEffects) -> bool:
     card, you gain 3 life.", "If you put a Cave onto the battlefield this
     way, you gain 4 life."); a life gain rides with nothing else here.
     And an enter trigger whose one instruction adds mana (unit EM)."""
-    if _same_name_exile(h) or _enter_trigger_mana(h):
+    if _same_name_exile(h) or _enter_trigger_mana(h) \
+            or _outside_the_game_host(h):
         return True
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS
                         | {Verb.GAIN_LIFE}, durations=True, conditions=True):
@@ -2806,8 +2827,15 @@ _row("has_draw_effect", F, "B", "E3", lambda e, k=None, t=None:
      _has_verb(e, Verb.DRAW), default=False)
 _row("has_discard_effect", F, "B", "E3", lambda e, k=None, t=None:
      _has_verb(e, Verb.DISCARD), default=False)
+# A tutor searches a library or brings a card from outside the game -- an
+# instruction reading the cards its player owns there, its sideboard (CR
+# 400.11a; unit OG): the legacy reading's two phrases.
+_from_outside_the_game = _any_spec(
+    lambda h, s: getattr(s.filter, "zone", None) == "sideboard",
+    "_from_outside_the_game")
 _row("is_tutor", F, "B", "E3", lambda e, k=None, t=None:
-     _has_verb(e, Verb.SEARCH), default=False)
+     _has_verb(e, Verb.SEARCH) or _from_outside_the_game(e, k, t),
+     default=False)
 _row("has_surveil", F, "B", "E3", lambda e, k=None, t=None:
      _has_verb(e, Verb.SURVEIL), default=False)
 _row("has_scry", F, "B", "E3", lambda e, k=None, t=None:

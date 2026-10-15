@@ -537,6 +537,30 @@ class CastManager:
         return None
 
     @staticmethod
+    def _audit_from_outside_the_game(game, player_idx: int, card) -> None:
+        """CR 400.11a-b, 601.2a, restated from raw fields: a card cast from
+        outside the game is one its caster owns in its sideboard, and a
+        stored permission over the sideboard names it with a play left.
+        Observation only."""
+        from .rules_audit import enabled as _on, check as _check
+        if not _on():
+            return
+        from .effect_model import ModKind
+        named = any(
+            e.modification.kind is ModKind.PERMIT
+            and dict(e.modification.data).get("zone") == "sideboard"
+            and card.instance_id in (dict(e.modification.data).get("objects")
+                                     or ())
+            and dict(e.modification.data).get("plays", 1) >= 1
+            for e in game.continuous_effects._rule_effects)
+        _check("400.11a/play_from_outside_the_game",
+               card.owner == player_idx
+               and card in game.players[player_idx].sideboard and named,
+               f"{card.name} cast from outside the game by P{player_idx + 1}"
+               f" (owner P{card.owner + 1}) without a permission naming it",
+               game=game)
+
+    @staticmethod
     def _audit_target_discount(game, player_idx: int, template, targets,
                                printed_generic: int, paid_generic: int):
         """CR 601.2c, 601.2f, restated from raw fields: a spell whose chosen
@@ -645,8 +669,12 @@ class CastManager:
         # "you may play those cards"; a warped card's owner may cast it
         # from exile on a later turn, CR 702.185a): the cast then meets
         # every normal check below -- timing, cost, targets.
-        exile_permitted = (card.zone == "exile"
-                           and card in game.players[card.owner].exile
+        # A card its owner owns outside the game -- its sideboard (CR
+        # 400.11a) -- is castable the same way while a permission names it
+        # ("you may play a card you own from outside the game this turn").
+        exile_permitted = (card.zone in ("exile", "sideboard")
+                           and card in getattr(game.players[card.owner],
+                                               card.zone)
                            and rules_query.play_permitted(game, player_idx,
                                                           card))
         if card.zone != "hand" and card.zone != "graveyard" \
@@ -2382,6 +2410,13 @@ class CastManager:
             # CR 400.7: the spell is a new object; a permission that named
             # the exiled card no longer names it.
             game.continuous_effects.forget_object(card.instance_id)
+        elif card in game.players[card.owner].sideboard:
+            # A card brought into the game from outside it (CR 400.11b),
+            # cast under the permission that names it, which the play
+            # spends ("you may play a card ...": one play).
+            CastManager._audit_from_outside_the_game(game, player_idx, card)
+            game.players[card.owner].sideboard.remove(card)
+            game.continuous_effects.spend_play(card.instance_id)
         elif card in player.hand:
             player.hand.remove(card)
         elif card in player.graveyard:

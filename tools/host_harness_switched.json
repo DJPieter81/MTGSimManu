@@ -13609,6 +13609,11 @@
    "SPELL:0:1"
   ],
   [
+   "dispatched",
+   "Wish",
+   "SPELL:0:0"
+  ],
+  [
    "planeswalker_manager:UNCLASSIFIED",
    "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
    "LOYALTY:1:0"
@@ -13617,6 +13622,11 @@
    "planeswalker_manager:UNCLASSIFIED",
    "Elspeth, Sun's Champion",
    "LOYALTY:0:1"
+  ],
+  [
+   "planeswalker_manager:UNCLASSIFIED",
+   "Vivien, Arkbow Ranger",
+   "LOYALTY:0:2"
   ]
  ],
  "seeds": [

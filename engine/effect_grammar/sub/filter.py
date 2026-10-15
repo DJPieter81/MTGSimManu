@@ -350,6 +350,10 @@ _ZONE_RE = re.compile(
     r"(?P<more>(?:,? (?:and/or|or|and) (?:(?:%s) )?(?:%s|exile))+)?)(?![\w'])"
     % (_POSS, _ZONE_WORD, _POSS, _ZONE_WORD))
 _BATTLEFIELD_RE = re.compile(r"on the battlefield(?![\w'])")
+# "from outside the game": outside the game is not a zone (CR 400.11); in a
+# sanctioned game the cards a player owns outside the game are its sideboard
+# (CR 400.11a, 100.4a), the list a description of them reads.
+_OUTSIDE_RE = re.compile(r"from outside the game(?![\w'])")
 _AMONG_RE = re.compile(
     r"from among (?P<among>them|those cards|the revealed cards"
     r"|the exiled cards|the milled cards|the chosen cards"
@@ -736,6 +740,9 @@ def _filter_rel(t: str, zone: str, operand: Any = None) -> _Rel:
         elif _BATTLEFIELD_RE.match(t, pos):
             m = _BATTLEFIELD_RE.match(t, pos)
             zone_phrase = "battlefield"
+        elif _OUTSIDE_RE.match(t, pos):
+            m = _OUTSIDE_RE.match(t, pos)
+            zone_phrase = "sideboard"
         elif _AMONG_RE.match(t, pos):
             m = _AMONG_RE.match(t, pos)
             zone_phrase = zone

@@ -286,14 +286,21 @@ def permit_cast_as_flash(player: int, types, duration: Duration,
 
 
 def permit_play(player: int, objects, action: str, duration: Duration,
-                source_id: int = 0, from_turn: Optional[int] = None) -> Effect:
+                source_id: int = 0, from_turn: Optional[int] = None,
+                zone: str = "exile", plays: Optional[int] = None) -> Effect:
     """"You may play / cast those cards" (CR 305.1, 601.2a): `player` may
     play (lands and spells) or cast (spells only) the objects -- instance
-    ids, in exile -- for `duration`; from game turn `from_turn` on when set
-    (warp's "after the current turn has ended", CR 702.185a)."""
-    data = (("objects", tuple(sorted(objects))), ("zone", "exile"))
+    ids, in `zone` (exile; or the sideboard, the cards its player owns
+    outside the game, CR 400.11a) -- for `duration`; from game turn
+    `from_turn` on when set (warp's "after the current turn has ended", CR
+    702.185a). `plays` bounds how many of the objects may be played under
+    it ("you may play a card ...": one); the permission ends when they are
+    spent (`ContinuousEffectsManager.spend_play`)."""
+    data = (("objects", tuple(sorted(objects))), ("zone", zone))
     if from_turn is not None:
         data += (("from_turn", from_turn),)
+    if plays is not None:
+        data += (("plays", plays),)
     return Effect(Selector(SelectorKind.PLAYER, player=player),
                   Modification(ModKind.PERMIT, action=action, data=data),
                   duration, OriginKind.RESOLVED, source_id=source_id,

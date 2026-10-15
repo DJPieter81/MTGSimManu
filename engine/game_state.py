@@ -188,8 +188,10 @@ class GameState:
     def get_card_by_id(self, instance_id: int) -> Optional[CardInstance]:
         """Find a card instance by its unique ID across all zones."""
         for player in self.players:
+            # The sideboard last: the cards its player owns outside the game
+            # (CR 400.11a), found when an effect named one there.
             for zone in [player.battlefield, player.hand, player.graveyard,
-                         player.exile, player.library]:
+                         player.exile, player.library, player.sideboard]:
                 for card in zone:
                     if card.instance_id == instance_id:
                         return card

@@ -114,14 +114,21 @@ def permitted_cards(game: "GameState", player_idx: int) -> list:
     own checks (`can_cast`, the land play). An exiled card stays in its
     OWNER's exile (CR 108.3, 400.3) -- "exile the top card of that
     player's library ... you may cast that card" -- so every player's
-    exile is read."""
-    if not any(p.exile for p in game.players):
+    exile is read. A card the player owns outside the game -- its
+    sideboard (CR 400.11a) -- is read when a permission names it ("you may
+    play a card you own from outside the game this turn")."""
+    outside = game.continuous_effects.permits_zone("sideboard")
+    if not outside and not any(p.exile for p in game.players):
         return []
     permitted = permitted_objects(game, player_idx)
     if not permitted:
         return []
-    return [c for p in game.players for c in p.exile
-            if play_permitted(game, player_idx, c, permitted)]
+    cards = [c for p in game.players for c in p.exile
+             if play_permitted(game, player_idx, c, permitted)]
+    if outside:
+        cards += [c for c in game.players[player_idx].sideboard
+                  if play_permitted(game, player_idx, c, permitted)]
+    return cards
 
 
 def permission_ends_this_turn(game: "GameState", player_idx: int,
