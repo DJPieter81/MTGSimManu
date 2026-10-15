@@ -124,6 +124,18 @@ def test_one_play_spends_the_permission(card_db):
     assert not game.can_cast(0, sb_empty), "a card: one play"
 
 
+def test_the_cards_a_one_play_permission_names_share_its_play(card_db):
+    """Playing either spends the play the other needs: the AI's plan reads
+    them as alternatives (`rules_query.share_one_play`)."""
+    from engine.rules_query import share_one_play
+    game, sb_shot, sb_empty, _ = _wished(card_db)
+    assert share_one_play(game, 0, sb_shot, sb_empty)
+    in_hand = _add(game, card_db, "Grapeshot", 0, "hand")
+    assert not share_one_play(game, 0, sb_shot, in_hand), "a hand card needs no play"
+    game.cleanup_step()
+    assert not share_one_play(game, 0, sb_shot, sb_empty), "no permission left"
+
+
 def test_the_permission_ends_with_the_turn(card_db):
     game, sb_shot, _, _ = _wished(card_db)
     game.cleanup_step()

@@ -148,6 +148,24 @@ def permission_ends_this_turn(game: "GameState", player_idx: int,
                                 for e in naming)
 
 
+def share_one_play(game: "GameState", player_idx: int, a, b) -> bool:
+    """Playing one of these objects spends the play the other needs:
+    neither is in a hand, and every permission that lets this player play
+    `a` names `b` too and allows a single play of the objects it names
+    ("you may play a card you own from outside the game this turn", CR
+    400.11a; `ContinuousEffectsManager.spend_play`)."""
+    from engine.effect_model import ModKind
+    if a is b or a.zone == "hand" or b.zone == "hand":
+        return False
+    naming = [e for e in _covering(game, player_idx, ModKind.PERMIT,
+                                   ("play", "cast"))
+              if a.instance_id in (e.modification.get("objects") or ())]
+    return bool(naming) and all(
+        e.modification.get("plays") == 1   # "a card": one play
+        and b.instance_id in (e.modification.get("objects") or ())
+        for e in naming)
+
+
 def cast_as_though_flash(game: "GameState", player_idx: int, template) -> bool:
     """This player may cast this spell as though it had flash (CR 702.8d)."""
     from engine.effect_model import ModKind

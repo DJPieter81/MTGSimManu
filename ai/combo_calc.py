@@ -1054,6 +1054,16 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                 return a.combo_value + (a.combo_value / opp_life)
             return a.combo_value
 
+        # The turn's finishers together (CR 702.40a; unit FS): every
+        # closer copies itself once per spell before it, so the casts the
+        # mana pays sum their damage. When that sum is lethal the sequence
+        # fires, its first cast first (`ai.finisher_reach`).
+        from ai import finisher_reach as _reach
+        reached, first = _reach.reach_now(game, player_idx, snap.my_mana)
+        if deals_damage and reached >= opp_life and first is card:
+            return a.combo_value + (a.combo_value / opp_life)
+        own_cost = _reach.finisher_cost(game, player_idx, card)
+
         # Count CHAIN-EXTENDING fuel.  Two categories qualify:
         #   1. Plain chain fuel (`is_chain_fuel`): cards tagged
         #      ritual / cantrip / draw / card_advantage.  Casting one
@@ -1077,6 +1087,11 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # it is no fuel either: the hold would wait for nothing and the
         # turn would pass with the finisher in hand.
         from ai.predicates import is_chain_fuel
+        # A play is fuel only while it leaves what this finisher's cast
+        # still needs after it -- the mana (CR 106.4, 500.4) and the one
+        # play a permission allows them both (CR 400.11a; unit FS): one
+        # that spends either strands the finisher, so holding for it
+        # waits for nothing.
         total_fuel = sum(
             1 for c in me.hand
             if c.instance_id != card.instance_id
@@ -1084,6 +1099,8 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and (is_chain_fuel(c) or _tutor_has_payoff_access(c, me))
             and not cast_is_deferred(c, snap, game, player_idx)
+            and _reach.keeps_finisher(game, player_idx, c, own_cost,
+                                      snap.my_mana, finisher=card)
         )
         if total_fuel > 0:
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
@@ -1159,6 +1176,14 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # exactly kill.  See test_storm_tutor_lethal_fires.py.
         if storm + 2 >= opp_life:
             return a.combo_value  # tutor reach is lethal — fire
+        # The turn's finishers together (CR 702.40a; unit FS): this tutor
+        # fires first when the sequence the mana pays is lethal and starts
+        # with it.
+        from ai import finisher_reach as _reach
+        reached, first = _reach.reach_now(game, player_idx, snap.my_mana)
+        if reached >= opp_life and first is card:
+            return a.combo_value
+        own_cost = _reach.finisher_cost(game, player_idx, card)
         # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
         # tagged ritual / cantrip / draw / card_advantage.  Cards
         # without those tags (creatures like Ral, random filler)
@@ -1178,6 +1203,8 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             and 'tutor' not in getattr(c.template, 'tags', set())
             and is_chain_fuel(c)
             and not cast_is_deferred(c, snap, game, player_idx)
+            and _reach.keeps_finisher(game, player_idx, c, own_cost,
+                                      snap.my_mana, finisher=card)
         )
         if non_tutor_fuel > 0:
             return -non_tutor_fuel / opp_life * a.combo_value
@@ -1197,23 +1224,32 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # progress" behaviour that test_wish_fires_when_fuel_depleted
         # pins at storm = 8 (there storm > 0 → develop unreachable →
         # fire).
+        #
+        # A tutor whose closer the mana cannot follow deals nothing this
+        # turn (CR 106.4, 500.4; unit FS) -- and a card played from
+        # outside the game is played this turn or never (CR 400.11a): it
+        # is not cashed but held for a turn whose mana pays both, the
+        # developed line being its own.
+        pays_whole = _reach.pays(own_cost, snap.my_mana)
+        # +2 spells: the tutor + the fetched payoff.
+        fire_now = storm + 2 if pays_whole else 0
         develop_possible = (
-            (storm + 2) < opp_life     # not already lethal now
-            and storm == 0             # nothing sunk into this turn's chain
+            fire_now < opp_life        # not already lethal now
+            # nothing sunk into this turn's chain, or nothing to cash
+            and (storm == 0 or not pays_whole)
             and not snap.am_dead_next  # we survive to develop
         )
         # Only scan the library when developing could still matter; a
         # larger line needs chain fuel left to draw.  Guard against any
         # None/blank library entry so the scan is robust.
-        line_can_grow = develop_possible and any(
+        line_can_grow = develop_possible and (not pays_whole or any(
             is_chain_fuel(c) for c in me.library
             if c is not None and c.template is not None
             and not c.template.is_land
-            and Kw.STORM not in getattr(c.template, 'keywords', set()))
+            and Kw.STORM not in getattr(c.template, 'keywords', set())))
         develop_reach = 1.0 if line_can_grow else 0.0
-        # +2 spells: the tutor + the fetched payoff.
         return scarce_payoff_commit_ev(
-            storm + 2, opp_life, a.combo_value, develop_reach)
+            fire_now, opp_life, a.combo_value, develop_reach)
 
     # ═══ NON-STORM PAYOFF: hold until resources ready ═══
     if role == 'payoff' and Kw.CASCADE not in getattr(card.template, 'keywords', set()):
