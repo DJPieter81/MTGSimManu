@@ -67,6 +67,9 @@ def _fight(game, attacker, blocker):
     cm = CombatManager()
     cm.declare_attackers(game, [attacker], active_player=1)
     cm.declare_blockers(game, {attacker.instance_id: [blocker.instance_id]})
+    # CR 509.4: the runner offers both players priority after blockers
+    # (`GameRunner._combat_pump_window`) before combat damage.
+    game.after_blockers_offered.update(range(len(game.players)))
     cm.resolve_combat_damage(game)
     game.check_state_based_actions()
 
@@ -244,6 +247,7 @@ def test_combat_audit_expects_no_damage_from_an_attacker_whose_planeswalker_left
     cm.declare_attackers(game, [a], active_player=1,
                          attack_targets={a.instance_id: pw})
     cm.declare_blockers(game, {})
+    game.after_blockers_offered.update(range(len(game.players)))  # CR 509.4
     game.players[0].battlefield.remove(pw)
     pw.zone = "exile"
     game.players[0].exile.append(pw)

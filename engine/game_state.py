@@ -94,6 +94,10 @@ class GameState:
             _p._game = self
         self.callbacks: GameCallbacks = callbacks or DefaultCallbacks()
         self.stack = Stack()
+        # The players offered priority after this combat's blockers were
+        # declared (CR 509.4; `GameRunner._combat_pump_window`), read by
+        # the combat-damage audit. Emptied as blockers are declared.
+        self.after_blockers_offered: set = set()
         self.active_player: int = 0
         self.priority_player: int = 0
         self.current_phase: Phase = Phase.UNTAP

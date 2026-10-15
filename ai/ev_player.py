@@ -3704,6 +3704,25 @@ class EVPlayer:
         b_pow = blocker.power or 0
         b_tou = blocker.toughness or 0
 
+        # The blocker's own pump (`ai.combat_pump.fight_plan`, CR 509.4,
+        # 602.2): the fewest activations its controller can pay for that
+        # change this fight. The block is fought at those stats; the cards
+        # it spends are charged at a card's clock value
+        # (`card_clock_impact`, the turns unit of this score) and its life
+        # payment comes off life. A counter it keeps stays on a survivor.
+        from ai.clock import card_clock_impact
+        from ai.combat_pump import fight_plan, pump_cost, pump_step
+        plan = fight_plan(game, self.player_idx, blocker, attacker)
+        pump_cards = pump_life = kept = 0
+        if plan is not None:
+            ability, steps = plan
+            step = pump_step(ability)
+            b_pow += steps * step.power
+            b_tou += steps * step.toughness
+            cost = pump_cost(ability, steps)
+            pump_cards, pump_life = cost['cards'], cost['life']
+            kept = steps * step.power if step.lasting else 0
+
         b_kills_attacker = (b_pow >= a_tou) or (
             Keyword.DEATHTOUCH in blocker.keywords
         )
@@ -3715,13 +3734,14 @@ class EVPlayer:
         has_trample = Keyword.TRAMPLE in attacker.keywords
         damage_through = max(0, a_pow - b_tou) if has_trample else 0
 
-        my_life_after_block = my_life - damage_through
+        my_life_after_block = my_life - damage_through - pump_life
         # CR 301.5c: a dead creature's Equipment stays and re-attaches, so
         # only the creature's OWN power leaves its side's board.
         a_own = a_pow - attacker.equipment_power_bonus()
-        b_own = b_pow - blocker.equipment_power_bonus()
+        b_own = (blocker.power or 0) - blocker.equipment_power_bonus()
         opp_power_after_block = opp_power - (a_own if b_kills_attacker else 0)
-        my_power_after_block = my_power - (b_own if a_kills_blocker else 0)
+        my_power_after_block = (my_power - b_own if a_kills_blocker
+                                else my_power + kept)
         if a_kills_blocker:
             # What the dead blocker gives up BEYOND its power — mana
             # production, unbounded-engine membership, activated
@@ -3751,7 +3771,7 @@ class EVPlayer:
             opp_power_after=opp_power_after_no_block,
             my_power_after=my_power_after_no_block,
         )
-        return block - no_block
+        return block - no_block - pump_cards * card_clock_impact(snap)
 
     def _log_block_assignments(self, game, blocks, id_to_attacker,
                                 id_to_blocker, my_power_total,
@@ -3890,8 +3910,85 @@ class EVPlayer:
                 f"combat trick on {best[1] and game.get_card_by_id(best[1][0]).name}")
         return best
 
+    def decide_combat_pump(self, game, combat):
+        """After blockers are declared (CR 509.4), one activation of a
+        creature's own pump (`ai.combat_pump`) toward the plan whose
+        projected post-combat position beats making none -- or None.
+
+        Each creature of this player in the declared combat, attacking or
+        blocking, is projected with every number of activations of each of
+        its own pumps the engine lets it activate now (`ActivationManager.
+        can_activate`) and its controller can pay for (`affordable_steps`);
+        the cost comes out of the same snapshot (cards from hand, life,
+        mana) and the boards are priced with `position_value`, as a combat
+        trick is. A plan must change the fight -- a creature that dies or
+        survives, or a player who loses this combat; damage to a player who
+        lives through it is not a fight changed, and a pump that buys only
+        that spends its cost. One activation at a time: the window asks
+        again after each resolves, from the board it left."""
+        from ai.clock import position_value
+        from ai.combat_pump import (
+            PumpStep, affordable_steps, pump_cost, pump_step, self_pumps)
+        from engine.activation import ActivationManager
+        assignments = [a for a in getattr(combat, 'assignments', [])
+                       if a.attacker.zone == 'battlefield']
+        mine = []
+        for a in assignments:
+            if a.attacker.controller == self.player_idx:
+                mine.append(a.attacker)
+            for bid in a.blocker_ids:
+                b = game.get_card_by_id(bid)
+                if b is not None and b.zone == 'battlefield' \
+                        and b.controller == self.player_idx:
+                    mine.append(b)
+        pumps = [(perm, ability) for perm in mine
+                 for ability in self_pumps(perm)
+                 if ActivationManager.can_activate(
+                     game, self.player_idx, perm, ability)]
+        if not pumps:
+            return None
+        snap = snapshot_from_game(game, self.player_idx)
+        base = self._post_combat_snapshot(game, snap, assignments, None, None)
+        baseline = position_value(base)
+
+        def _changes_the_fight(fight) -> bool:
+            return (fight.my_creature_count != base.my_creature_count
+                    or fight.opp_creature_count != base.opp_creature_count
+                    or (fight.my_life <= 0) != (base.my_life <= 0)
+                    or (fight.opp_life <= 0) != (base.opp_life <= 0))
+
+        best, best_gain = None, 0.0
+        for perm, ability in pumps:
+            step = pump_step(ability)
+            # Every number of activations the hand can pay for: the first
+            # is made toward the best plan, and the window asks again with
+            # it resolved.
+            for k in range(1, affordable_steps(
+                    game, self.player_idx, perm, ability) + 1):
+                total = PumpStep(step.power * k, step.toughness * k,
+                                 step.lasting)
+                # It must change the fight itself, read with the bonus for
+                # this combat only; a counter that lasts is then worth
+                # keeping too.
+                fight = self._post_combat_snapshot(
+                    game, snap, assignments, None, None,
+                    bonus={perm.instance_id: total._replace(lasting=False)})
+                if not _changes_the_fight(fight):
+                    continue
+                after = self._post_combat_snapshot(
+                    game, snap, assignments, None, None,
+                    bonus={perm.instance_id: total})
+                cost = pump_cost(ability, k)
+                after.my_hand_size -= cost['cards']
+                after.my_life -= cost['life']
+                after.my_mana = max(0, after.my_mana - cost['mana'])
+                gain = position_value(after) - baseline
+                if gain > best_gain:
+                    best, best_gain = (perm, ability), gain
+        return best
+
     def _post_combat_snapshot(self, game, snap: EVSnapshot, assignments,
-                              spell, pumped) -> EVSnapshot:
+                              spell, pumped, bonus=None) -> EVSnapshot:
         """Project the declared combat to its post-damage board (CR 510):
         unblocked power to the defending player (510.1b), ordered lethal
         assignment among blockers (510.1c; deathtouch 702.2c; trample
@@ -3913,10 +4010,55 @@ class EVPlayer:
             kwe = getattr(_K, kw.upper().replace(' ', '_'), None) if kw else None
             if kwe is not None:
                 grant.add(kwe)
+        # `bonus` ({instance_id: PumpStep}): a creature's own pumps for this
+        # combat (`ai.combat_pump`), attacker or blocker; a lasting one (a
+        # +1/+1 counter) stays on a survivor. The snapshot's "my" side is
+        # the attacker's unless this player is defending.
+        bonus = bonus or {}
+        defending = any(a.attacker.controller != self.player_idx
+                        for a in assignments)
+        atk_side, blk_side = ('opp', 'my') if defending else ('my', 'opp')
+
+        def _bp(c) -> int:
+            s = bonus.get(c.instance_id)
+            return (c.power or 0) + (s.power if s else 0)
+
+        def _bt(c) -> int:
+            s = bonus.get(c.instance_id)
+            return (c.toughness or 0) + (s.toughness if s else 0)
+
+        def _lose(side, c, power, toughness):
+            setattr(after, f'{side}_power',
+                    max(0, getattr(after, f'{side}_power') - power))
+            setattr(after, f'{side}_toughness',
+                    max(0, getattr(after, f'{side}_toughness') - toughness))
+            setattr(after, f'{side}_creature_count',
+                    max(0, getattr(after, f'{side}_creature_count') - 1))
+            if set(c.keywords) & _EVASION:
+                setattr(after, f'{side}_evasion_power',
+                        max(0, getattr(after, f'{side}_evasion_power') - power))
+            if side == 'my' and _K.LIFELINK in c.keywords:
+                after.my_lifelink_power = max(0, after.my_lifelink_power - power)
+
+        def _keep(side, c):
+            s = bonus.get(c.instance_id)
+            if s is None or not s.lasting:
+                return
+            setattr(after, f'{side}_power',
+                    getattr(after, f'{side}_power') + s.power)
+            setattr(after, f'{side}_toughness',
+                    getattr(after, f'{side}_toughness') + s.toughness)
+
+        def _hit_defender(n):
+            if defending:
+                after.my_life -= n
+            else:
+                after.opp_life -= n
+
         for a in assignments:
             atk = a.attacker
-            p = atk.power or 0
-            tough = (atk.toughness or 0) - (getattr(atk, 'damage_marked', 0) or 0)
+            p = _bp(atk)
+            tough = _bt(atk) - (getattr(atk, 'damage_marked', 0) or 0)
             kws = set(atk.keywords)
             if spell is not None and _K.PROWESS in kws:
                 p += 1
@@ -3928,15 +4070,16 @@ class EVPlayer:
             blockers = [b for b in (game.get_card_by_id(bid) for bid in a.blocker_ids)
                         if b is not None and b.zone == 'battlefield']
             if not blockers:
-                after.opp_life -= max(0, p)
+                _hit_defender(max(0, p))
+                _keep(atk_side, atk)
                 continue
 
             def _deadly(b) -> bool:
-                return (b.power or 0) > 0 and _K.DEATHTOUCH in b.keywords
+                return _bp(b) > 0 and _K.DEATHTOUCH in b.keywords
 
             atk_first = bool(kws & _FIRST)
             fs_blockers = [b for b in blockers if set(b.keywords) & _FIRST]
-            back_first = sum((b.power or 0) for b in fs_blockers)
+            back_first = sum(_bp(b) for b in fs_blockers)
             dead: list = []
             if (not atk_first) and (back_first >= tough > 0
                                     or any(_deadly(b) for b in fs_blockers)):
@@ -3946,35 +4089,29 @@ class EVPlayer:
                 remaining = max(0, p)
                 for b in blockers:
                     need = (1 if _K.DEATHTOUCH in kws else max(
-                        0, (b.toughness or 0) - (getattr(b, 'damage_marked', 0) or 0)))
+                        0, _bt(b) - (getattr(b, 'damage_marked', 0) or 0)))
                     if remaining >= need:
                         dead.append(b)
                         remaining -= need
                     else:
                         break
                 if _K.TRAMPLE in kws and len(dead) == len(blockers) and remaining > 0:
-                    after.opp_life -= remaining
+                    _hit_defender(remaining)
                 survivors = [b for b in blockers if b not in dead]
                 dealing = survivors if atk_first else blockers
-                back = sum((b.power or 0) for b in dealing)
+                back = sum(_bp(b) for b in dealing)
                 attacker_dies = back >= tough or any(_deadly(b) for b in dealing)
 
             for b in dead:
-                bp, bt = max(0, b.power or 0), max(0, b.toughness or 0)
-                after.opp_power = max(0, after.opp_power - bp)
-                after.opp_toughness = max(0, after.opp_toughness - bt)
-                after.opp_creature_count = max(0, after.opp_creature_count - 1)
-                if set(b.keywords) & _EVASION:
-                    after.opp_evasion_power = max(0, after.opp_evasion_power - bp)
+                _lose(blk_side, b, max(0, b.power or 0), max(0, b.toughness or 0))
+            for b in blockers:
+                if b not in dead:
+                    _keep(blk_side, b)
             if attacker_dies:
-                ap, at = max(0, atk.power or 0), max(0, atk.toughness or 0)
-                after.my_power = max(0, after.my_power - ap)
-                after.my_toughness = max(0, after.my_toughness - at)
-                after.my_creature_count = max(0, after.my_creature_count - 1)
-                if set(atk.keywords) & _EVASION:
-                    after.my_evasion_power = max(0, after.my_evasion_power - ap)
-                if _K.LIFELINK in atk.keywords:
-                    after.my_lifelink_power = max(0, after.my_lifelink_power - ap)
+                _lose(atk_side, atk, max(0, atk.power or 0),
+                      max(0, atk.toughness or 0))
+            else:
+                _keep(atk_side, atk)
         return after
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:

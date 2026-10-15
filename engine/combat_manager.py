@@ -170,6 +170,7 @@ class CombatManager:
         another way (a different caller, a bug in that filter) from
         being recorded and acted on as if it were legal.
         """
+        game.after_blockers_offered = set()   # CR 509.4: a new window
         for assignment in self._assignments:
             attacker = assignment.attacker
             attacker_id = attacker.instance_id
@@ -331,6 +332,19 @@ class CombatManager:
         return (getattr(pw, 'zone', None) == 'battlefield'
                 and pw.controller == self._defending_player)
 
+    def _audit_priority_after_blockers(self, game: "GameState") -> None:
+        """CR 509.4, restated from the game's record of the window: when
+        combat damage is dealt, both players were offered priority after
+        blockers were declared. Observation only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or not self._assignments:
+            return
+        offered = getattr(game, "after_blockers_offered", set())
+        missing = sorted(set(range(len(game.players))) - set(offered))
+        _audit_check("509.4/priority_after_blockers", not missing,
+                     f"combat damage before P{[m + 1 for m in missing]} "
+                     f"held priority after blockers", game=game)
+
     def resolve_combat_damage(self, game: "GameState") -> int:
         """CR 510: Combat damage step.
 
@@ -338,6 +352,7 @@ class CombatManager:
         Returns total damage dealt to defending player.
         """
         total_player_damage = 0
+        self._audit_priority_after_blockers(game)
 
         # Combat prevention as a class (CR 509.4 / 615). Audit both shapes
         # independently of the enforcement above, then honour Fog: if any

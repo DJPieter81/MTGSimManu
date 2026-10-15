@@ -1029,6 +1029,10 @@ class GameRunner:
                                                   combat_mgr)
                         if game.game_over:
                             break
+                        self._combat_pump_window(game, ai, opponent_ai,
+                                                 combat_mgr)
+                        if game.game_over:
+                            break
 
                 elif step == TurnStep.FIRST_STRIKE_DAMAGE:
                     pass  # First-strike and regular damage are both
@@ -1358,6 +1362,61 @@ class GameRunner:
             self._resolve_stack_loop(game)
             if game.game_over:
                 return
+
+    def _combat_pump_window(self, game: GameState, active_ai: AIPlayer,
+                            defending_ai: AIPlayer, combat_mgr) -> None:
+        """CR 509.4, 602.2: after blockers are declared, the active player
+        and then the defending player hold priority before combat damage,
+        and either may activate abilities. A player holding priority is
+        asked for one of its creatures' own pumps (`decide_combat_pump`),
+        activated through the activation owner and resolved before damage.
+        After it resolves the active player receives priority again (CR
+        117.3b), and the step ends when both pass in succession (CR
+        117.4). The defending player had no window at all: a blocker's own
+        pump was never activated (docs/diagnostics/
+        2026-10-14_dimir_midrange_root_cause.md, subsystem 2).
+
+        The offer is recorded on the game for the combat-damage audit
+        (`509.4/priority_after_blockers`). A player a rule effect restricts
+        to sorcery timing (CR 101.2, 307.1) activates nothing here."""
+        from .constants import MAX_STACK_RESOLVES
+        if game.game_over or not combat_mgr.attackers:
+            return
+        players = (active_ai, defending_ai)
+        for player_ai in players:
+            game.after_blockers_offered.add(player_ai.player_idx)
+        holder, passed = 0, 0
+        # Each activation pays its cost; the bound is the stack-loop safety
+        # bound, never reached by a paying player.
+        for _ in range(MAX_STACK_RESOLVES):
+            if passed == len(players):
+                return
+            if self._activate_combat_pump(game, players[holder], combat_mgr):
+                if game.game_over:
+                    return
+                holder, passed = 0, 0               # CR 117.3b
+            else:
+                holder, passed = (holder + 1) % len(players), passed + 1
+
+    def _activate_combat_pump(self, game: GameState, player_ai: AIPlayer,
+                              combat_mgr) -> bool:
+        """One pump the player holding priority chooses, activated and
+        resolved; False when it passes."""
+        from . import rules_query
+        from .activation import ActivationManager
+        idx = player_ai.player_idx
+        decide = getattr(player_ai, 'decide_combat_pump', None)
+        if decide is None or rules_query.sorcery_speed_only(game, idx):
+            return False
+        decision = decide(game, combat_mgr)
+        if not decision:
+            return False
+        perm, ability = decision
+        if not ActivationManager.can_activate(game, idx, perm, ability) \
+                or not ActivationManager.activate(game, idx, perm, ability):
+            return False
+        self._resolve_stack_loop(game)
+        return True
 
     def _opponent_instant_window(self, game: GameState, opponent_ai: AIPlayer,
                                    active_ai: AIPlayer):
