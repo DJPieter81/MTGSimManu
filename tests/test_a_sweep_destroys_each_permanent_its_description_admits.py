@@ -228,6 +228,25 @@ def test_the_audit_is_silent_when_the_sweep_destroys_what_it_admits(
     assert not _findings(audit)
 
 
+def test_the_audit_reads_only_the_objects_there_as_the_sweep_applied(
+        card_db, audit, monkeypatch):
+    """A permanent that enters while the sweep is performed -- a token a
+    death trigger makes -- is a new object the description never admitted
+    (CR 400.7): the audit does not count it as left behind."""
+    game = _game()
+    ee = _explosives(game, card_db, charges=0)
+    _add(game, card_db, "Memnite", 1)                       # MV 0
+    real = game._permanent_destroyed
+
+    def _destroyed_then_a_token(perm):
+        real(perm)
+        _add(game, card_db, "Ornithopter", 1)               # MV 0, new
+    monkeypatch.setattr(game, "_permanent_destroyed", _destroyed_then_a_token)
+    _activate(game, ee)
+    assert any(c.name == "Ornithopter" for c in game.players[1].battlefield)
+    assert not _findings(audit)
+
+
 def test_the_audit_records_a_sweep_that_counted_without_the_last_known_counters(
         card_db, audit, monkeypatch):
     """Broken the way the defect would be: the count read off the card in

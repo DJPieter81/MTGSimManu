@@ -1857,6 +1857,13 @@ def _destroy_each(ctx: Resolution, s: EffectSpec) -> Outcome:
     covered = [c for p in players for c in ctx.game.players[p].battlefield
                if conditions.permanent_described(c, f, source=source,
                                                  bounds=bounds)]
+    # The objects on the battlefield as the instruction applies, for the
+    # audit: one that enters while it is performed (a token a death
+    # trigger makes) is a new object it never described (CR 400.7).
+    from . import rules_audit
+    before = ({(c.instance_id, c.battlefield_entry_seq)
+               for pl in ctx.game.players for c in pl.battlefield}
+              if rules_audit.enabled() else None)
     out = {}
     for perm in covered:
         if perm.zone != "battlefield" \
@@ -1869,7 +1876,7 @@ def _destroy_each(ctx: Resolution, s: EffectSpec) -> Outcome:
         ctx.game._permanent_destroyed(perm)
         _audit_destroyed(ctx, perm)
         out.setdefault(controller, []).append(h)
-    _audit_destroyed_each(ctx, f, bounds)
+    _audit_destroyed_each(ctx, f, bounds, before)
     return Outcome(bool(out), {p: tuple(v) for p, v in out.items()})
 
 
@@ -1880,10 +1887,11 @@ _RESTATED_DESCRIPTION = frozenset({"types", "not_types", "all_types",
 
 
 def _audit_destroyed_each(ctx: Resolution, f: CardFilter,
-                          bounds: tuple) -> None:
+                          bounds: tuple, before=None) -> None:
     """CR 701.8a, restated from raw fields: after "destroy each <noun>
-    [with <characteristic> <op> <value>]", no permanent that is not
-    indestructible, has a card type the description names and none it
+    [with <characteristic> <op> <value>]", no permanent that was on the
+    battlefield as it applied (`before`, the same objects, CR 400.7), is
+    not indestructible, has a card type the description names and none it
     excludes, and meets every bound is left on the battlefield. Each bound
     is re-read here -- a printed number, X, or the source's counters, from
     what it last had when it left (CR 608.2h). Observation only."""
@@ -1912,6 +1920,9 @@ def _audit_destroyed_each(ctx: Resolution, f: CardFilter,
     left = []
     for p in players:
         for perm in ctx.game.players[p].battlefield:
+            if before is not None and (
+                    perm.instance_id, perm.battlefield_entry_seq) not in before:
+                continue
             types = {t.value for t in perm.effective_card_types}
             if Keyword.INDESTRUCTIBLE in perm.keywords \
                     or (f.types and not types & f.types) \
