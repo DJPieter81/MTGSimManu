@@ -537,6 +537,47 @@ class CastManager:
         return None
 
     @staticmethod
+    def _audit_target_discount(game, player_idx: int, template, targets,
+                               printed_generic: int, paid_generic: int):
+        """CR 601.2c, 601.2f, restated from raw fields: a spell whose chosen
+        target fits its "costs {N} less to cast if it targets <description>"
+        hands payment N less generic mana (no less than none); one whose
+        targets do not fit pays it all. Restated for descriptions of
+        colours, card types and tapped / attacking / blocking state; any
+        other is not audited. Observation only."""
+        from .rules_audit import enabled as _on, check as _check
+        if not _on():
+            return
+        n, f = template.target_cost_reduction
+        keys = {k for k, _ in f.as_tuple()}
+        if not keys <= {"zone", "types", "colors", "state", "controller"}:
+            return
+        fits = False
+        for tid in targets or ():
+            obj = game.get_card_by_id(tid) if isinstance(tid, int) and tid >= 0 \
+                else None
+            if obj is None or obj.zone != f.zone:
+                continue
+            if f.controller == "you" and obj.controller != player_idx:
+                continue
+            if f.controller == "not_you" and obj.controller == player_idx:
+                continue
+            types = {t.value for t in obj.template.card_types}
+            colours = {c.value for c in obj.template.colors}
+            states = {"tapped": bool(obj.tapped),
+                      "attacking": bool(getattr(obj, "attacking", False)),
+                      "blocking": getattr(obj, "blocking", None) is not None}
+            if (not f.types or types & f.types) \
+                    and (not f.colors or colours & f.colors) \
+                    and (not f.state or any(states.get(st) for st in f.state)):
+                fits = True
+        want = max(0, printed_generic - n) if fits else printed_generic
+        _check("601.2f/target_cost_reduction", paid_generic == want,
+               f"{template.name}: targets {'fit' if fits else 'do not fit'} "
+               f"its discount; generic {paid_generic} handed to payment, "
+               f"{want} due", game=game)
+
+    @staticmethod
     def can_cast(game: "GameState", player_idx: int,
                  card: "CardInstance") -> bool:
         """Check if a player can cast a card."""
@@ -720,6 +761,8 @@ class CastManager:
         # never target itself in its source zone. Relevant for graveyard-
         # cast spells (Persist) where the card is still in the
         # graveyard list at can_cast time.
+        # The requirements a target-conditional discount reads (CR 601.2c).
+        discount_requirements = None
         if template.is_instant or template.is_sorcery:
             from .target_solver import (has_legal_target_for_spell,
                                         parse as _parse_targets)
@@ -731,6 +774,7 @@ class CastManager:
                     x_ceiling=CastManager.affordable_x(game, player_idx, template),
                     source=card):
                 return False
+            discount_requirements = requirements
 
         # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
         untapped_lands = player.untapped_mana_sources
@@ -784,6 +828,14 @@ class CastManager:
         own_reduction = self_cost_reduction(game, player_idx, template)
         if own_reduction > 0:
             effective_cmc = max(0, effective_cmc - own_reduction)
+        # A discount for a target the spell may choose (CR 601.2c, 601.2f):
+        # castable when the discounted cost is payable with a fitting
+        # legal target to choose.
+        if template.target_cost_reduction and discount_requirements:
+            from .oracle_resolver import best_target_cost_reduction
+            effective_cmc = max(0, effective_cmc - best_target_cost_reduction(
+                game, player_idx, template, discount_requirements,
+                source=card))
         # Affinity for artifacts
         if Keyword.AFFINITY in template.keywords:
             artifact_count = sum(
@@ -2274,6 +2326,22 @@ class CastManager:
                                     f"{template.name}: kicked x{kick_count} but the "
                                     f"paid cost is {_base_cost.cmc}, not base+kicker",
                                     game=game)
+                        # A discount for a chosen target (CR 601.2c, 601.2f):
+                        # the cost handed to payment is the printed cost less
+                        # what the targets earn (`target_cost_reduction`).
+                        if template.target_cost_reduction:
+                            from .oracle_resolver import target_cost_reduction
+                            _printed_generic = _base_cost.generic
+                            _td = target_cost_reduction(
+                                game, player_idx, template, targets)
+                            if _td:
+                                import dataclasses as _dc
+                                _base_cost = _dc.replace(
+                                    _base_cost,
+                                    generic=max(0, _base_cost.generic - _td))
+                            CastManager._audit_target_discount(
+                                game, player_idx, template, targets,
+                                _printed_generic, _base_cost.generic)
                         # Phyrexian mana (CR 107.4f): 2 life instead of one
                         # mana of the pip's colour.  Waive the FEWEST pips
                         # that make the rest payable — chosen by the same

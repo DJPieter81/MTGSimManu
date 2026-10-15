@@ -3099,6 +3099,10 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "has_stax_ability": _STATIC, "has_pithing_needle_lock": _STATIC,
     "has_spell_chain_hate": _STATIC,
     "draw_limit": _STATIC, "prevents_graveyard_etb": _REPLACEMENT,
+    "target_cost_reduction": ("cost determination (CR 601.2c, 601.2f): a "
+                              "discount the chosen target earns, its "
+                              "description typed by the filter leaf; "
+                              "the grammar does not type the sentence"),
     "draw_replacement": _REPLACEMENT,
     "prevents_graveyard_casting": _STATIC,
     "exiles_cards_bound_for_graveyard": _REPLACEMENT,

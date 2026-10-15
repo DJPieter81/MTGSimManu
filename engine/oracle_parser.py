@@ -13,7 +13,7 @@ This replaces the hardcoded data tables in game_state.py
 """
 from __future__ import annotations
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from engine.oracle_clauses import split_abilities, split_clauses
 
@@ -539,6 +539,39 @@ def parse_self_cost_reduction(oracle: str) -> Tuple[int, str]:
         if pattern.match(unit_phrase):
             return amount, unit
     return 0, ''
+
+
+_TARGET_COST_REDUCTION_RE = re.compile(
+    r"\bthis spell costs \{(\d+)\} less to cast if it targets ([^.]+)\.")
+
+
+def parse_target_cost_reduction(oracle: str) -> Optional[Tuple[int, Any]]:
+    """Parse "This spell costs {N} less to cast if it targets <description>"
+    (CR 601.2c, 601.2f: the targets are chosen before the cost is
+    determined, so the discount reads them).
+
+    Returns ``(N, CardFilter)`` -- the description typed by the effect
+    grammar's filter leaf, one table of descriptions -- or None when the
+    card prints no such reduction or its description is one the
+    description owner (`effect_conditions`) cannot read: refused, never
+    half-applied. Consumed at DB load into
+    ``CardTemplate.target_cost_reduction``."""
+    if not oracle or 'less to cast if it targets' not in oracle.lower():
+        return None
+    m = _TARGET_COST_REDUCTION_RE.search(strip_reminder_text(oracle).lower())
+    if not m:
+        return None
+    import dataclasses as _dc
+    from .effect_conditions import description_supported
+    from .effect_grammar.sub.filter import parse_filter
+    f = parse_filter(m.group(2).strip()).value
+    if f is None or f.zone not in ("battlefield", "stack") \
+            or f.controller not in ("any", "you", "not_you") \
+            or not description_supported(
+                _dc.replace(f, zone="battlefield", controller="any"),
+                bounds=True):
+        return None
+    return int(m.group(1)), f
 
 
 def parse_is_land_sacrifice_tutor(oracle: str) -> bool:

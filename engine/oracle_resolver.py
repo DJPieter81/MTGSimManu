@@ -1886,6 +1886,64 @@ def self_cost_reduction(game, player_idx: int, card_template) -> int:
     return min(amount * count, max(0, template.mana_cost.generic))
 
 
+def target_fits(game, player_idx: int, obj, f) -> bool:
+    """Does the object chosen as a target fit a cost reduction's
+    description (``CardTemplate.target_cost_reduction``): in the zone it
+    names (a spell on the stack, a permanent on the battlefield), under the
+    controller it names relative to the caster, and admitted by the
+    description owner (`effect_conditions.permanent_described`)?"""
+    import dataclasses as _dc
+    from engine.effect_conditions import bound_values, permanent_described
+    if obj is None or getattr(obj, 'zone', None) != f.zone:
+        return False
+    if f.controller == "you" and obj.controller != player_idx:
+        return False
+    if f.controller == "not_you" and obj.controller == player_idx:
+        return False
+    g = _dc.replace(f, zone="battlefield", controller="any")
+    bounds = bound_values(game, player_idx, g) if g.stat_bounds else None
+    return permanent_described(obj, g, bounds=bounds)
+
+
+def target_cost_reduction(game, player_idx: int, card_template,
+                          targets) -> int:
+    """Generic mana a spell discounts because of the targets chosen for it
+    -- "This spell costs {N} less to cast if it targets <description>"
+    (CR 601.2c, 601.2f: the targets are chosen before the total cost is
+    determined). N when a chosen target fits the description, capped at
+    the printed generic portion (a reduction never touches coloured pips);
+    else 0."""
+    spec = getattr(card_template, 'target_cost_reduction', None)
+    if not spec:
+        return 0
+    n, f = spec
+    for tid in targets or ():
+        if not isinstance(tid, int) or tid < 0:
+            continue
+        if target_fits(game, player_idx, game.get_card_by_id(tid), f):
+            return min(n, max(0, card_template.mana_cost.generic))
+    return 0
+
+
+def best_target_cost_reduction(game, player_idx: int, card_template,
+                               requirements, source=None) -> int:
+    """The discount the caster can get by choosing a fitting legal target
+    (CR 601.2c, 601.2f): N when an object some requirement admits fits the
+    description, else 0 -- what a cast's legality may count on before its
+    targets are chosen."""
+    spec = getattr(card_template, 'target_cost_reduction', None)
+    if not spec or not requirements:
+        return 0
+    n, f = spec
+    from engine.target_solver import enumerate_legal_targets
+    for req in requirements:
+        for obj in enumerate_legal_targets(game, player_idx, req,
+                                           exclude=source, source=source):
+            if target_fits(game, player_idx, obj, f):
+                return min(n, max(0, card_template.mana_cost.generic))
+    return 0
+
+
 _COLOR_QUALITY = {'white': 'W', 'blue': 'U', 'black': 'B', 'red': 'R',
                   'green': 'G'}
 _PERMANENT_TYPES = ('artifact', 'creature', 'enchantment', 'land',

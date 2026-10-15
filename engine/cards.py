@@ -695,6 +695,13 @@ class CardTemplate:
     # (0, "") when absent or when the unit is unmodelled (refused outright).
     self_cost_reduction_amount: int = 0
     self_cost_reduction_unit: str = ""
+    # "This spell costs {N} less to cast if it targets <description>"
+    # (CR 601.2c, 601.2f): (N, CardFilter) -- the discount applies when a
+    # chosen target fits the description
+    # (`oracle_resolver.target_cost_reduction`). Populated by
+    # `oracle_parser.parse_target_cost_reduction`; None when absent or
+    # its description is one the description owner cannot read.
+    target_cost_reduction: Optional[Tuple[int, Any]] = None
     back_face_oracle: str = ""                # oracle text for back face (transform cards)
     back_face_loyalty: int = 0                # starting loyalty for back face planeswalker
     # Full back-face characteristics for ANY multi-face card (not just

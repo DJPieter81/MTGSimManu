@@ -430,7 +430,8 @@ class ResponseDecider:
                         and "counterspell" in inst.template.tags):
                     # Allow nearly-free pitch counters through (their
                     # opportunity cost is low — exiled card vs. UU).
-                    effective_cost = self._effective_counter_cost(game, inst)
+                    effective_cost = self._effective_counter_cost(
+                        game, inst, stack_item)
                     # Rules constant: a "free" pitch counter on opp's
                     # turn costs 1 (the exiled card).  Counters costing
                     # 2+ effective should be reserved.  Sourced from
@@ -442,7 +443,7 @@ class ResponseDecider:
                 # prefer the printed-cheaper counter (Counterspell at 2)
                 # over a free pitch counter (Force of Negation at printed 3).
                 effective_cmc = (
-                    self._effective_counter_cost(game, inst)
+                    self._effective_counter_cost(game, inst, stack_item)
                     if "counterspell" in inst.template.tags
                     else (inst.template.cmc or 0)
                 )
@@ -525,7 +526,7 @@ class ResponseDecider:
             # creature-exile in hand can answer the same threat.  Free
             # pitch counters (effective cost ≤ 1) are still considered
             # — their opportunity cost is too low to reserve.
-            cost = self._effective_counter_cost(game, instant)
+            cost = self._effective_counter_cost(game, instant, stack_item)
             if (skip_counter_for_this_creature
                     and cost > PITCH_COUNTER_FREE_COST):
                 continue
@@ -777,7 +778,7 @@ class ResponseDecider:
         for inst in alternatives[:_REPLAY_RESPONSE_TOP_N_ALTS]:
             try:
                 if "counterspell" in inst.template.tags:
-                    eff = self._effective_counter_cost(game, inst)
+                    eff = self._effective_counter_cost(game, inst, stack_item)
                 else:
                     eff = inst.template.cmc or 0
             except Exception:
@@ -1020,20 +1021,31 @@ class ResponseDecider:
             return False
         return True
 
-    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
+    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance",
+                                stack_item=None) -> int:
         """Cost paid to actually fire this counter, after alternative-cost paths.
 
         Routes through `_is_pitch_counter` (single classification
         site): on the opponent's turn a pitch counter is free in mana
         — its cost is a single exiled card, which we represent as 1
-        for ranking purposes. Otherwise the cost is the printed CMC.
+        for ranking purposes. Otherwise the cost is the printed CMC,
+        less a discount for countering this spell
+        (`oracle_resolver.target_cost_reduction`, CR 601.2c, 601.2f: "this
+        spell costs {2} less to cast if it targets a blue spell").
 
         Used to pick the cheapest castable counter when several are available;
         without this the legacy hand-order iteration would burn the wrong one.
         """
         if self._is_pitch_counter(game, instant):
             return 1  # one exiled card, no mana
-        return instant.template.cmc
+        cost = instant.template.cmc
+        source = getattr(stack_item, 'source', None)
+        if source is not None and instant.template.target_cost_reduction:
+            from engine.oracle_resolver import target_cost_reduction
+            cost -= target_cost_reduction(game, instant.controller,
+                                          instant.template,
+                                          [source.instance_id])
+        return cost
 
     def _has_post_resolution_creature_answer(
         self, game: "GameState", stack_item: "StackItem",
