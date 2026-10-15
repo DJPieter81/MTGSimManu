@@ -951,7 +951,7 @@
     "strict": false
    }
   ],
-  "executable": 177,
+  "executable": 178,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -964,7 +964,7 @@
    "E6": 9,
    "none": 89
   },
-  "strict": 200,
+  "strict": 201,
   "sub_kinds": {
    "DELAYED": 12,
    "REFLEXIVE": 2
@@ -1456,27 +1456,27 @@
     "strict": true
    }
   ],
-  "executable": 520,
+  "executable": 521,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 498,
+   "pool": 499,
    "sideboard": 0
   },
   "steps": {
    "E2": 46,
-   "E3": 196,
+   "E3": 197,
    "E4": 263,
    "E5": 10,
    "E6": 5
   },
-  "strict": 520,
+  "strict": 521,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
    "CREATE_TOKEN": 249,
-   "DRAW": 108,
+   "DRAW": 109,
    "EXILE": 10,
    "EXILE,GAIN_LIFE": 3,
    "MILL": 37,
@@ -1971,7 +1971,7 @@
     "host": "LOYALTY:1:1",
     "part": "mainboard",
     "step": "E4",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Chandra, Awakened Inferno",
@@ -2002,7 +2002,7 @@
     "strict": true
    }
   ],
-  "executable": 20,
+  "executable": 21,
   "family": "damage",
   "hosts": {
    "mainboard": 3,
@@ -2017,7 +2017,7 @@
    "E6": 2,
    "none": 59
   },
-  "strict": 23,
+  "strict": 24,
   "sub_kinds": {
    "REFLEXIVE": 2
   },

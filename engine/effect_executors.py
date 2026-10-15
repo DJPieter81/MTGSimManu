@@ -1758,7 +1758,8 @@ execute_sacrifice.allowed_families = lambda s: frozenset({FAMILY_EDICT})
 # ── Conditions ────────────────────────────────────────────────────────
 
 def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
-    return conditions.state_condition_holds(ctx.game, ctx.controller, cond)
+    return conditions.state_condition_holds(ctx.game, ctx.controller, cond,
+                                            source=_source_object(ctx))
 
 
 evaluate_state.supports = conditions.state_condition_supported

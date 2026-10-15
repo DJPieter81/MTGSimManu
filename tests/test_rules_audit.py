@@ -514,7 +514,7 @@ def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db
     game, gb, v = _metalcraft_blast_board(card_db)
     with monkeypatch.context() as m:
         m.setattr(effect_conditions, "state_condition_holds",
-                  lambda g, c, cond: False)
+                  lambda g, c, cond, **_kw: False)
         resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
     assert v.damage_marked == 2
     assert "608.2/damage_upgrade" in _rules(rules_audit.drain())

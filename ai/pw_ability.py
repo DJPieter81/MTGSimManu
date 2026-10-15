@@ -177,6 +177,44 @@ def dispatched_damage_value(pw, ability, game: "GameState",
     return aim.value if aim is not None else 0.0
 
 
+def reflexive_damage_value(pw, ability, game: "GameState",
+                           player_idx: int) -> float:
+    """What the reflexive damage of a loyalty line the carrier performs is
+    worth (CR 603.12, unit RX): for each "when you do" trigger of the line
+    whose intervening "if" holds now -- asked of the dispatcher's own
+    evaluator (`effect_resolver.holds`), with the walker as the source --
+    the value of the aim its targeted damage instruction takes, as for a
+    line whose own damage the carrier deals (`dispatched_damage_value`).
+    The amount is read on the board as it is now; a count the line's
+    first instruction adds to (a token it creates) is under-read. 0 for a
+    line the carrier does not take."""
+    from engine.effect_carrier import (intervening_if_holds_now,
+                                       loyalty_family, loyalty_host)
+    from engine.effect_spec import SubAbilityKind, Verb, iter_specs
+    host = loyalty_host(pw, ability)
+    if loyalty_family(ability, host) is None:
+        return 0.0
+    from ai.damage_targets import choose_damage_recipient
+    from engine.effect_conditions import amount_value
+    value = 0.0
+    for s in iter_specs(host.specs):
+        if s.verb is not Verb.CREATE_TRIGGER \
+                or s.payload.kind is not SubAbilityKind.REFLEXIVE:
+            continue
+        sub = s.payload.host
+        if not intervening_if_holds_now(game, pw, player_idx, sub):
+            continue
+        for d in iter_specs(sub.specs):
+            if d.verb is not Verb.DAMAGE or d.target_slot is None:
+                continue
+            amount = amount_value(game, player_idx, d.amount, 0)
+            aim = choose_damage_recipient(game, player_idx, pw, amount,
+                                          sub.targets[d.target_slot],
+                                          mana_committed=0)
+            value += aim.value if aim is not None else 0.0
+    return value
+
+
 def loyalty_line_value(pw, ability, game: "GameState", player_idx: int) -> float:
     """Value of activating `ability` now, in position-value units (the
     scale `compute_play_ev` uses for spells): the projected board after
@@ -223,6 +261,9 @@ def loyalty_line_value(pw, ability, game: "GameState", player_idx: int) -> float
     value = evaluate_board(projected) - current
     if damage_value is not None:
         value += damage_value
+    # A "when you do" trigger's damage is valued by where it goes, while
+    # its condition holds (`reflexive_damage_value`).
+    value += reflexive_damage_value(pw, ability, game, player_idx)
 
     # A bounce of a noncreature permanent has no snapshot term: price it by
     # that permanent's marginal worth to its owner, for the tempo it costs.

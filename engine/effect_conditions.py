@@ -300,29 +300,33 @@ def permanent_described(perm: Any, f: CardFilter, source: Any = None,
 
 
 def state_condition_supported(cond: Condition) -> bool:
-    """The STATE conditions evaluated here: a count of permanents of some
-    card types you control (metalcraft's shape) and the number of card
-    types among cards in your graveyard (delirium's), each compared with a
-    printed number."""
+    """The STATE conditions evaluated here, each compared with a printed
+    number: a count of the permanents you control that a battlefield
+    description admits (metalcraft's "artifacts you control", "a red
+    permanent other than ~", "a creature with a +1/+1 counter on it"), and
+    the number of card types among cards in your graveyard (delirium's)."""
     if not isinstance(cond, Condition) or cond.kind is not ConditionKind.STATE:
         return False
     if cond.op not in _OPS or _literal(cond.n) is None or cond.ref is not None \
             or cond.payer is not None or cond.cost is not None or cond.children:
         return False
     if cond.pred == "count":
-        return _controlled_types_filter(cond.filter)
+        f = cond.filter
+        return description_supported(f) and f.controller == "you"
     if cond.pred == "card_types":
         return _only(cond.filter, zone="graveyard", owner="you")
     return False
 
 
-def state_condition_holds(game: Any, controller: int, cond: Condition) -> bool:
-    """Evaluate a supported STATE condition for `controller` now."""
+def state_condition_holds(game: Any, controller: int, cond: Condition,
+                          source: Any = None) -> bool:
+    """Evaluate a supported STATE condition for `controller` now. A count
+    reads the description owner (`permanent_described`); "other" leaves
+    out `source`, the object whose ability the condition belongs to."""
     if cond.pred == "count":
-        types = cond.filter.types
         count = permanents_controlled(
             game, controller,
-            lambda p: any(t.value in types for t in p.effective_card_types))
+            lambda p: permanent_described(p, cond.filter, source))
     else:
         count = graveyard_card_types(game, controller)
     return _OPS[cond.op](count, _literal(cond.n))

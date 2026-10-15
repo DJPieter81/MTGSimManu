@@ -815,10 +815,14 @@ def test_a_triggered_abilitys_intervening_if_is_rechecked_on_resolution(er, run)
     assert rec.calls == [(0, (0,))]
 
 
-def test_a_sub_ability_chooses_its_own_targets_unbound(er, run):
-    """A30/A36: a sub-ability's targets are not the parent's; the
-    dispatcher never picks, so its slots reach the owner unbound."""
-    seen = []
+def test_a_sub_ability_chooses_its_own_targets_as_it_goes_on_the_stack(
+        er, run, monkeypatch):
+    """A30, CR 603.3d: a sub-ability's targets are not the parent's; they
+    are chosen for its own slots as it is put on the stack, by its
+    controller (`effect_carrier.trigger_targets`), and a required target
+    with no legal choice removes it."""
+    from engine import effect_carrier
+    seen, asked = [], []
 
     def _ex(ctx, spec, actors):
         seen.append(ctx.chosen)
@@ -831,8 +835,21 @@ def test_a_sub_ability_chooses_its_own_targets_unbound(er, run):
                 kind=HostKind.TRIGGERED, targets=(req,))
     host = _host(_spec(Verb.DRAW, 0), _spec(Verb.CREATE_TRIGGER, 1, payload=SubAbility(
         SubAbilityKind.REFLEXIVE, None, sub)))
-    er.resolve_ability(_game(), _src(), 0, host, ((er.Handle(5, "battlefield", 1),),))
-    assert seen == [((),)]
+    own = ((er.Handle(9, "battlefield", 3),),)
+
+    def _pick(game, source, controller, h):
+        asked.append((controller, h))
+        return own
+    monkeypatch.setattr(effect_carrier, "trigger_targets", _pick)
+    game = _game()
+    game.get_card_by_id = lambda iid: None
+    er.resolve_ability(game, _src(), 0, host, ((er.Handle(5, "battlefield", 1),),))
+    assert asked == [(0, sub)] and seen == [own]
+    seen.clear()
+    monkeypatch.setattr(effect_carrier, "trigger_targets",
+                        lambda game, source, controller, h: None)
+    er.resolve_ability(game, _src(), 0, host, ((er.Handle(5, "battlefield", 1),),))
+    assert seen == [], "no legal choice: the trigger is removed"
 
 
 # ── chosen_from_legacy (A36) ───────────────────────────────────────────

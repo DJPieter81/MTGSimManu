@@ -44,6 +44,7 @@ built once per parsed `CardEffects` and a lookup never parses.
 """
 from __future__ import annotations
 
+import dataclasses
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -271,6 +272,34 @@ def _no_unparsed(s) -> bool:
 # an earlier family's host. E0 tolerates no residue (the dispatcher's
 # LEGACY_RESIDUE_TOLERATED is empty until a family switch adds codes).
 
+# A reflexive trigger (CR 603.12, unit RX): "When you do, [if <condition>,]
+# <effect>" sits in the branch of the instruction it follows, so it is
+# created only when that instruction was performed, and the dispatcher
+# carries it -- it checks the trigger's intervening "if" when it triggers
+# and as it resolves (CR 603.4), and its controller chooses its targets as
+# it is put on the stack (CR 603.3d). A host holding one is strict when
+# the trigger's own host, its intervening "if" aside, is in an effect
+# family's strict shape.
+_EFFECT_FAMILIES = (FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
+                    FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
+                    FAMILY_STACK_MANA, FAMILY_TYPE_CHANGE, FAMILY_EDICT)
+
+
+def _strict_reflexive(s) -> bool:
+    if not _is_sub(s) or s.payload.kind is not SubAbilityKind.REFLEXIVE:
+        return False
+    if s.residue or s.condition is not None or s.optional or s.then \
+            or s.otherwise or s.alternatives or s.replaces \
+            or s.duration is not None:
+        return False
+    sub = s.payload.host
+    head = sub.trigger
+    if head is not None and head.intervening_if is not None:
+        sub = dataclasses.replace(sub, trigger=dataclasses.replace(
+            head, intervening_if=None))
+    return any(STRICT[f](sub) for f in _EFFECT_FAMILIES)
+
+
 def _strict_host(h: AbilityEffects, verbs: frozenset, *,
                  durations: bool = False, conditions: bool = False) -> bool:
     if h is None or not h.specs:
@@ -278,6 +307,8 @@ def _strict_host(h: AbilityEffects, verbs: frozenset, *,
     if h.trigger is not None and h.trigger.intervening_if is not None:
         return False
     for s in iter_specs(h.specs):
+        if _strict_reflexive(s):
+            continue
         if s.verb not in verbs or _is_sub(s) or s.residue:
             return False
         if s.duration is not None and not durations:

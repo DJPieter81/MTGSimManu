@@ -244,6 +244,23 @@ def loyalty_family(ability: Any, host: Any) -> Optional[str]:
                  if STRICT[f](host) and er.can_execute(host, f)), None)
 
 
+def intervening_if_holds_now(game: Any, source: Any, controller: int,
+                             host: Any) -> bool:
+    """Does `host`'s intervening "if" (CR 603.4) hold now for `controller`,
+    `source` being the object whose ability it is -- asked of the
+    dispatcher's own evaluator (`effect_resolver.holds`)? True for a host
+    without one. The AI reads it to value a trigger before it triggers (a
+    loyalty line's "when you do" trigger, unit RX); only a host the
+    dispatcher can execute is asked."""
+    head = getattr(host, "trigger", None)
+    if head is None or head.intervening_if is None:
+        return True
+    probe = er.Resolution(game=game, source=er.handle_of(source),
+                          controller=controller, ability=host, chosen=(),
+                          source_object=source)
+    return bool(er.holds(probe, head.intervening_if))
+
+
 def loyalty_host(pw: Any, ability: Any) -> Optional[Any]:
     """The typed host of the printed loyalty line `ability` of walker `pw`:
     the LOYALTY host of the face and slot that print it."""

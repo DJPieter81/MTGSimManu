@@ -554,8 +554,7 @@ def _run(ctx: Resolution, s: EffectSpec, *, decided: bool = False) -> None:
         _not_performed(ctx, s)
         return _branch(ctx, s.otherwise)
     if s.verb is Verb.CREATE_TRIGGER:
-        _create_trigger(ctx, s)
-        ctx.performed[s.seq] = True
+        ctx.performed[s.seq] = _create_trigger(ctx, s)
         ctx.results[s.seq] = {}
         return _branch(ctx, s.then)
     if is_choice(s):
@@ -613,7 +612,9 @@ def _actors_apnap(ctx: Resolution, s: EffectSpec) -> Tuple[int, ...]:
 
 # ── Sub-abilities (A30) ────────────────────────────────────────────────
 
-def _create_trigger(ctx: Resolution, s: EffectSpec) -> None:
+def _create_trigger(ctx: Resolution, s: EffectSpec) -> bool:
+    """Create the delayed or reflexive ability `s` names; whether it was
+    created."""
     sub, snap = s.payload, ctx.snapshot()       # Handles, never objects (A34)
     if sub.kind is SubAbilityKind.DELAYED:      # CR 603.7; 603.7c: a moved object is not acted on
         # The queue calls effect(game) when the trigger is due.
@@ -621,8 +622,37 @@ def _create_trigger(ctx: Resolution, s: EffectSpec) -> None:
             timing=sub.timing, controller=ctx.controller,
             effect=partial(resolve_sub_ability, sub=sub, snap=snap),
             description=s.raw, created_turn=ctx.game.turn_number))
-    else:                                       # CR 603.12: after the parent
-        ctx.pending_reflexive.append((sub, snap))
+        return True
+    # CR 603.12: a reflexive trigger triggers on the instruction it
+    # follows, performed earlier in this resolution (it sits in that
+    # instruction's branch), and is put on the stack after the parent.
+    _audit_reflexive_parent(ctx, s)
+    # CR 603.4: its intervening "if" is checked as it triggers -- now -- and
+    # again as it resolves (`resolve_sub_ability`); false now, it does not
+    # trigger.
+    if not _intervening_if_holds(ctx, sub.host):
+        return False
+    ctx.pending_reflexive.append((sub, snap))
+    return True
+
+
+def _audit_reflexive_parent(ctx: Resolution, s: EffectSpec) -> None:
+    """Rules audit (CR 603.12), restated from the printed order: a "when
+    you do" trigger is created only when the instruction printed just
+    before it -- the action it names -- was performed during this
+    resolution. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    hosts = (ctx.ability, *ctx.ability.modes)
+    before = [x.seq for h in hosts for x in iter_specs(h.specs)
+              if x.seq < s.seq and x.verb is not Verb.CREATE_TRIGGER]
+    parent = max(before, default=None)
+    rules_audit.check(
+        "603.12/reflexive_after_parent",
+        parent is not None and ctx.performed.get(parent) is True,
+        f"'{s.raw}' was created though the instruction it follows "
+        f"(seq {parent}) was not performed", game=ctx.game)
 
 
 def _drain_reflexive(ctx: Resolution) -> None:
@@ -634,14 +664,24 @@ def _drain_reflexive(ctx: Resolution) -> None:
 
 def resolve_sub_ability(game: Any, sub: SubAbility, snap: Snapshot) -> bool:
     """Resolve a delayed or reflexive ability its parent created. Its
-    targets are its own, chosen now -- the dispatcher binds none, so each
-    slot reaches the owner unbound -- and its intervening-if (CR 603.4) is
-    checked again now. True iff any of its specs was performed."""
+    targets are its own, chosen as it is put on the stack (CR 603.3d) by
+    its controller, out of the legal choices (`effect_carrier.
+    trigger_targets`); a required target with no legal choice removes it.
+    Its intervening-if (CR 603.4) is checked again as it resolves. True
+    iff any of its specs was performed."""
     host = sub.host
     if not can_execute(host, snap.family):
         return False
+    chosen: Chosen = tuple(() for _ in host.targets)
+    if host.targets:
+        from .effect_carrier import trigger_targets
+        source = game.get_card_by_id(snap.source.instance_id)
+        picked = trigger_targets(game, source, snap.controller, host)
+        if picked is None:
+            return False
+        chosen = picked
     ctx = Resolution(game=game, source=snap.source, controller=snap.controller,
-                     ability=host, chosen=tuple(() for _ in host.targets),
+                     ability=host, chosen=chosen,
                      x_value=snap.x_value, event=snap.event,
                      cast_facts=snap.cast_facts, family=snap.family)
     own = {s.seq for s in iter_specs(host.specs)}

@@ -8004,6 +8004,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Chronicler of Heroes",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit RX: the draw's own condition ('if you control a creature with a +1/+1 counter on it') is a count the description owner answers (CR 608.2c); the legacy enter resolver never drew"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Clachan Festival",
     "TRIGGERED:0:0"
    ],
@@ -11544,6 +11552,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "planeswalker_manager:DAMAGE",
+    "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+    "LOYALTY:1:1"
+   ],
+   "reason": "unit RX: the line creates its Cat token and, when it does, if its controller controls a red permanent other than the walker, deals damage equal to the creatures they control to the target they choose as the trigger is put on the stack (CR 603.12, 603.4, 603.3d); the legacy DAMAGE resolver created no token and dealt 1 damage whatever the condition"
   },
   {
    "pair": [
