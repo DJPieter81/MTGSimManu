@@ -10078,6 +10078,11 @@ Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now 
 - **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged.
 - **Chunks at `d48764e`:** 5124 + 2766 passed. One test failed: RX's `test_the_condition_counts_what_its_description_names_other_than_the_source` assumed a transformed Ajani is not red, which is the bug this unit fixes. It is restated with Ajani as the source in `d676f1f`; re-run there, 24 passed.
 
+**Measured** (`bfrw-post` arm, with RW, against `rx-post`, 600 cells each):
+- Every deck is within ±0.3, and audit violations are 0 → 0. The band miss is 42.7 → 42.5.
+- Eight cells move, each by one game (5 pp): five in Ruby Storm's row or column, which net to −0.1, and three in Domain Zoo's.
+- No deck moved more than 5 pp, so no cell is replayed. The colours of a face that is up decide no game on these seeds; they are now right for every reader that asks.
+
 **Leads, not built:**
 - **A transformed permanent's keywords** are still the front face's. MTGJSON's per-face `keywords` list is the whole card's (a land back face lists the front's Flying and Lifelink), so a face's keywords must be read from its own text. The `back_face_keywords` field is populated from that list and read nowhere.
 - **`protection_from_colors`** is parsed from the front face's text only.
@@ -10117,8 +10122,51 @@ Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now 
 - **Goldfish (the 160 seeds, pre `d676f1f`):** kills 101 → 101. One game differs: play 70059, a decking loss on T9 that now decks on T17. Against an opponent who does nothing, the turn-3 shape barely arises.
 - **Chunks at `90af9a5`:** 5131 + 2766 passed, nothing failed.
 
+**Measured** (`bfrw-post`, with BF): Ruby Storm 14.1 → 14.0, inside the arm's noise. Its five changed cells are one game each, three lost and two won.
+- **Loop-break count for Ruby Storm:** FS moved it toward its band; CC away; RW, built, does not move it. That is two Storm-targeted units without movement toward the band. A third halts Storm code until a new root cause is written.
+
 **Mode A (unit MA in the plan), tested and not built:** `docs/diagnostics/2026-10-16_storm_closer_held_below_lethal_falsified.md`.
 - **Experiment:** both finisher branches' `storm == 0` gate on the develop line was removed, so a closer below lethal is held while a later turn can assemble lethal.
 - **Result:** over the 160 goldfish seeds, kills fall 101 → 74 and decking rises 59 → 86, failing both guards the plan set. The kills it keeps come sooner (by turn 6: 17 → 27).
 - **Reading:** Storm's damage accumulates across turns (Grapeshot chips, Past in Flames recasts, Empty the Warrens' tokens attack next turn), so a closer cashed mid-chain is progress. Holding a hand of closers waits for draws.
 - **Lead:** a hold bounded by what next turn's chain can assemble.
+
+## Unit DT: damage dealt to a permanent has the results its current types give it (CR 120.3c, 120.3e, 712.8, 613.1d; 2026-10-16)
+
+**Source:** the inverse question of unit BF. With colour read off the face that is up, the other readers of a permanent's printed front-face types were checked. The damage owner was one of them.
+
+**Rule (CR 120.3c, 120.3e):**
+- Damage dealt to a planeswalker removes that many loyalty counters from it. Damage dealt to a creature is marked on it. A permanent that is both takes both results.
+- The types are the ones it has now: a transformed double-faced permanent has only its back face's (CR 712.8), and an effect or an animation can make a permanent a creature (CR 613.1d).
+
+**Defect:**
+- `CardInstance.take_damage`, the damage target protocol that `engine/damage.deal_damage` calls, routed on `template.card_types`: the front face's printed types.
+- A transformed Ajani, Nacatl Avenger dealt 3 damage marked 3 damage as a creature and kept its 3 loyalty. No attack or burn spell ever reduced a transformed Ajani, Tamiyo or Ral.
+- A creature back face over a noncreature front (Reflection of Kiki-Jiki) and an animated land (Mutavault) marked nothing and never died to damage.
+- A permanent an effect made a creature took no damage as one.
+- A second writer, the energy-damage clause (`clause_resolver._a_energy_damage`, Galvanic Discharge), read the printed type the same way and wrote damage and loyalty itself.
+
+**Class:** 121 transforming double-faced cards whose faces differ in creature or planeswalker type, plus every animated land and every permanent an effect makes a creature.
+- 76 have a noncreature front and a creature back; 33 a creature front and a noncreature back; 11 a creature front and a planeswalker back; 1 a noncreature front and a planeswalker back.
+- Registered: Ajani (Boros Energy ×4), Ral (Ruby Storm ×4), Tamiyo (Dimir Midrange ×3), Fable of the Mirror-Breaker (Jeskai Blink ×4).
+- Modal double-faced cards (33 more) were already right: the face on the battlefield swaps the whole template.
+
+**Steps:**
+- **One owner:** `take_damage` reads `effective_is_creature` (or an animated land) and `effective_is_planeswalker`, and applies each result that holds.
+- **The energy-damage clause** reads the same current types, and its damage goes through `deal_damage`, then the state-based actions.
+- **Auditor:** `120.3/damage_result` at the seam in `deal_damage`. It is restated from raw fields (the face up, the types an effect adds, the animation) and compares the marked damage and loyalty before and after.
+
+**Tests:** 12, in `tests/test_damage_to_a_permanent_has_the_results_its_current_types_give_it.py`. 10 were red first. A front face's creature damage and the auditor's silent case pass either way, as pins.
+
+**Pins:** (`bc247e7`)
+- **Digest:** re-recorded after replay. One Bo3 changes: Jeskai Blink vs Eldrazi Tron s59500. In game 1, on T22, Reflection of Kiki-Jiki (2/2) blocks a 6/6 Devourer of Destiny and now dies; before, it took 6 damage and lived. Games 2 and 3 differ from their opening hands on, the runner's shuffles shifted by game 1's extra turn, and the match now goes to Jeskai Blink.
+- **Anchor:** 29, no flip.
+- **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged; single-owner `damage_write` stays 24.
+- **Chunks at `bc247e7`:** 5143 + 2766 passed, nothing failed.
+
+**Leads, not built:**
+- **The AI's readers of a permanent's types** still read the printed front face in three places:
+  - `ai/evaluator.py`'s card value (a transformed walker is valued as its front-face creature);
+  - `ai/modal.py`'s mass-damage hit test;
+  - `ai/response_enumeration.py`'s channel targets.
+- **A second 704.5p path:** `sba_manager.py` checks zero loyalty by the printed types. The game state's own pass reads the current ones, so no walker survives, but the rule has two owners.
