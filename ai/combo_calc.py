@@ -899,7 +899,20 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
     return float((post_pif_storm + 1) / max(1, snap.opp_life))
 
 
-def _digs_the_ai_will_make(card, me, snap, game, player_idx) -> list:
+def _digs_paid(costs, mana) -> int:
+    """How many of the digs costing `costs` the mana pays for, cheapest
+    first."""
+    paid = 0
+    for cost in sorted(costs):
+        if cost > mana:
+            break
+        mana -= cost
+        paid += 1
+    return paid
+
+
+def _digs_the_ai_will_make(card, me, snap, game, player_idx,
+                           storm=0) -> list:
     """The digs the AI will make this turn once the ritual `card`
     resolves: `card` itself when it digs (a ritual that draws is its own
     dig, and so is one whose cast triggers a cast trigger that draws,
@@ -910,7 +923,14 @@ def _digs_the_ai_will_make(card, me, snap, game, player_idx) -> list:
     dig. A dig looks for the closer (`_digs_toward_closer`): it puts new
     cards in hand or play from the typed draw / tutor fields, never a
     classifier tag, and a tutor counts only when its pool holds a
-    finisher."""
+    finisher.
+
+    With no chain begun (`storm` 0) the ritual's only gift this turn is its
+    mana: the storm it adds closes nothing. So the other digs count only
+    when the ritual funds them, that is, when the mana after it pays for
+    more of them than the mana without it (`_digs_paid`). A dig the lands
+    already pay for is cast from the lands. Mid-chain the ritual's storm
+    feeds a chain in progress, and every dig its mana pays counts."""
     from ai.effective_cmc import effective_cmc
     from ai.ev_evaluator import cast_is_deferred
     digs = [card] if (_digs_toward_closer(card, me)
@@ -918,17 +938,21 @@ def _digs_the_ai_will_make(card, me, snap, game, player_idx) -> list:
     others = [c for c in me.hand
               if c.instance_id != card.instance_id
               and not c.template.is_land
-              and _digs_toward_closer(c, me)]
+              and _digs_toward_closer(c, me)
+              and not cast_is_deferred(c, snap, game, player_idx)]
     if not others:
         return digs
     rdata = getattr(card.template, 'ritual_mana', None)
     mana_after = (snap.my_mana
                   - effective_cmc(card, snap, game=game, player_idx=player_idx)
                   + (rdata[1] if rdata else 0))
-    digs += [c for c in others
-             if effective_cmc(c, snap, game=game,
-                              player_idx=player_idx) <= mana_after
-             and not cast_is_deferred(c, snap, game, player_idx)]
+    costs = {c.instance_id: effective_cmc(c, snap, game=game,
+                                          player_idx=player_idx)
+             for c in others}
+    if not storm and _digs_paid(costs.values(), mana_after) \
+            <= _digs_paid(costs.values(), snap.my_mana):
+        return digs                  # the ritual funds no dig
+    digs += [c for c in others if costs[c.instance_id] <= mana_after]
     return digs
 
 
@@ -973,7 +997,7 @@ def _ritual_without_closer(card, me, snap, game, player_idx, storm,
     (B) draw-miss cascade risk -- at storm >= COMBO_MIN_CHAIN_DEPTH with
         one dig left the chain is one bad top-deck from collapse.
     One rule for the storm-0 gate and the mid-chain gate."""
-    digs = _digs_the_ai_will_make(card, me, snap, game, player_idx)
+    digs = _digs_the_ai_will_make(card, me, snap, game, player_idx, storm)
     if not digs:
         return STORM_HARD_HOLD
     storm_coverage = storm / opp_life

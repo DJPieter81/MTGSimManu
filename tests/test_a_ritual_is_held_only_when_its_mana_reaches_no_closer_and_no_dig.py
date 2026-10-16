@@ -89,11 +89,13 @@ def _soft_penalty(storm, opp_life):
 
 
 def test_at_storm_zero_a_ritual_whose_mana_reaches_a_dig_is_not_held(card_db):
-    """Two lands: Pyretic Ritual (2) leaves 3 mana, enough for Reckless
-    Impulse (2), which digs."""
+    """Three lands: Pyretic Ritual (2) leaves 4 mana, enough for Big Score
+    (4), which digs and which the lands alone cannot pay for. (A dig the
+    lands already pay for funds no ritual at storm 0: unit RW,
+    `tests/test_a_ritual_with_no_chain_begun_is_cast_only_for_a_dig_its_
+    mana_pays.py`.)"""
     g, (ritual, _dig) = _main_phase(
-        card_db, hand=["Pyretic Ritual", "Reckless Impulse"], storm=0,
-        lands=2)
+        card_db, hand=["Pyretic Ritual", "Big Score"], storm=0, lands=3)
     assert _modifier(g, ritual) == pytest.approx(_soft_penalty(0, 20))
 
 
