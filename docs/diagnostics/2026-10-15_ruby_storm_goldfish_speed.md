@@ -207,3 +207,32 @@ Before a full search, two cheaper reads of the 160 dumped games:
 - Nothing holds chain fuel for the turn that can kill.
 
 The full search remains the way to measure the earliest kill each seeded draw allows.
+
+### The `cc-post` replay: two planner decisions (2026-10-16)
+
+Unit CC made the chain projection price every spell at the AI's own cost estimate. The `cc-post` arm moved Ruby Storm 17.6 → 14.0, and all 32 changed cells are Storm's.
+
+Two cells were replayed cell-exact (pre `b7ee1fe`, post `707aeb6`):
+
+| Cell | Pre | Post |
+|---|---|---|
+| vs Boros Ponza | 9 of 20 | 4 of 20 |
+| vs 4c Omnath | 5 of 20 | 1 of 20 |
+
+All nine changed seeds turn a Storm win into a loss. The play-by-play of seed 50500 vs 4c Omnath reproduces both winners, and its game 1 names two decisions:
+
+- **A storm-0 ritual spent on a dig the lands already pay.** On turn 3, with three lands, Storm casts Desperate Ritual, then Ral and Reckless Impulse.
+  - The lands alone paid for both: Ral costs 2, and then the Impulse costs {R} with Ral's reduction. The ritual's extra mana went unused, and the kill turn lost a spell of storm and its mana.
+  - The ritual gate (unit RG0) asks only whether a ritual's mana reaches a dig (`_digs_the_ai_will_make`), not whether the mana without it already does.
+  - The gate's own test pins this shape: `test_at_storm_zero_a_ritual_whose_mana_reaches_a_dig_is_not_held` admits a ritual whose dig the two lands already pay for.
+- **Mode A.** On turn 5 Storm casts Grapeshot after two spells, far below lethal.
+  - With no fuel in hand, both finisher branches of `card_combo_modifier` reach the develop line only at storm 0. So a chain already begun cashes its closer for `storm + 1` into any life total.
+  - The spells already cast are spent either way; firing forfeits only the closer.
+  - `test_grapeshot_still_fires_when_chain_in_progress` pins the old rule: storm 4 into 15 with a library of rituals fires.
+- **Pre-CC:** Storm cast Ral off its lands and kept the ritual. It assembled over turns 4 and 5 and won with two Grapeshots.
+
+**Subsystem:** the Storm planner's ritual gate and finisher hold (`ai/combo_calc.py`). The arithmetic CC fixed is right and is kept. The units this licenses:
+- **RW:** a storm-0 ritual is cast only for a dig its mana makes affordable.
+- **MA:** a closer below lethal is held while a later turn can still assemble lethal, whatever this turn has spent.
+
+In the loop-break count, FS moved Ruby Storm toward its band and CC away.

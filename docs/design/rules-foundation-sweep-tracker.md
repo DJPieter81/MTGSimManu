@@ -9962,8 +9962,70 @@ Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now 
 - The greedy and residue steps alone moved nothing: CC with them gives 101, without them 101.
 - The arithmetic is right. What the truer projection exposes is mode A, a closer cashed below lethal once a spell is cast.
 
-**Measured:** by the `cc-post` arm (pre = `fs-post`).
+**Measured** (`cc-post` arm against `fs-post`, 600 cells each):
+- Ruby Storm 17.6 → 14.0 (−3.6). Every other deck is within 0.5. Audit violations 0 → 0.
+- All 32 changed cells involve Ruby Storm.
+- **Replayed cell-exact** (pre `b7ee1fe`, post `707aeb6`, same seed grid, deadline neutralised): Ruby Storm vs Boros Ponza 9 → 4 of 20, and vs 4c Omnath 5 → 1 of 20, seed for seed. All nine changed seeds flip from a Storm win to a loss.
+- **Seed 50500 vs 4c Omnath, game 1** (its play-by-play reproduces both winners):
+  - Pre: Storm casts Ral off a land on turn 3 and keeps its ritual. It assembles over turns 4 and 5 and wins with two Grapeshots.
+  - Post: Ral's reduction is now read. On turn 3 Storm spends Desperate Ritual at storm 0 to cast Ral and Reckless Impulse; the ritual gate lets a storm-0 ritual through when its mana reaches a dig (unit RG0). On turn 5 it casts Grapeshot after two spells (mode A). Omnath wins 2-0.
+- **Verdict:** the arithmetic is rules-correct and is kept. What the truer projection exposes is the Storm planner: mode A, and a storm-0 ritual spent to reach a dig the next turn could reach without it. Those are the next Storm unit. In Ruby Storm's loop-break count, FS moved it toward its band and CC away.
 
 **Leads, not built:**
+- **A storm-0 ritual spent on a dig:** the ritual gate (unit RG0) asks only whether the ritual's mana reaches a dig, not whether the dig needs that mana this turn. A ritual cast to reach a dig the lands alone reach next turn costs the kill turn one spell of storm and its mana.
 - **Mode A:** the storm and tutor fallbacks cash a closer below lethal once a spell is cast (the develop reach is 0 when storm > 0). A sound hold needs a next-turn reach that sees flashback (Past in Flames) and the opponent's clock; the chain projection does not model graveyard flashback.
 - **The storm assessment's draw projection** adds `int(expected_extra * 2)` when the residue passes its divergence point: a literal multiplier, calibrated on the old arithmetic.
+
+## Unit RX: a reflexive trigger follows the instruction that creates it; its condition is checked as it triggers and as it resolves, and its controller chooses its targets as it is put on the stack (CR 603.12, 603.4, 603.3d; 2026-10-15)
+
+**Source:** unit PF's measurement. Once Ajani, Nacatl Avenger's +2 was offered (Boros Energy ×4), the walker was activated, and his 0 line was still resolved by its legacy kind's resolver.
+
+**Rule (CR 603.12, 603.4, 603.3d):**
+- "<instruction>. When you do, [if <condition>,] <effect>": the instruction creates the trigger, and only when it was performed during the resolution.
+- Its intervening "if" is checked as it triggers and again as it resolves.
+- Its targets are its own. Its controller chooses them, out of the legal choices, as it is put on the stack once the parent has finished resolving. A required target with no legal choice removes it.
+- A count condition reads any battlefield description ("a red permanent other than ~", "a creature with a +1/+1 counter on it"). "Other" leaves out the source.
+
+**Defect:**
+- No host holding a reflexive trigger was in any family's strict shape, so none resolved from its typed host. Ajani's 0 went to the legacy DAMAGE resolver: no Cat token, 1 damage, and the condition ignored.
+- The count condition read card types only ("artifacts you control"). A colour, "other", a subtype or a counter refused the host.
+- A sub-ability's slots reached their executors unbound, so its "any target" went to the opponent's face whatever its controller would choose.
+- The intervening "if" was checked only as the trigger resolved.
+
+**Class:**
+- 180 typed reflexive hosts (269 pool cards print "when you do").
+  - Two switch today: Ajani's 0 line, and Chronicler of Heroes' enter trigger (its draw's own count condition).
+  - The rest wait on the instruction they follow: an optional payment (41), an unmodelled instruction (35), an optional sacrifice (26), a sacrifice (11) and others. Or they wait on their own instructions.
+- The count condition now reads 306 more pool conditions (375 cards); 133 were read before.
+- Registered decks:
+  - Ajani (Boros Energy ×4) switches.
+  - Guide of Souls (Boros Energy ×4, Azorius Blink ×4) and Grist, the Hunger Tide (Creatures Toolbox SB ×1) carry reflexive triggers whose parents are not executable yet.
+
+**Steps:**
+- `effect_conditions.state_condition_supported` / `state_condition_holds`: a count over any supported battlefield description its controller controls. It is read by `permanent_described`, with the ability's source for "other".
+- `effect_views._strict_reflexive`: a host holding a reflexive trigger is strict when the trigger's own host, its intervening "if" aside, is in an effect family's strict shape. The dispatcher carries that "if".
+- `effect_resolver`:
+  - `_create_trigger` checks the trigger's intervening "if" as it triggers; false, it is not created.
+  - `resolve_sub_ability` chooses a delayed or reflexive ability's targets through `effect_carrier.trigger_targets`, the controller's pick out of the legal choices, as it is put on the stack.
+- AI: `pw_ability.reflexive_damage_value`. A loyalty line's reflexive damage is valued by the aim the carrier's pick takes, while its condition holds now. `effect_carrier.intervening_if_holds_now` lends the AI the dispatcher's evaluator; the AI does not import the dispatcher.
+- **Auditor** `603.12/reflexive_after_parent`, restated from printed order: a "when you do" trigger is created only when the instruction printed just before it was performed.
+
+**Tests:** 10, in `tests/test_a_reflexive_trigger_follows_the_instruction_that_creates_it.py`, each red first.
+- One pin is restated for CR 603.3d: `test_a_sub_ability_chooses_its_own_targets_as_it_goes_on_the_stack`. It was `..._unbound`.
+- The rules-audit test's stub for the state evaluator takes the new `source` keyword.
+
+**Pins (`a0585ec`):**
+- **Digest:** 27 games byte-identical.
+- **Anchor:** one flip, replayed and accepted. Boros Ponza vs Boros Energy s51000 went to Boros Ponza on T17; it now goes to Boros Energy on T5. Both verbose replays reproduce the anchor's winners.
+  - T3: Ajani's 0 creates a Cat. Seasoned Pyromancer and its Elemental are red, so the trigger triggers. It deals 3 to the face: Pyromancer, Elemental and the Cat are the three creatures, and the opponent has none.
+  - T5: the Elemental and Goblin Bombardment are red. It deals 4: Elemental, Ocelot Pride, Voice of Victory and the Cat.
+  - The fixture is refreshed; only that entry changes.
+- **Harness:** 1844 new-path pairs (1842 before): 373 proven identical, and 1471 intended changes with reasons, including the two new ones (Ajani's 0 line; Chronicler of Heroes' enter trigger).
+- **Effect-parser baseline (f):** 3139 → 3138. Spec equivalence and the closure report are re-recorded; the effect census is unchanged.
+- **Chunks at `a0585ec`:** 5111 + 2766 passed, nothing failed. On a quiet machine even the three CPU-ceiling tests pass.
+
+**Leads, not built:**
+- **RX.2, the optional sacrifice parent** ("you may sacrifice a creature. When you do, ...": 26 hosts, Grist's −2 among them). It needs the SACRIFICE executor for its controller's optional sacrifice, and the AI's price of the trade.
+- **RX.3, the optional payment parent** ("you may pay {E}{E}{E}. When you do, ...": 41 hosts). It needs a PAY executor. Guide of Souls' line also waits on "whenever you attack", a trigger event the engine does not fire at all, so its angel line never happens.
+- **The line's damage is valued on the board as it is now:** the Cat its first instruction creates is not counted.
+- **A transformed permanent shows its front face's colours:** Ajani, Nacatl Avenger reads white, not red and white. A back face's own colours (CR 712.8) are not read.
