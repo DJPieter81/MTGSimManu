@@ -10164,9 +10164,84 @@ Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now 
 - **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged; single-owner `damage_write` stays 24.
 - **Chunks at `bc247e7`:** 5143 + 2766 passed, nothing failed.
 
+**Measured** (`dt-post` arm against `bfrw-post`, 600 cells each):
+- Jeskai Blink 52.8 → 51.4 (−1.5) and Boros Energy 73.0 → 72.5 (−0.5). Every other deck is within ±0.4. Audit violations 0 → 0.
+- The band miss is 42.5 → 42.2: Boros Energy now sits 2.5 above its band.
+- 18 of the 28 changed cells are Jeskai Blink's (Fable of the Mirror-Breaker ×4).
+- **Replayed cell-exact** (pre `90af9a5`, post `bc247e7`): Jeskai Blink vs 4c Omnath 7 → 5 of 20. Both changed seeds turn a Jeskai win into a loss.
+  - Seed 56000's first divergence is on T8: Reflection of Kiki-Jiki (2/2) attacks into Elesh Norn (4/7). Before, it lived through 4 damage; now it dies.
+  - Rules-correct.
+- Dimir Midrange does not move: Tamiyo's back face can now be damaged, and that decides no game on these seeds.
+
 **Leads, not built:**
 - **The AI's readers of a permanent's types** still read the printed front face in three places:
   - `ai/evaluator.py`'s card value (a transformed walker is valued as its front-face creature);
   - `ai/modal.py`'s mass-damage hit test;
   - `ai/response_enumeration.py`'s channel targets.
 - **A second 704.5p path:** `sba_manager.py` checks zero loyalty by the printed types. The game state's own pass reads the current ones, so no walker survives, but the rule has two owners.
+
+## Unit CN: a permanent's own type-changing static applies exactly while its condition holds (CR 613.1d, 613.4b, 611.3a, 205.1a-b, 700.5; 2026-10-16)
+
+**Source:** the Dimir Midrange root cause's WST v2 trace (`docs/diagnostics/2026-10-14_dimir_midrange_root_cause.md`, s50000, game 1). Kaito, Bane of Nightmares resolved on T7 and was never the 3/4 hexproof Ninja his text makes him during Dimir's turn. He never attacked in thirteen turns, ten of them into an empty board, and Dimir decked itself on T21.
+
+**Rule:**
+- A permanent's own static ability that changes its card types is a characteristic-changing effect on that permanent (CR 613.1d layer 4; 613.4b layer 7b for the power and toughness it sets; 613.1f layer 6 for the abilities it lists).
+- It applies on the battlefield only, and exactly while its printed condition holds (CR 611.3a). The conditions are: during its controller's turn, while it has counters, while its controller controls enough of something, or while its controller's devotion (CR 700.5) is below a number.
+- A type it sets replaces the printed ones, subtypes included (CR 205.1a). The rulings for Kaito and Grand Master of Flowers say so: while he's a creature he is not a planeswalker, damage to him removes no loyalty, and his loyalty abilities can still be activated (CR 606.3).
+- A type it says the permanent is "still" is kept (CR 205.1b; Gideon Blackblade is both).
+- "An artifact creature" keeps every prior type (CR 205.1b).
+- "~ isn't a creature" removes the type (a god below its devotion).
+
+**Defect:**
+- No part of the layer system read these abilities. The grammar already typed Kaito's ("he's a 3/4 Ninja creature and has hexproof" under "during your turn, as long as ~ has one or more loyalty counters"), and nothing applied it.
+- Three of the class's shapes were refused by the grammar:
+  - Gideon Blackblade's "that's still a planeswalker";
+  - the gods' "~ isn't a creature";
+  - their devotion condition.
+- The runner's loyalty loop offered abilities only to permanents that were planeswalkers at that moment.
+
+**Class:** 28 pool cards are applied:
+- the 22 Theros gods;
+- Kaito, Bane of Nightmares, Gideon Blackblade and Grand Master of Flowers;
+- Ezio, Brash Novice, Skyknight Squire and Rusted Relic.
+
+Refused and recorded: Phoenix Fleet Airship (a condition counting permanents named like it), Grond, the Gatebreaker (it's your turn and you control an Army) and Case of the Gorgon's Kiss (the solved designation). Registered: Kaito (Dimir Midrange ×2).
+
+**Steps:**
+- **Grammar:**
+  - `isn't a <type>` types a REMOVE_TYPES modification (a new kind, applied by the layer);
+  - `that's still a <type>` generalises the land-only form into `still`;
+  - `your devotion to <colours> is <comparison>` types a STATE condition `devotion`, its colours in the filter. Every other devotion phrase stays refused.
+- **Condition owner** (`effect_conditions`):
+  - `devotion` (CR 700.5: Phyrexian pips by colour, a hybrid pip once if any of its colours is named);
+  - the STATE predicate `devotion`;
+  - `self_static_condition_supported` / `_holds` for a permanent's own statics: turn, state, "~ has N or more <kind> counters", and their combinations.
+- **Card model:** `cem_types_set`, `cem_subtypes_set`, `cem_types_removed` (layer 4) and `cem_base_pt` (layer 7b). They are read by `effective_card_types` / `effective_subtypes` / the printed power and toughness, and cleared by the layer and by the zone funnel (CR 400.7).
+- **Layer:**
+  - `_printed_self_type_changes` reads the typed hosts once, face-aware, memoised; a host with any part outside the vocabulary yields nothing.
+  - `_self_type_change_effects` derives the layer 4, 6 and 7b effects of each change whose condition holds, at every recalculation.
+  - The layer recalculates as each turn begins (a `TURN_BEGINS` subscriber), so "during your turn" changes with the turn. Before this, the untap step and the turn header saw the last turn's state.
+- **Loyalty:** `PlaneswalkerManager.loyalty_permanents` (CR 606.3) lists the permanents with a loyalty ability on the face up. The runner's loyalty loop reads it.
+- **Auditor:** `613.1d/self_type_change` at recalculation. It is restated from the template's typed hosts directly (never the layer's reader): while the condition holds, the permanent has the types its static sets and lacks those it removes.
+
+**Tests:** 18, in `tests/test_a_permanents_own_type_changing_static_applies_exactly_while_its_condition_holds.py`. 14 were red first. The opponent's-turn, failed-condition, off-battlefield and audit-silent cases pass either way, as pins. Two pins move with intent:
+- the payload vocabulary lists REMOVE_TYPES as applied;
+- the turn-begins subscribers end with `layer_recalculation`.
+
+**Pins:** (`efd8fae`)
+- **Digest:** re-recorded after replay. Three games change, each with the same winner:
+  - Dimir Midrange vs Domain Zoo s57000: Kaito attacks on T7 and T8 for 3 each. Zoo still wins on T9.
+  - Ruby Storm vs Dimir Midrange s50500: Kaito attacks on T6, T8 and T9. Storm, at 3, sequences its kill differently and wins on T11, not T10.
+  - Living End vs Dimir Midrange s59000, game 1: Kaito attacks on T11 for 3. Living End still wins.
+- **Anchor:** 29, no flip.
+- **Spec equivalence and census:** re-recorded.
+  - The census's unmodelled conditions fall 1163 → 1141 and amounts 688 → 680.
+  - Three legacy-field disagreements are unmasked now that the devotion and "isn't a" clauses parse: Klothys and Pharika (`has_graveyard_recursion`), Luxior, Giada's Gift (`has_pump_grant`). They are recorded as leads.
+- **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). The parser ratchet is unchanged.
+- **Chunks at `efd8fae`:** 5161 + 2766 passed, nothing failed.
+
+**Leads, not built:**
+- **A god that stops being a creature keeps its God subtype.** CR 205.1a removes subtypes with their type, and the engine has no creature-type list to tell them apart.
+- **A loyalty ability that counts what happened this turn** (Kaito's 0: "draw a card for each opponent who lost life this turn") is activated in the first main phase, before the combat damage it counts. It should come in the second main phase.
+- **A permanent's own conditional keyword or P/T static** ("as long as ..., ~ gets +2/+2 and has flying"; 377 pool cards with the type-changing ones) is applied only where it rides on a type change. Dragon's Rage Channeler's delirium flying is never granted: its legacy grant mutates a computed keyword set.
+- **A permanent that stops being a creature mid-combat** is not removed from combat (CR 506.4). Rusted Relic is the one in the class whose condition can fail mid-combat.
