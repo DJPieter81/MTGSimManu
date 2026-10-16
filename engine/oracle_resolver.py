@@ -1464,8 +1464,29 @@ def return_transformed(game: "GameState", card: "CardInstance",
     return True
 
 
+def _audit_face_colours(game: "GameState", perm: "CardInstance") -> None:
+    """Rules audit (CR 712.8), restated from the template's raw back-face
+    fields: a permanent with its back face up, and no colour-setting
+    effect on it, shows its back face's printed colours. Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    t = perm.template
+    back = getattr(t, "back_face_colors", None)
+    if not (perm.is_transformed and t.back_face_types) or back is None \
+            or perm.cem_colors_set is not None:
+        return
+    rules_audit.check(
+        "712.8/face_colours", set(perm.colors) == set(back),
+        f"{perm.name} has its back face up but shows "
+        f"{sorted(c.value for c in perm.colors)}, not its back face's "
+        f"{sorted(c.value for c in back)}", game=game)
+
+
 def _announce_transform(game: "GameState", perm: "CardInstance",
                         controller: int, extra_loyalty: int) -> None:
+    _audit_face_colours(game, perm)
     back_loyalty = getattr(perm.template, 'back_face_loyalty', 0) or 0
     if back_loyalty > 0:
         perm.loyalty_counters = back_loyalty + extra_loyalty
@@ -1487,9 +1508,11 @@ def _permanent_is_colored(perm: "CardInstance") -> bool:
     Uses the object's COLORS, never its color identity — a devoid
     creature and a colorless land each have a non-empty color identity
     but are colorless, so they are not legal targets for a "target
-    permanent that's one or more colors" effect.
+    permanent that's one or more colors" effect. The colours it shows now
+    (`CardInstance.colors`): the face that is up (CR 712.8) and any
+    colour-setting effect (CR 105.2b).
     """
-    return bool(getattr(perm.template, 'colors', None))
+    return bool(perm.colors)
 
 
 def resolve_self_cast_trigger(game: "GameState", caster_idx: int,

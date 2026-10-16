@@ -714,6 +714,11 @@ class CardTemplate:
     back_face_power: Optional[int] = None
     back_face_toughness: Optional[int] = None
     back_face_keywords: Set[Keyword] = field(default_factory=set)
+    # The back face's own printed colour (CR 712.8; a back face prints it as
+    # a colour indicator, CR 204), from that face's MTGJSON `colors`. None
+    # for a card with no back face; an empty set for a colourless one.
+    # Read by `CardInstance.colors` while the back face is up.
+    back_face_colors: Optional[Set["Color"]] = None
     power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard",
                                                 # "permanent_count:<word>",
                                                 # "graveyard_count:<formula>:<type>:<scope>"
@@ -2561,6 +2566,11 @@ class CardInstance:
         that are one or more colors" sweeps)."""
         if self.cem_colors_set is not None:
             return set(self.cem_colors_set)
+        # A double-faced permanent with its back face up has that face's
+        # colour (CR 712.8), as it has its types and power.
+        if self.is_transformed and self.template.back_face_types \
+                and self.template.back_face_colors is not None:
+            return set(self.template.back_face_colors)
         return set(self.template.colors)
 
     @property

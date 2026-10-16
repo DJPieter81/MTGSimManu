@@ -140,8 +140,8 @@ def test_its_targets_are_chosen_by_its_controller_as_it_goes_on_the_stack(
 def test_the_condition_counts_what_its_description_names_other_than_the_source(
         card_db):
     """"If you control a red permanent other than <this>": the source
-    itself is never counted, another red permanent is, and so is a
-    permanent an effect has made red."""
+    itself is never counted -- Ajani, Nacatl Avenger is red and white
+    (unit BF, CR 712.8) -- and another red permanent is."""
     from engine import effect_conditions as ec
     game = _game(card_db)
     ajani = _ajani(game, card_db)
@@ -149,13 +149,12 @@ def test_the_condition_counts_what_its_description_names_other_than_the_source(
     sub = next(s.payload for s in _walk(host) if _reflexive(s))
     cond = sub.host.trigger.intervening_if
     assert ec.state_condition_supported(cond)
-    red = _add(game, card_db, "Monastery Swiftspear", 0)
-    assert not ec.state_condition_holds(game, 0, cond, source=red)
-    other = _add(game, card_db, "Raging Goblin", 0)
-    assert ec.state_condition_holds(game, 0, cond, source=red)
-    assert not ec.state_condition_holds(game, 1, cond, source=red), \
+    assert not ec.state_condition_holds(game, 0, cond, source=ajani), \
+        "the source is red, and is not counted"
+    _add(game, card_db, "Monastery Swiftspear", 0)
+    assert ec.state_condition_holds(game, 0, cond, source=ajani)
+    assert not ec.state_condition_holds(game, 1, cond, source=ajani), \
         "the opponent controls no red permanent"
-    del other
 
 
 def test_an_instructions_own_count_condition_reads_any_description(card_db):

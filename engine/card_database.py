@@ -1366,6 +1366,11 @@ class CardDatabase:
                             TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
                         ]
                         template.back_face_subtypes = list(back.get('subtypes', []) or [])
+                        # The back face's own colour (CR 712.8): MTGJSON's
+                        # face `colors` already holds its colour indicator.
+                        template.back_face_colors = {
+                            COLOR_MAP[c] for c in back.get('colors', []) or []
+                            if c in COLOR_MAP}
                         back_power = back.get('power')
                         template.back_face_power = (
                             int(back_power) if back_power not in (None, '', '*') else None
