@@ -10024,8 +10024,101 @@ Kills rise from 70 to 108 of 160 and decking falls from 90 to 52: the chain now 
 - **Effect-parser baseline (f):** 3139 → 3138. Spec equivalence and the closure report are re-recorded; the effect census is unchanged.
 - **Chunks at `a0585ec`:** 5111 + 2766 passed, nothing failed. On a quiet machine even the three CPU-ceiling tests pass.
 
+**Measured** (`rx-post` arm against `cc-post`, 600 cells each):
+- Boros Energy 64.4 → 73.0 (+8.6). Every other deck is within ±0.8, and Ruby Storm is 14.0 → 14.1. Audit violations 0 → 0.
+- The band miss is 40.0 → 42.7: Boros Energy now sits 3.0 above its [50, 70] band.
+- **Replayed cell-exact** (pre `707aeb6`, post `a0585ec`, the arm's own `_run_pair` with the deadline neutralised): Boros Energy vs 4c Omnath 10 → 15 of 20. All five changed seeds turn an Omnath win into a Boros win.
+- **Seed 52000, game 3 decides the match.** Its first divergence is turn 5.
+  - Pre: Ajani uses his +2.
+  - Post: Goblin Bombardment is cast, then Ajani's 0 creates a Cat. The red Bombardment meets the condition, and Ajani deals 3 to the face for Guide of Souls, Voice of Victory and the Cat, with no opposing creature. Guide of Souls triggers on the token.
+  - Rules-correct; Boros wins the game, and the match 2-1.
+- `run_meta --bo3` at the same seed does not replay the arm's game: its seeding is not the arm's. A cell's game is replayed through the arm's own `run_meta._run_pair(..., verbose=True)`, whose games carry their logs.
+
 **Leads, not built:**
+- **Boros Energy above its band.** With Ajani's 0 now performed, the line is as strong as it is in the real format. Whether opponents answer the walker (attacks on planeswalkers, removal aimed at it) is the next thing to read.
 - **RX.2, the optional sacrifice parent** ("you may sacrifice a creature. When you do, ...": 26 hosts, Grist's −2 among them). It needs the SACRIFICE executor for its controller's optional sacrifice, and the AI's price of the trade.
 - **RX.3, the optional payment parent** ("you may pay {E}{E}{E}. When you do, ...": 41 hosts). It needs a PAY executor. Guide of Souls' line also waits on "whenever you attack", a trigger event the engine does not fire at all, so its angel line never happens.
 - **The line's damage is valued on the board as it is now:** the Cat its first instruction creates is not counted.
-- **A transformed permanent shows its front face's colours:** Ajani, Nacatl Avenger reads white, not red and white. A back face's own colours (CR 712.8) are not read.
+- **A transformed permanent shows its front face's colours:** Ajani, Nacatl Avenger reads white, not red and white. A back face's own colours (CR 712.8) are not read. Built as unit BF.
+
+## Unit BF: a double-faced permanent has the colours of the face that is up (CR 712.8, 105.2b; 2026-10-16)
+
+**Source:** unit RX. Testing "a red permanent other than Ajani" showed a transformed Ajani, Nacatl Avenger reading white only.
+
+**Rule (CR 712.8, 204, 105.2b):**
+- While a transforming double-faced permanent has its back face up, it has only that face's characteristics, its colour among them. A back face usually prints its colour as a colour indicator.
+- With its front face up, or off the battlefield (CR 712.8a), it has its front face's.
+- A colour-setting effect still sets it.
+
+**Defect:**
+- `CardInstance.colors` returned the front face's printed colour whatever face was up. Every other characteristic already switched on the face: card types, subtypes, power, toughness and text.
+- The colour mismatches this produced:
+  - a transformed Ajani read white, not red and white;
+  - Ral, Leyline Prodigy read red, not blue and red;
+  - Tamiyo, Seasoned Scholar read blue, not green and blue;
+  - a colourless land or Eldrazi back face kept its front's colour.
+- A second reader of "is this permanent coloured", `oracle_resolver._permanent_is_colored`, read the printed template colour, bypassing both the face and colour-setting effects.
+
+**Class:** 93 of the pool's 365 transforming double-faced cards have faces that differ in colour.
+- 50 have back faces with an indicator; 43 have a coloured front and a colourless back.
+- Registered decks: Ajani (Boros Energy ×4), Ral (Ruby Storm ×4), Tamiyo (Dimir Midrange ×3), and The Legend of Roku (Boros Ponza; the engine makes its Avatar a token and never transforms it).
+- Modal double-faced land faces were already right: the whole template is swapped to `back_face_template` on the battlefield.
+
+**Steps:**
+- **Typed at load:** `CardTemplate.back_face_colors` is read from the back face's own MTGJSON `colors`, which folds in its colour indicator (`card_database.py`, beside the other `back_face_*` fields). It is None with no back face and an empty set for a colourless one.
+- **One reader:** `CardInstance.colors` shows it while the back face is up, gated as the type switch is (`is_transformed and back_face_types`). An effect-set colour still wins.
+- `_permanent_is_colored` reads the colours shown.
+- **Auditor:** `712.8/face_colours` at `_announce_transform`, the seam both transform paths pass through. It is restated from the template's raw back-face colours.
+
+**Tests:** 14, in `tests/test_a_double_faced_permanent_has_the_colours_of_the_face_that_is_up.py`. 12 were red first. The effect-set override and the auditor's silent case pass either way, as pins.
+
+**Pins:** (`d676f1f`)
+- **Digest:** 27 games byte-identical.
+- **Anchor:** 29.
+- **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged.
+- **Chunks at `d48764e`:** 5124 + 2766 passed. One test failed: RX's `test_the_condition_counts_what_its_description_names_other_than_the_source` assumed a transformed Ajani is not red, which is the bug this unit fixes. It is restated with Ajani as the source in `d676f1f`; re-run there, 24 passed.
+
+**Leads, not built:**
+- **A transformed permanent's keywords** are still the front face's. MTGJSON's per-face `keywords` list is the whole card's (a land back face lists the front's Flying and Lifelink), so a face's keywords must be read from its own text. The `back_face_keywords` field is populated from that list and read nowhere.
+- **`protection_from_colors`** is parsed from the front face's text only.
+- **`cast_manager._audit_target_discount`** recomputes a target's type and colour from the template; it is audit-only.
+
+## Unit RW: a ritual with no chain begun is cast only for a dig its mana pays (AI, from CR 106.4 and 500.4; 2026-10-16)
+
+**Source:** the `cc-post` replay, Ruby Storm vs 4c Omnath, seed 50500, game 1, turn 3 (`docs/diagnostics/2026-10-15_ruby_storm_goldfish_speed.md`, the cc-post section).
+
+**Rule (AI):**
+- A ritual's mana empties at the end of the phase. With no chain begun (storm 0) and no closer in reach, its only gift this turn is that mana: the storm it adds closes nothing.
+- So it is cast for a dig only when the dig needs it: when the mana after the ritual pays for more of the digs the AI will make than the mana without it, cheapest first.
+- A dig the lands already pay for is cast from the lands, and the ritual is kept for a turn its storm and mana can kill on.
+- Mid-chain the ritual's storm also feeds a chain in progress, so that gate is unchanged.
+
+**Defect:**
+- The ritual gate (unit RG0, `_digs_the_ai_will_make`) asked only whether the ritual's mana reached a dig. It never asked whether the mana without the ritual already did.
+- On seed 50500's turn 3, three lands paid for Ral and then Reckless Impulse at {R}. Desperate Ritual was cast first; its extra mana went unused, and the kill turn lost a spell of storm and its mana.
+- The gate's own test pinned the shape: `test_at_storm_zero_a_ritual_whose_mana_reaches_a_dig_is_not_held` admitted a ritual whose dig the two lands already paid for.
+
+**Class:** every ritual (the typed `ritual_mana` field) the storm-zone assessment gates at storm 0. These are the rituals of Ruby Storm and Living End, and of any deck that has a ritual and a dig.
+
+**Steps:**
+- `combo_calc._digs_paid`: how many digs a mana total pays for, cheapest first.
+- `_digs_the_ai_will_make(..., storm)`: at storm 0, the other digs count only when the ritual raises that number.
+- `_ritual_without_closer` passes the storm count.
+- A ritual that digs itself (its own draw, or a drawing cast trigger) is unchanged.
+
+**Tests:** 6, in `tests/test_a_ritual_with_no_chain_begun_is_cast_only_for_a_dig_its_mana_pays.py`.
+- Red first: the held case, and the replay's turn-3 board.
+- Pins: the funded dig, one dig more, and mid-chain at storms 1 and 3.
+- The RG0 test that pinned the defect is restated with a board where only the ritual's mana reaches the dig: three lands and Big Score.
+
+**Pins:** (`90af9a5`)
+- **Digest:** 27 games byte-identical.
+- **Anchor:** 29.
+- **Goldfish (the 160 seeds, pre `d676f1f`):** kills 101 → 101. One game differs: play 70059, a decking loss on T9 that now decks on T17. Against an opponent who does nothing, the turn-3 shape barely arises.
+- **Chunks at `90af9a5`:** 5131 + 2766 passed, nothing failed.
+
+**Mode A (unit MA in the plan), tested and not built:** `docs/diagnostics/2026-10-16_storm_closer_held_below_lethal_falsified.md`.
+- **Experiment:** both finisher branches' `storm == 0` gate on the develop line was removed, so a closer below lethal is held while a later turn can assemble lethal.
+- **Result:** over the 160 goldfish seeds, kills fall 101 → 74 and decking rises 59 → 86, failing both guards the plan set. The kills it keeps come sooner (by turn 6: 17 → 27).
+- **Reading:** Storm's damage accumulates across turns (Grapeshot chips, Past in Flames recasts, Empty the Warrens' tokens attack next turn), so a closer cashed mid-chain is progress. Holding a hand of closers waits for draws.
+- **Lead:** a hold bounded by what next turn's chain can assemble.

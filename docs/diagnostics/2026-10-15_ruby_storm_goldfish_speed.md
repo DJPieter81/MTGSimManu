@@ -236,3 +236,7 @@ All nine changed seeds turn a Storm win into a loss. The play-by-play of seed 50
 - **MA:** a closer below lethal is held while a later turn can still assemble lethal, whatever this turn has spent.
 
 In the loop-break count, FS moved Ruby Storm toward its band and CC away.
+
+**Outcome (2026-10-16):**
+- **RW** is built (`90af9a5`; tracker). Goldfish kills 101 → 101.
+- **MA is falsified as designed** (`docs/diagnostics/2026-10-16_storm_closer_held_below_lethal_falsified.md`). Over the 160 seeds, holding the closer below lethal cuts kills 101 → 74 and raises decking 59 → 86, though the kills it keeps come sooner (by turn 6: 17 → 27). The deck's damage accumulates across turns, so a closer cashed mid-chain is progress. Mode A is not built.

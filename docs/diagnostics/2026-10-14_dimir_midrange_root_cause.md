@@ -24,7 +24,11 @@ summary: >
   counters and never activated in six turns against a board of
   mana-value-2 permanents. (4) The SIDEBOARD brings Mystical Dispute in
   against a deck with no blue spells; it fizzles on a paid tax. Units are
-  built in that order, each red-first with its class.
+  built in that order, each red-first with its class. The WST v2 trace
+  (2026-10-16, s50000 at 90af9a5) names a fifth, in the layer system:
+  Kaito, Bane of Nightmares is never the 3/4 hexproof creature his text
+  makes him during Dimir's turn. He never attacks in thirteen turns, ten
+  of them into an empty board, and Dimir decks itself on T21.
 ---
 
 # Dimir Midrange at 37% — its interaction is held, its blockers die with their pump unused, and its sweeper is never activated
@@ -98,6 +102,33 @@ G1 is decided on T21 by decking:
 
 Before naming a subsystem here, the control mirror needs its own trace. Subsystem 1 bears on it as well: Dimir holds interaction. That is recorded, not built.
 
+### The WST v2 trace (2026-10-16)
+
+The cell still reads 5% both ways (`rx-post`). Seed 50000 was replayed through the arm's own Bo3 path (`run_meta._run_pair`, the deadline neutralised) at `90af9a5`, with every main-phase decision of Dimir traced. WST v2 wins 2-0.
+
+**Game 1, decided on T21 by decking. The exact turn is T8.**
+- Kaito, Bane of Nightmares resolves on T7 and stays on the battlefield to the end of the game. The opponent has no creature until a Solitude is hard-cast on T18.
+- Kaito's text: "During your turn, as long as Kaito has one or more loyalty counters on him, he's a 3/4 Ninja creature and has hexproof."
+  - From T8 on, Kaito is a 3/4 hexproof creature in Dimir's turn that has been under Dimir's control since the turn began (CR 302.6), so he can attack.
+  - The engine never makes him one. The board shows him under "Other" in Dimir's own turn, and he never attacks: ten turns into an empty board (T8 to T17), then three more into a lone 3/2 Solitude.
+- Instead Kaito's 0 (surveil 2, then draw a card for each opponent who lost life this turn) is activated each turn in the first main phase. No opponent has lost life by then, so it draws nothing and mills two.
+- Dimir's only damage is two Murktide Regent attacks (T15, T16; 19 → 13). Even on those turns the 0 comes before the combat damage it counts, so it draws nothing. Its library runs out on T21, with WST v2 at 18.
+
+**Game 2, decided on T10 by damage. No rules defect.**
+- On T5, Dimir taps out for a 6/6 Murktide Regent while WST v2 is tapped out (it cast Supreme Verdict on T4).
+- On its own T5, WST v2 resolves Teferi, Time Raveler, whose −3 returns Murktide to Dimir's hand. From then on Teferi's static ("each opponent can cast spells only any time they could cast a sorcery") strands Dimir's three Counterspells, and a Wan Shi Tong cast for X=4 attacks for 5 a turn.
+
+**A second engine defect, seen in game 1 T9:** Spell Snare ("counter target spell with mana value 2") countered Wan Shi Tong cast for X=6. On the stack, a spell's mana value counts the value chosen for its X (CR 202.3e), so that spell's is 8. Spell Snare had no legal target. This defect helps Dimir, so it is not the cause of the cell; it is its own unit.
+
+**Subsystem: the layer system (`engine/continuous_effects.py`).**
+- A permanent's own static ability that makes it a creature, with a set power and toughness, while a condition holds (CR 613.1d layer 4, 613.4b layer 7b, 611.3a) is not applied.
+- The layer derives its statics from the battlefield (`_derive_static_effects`): colour setting, forced land types and all basic land types. A conditional "is a creature" static is not among them.
+- Its inverse, "isn't a creature" under a condition, is not applied either.
+- **Class:** "during your turn ... is a creature" (Kaito, Gideon Blackblade; Grond names a control condition as well) and the gods' "as long as your devotion to <colour> is less than N, ~ isn't a creature" (22).
+- **Registered:** Kaito, Dimir Midrange ×2.
+
+**An AI lead, not built here:** a loyalty ability that counts what happened this turn ("for each opponent who lost life this turn") is activated before the event it counts. Main phase 2, after combat damage, is where it draws. It waits on the creature unit, since in this game nothing but Kaito himself would have dealt that damage.
+
 ## Order of units
 
 1. **Edict deferral:** smallest, one predicate, class 59.
@@ -129,3 +160,4 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
   - **Measured (`td-post`):** Dimir Midrange 40.4 → 41.2, inside the arm's noise; every deck is within 0.8.
   - Its auditor surfaced a pre-existing engine defect: a permanent that left the battlefield kept the colour an effect gave it (unit OB, `9bda2eb`).
 - **Loop-break count:** two Dimir-targeted units (EE, TD) without movement since CP. A third without movement halts Dimir code. Before one is built, the WST v2 control-mirror trace (Dimir decking itself by T21–23) is the deeper Bo3 root cause.
+- **The WST v2 trace (2026-10-16, above)** names the layer system: Kaito, Bane of Nightmares is never a creature during his controller's turn. That licenses the third Dimir unit, CN: a permanent whose static ability makes it a creature while a condition holds is one exactly then. It is sized and built per the abstraction contract, and measured against this cell.
