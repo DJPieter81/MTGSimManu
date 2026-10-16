@@ -139,7 +139,7 @@ HISTORY_PREDS = frozenset({
 
 PREDICATES = {
     ConditionKind.STATE: frozenset({
-        "count", "card_types", "basic_land_types", "total_power",
+        "count", "card_types", "basic_land_types", "devotion", "total_power",
         "total_toughness", "life_total", "poison", "monarch", "citys_blessing", "initiative",
         "completed_dungeon", "day", "night", "neither_day_nor_night"}),
     ConditionKind.OBJECT: frozenset({
@@ -1271,6 +1271,30 @@ def _object_rows(t: str) -> Optional[_W]:
     return None
 
 
+# "your devotion to <colour>[ and <colour>] is <comparison>" (CR 700.5):
+# the mana symbols of those colours among the mana costs of permanents its
+# controller controls, compared with a printed number. Any other devotion
+# phrase stays refused.
+_COLOR_LETTER = {"white": "W", "blue": "U", "black": "B", "red": "R",
+                 "green": "G"}
+_DEVOTION_RE = re.compile(
+    r"your devotion to (?P<cols>(?:white|blue|black|red|green)"
+    r"(?: and (?:white|blue|black|red|green))?) is ")
+
+
+def _devotion(t: str) -> Optional[_W]:
+    m = _DEVOTION_RE.match(t)
+    if m is None:
+        return None
+    op, n, pending, failure = _cmp_post(t, m.end())
+    if failure is not None or n is None or n.kind is not AmountKind.LITERAL:
+        return None
+    colors = frozenset(_COLOR_LETTER[w] for w in m.group("cols").split(" and "))
+    return _ok(Condition(ConditionKind.STATE, pred="devotion",
+                         filter=CardFilter(colors=colors), op=op, n=n, raw=t),
+               pending)
+
+
 # ── The whole body ─────────────────────────────────────────────────────
 
 _ROWS = (_fixed, _cast_fact, _history, _control, _there, _total,
@@ -1281,6 +1305,9 @@ _JOIN_RE = re.compile(r",? (?P<j>and|or)(?: if)? ")
 def _whole(t: str) -> _W:
     if not t:
         return _fail("empty")
+    w = _devotion(t)
+    if w is not None:
+        return w
     for code, rx in _REFUSALS:
         if rx.search(t):
             return _fail(code)

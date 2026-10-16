@@ -315,7 +315,36 @@ def state_condition_supported(cond: Condition) -> bool:
         return description_supported(f) and f.controller == "you"
     if cond.pred == "card_types":
         return _only(cond.filter, zone="graveyard", owner="you")
+    if cond.pred == "devotion":
+        f = cond.filter
+        return (isinstance(f, CardFilter) and bool(f.colors)
+                and f.colors <= _COLOR_LETTERS
+                and _set_fields(f) <= {"colors"})
     return False
+
+
+def _set_fields(f: CardFilter) -> set:
+    """The fields a description sets, its printed text aside."""
+    return {k for k, _ in f.as_tuple()} - {"raw"}
+
+
+def devotion(game: Any, player_idx: int, colors: frozenset) -> int:
+    """`player_idx`'s devotion to `colors` (CR 700.5): the mana symbols of
+    any of those colours among the mana costs of the permanents they
+    control. A Phyrexian pip is a symbol of its colour, a hybrid pip counts
+    once if any of its colours is named (CR 700.5a); generic and colourless
+    symbols count toward no colour."""
+    by_letter = {"W": "white", "U": "blue", "B": "black", "R": "red",
+                 "G": "green"}
+    total = 0
+    for perm in game.players[player_idx].battlefield:
+        cost = getattr(perm.template, "mana_cost", None)
+        if cost is None:
+            continue
+        total += sum(getattr(cost, by_letter[c], 0) for c in colors)
+        total += sum(1 for pip in getattr(cost, "hybrid", ())
+                     if any(o in colors for o in pip))
+    return total
 
 
 def state_condition_holds(game: Any, controller: int, cond: Condition,
@@ -327,8 +356,71 @@ def state_condition_holds(game: Any, controller: int, cond: Condition,
         count = permanents_controlled(
             game, controller,
             lambda p: permanent_described(p, cond.filter, source))
+    elif cond.pred == "devotion":
+        count = devotion(game, controller, cond.filter.colors)
     else:
         count = graveyard_card_types(game, controller)
+    return _OPS[cond.op](count, _literal(cond.n))
+
+
+# The counters an OBJECT condition on its own permanent counts: one kind,
+# or "*" for counters of any kind ("as long as ~ has two or more counters
+# on it").
+_ANY_COUNTER = "*"
+_COMBINATOR_KINDS = frozenset({ConditionKind.ALL_OF, ConditionKind.ANY_OF,
+                               ConditionKind.NOT})
+
+
+def self_static_condition_supported(cond: Optional[Condition]) -> bool:
+    """The printed conditions a permanent's own static ability may carry and
+    be applied under (CR 611.3a): its controller's turn, a supported STATE
+    condition, "~ has N or more <kind> counters on it", and any
+    conjunction, disjunction or negation of those."""
+    if cond is None:
+        return True
+    if cond.kind in _COMBINATOR_KINDS:
+        return bool(cond.children) and all(
+            self_static_condition_supported(c) for c in cond.children)
+    if cond.kind is ConditionKind.TURN:
+        return rule_condition_supported(cond)
+    if cond.kind is ConditionKind.STATE:
+        return state_condition_supported(cond)
+    if cond.kind is ConditionKind.OBJECT and cond.pred == "counters":
+        f, r = cond.filter, cond.ref
+        return (getattr(r, "kind", None) is RefKind.SELF
+                and cond.op in _OPS and _literal(cond.n) is not None
+                and isinstance(f, CardFilter) and len(f.counters) == 1
+                and f.counters[0][1] is True
+                and _set_fields(f) <= {"counters", "zone"}
+                and f.zone in ("", "battlefield"))
+    return False
+
+
+def self_static_condition_holds(game: Any, controller: int,
+                                cond: Optional[Condition],
+                                source: Any) -> bool:
+    """Does a supported condition of `source`'s own static ability hold
+    now, for its controller?"""
+    if cond is None:
+        return True
+    if cond.kind is ConditionKind.ALL_OF:
+        return all(self_static_condition_holds(game, controller, c, source)
+                   for c in cond.children)
+    if cond.kind is ConditionKind.ANY_OF:
+        return any(self_static_condition_holds(game, controller, c, source)
+                   for c in cond.children)
+    if cond.kind is ConditionKind.NOT:
+        return not self_static_condition_holds(game, controller,
+                                               cond.children[0], source)
+    if cond.kind is ConditionKind.TURN:
+        return rule_condition_holds(game, controller, cond)
+    if cond.kind is ConditionKind.STATE:
+        return state_condition_holds(game, controller, cond, source)
+    kind = cond.filter.counters[0][0]
+    if kind == _ANY_COUNTER:
+        count = sum(n for _, n in source.last_known().counters)
+    else:
+        count = source.counter_count(kind)
     return _OPS[cond.op](count, _literal(cond.n))
 
 

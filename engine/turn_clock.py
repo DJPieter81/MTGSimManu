@@ -117,6 +117,14 @@ def _reset_cross_turn_counters(game, ev):
     game.players[1 - ev.player].reset_cross_turn_event_counters()
 
 
+@subscribe(Clock.TURN_BEGINS, "layer_recalculation")
+def _recalculate_as_the_turn_begins(game, ev):
+    # CR 611.3a: a static ability's effect follows its condition at all
+    # times, and a condition on whose turn it is ("during your turn")
+    # changes as this turn begins -- after the expiries above.
+    game.continuous_effects.recalculate(game)
+
+
 @subscribe(Clock.UPKEEP, "delayed_triggers_upkeep")
 def _fire_upkeep_delayed(game, ev):
     from .delayed_triggers import DelayedTriggerStep

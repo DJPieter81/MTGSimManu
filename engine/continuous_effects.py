@@ -56,6 +56,8 @@ _EFFECT_CHARACTERISTIC_DEFAULTS = (
     ("cem_keywords", frozenset()), ("cem_colors_set", None),
     ("cem_land_type_set", None), ("cem_land_types_added", frozenset()),
     ("cem_types_added", frozenset()), ("cem_subtypes_added", frozenset()),
+    ("cem_types_set", None), ("cem_subtypes_set", None),
+    ("cem_types_removed", frozenset()), ("cem_base_pt", None),
 )
 
 
@@ -303,6 +305,11 @@ class ContinuousEffectsManager:
                 # Layer-4 type ADD ("in addition to its other types")
                 card.cem_types_added = set()
                 card.cem_subtypes_added = set()
+                # Layer-4 type SET / removal, layer-7b base P/T SET
+                card.cem_types_set = None
+                card.cem_subtypes_set = None
+                card.cem_types_removed = set()
+                card.cem_base_pt = None
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects + derived, key=lambda e: (
@@ -343,6 +350,7 @@ class ContinuousEffectsManager:
                 record_unhandled_effect(effect.source_name, "static")
         if _audit:
             self._audit_off_battlefield(game)
+            _audit_self_type_changes(game)
 
     @staticmethod
     def _audit_off_battlefield(game: "GameState") -> None:
@@ -410,6 +418,8 @@ class ContinuousEffectsManager:
                         controller=controller,
                         timestamp=source.instance_id,
                     ))
+                derived.extend(_self_type_change_effects(game, controller,
+                                                         source))
         return derived
 
     def _cleanup_stale_effects(self, game: "GameState") -> None:
@@ -938,3 +948,252 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                     controller=controller, timestamp=perm.instance_id,
                     condition=cond))
     return out
+
+
+# ── A permanent's own type-changing static (CR 613.1d, 611.3a) ────────
+
+@dataclass(frozen=True)
+class _SelfTypeChange:
+    """One printed static ability that changes its own permanent's card
+    types while its condition holds: the types (and subtypes) it sets, the
+    ones it adds, the ones it says the permanent isn't, the base power and
+    toughness it sets and the keywords it lists."""
+    condition: object
+    set_types: Optional[Tuple[CardType, ...]] = None
+    set_subtypes: Optional[Tuple[str, ...]] = None
+    add_types: Tuple[CardType, ...] = ()
+    add_subtypes: Tuple[str, ...] = ()
+    remove_types: Tuple[CardType, ...] = ()
+    base_pt: Optional[Tuple[int, int]] = None
+    keywords: Tuple[Keyword, ...] = ()
+
+
+# id(CardEffects) -> (that CardEffects, its per-face records).
+_SELF_TYPE_CHANGES: dict = {}
+_CARD_TYPE_BY_NAME = {t.value: t for t in CardType}
+_KEYWORD_BY_NAME = {k.value: k for k in Keyword}
+_SET_KEYS = frozenset({"types", "subtypes", "power", "toughness",
+                       "keywords", "still"})
+
+
+def _printed_self_type_changes(perm) -> tuple:
+    """The static abilities a permanent prints that change its own card
+    types while a condition holds, on the face it shows, read once from its
+    parsed text. An ability the layer cannot apply whole -- a payload,
+    condition or duration outside this vocabulary, or residue -- yields
+    nothing, never part of its effect. Memoised per parsed-effects object."""
+    effects = getattr(perm.template, "effects", None)
+    if effects is None:
+        return ()
+    hit = _SELF_TYPE_CHANGES.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(_face_self_type_changes(face)
+                              for face in effects.faces))
+        _SELF_TYPE_CHANGES[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _literal_pt(amount) -> Optional[int]:
+    from .effect_spec import AmountKind
+    if amount is None or amount.kind is not AmountKind.LITERAL \
+            or amount.quantity is not None or amount.ref is not None \
+            or amount.inner is not None:
+        return None
+    return amount.n
+
+
+def _self_change_of(mod, condition) -> Optional[_SelfTypeChange]:
+    """The record of one type-changing payload, or None when any part of it
+    is outside the vocabulary."""
+    from .effect_model import ModKind
+    d = dict(mod.data)
+    types = d.get("types") or ()
+    if not all(t in _CARD_TYPE_BY_NAME for t in types):
+        return None
+    ctypes = tuple(_CARD_TYPE_BY_NAME[t] for t in types)
+    subtypes = tuple(st[:1].upper() + st[1:] for st in d.get("subtypes") or ())
+    if mod.kind is ModKind.REMOVE_TYPES:
+        if set(d) != {"types"} or not ctypes:
+            return None
+        return _SelfTypeChange(condition, remove_types=ctypes)
+    if mod.kind is ModKind.ADD_TYPES:
+        if set(d) - {"types", "subtypes"} or not (ctypes or subtypes):
+            return None
+        return _SelfTypeChange(condition, add_types=ctypes,
+                               add_subtypes=subtypes)
+    if set(d) - _SET_KEYS or not ctypes:
+        return None
+    still = d.get("still") or ()
+    if not all(t in _CARD_TYPE_BY_NAME for t in still):
+        return None
+    kws = d.get("keywords") or ()
+    if not all(param is None and kw in _KEYWORD_BY_NAME for kw, param in kws):
+        return None
+    pt = None
+    if "power" in d or "toughness" in d:
+        p, t = _literal_pt(d.get("power")), _literal_pt(d.get("toughness"))
+        if p is None or t is None:
+            return None
+        pt = (p, t)
+    if {CardType.ARTIFACT, CardType.CREATURE} <= set(ctypes):
+        # "an artifact creature" keeps every prior type and subtype
+        # (CR 205.1b): the change adds its types.
+        return _SelfTypeChange(
+            condition, add_types=ctypes, add_subtypes=subtypes, base_pt=pt,
+            keywords=tuple(_KEYWORD_BY_NAME[kw] for kw, _ in kws))
+    return _SelfTypeChange(
+        condition,
+        set_types=ctypes + tuple(_CARD_TYPE_BY_NAME[t] for t in still
+                                 if _CARD_TYPE_BY_NAME[t] not in ctypes),
+        set_subtypes=subtypes or None, base_pt=pt,
+        keywords=tuple(_KEYWORD_BY_NAME[kw] for kw, _ in kws))
+
+
+def _face_self_type_changes(hosts) -> tuple:
+    import dataclasses
+    from .effect_conditions import self_static_condition_supported
+    from .effect_model import DurationKind, Modification, ModKind
+    from .effect_spec import HostKind, RefKind, Verb, iter_specs
+    type_kinds = (ModKind.SET_TYPES, ModKind.ADD_TYPES, ModKind.REMOVE_TYPES)
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC:
+            continue
+        specs = list(iter_specs(host.specs))
+        changes, keywords, refused = [], {}, False
+        for s in specs:
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or mod.kind not in type_kinds + (ModKind.ADD_KEYWORDS,):
+                continue
+            if s.residue or getattr(s.ref, "kind", None) is not RefKind.SELF \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD) \
+                    or not self_static_condition_supported(s.condition):
+                refused = True
+                continue
+            if mod.kind is ModKind.ADD_KEYWORDS:
+                kws = mod.get("keywords") or ()
+                if not kws or not all(p is None and k in _KEYWORD_BY_NAME
+                                      for k, p in kws):
+                    refused = True
+                    continue
+                keywords.setdefault(id(s.condition), (s.condition, []))[1] \
+                    .extend(_KEYWORD_BY_NAME[k] for k, _ in kws)
+                continue
+            change = _self_change_of(mod, s.condition)
+            if change is None:
+                refused = True
+                continue
+            changes.append(change)
+        if refused or not changes:
+            continue
+        # A keyword the same ability lists under the same condition ("he's
+        # a 3/4 Ninja creature and has hexproof") rides on its change.
+        for i, change in enumerate(changes):
+            extra = [kw for cond, kws in keywords.values()
+                     if cond == change.condition for kw in kws]
+            if extra:
+                changes[i] = dataclasses.replace(
+                    change, keywords=change.keywords + tuple(extra))
+        out.extend(changes)
+    return tuple(out)
+
+
+def _self_type_change_effects(game: "GameState", controller: int,
+                              source) -> list:
+    """The layer 4, 6 and 7b effects of `source`'s own type-changing
+    statics whose condition holds now (CR 611.3a): derived every
+    recalculation, so the change starts and ends with its condition."""
+    from .effect_conditions import self_static_condition_holds
+    out = []
+    for change in _printed_self_type_changes(source):
+        if not self_static_condition_holds(game, controller, change.condition,
+                                           source):
+            continue
+        sid, name = source.instance_id, source.template.name
+
+        def is_source(g, c, _sid=sid):
+            return c.instance_id == _sid
+
+        def apply_types(g, c, ch=change):
+            if ch.set_types is not None:
+                c.cem_types_set = list(ch.set_types)
+                if ch.set_subtypes is not None:
+                    c.cem_subtypes_set = list(ch.set_subtypes)
+            c.cem_types_added |= set(ch.add_types)
+            c.cem_subtypes_added |= set(ch.add_subtypes)
+            c.cem_types_removed |= set(ch.remove_types)
+
+        out.append(ContinuousEffect(
+            source_id=sid, source_name=name, layer=Layer.TYPE,
+            affected=is_source, apply=apply_types, timestamp=sid,
+            description=f"{name}'s own type change"))
+        if change.keywords:
+            def apply_keywords(g, c, kws=change.keywords):
+                c.cem_keywords |= set(kws)
+            out.append(ContinuousEffect(
+                source_id=sid, source_name=name, layer=Layer.ABILITY,
+                affected=is_source, apply=apply_keywords, timestamp=sid,
+                description=f"{name}'s own keywords"))
+        if change.base_pt is not None:
+            def apply_pt(g, c, pt=change.base_pt):
+                c.cem_base_pt = pt
+            out.append(ContinuousEffect(
+                source_id=sid, source_name=name, layer=Layer.POWER_TOUGHNESS,
+                pt_sublayer=PTSublayer.SET_PT, affected=is_source,
+                apply=apply_pt, timestamp=sid,
+                description=f"{name}'s own base power and toughness"))
+    return out
+
+
+def _audit_self_type_changes(game: "GameState") -> None:
+    """CR 613.1d, 611.3a, restated from each permanent's parsed text: while
+    the condition of a permanent's own static that sets, adds or removes a
+    card type holds, the permanent has the types it names and lacks the
+    types it removes. Read from the template's typed hosts directly, never
+    through the layer's own reader. Observation only."""
+    from .effect_conditions import (self_static_condition_holds,
+                                    self_static_condition_supported)
+    from .effect_model import Modification, ModKind
+    from .effect_spec import HostKind, RefKind, Verb, iter_specs
+    from .rules_audit import check as _audit_check
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            effects = getattr(perm.template, "effects", None)
+            if effects is None or not effects.faces:
+                continue
+            face = effects.faces[1 if perm.is_transformed
+                                 and len(effects.faces) > 1 else 0]
+            for host in face:
+                if host.kind is not HostKind.STATIC:
+                    continue
+                for s in iter_specs(host.specs):
+                    mod = s.payload
+                    if s.verb is not Verb.CONTINUOUS \
+                            or not isinstance(mod, Modification) \
+                            or mod.kind is not ModKind.SET_TYPES \
+                            and mod.kind is not ModKind.REMOVE_TYPES \
+                            or getattr(s.ref, "kind", None) is not RefKind.SELF \
+                            or s.residue \
+                            or not self_static_condition_supported(s.condition):
+                        continue
+                    keys = {k for k, _ in mod.data}
+                    if keys - {"types", "subtypes", "power", "toughness",
+                               "keywords", "still"}:
+                        continue          # a variant the model refuses
+                    if not self_static_condition_holds(game, controller,
+                                                       s.condition, perm):
+                        continue
+                    named = {t for t in (mod.get("types") or ())}
+                    have = {t.value for t in perm.effective_card_types}
+                    ok = (not named & have if mod.kind is ModKind.REMOVE_TYPES
+                          else named <= have)
+                    _audit_check("613.1d/self_type_change", ok,
+                                 f"{perm.name}: its condition holds but its "
+                                 f"types are {sorted(have)} "
+                                 f"({mod.kind.value} {sorted(named)})",
+                                 game=game)

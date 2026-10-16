@@ -362,6 +362,9 @@ _ROWS: Tuple[_Row, ...] = (
     _r("be", _C, r"(?= (?:an?|all|still|every|colorless|the colou?r|"
                  r"(?:white|blue|black|red|green)(?: and \w+)?)\b)",
        ModKind.ADD_TYPES),
+    # "~ isn't a creature" (CR 205.1a): a type the object loses.
+    _r("isn't", _C, r"(?= an? (?:creature|artifact|enchantment|land|"
+                    r"planeswalker|battle)\b)", ModKind.REMOVE_TYPES),
     _r("switch", _C, r"(?= [^.;]*?\bpower and toughness\b)", ModKind.SWITCH_PT),
     _r("can't", _C, r"(?= (?:draw|cast) more than\b)", ModKind.LIMIT),
     _r("can't", _C, mod=ModKind.PROHIBIT),
@@ -427,6 +430,7 @@ VERB_ONLY_WORDS = frozenset({
 def _inflections(lemma: str) -> Tuple[str, ...]:
     """The printed base and third-person forms of a lemma's first word."""
     irregular = {"have": ("have", "has"), "be": ("is", "are"),
+                 "isn't": ("isn't", "aren't"),
                  "can't": ("can't", "cannot"), "can": ("can",),
                  "doesn't": ("doesn't", "don't"),
                  "must": ("must",), "the": ("the",)}

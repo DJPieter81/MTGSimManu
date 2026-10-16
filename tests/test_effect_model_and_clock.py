@@ -25,7 +25,8 @@ def test_turn_boundary_resets_are_clock_subscribers_in_order():
     assert subscribers(Clock.TURN_BEGINS) == [
         "rule_effects_expiry", "this_turn_effects_audit",
         "player_turn_state_reset", "until_next_turn_expiry",
-        "until_next_turn_audit", "cross_turn_event_counters_reset"]
+        "until_next_turn_audit", "cross_turn_event_counters_reset",
+        "layer_recalculation"]
     assert subscribers(Clock.CLEANUP) == ["rule_effects_expiry",
                                           "end_of_turn_effects_expiry",
                                           "flashback_grants_expiry"]

@@ -180,6 +180,7 @@ class ModKind(Enum):
     # characteristic (CR 613)
     SET_TYPES = "set_types"
     ADD_TYPES = "add_types"
+    REMOVE_TYPES = "remove_types"       # "~ isn't a creature" (CR 205.1a)
     SET_COLORS = "set_colors"
     ADD_KEYWORDS = "add_keywords"
     REMOVE_KEYWORDS = "remove_keywords"
@@ -213,7 +214,8 @@ _RULE_KINDS = frozenset({ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT,
 # The payload vocabulary above is absent for that reason.
 APPLIED_MODKINDS: FrozenSet[ModKind] = frozenset({
     # the layer system (continuous_effects, CR 613)
-    ModKind.SET_TYPES, ModKind.ADD_TYPES, ModKind.SET_COLORS,
+    ModKind.SET_TYPES, ModKind.ADD_TYPES, ModKind.REMOVE_TYPES,
+    ModKind.SET_COLORS,
     ModKind.ADD_KEYWORDS, ModKind.REMOVE_KEYWORDS, ModKind.SET_BASE_PT,
     ModKind.MODIFY_PT,
     # the rule gate that owns the action (rules_query)

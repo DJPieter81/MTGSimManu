@@ -1760,7 +1760,10 @@ class GameRunner:
         player = game.players[active]
         opponent = 1 - active
 
-        for pw in player.planeswalkers:
+        # CR 606.3: every permanent with a loyalty ability, whatever its
+        # types are now.
+        from .planeswalker_manager import PlaneswalkerManager as _PWM
+        for pw in _PWM.loyalty_permanents(player):
             if pw.entered_battlefield_this_turn and pw.loyalty_counters <= 0:
                 continue
 

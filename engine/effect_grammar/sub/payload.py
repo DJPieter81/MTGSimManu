@@ -741,7 +741,16 @@ _BECOMES_RE = re.compile(
     r"(?:becomes?|is|are|is still|are still) (?P<article>an? )?")
 _IN_ADDITION_RE = re.compile(
     r"(?:,)? in addition to (?:its|their) other (?:colors and )?(?:creature |card )?types\b")
-_STILL_LAND_RE = re.compile(r"(?:,)? (?:that's|it's) still a land\b")
+# "that's still a planeswalker" / "it's still a land" (CR 205.1b): a type
+# the type-setting effect keeps.
+_STILL_RE = re.compile(r"(?:,)? (?:that's|it's) still an? "
+                       r"(?P<type>land|planeswalker|artifact|enchantment|"
+                       r"creature|battle)\b")
+# "~ isn't a creature" (CR 205.1a): a type-changing effect that removes a
+# card type.
+_NOT_A_TYPE_RE = re.compile(r"(?:isn't|is not|aren't|are not) an? "
+                            r"(?P<type>creature|artifact|enchantment|land|"
+                            r"planeswalker|battle)\b")
 _COLOR_OF_CHOICE_RE = re.compile(
     r"becomes? the colou?r (?:or colou?rs )?of your choice\b")
 # Longest rows first: a row is a prefix of the rows after it. A row's match
@@ -876,9 +885,9 @@ def _type_change_rel(t: str) -> Optional[_Rel]:
     am = _IN_ADDITION_RE.match(t, end)
     if am:
         kind, end = ModKind.ADD_TYPES, am.end()
-    sm = _STILL_LAND_RE.match(t, end)
+    sm = _STILL_RE.match(t, end)
     if sm:
-        data["still_a_land"] = True
+        data["still"] = (sm.group("type"),)
         end = sm.end()
     if not typed:                    # "becomes a 4/4": P/T only
         kind = ModKind.SET_BASE_PT
@@ -996,6 +1005,10 @@ def _modification_rel(t: str) -> _Rel:
     cost = _cost_modifier_rel(t)
     if cost is not None:
         return cost
+    m = _NOT_A_TYPE_RE.match(t)
+    if m:
+        return (_mod(ModKind.REMOVE_TYPES, types=(m.group("type"),)), None,
+                m.end(), None, (), ())
     changed = _type_change_rel(t)
     if changed is not None:
         return changed

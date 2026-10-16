@@ -1456,7 +1456,8 @@ def _audit_described_counters(ctx: Resolution, f: CardFilter, source: Any,
     missed = []
     for perm, was in seen:
         if perm.zone != "battlefield" or perm.is_transformed \
-                or perm.cem_types_added or perm.cem_subtypes_added:
+                or perm.cem_types_added or perm.cem_subtypes_added \
+                or perm.cem_types_set is not None or perm.cem_types_removed:
             continue
         types = {t.value for t in perm.template.card_types}
         subtypes = {str(st).lower() for st in perm.template.subtypes or ()}

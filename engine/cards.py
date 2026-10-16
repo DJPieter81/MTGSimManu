@@ -1850,6 +1850,15 @@ class CardInstance:
     # effective_subtypes.
     cem_types_added: Set[CardType] = field(default_factory=set)
     cem_subtypes_added: Set[str] = field(default_factory=set)
+    # A type-setting effect's card types and subtypes (CR 205.1a, layer
+    # 4): they replace the face's (None: no such effect applies). Types an
+    # effect says the object isn't are removed after. The base power and
+    # toughness an effect sets (CR 613.4b, layer 7b; None: printed).
+    # Written only by ContinuousEffectsManager.recalculate, like the rest.
+    cem_types_set: Optional[List[CardType]] = None
+    cem_subtypes_set: Optional[List[str]] = None
+    cem_types_removed: Set[CardType] = field(default_factory=set)
+    cem_base_pt: Optional[Tuple[int, int]] = None
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -1951,23 +1960,30 @@ class CardInstance:
 
     @property
     def effective_card_types(self) -> List[CardType]:
-        """Card types of whichever face is currently active, plus any an
-        effect adds (CR 205.1b, 613.1d)."""
-        if self.is_transformed and self.template.back_face_types:
+        """Card types of whichever face is currently active -- or the ones
+        a type-setting effect sets -- plus any an effect adds, less any an
+        effect says the object isn't (CR 205.1a-b, 613.1d)."""
+        if self.cem_types_set is not None:
+            face = self.cem_types_set
+        elif self.is_transformed and self.template.back_face_types:
             face = self.template.back_face_types
         else:
             face = self.template.card_types
-        added = self.cem_types_added
-        if not added:
+        added, removed = self.cem_types_added, self.cem_types_removed
+        if not added and not removed:
             return face
-        return list(face) + [t for t in CardType if t in added
-                             and t not in face]
+        types = list(face) + [t for t in CardType if t in added
+                              and t not in face]
+        return [t for t in types if t not in removed] if removed else types
 
     @property
     def effective_subtypes(self) -> List[str]:
-        """Subtypes of whichever face is currently active, plus any an
-        effect adds (CR 205.1b, 613.1d)."""
-        if self.is_transformed and self.template.back_face_types:
+        """Subtypes of whichever face is currently active -- or the ones a
+        type-setting effect sets -- plus any an effect adds (CR 205.1b,
+        613.1d)."""
+        if self.cem_subtypes_set is not None:
+            face = self.cem_subtypes_set
+        elif self.is_transformed and self.template.back_face_types:
             face = self.template.back_face_subtypes
         else:
             face = self.template.subtypes
@@ -1987,14 +2003,20 @@ class CardInstance:
         return CardType.PLANESWALKER in self.effective_card_types
 
     def _effective_printed_power(self) -> int:
-        """Printed power of whichever face is currently active."""
+        """Printed power of whichever face is currently active, or the base
+        power an effect sets (CR 613.4b, layer 7b)."""
+        if self.cem_base_pt is not None:
+            return self.cem_base_pt[0]
         if (self.is_transformed and self.template.back_face_types
                 and self.template.back_face_power is not None):
             return self.template.back_face_power
         return self.template.power or 0
 
     def _effective_printed_toughness(self) -> int:
-        """Printed toughness of whichever face is currently active."""
+        """Printed toughness of whichever face is currently active, or the
+        base toughness an effect sets (CR 613.4b, layer 7b)."""
+        if self.cem_base_pt is not None:
+            return self.cem_base_pt[1]
         if (self.is_transformed and self.template.back_face_types
                 and self.template.back_face_toughness is not None):
             return self.template.back_face_toughness

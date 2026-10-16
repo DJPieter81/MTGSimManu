@@ -614,6 +614,10 @@ class ZoneManager:
         card.cem_land_types_added = set()
         card.cem_types_added = set()
         card.cem_subtypes_added = set()
+        card.cem_types_set = None
+        card.cem_subtypes_set = None
+        card.cem_types_removed = set()
+        card.cem_base_pt = None
 
         # A modal double-faced card played as its back face is its front
         # face again off the battlefield (CR 712.8a).

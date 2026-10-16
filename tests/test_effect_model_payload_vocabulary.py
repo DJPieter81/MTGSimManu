@@ -32,7 +32,8 @@ _PAYLOAD_ONLY = {"GRANT_ABILITY", "REMOVE_ALL_ABILITIES", "SWITCH_PT",
 # Applied by the layer system (CR 613: types, colours, keywords, P/T), by
 # the rule gate that owns the action (rules_query), or by the draw owner
 # (REPLACE_DRAW, unit DRW: GameState.draw_cards through rules_query).
-_APPLIED = {"SET_TYPES", "ADD_TYPES", "SET_COLORS", "ADD_KEYWORDS",
+_APPLIED = {"SET_TYPES", "ADD_TYPES", "REMOVE_TYPES", "SET_COLORS",
+            "ADD_KEYWORDS",
             "REMOVE_KEYWORDS", "SET_BASE_PT", "MODIFY_PT", "PROHIBIT",
             "PERMIT", "LIMIT", "COST_DELTA", "PREVENT_DAMAGE", "OBSERVE",
             "REPLACE_DRAW"}

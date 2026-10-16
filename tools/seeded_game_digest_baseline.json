@@ -1,5 +1,5 @@
 {
-  "combined": "a3b6b0968d3136ffc1e44a31c3109150ca4d86fa14b416e86413768df7bfdc44",
+  "combined": "7159c0d916a1581f586c52769bbb54c363fd57cdbaf4ce6f2a3835d2d53e6949",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -45,8 +45,8 @@
       "winner": "Grixis Reanimator"
     },
     "bo1|Dimir Midrange|Domain Zoo|57000": {
-      "lines": 570,
-      "sha256": "d6587d322a6887e0a18a87aa04f7517adc1607d0b033f7f4ee84b91d68ebf1f6",
+      "lines": 578,
+      "sha256": "040b2e2e20ca08d7a2cc031eb3329de30e86bd49a82f93c553f7ddfce7a78417",
       "turns": 9,
       "winner": "Domain Zoo"
     },
@@ -93,9 +93,9 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 852,
-      "sha256": "0ee219c339d290d4dedfc8c18000f865437c2cce991ba1493ebe5c297eb09eb6",
-      "turns": 10,
+      "lines": 1008,
+      "sha256": "e0b59f52c20af3c55726293061582b88280f161d2a70b2fafd26c1c74954e361",
+      "turns": 11,
       "winner": "Ruby Storm"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
@@ -153,8 +153,8 @@
       "winner": "Jeskai Blink"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
-      "lines": 724,
-      "sha256": "db9c6895047b9f28c2f6b015cb3b6bd66783549f11b8e36cd43f6b505cd839b3",
+      "lines": 728,
+      "sha256": "6edfea67b3007134e0c7a46d926e730037f763fe49d7667180138f4285d52c3b",
       "turns": 11,
       "winner": "Living End"
     },

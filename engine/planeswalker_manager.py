@@ -32,7 +32,7 @@ Static methods; each takes `game: GameState` as its first argument.
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List
 
 from .cards import CardInstance, LoyaltyAbility, LoyaltyEffectKind
 from .target_solver import enumerate_legal_targets
@@ -82,6 +82,16 @@ class PlaneswalkerManager:
                 and template.back_face_oracle):
             return template.back_face_loyalty_abilities or {}
         return template.loyalty_abilities or {}
+
+    @staticmethod
+    def loyalty_permanents(player) -> List[CardInstance]:
+        """The permanents `player` controls with a loyalty ability on the
+        face they show (CR 606.3): a loyalty ability is activated from its
+        permanent whatever that permanent's types are now -- a planeswalker
+        its own static makes only a creature during its controller's turn
+        still has its loyalty abilities."""
+        return [c for c in player.battlefield
+                if PlaneswalkerManager.loyalty_abilities(c)]
 
     @staticmethod
     def resolvable_ability_slots(pw_card: CardInstance,
