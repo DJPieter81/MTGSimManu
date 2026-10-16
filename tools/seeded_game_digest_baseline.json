@@ -1,5 +1,5 @@
 {
-  "combined": "31e39fd750c5bac567e74afb16632230f90de5b652fa31926dc5559937880c0c",
+  "combined": "a3b6b0968d3136ffc1e44a31c3109150ca4d86fa14b416e86413768df7bfdc44",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -135,22 +135,22 @@
       "winner": "Domain Zoo"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g1": {
-      "lines": 1476,
-      "sha256": "e143fa0c26c684b3fc880ea57d9ad53bc60c7e518353b18df945945d9d3eaeda",
-      "turns": 23,
+      "lines": 1542,
+      "sha256": "a91ce859d5d5b64e5b05ce621539f1d950eb9f8873619dd607e6647486673245",
+      "turns": 24,
       "winner": "Jeskai Blink"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g2": {
-      "lines": 877,
-      "sha256": "95545685e7f93a041d7e4caa6eb41c867ee9cdfdf5dfca0767e339cfde203cca",
-      "turns": 14,
+      "lines": 565,
+      "sha256": "4f480061c8e6f4b0a7b672524562a5b76afd4f1237daf2508c611a8d3abbddf8",
+      "turns": 8,
       "winner": "Eldrazi Tron"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g3": {
-      "lines": 914,
-      "sha256": "3133e3bb9c162203719ca7f6b0d0e155e66e2f5aa99eb259e90867944beb991e",
-      "turns": 15,
-      "winner": "Eldrazi Tron"
+      "lines": 606,
+      "sha256": "c8aedc43b23e31687392468dbe181987af76a0be736bd5eb169410b36eef7a56",
+      "turns": 10,
+      "winner": "Jeskai Blink"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
       "lines": 724,

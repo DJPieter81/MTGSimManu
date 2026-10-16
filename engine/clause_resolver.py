@@ -380,16 +380,17 @@ def _a_energy_damage(ctx):
         if tid == -1:
             continue  # face-marker — illegal target for this spell
         cand = game.get_card_by_id(tid)
+        # A creature or planeswalker by the types it has now (CR 712.8,
+        # 613.1d).
         if (cand is not None and cand.zone == "battlefield"
-                and (cand.template.is_creature
-                     or 'planeswalker' in [t.value for t in cand.template.card_types])):
+                and (cand.effective_is_creature or cand.is_animated
+                     or cand.effective_is_planeswalker)):
             chosen = cand
             break
     if chosen is None:
         opp = game.players[1 - controller]
-        opp_pw = [c for c in opp.battlefield
-                  if 'planeswalker' in [t.value for t in c.template.card_types]]
-        candidates = list(opp.creatures) + opp_pw
+        candidates = list(opp.creatures) + [
+            c for c in opp.planeswalkers if c not in opp.creatures]
         if not candidates:
             return True  # fizzle: no legal target
         chosen = max(candidates,
@@ -397,23 +398,26 @@ def _a_energy_damage(ctx):
                      + getattr(c, 'loyalty_counters', 0))
     player = game.players[controller]
     player.add_energy(self_gen_energy)
-    if chosen.template.is_creature:
-        remaining = (chosen.toughness or 0) - getattr(chosen, 'damage_marked', 0)
-    else:
-        remaining = chosen.loyalty_counters  # CR 119.3
+    # The damage that destroys it: lethal damage while it is a creature,
+    # its loyalty while it is a planeswalker (CR 120.3c, 120.3e, 704.5g,
+    # 704.5i), the least of them when it is both.
+    lethal = []
+    if chosen.effective_is_creature or chosen.is_animated:
+        lethal.append((chosen.toughness or 0) - chosen.damage_marked)
+    if chosen.effective_is_planeswalker:
+        lethal.append(chosen.loyalty_counters)
+    remaining = min(lethal)
     need_to_kill = max(0, remaining - base_damage)
     spend = min(need_to_kill, player.energy_counters) if need_to_kill > 0 else 0
     if spend > 0:
         player.spend_energy(spend)
     total = base_damage + spend
     if total > 0:
-        if chosen.template.is_creature:
-            chosen.damage_marked = getattr(chosen, 'damage_marked', 0) + total
-            if chosen.is_dead:
-                game._creature_dies(chosen)
-        else:
-            chosen.loyalty_counters = max(0, chosen.loyalty_counters - total)
-            game.check_state_based_actions()
+        # Through the damage owner, whose results follow the types the
+        # permanent has now (CR 120.3).
+        from engine.damage import deal_damage
+        deal_damage(card, chosen, total)
+        game.check_state_based_actions()
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"{card.name} deals {total} to {chosen.name} "

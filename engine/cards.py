@@ -2682,12 +2682,11 @@ class CardInstance:
           implemented; falls through to no-op until W1 adds the
           battle target type.
 
-        A single CardInstance can be both creature and PW
-        (Tibalt, Cosmic Impostor-style cards): the engine treats
-        the *current* face / current types as authoritative; we
-        check creature first because the most common multi-type
-        case is creature-with-PW-back-face and we are damaging the
-        face that is currently on the battlefield.
+        The results follow the types the permanent has now (CR 120.3c,
+        120.3e): a transformed double-faced permanent has only its
+        back face's (CR 712.8), and an effect or an animation can make
+        a permanent a creature (CR 613.1d). A permanent that is both a
+        creature and a planeswalker takes both results.
 
         `source` is accepted to satisfy the protocol; today it
         feeds into the deathtouch marker that `deal_damage` writes
@@ -2695,17 +2694,13 @@ class CardInstance:
         Triggers that care about "dealt damage by X" read it from
         the event log, not from this parameter.
         """
-        if CardType.CREATURE in self.template.card_types:
+        if self.effective_is_creature or self.is_animated:
             self.damage_marked += amount
-            return
-        if CardType.PLANESWALKER in self.template.card_types:
+        if self.effective_is_planeswalker:
             self.loyalty_counters -= amount
-            return
-        # Unknown permanent type (battle, etc.) — no-op until the
-        # rules layer for that type lands. Returning silently is
-        # safe; the SBA pass will not destroy anything that wasn't
-        # marked.
-        return
+        # Any other permanent type (a battle, etc.) takes no result until
+        # the rules layer for that type lands; the SBA pass destroys
+        # nothing that was not marked.
 
     def new_turn(self):
         """Called at the start of controller's turn."""
