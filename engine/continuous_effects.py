@@ -840,12 +840,14 @@ _PRINTED_RULES: dict = {}
 
 
 def _printed_prohibitions(perm) -> tuple:
-    """The rule prohibitions a permanent's printed static abilities state,
-    on the face it shows, read from its parsed text (CR 113.1, 604.1): one
-    ``(action, data, selector_kind, condition)`` record per prohibited act.
-    A spec the read path cannot run whole -- an action, filter, subject,
-    duration or condition outside its vocabulary, or residue -- yields
-    nothing, never part of its rule. Memoised per parsed-effects object."""
+    """The rule prohibitions and turn-scoped cast caps a permanent's printed
+    static abilities state, on the face it shows, read from its parsed text
+    (CR 113.1, 604.1, 101.2): one ``(mod_kind, action, data, selector_kind,
+    condition)`` record per prohibited act or cap, `mod_kind` PROHIBIT or
+    LIMIT. A spec the read path cannot run whole -- an action, filter,
+    subject, count, duration or condition outside its vocabulary, or
+    residue -- yields nothing, never part of its rule. Memoised per
+    parsed-effects object."""
     effects = perm.template.effects
     hit = _PRINTED_RULES.get(id(effects))
     if hit is None or hit[0] is not effects:
@@ -869,7 +871,14 @@ def _face_prohibitions(hosts) -> tuple:
         for s in iter_specs(host.specs):
             mod = s.payload
             if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
-                    or mod.kind is not ModKind.PROHIBIT or s.residue:
+                    or s.residue:
+                continue
+            if mod.kind is ModKind.LIMIT:
+                cap = _cast_cap_record(s, mod)
+                if cap is not None:
+                    out.append(cap)
+                continue
+            if mod.kind is not ModKind.PROHIBIT:
                 continue
             actions = tuple(mod.get("actions") or (mod.action,))
             who = getattr(s.subject, "kind", None)
@@ -892,19 +901,48 @@ def _face_prohibitions(hosts) -> tuple:
                     data = (("sources", tuple(mod.get("sources"))),)
                 else:
                     data = ()
-                records.append((action, data, who, s.condition))
+                records.append((ModKind.PROHIBIT, action, data, who,
+                                s.condition))
             else:
                 out.extend(records)
     return tuple(out)
 
 
+# A cast cap's filters the read path knows (rules_query.cast_filter_admits).
+_CAP_FILTERS = frozenset({None, "noncreature", "nonartifact", "non_phyrexian"})
+
+
+def _cast_cap_record(s, mod) -> "tuple | None":
+    """A printed "<players> can't cast more than N <filter> spells each
+    turn" (CR 101.2) as a rule record, or None when the read path can't run
+    it whole: a subject other than you, each opponent or each player (an
+    enchanted player), a count that is not a printed number, a filter
+    outside its vocabulary, an unsupported condition or duration."""
+    from .effect_conditions import rule_condition_supported
+    from .effect_model import DurationKind, ModKind, SelectorKind
+    from .effect_spec import AmountKind
+    who = getattr(s.subject, "kind", None)
+    n = mod.get("max")
+    if mod.action != "cast" \
+            or who not in (SelectorKind.PLAYER, SelectorKind.OPPONENTS,
+                           SelectorKind.ALL_PLAYERS) \
+            or getattr(n, "kind", None) is not AmountKind.LITERAL \
+            or mod.get("filter") not in _CAP_FILTERS \
+            or not rule_condition_supported(s.condition) \
+            or (s.duration is not None and s.duration.kind
+                is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+        return None
+    data = (("filter", mod.get("filter")), ("max", n.n))
+    return (ModKind.LIMIT, "cast", data, who, s.condition)
+
+
 def _derive_static_rule_effects(game: "GameState") -> list:
     """Rule-modifying effects that permanents have by being on the
     battlefield (CR 611.3a): cost reducers, draw limits and the printed
-    static prohibitions (`_printed_prohibitions`) apply while their source
-    is there."""
+    static prohibitions and cast caps (`_printed_prohibitions`) apply while
+    their source is there."""
     from .effect_model import (Effect, Modification, OriginKind, Selector,
-                               WHILE_SOURCE)
+                               SelectorKind, WHILE_SOURCE)
     from .effect_model import ModKind, cost_delta_effect, draw_limit_effect
     from .oracle_resolver import reduction_rules_of
     out = []
@@ -938,12 +976,24 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                 out.append(draw_limit_effect(controller, lim['who'], lim['max'],
                                              WHILE_SOURCE, source_id=perm.instance_id,
                                              origin=OriginKind.STATIC))
-            for action, data, who, cond in _printed_prohibitions(perm):
-                # CR 101.2 / 604.1: a printed prohibition binds the players
-                # it names, relative to this permanent's controller.
+            if "canonist_active" in perm.instance_tags:
+                # CR 101.2: "each player who has cast a nonartifact spell
+                # this turn can't cast additional nonartifact spells" -- a
+                # cap of one nonartifact spell. The grammar refuses a
+                # player set narrowed by a relative clause, so its legacy
+                # enter handler's tag carries the cap to the same owner.
+                out.append(Effect(
+                    Selector(SelectorKind.ALL_PLAYERS, player=controller),
+                    Modification(ModKind.LIMIT, action="cast",
+                                 data=(("filter", "nonartifact"), ("max", 1))),
+                    WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                    controller=controller, timestamp=perm.instance_id))
+            for kind, action, data, who, cond in _printed_prohibitions(perm):
+                # CR 101.2 / 604.1: a printed prohibition or cap binds the
+                # players it names, relative to this permanent's controller.
                 out.append(Effect(
                     Selector(who, player=controller),
-                    Modification(ModKind.PROHIBIT, action=action, data=data),
+                    Modification(kind, action=action, data=data),
                     WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
                     controller=controller, timestamp=perm.instance_id,
                     condition=cond))

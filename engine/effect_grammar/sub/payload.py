@@ -803,8 +803,17 @@ _SOURCE_TYPE = r"(?:artifacts|creatures|enchantments|planeswalkers|lands|battles
 # creatures, or enchantments".
 _ABILITY_SOURCES_RE = re.compile(
     r" (?P<types>%s(?:,? (?:or |and )?%s)*)" % (_SOURCE_TYPE, _SOURCE_TYPE))
+# A turn-scoped cap (CR 101.2): "can't draw more than N cards each turn",
+# "can't cast more than N [noncreature | nonartifact | non-Phyrexian]
+# spells each turn". A cap on spells cast "this way" (a permission's own
+# limit) is not this shape.
 _LIMIT_RE = re.compile(r"(?:can't|cannot) (?P<act>draw|cast) more than "
-                       r"(?P<n>%s) (?:cards?|spells?) each turn\b" % _COUNT_RE)
+                       r"(?P<n>%s) (?:(?P<filter>noncreature|nonartifact|"
+                       r"non-phyrexian) )?(?:cards?|spells?) each turn\b"
+                       % _COUNT_RE)
+# The cap's spell filter, in the read path's vocabulary.
+_LIMIT_FILTERS = {"noncreature": "noncreature", "nonartifact": "nonartifact",
+                  "non-phyrexian": "non_phyrexian"}
 _UNTAP_RE = re.compile(r"(?:doesn't|don't) untap during (?:its|their) "
                        r"controllers?'s? untap steps?\b")
 _REQUIRE_RE = re.compile(r"(?P<act>attacks?|blocks?) each combat if able\b"
@@ -932,9 +941,11 @@ def _modification_rel(t: str) -> _Rel:
     if m:
         return (_mod(ModKind.SWITCH_PT), None, m.end(), None, (), ())
     m = _LIMIT_RE.match(t)
-    if m:
+    if m and not (m.group("filter") and m.group("act") == "draw"):
         return (_mod(ModKind.LIMIT, action=m.group("act"),
-                     max=_count(m.group("n"))), None, m.end(), None, (), ())
+                     max=_count(m.group("n")),
+                     filter=_LIMIT_FILTERS.get(m.group("filter") or "")),
+                None, m.end(), None, (), ())
     m = _CAN_ONLY_RE.match(t)
     if m:
         action = ("cast_outside_sorcery_timing" if m.group("sorcery")

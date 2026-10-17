@@ -2005,7 +2005,9 @@ def relic_of_progenitus_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Ethersworn Canonist", EffectTiming.ETB,
                            description="Each player can only cast one nonartifact spell per turn")
 def ethersworn_canonist_etb(game, card, controller, targets=None, item=None):
-    # Tag presence on battlefield restricts spellcasting (checked in can_cast)
+    # The tag carries its cap of one nonartifact spell a turn (CR 101.2) to
+    # the layer (continuous_effects._derive_static_rule_effects), whose
+    # LIMIT-cast effect rules_query.cast_prohibited enforces.
     card.instance_tags.add("canonist_active")
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Ethersworn Canonist enters — nonartifact spell restriction active")

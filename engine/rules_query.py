@@ -32,10 +32,31 @@ def _covering(game: "GameState", player_idx: int, kind, action):
             and rule_condition_holds(game, e.controller, e.condition)]
 
 
+def spell_kind(template) -> tuple:
+    """What a spell is as it is cast, for a cast cap's filter: its card
+    types and its subtypes, lowercased (CR 205)."""
+    return (frozenset(ct.value for ct in template.card_types),
+            frozenset(str(st).lower() for st in template.subtypes or ()))
+
+
+def cast_filter_admits(spell_filter, kind: tuple) -> bool:
+    """Does a cast cap's filter name a spell of this kind (`spell_kind`)?
+    The vocabulary: every spell (no filter), noncreature, nonartifact and
+    non-Phyrexian spells. An unknown filter names none."""
+    types, subtypes = kind
+    return (spell_filter is None
+            or (spell_filter == "noncreature" and "creature" not in types)
+            or (spell_filter == "nonartifact" and "artifact" not in types)
+            or (spell_filter == "non_phyrexian" and "phyrexian" not in subtypes))
+
+
 def cast_prohibited(game: "GameState", player_idx: int, template) -> bool:
     """A cast prohibition covers this spell (CR 101.2): a "can't cast"
-    whose filter it matches, or "can cast spells only during their own
-    turns" on another player's turn."""
+    whose filter it matches, "can cast spells only during their own
+    turns" on another player's turn, or a turn-scoped cap the spell would
+    exceed -- "can't cast more than N <filter> spells each turn", counted
+    over the spells the player has cast this turn that its filter names,
+    those cast before the cap arrived included."""
     from engine.effect_model import ModKind
     is_creature = template.is_creature
     for e in _covering(game, player_idx, ModKind.PROHIBIT, "cast"):
@@ -43,8 +64,25 @@ def cast_prohibited(game: "GameState", player_idx: int, template) -> bool:
         if (f == "all" or (f == "noncreature" and not is_creature)
                 or (f == "creature" and is_creature)):
             return True
-    return (game.active_player != player_idx and bool(
-        _covering(game, player_idx, ModKind.PROHIBIT, "cast_outside_own_turn")))
+    if game.active_player != player_idx and bool(
+            _covering(game, player_idx, ModKind.PROHIBIT, "cast_outside_own_turn")):
+        return True
+    return cast_cap_reached(game, player_idx, template)
+
+
+def cast_cap_reached(game: "GameState", player_idx: int, template) -> bool:
+    """A LIMIT-cast effect covering this player (CR 101.2) names this spell
+    and the player has already cast its count of the spells it names this
+    turn."""
+    from engine.effect_model import ModKind
+    kind = spell_kind(template)
+    cast = getattr(game.players[player_idx], "spells_cast_this_turn_kinds", ())
+    for e in _covering(game, player_idx, ModKind.LIMIT, "cast"):
+        f = e.modification.get("filter")
+        if cast_filter_admits(f, kind) and \
+                sum(cast_filter_admits(f, k) for k in cast) >= e.modification.get("max"):
+            return True
+    return False
 
 
 def activation_prohibited(game: "GameState", player_idx: int, perm) -> bool:

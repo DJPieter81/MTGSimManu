@@ -248,6 +248,65 @@ def pick_converge_x_value(
     return best_x, best_target
 
 
+def _audit_cast_limit(game: "GameState", player_idx: int, card) -> None:
+    """Rules audit (CR 101.2), restated from raw fields -- each permanent's
+    typed static hosts and its legacy cap tag, the spell's printed types
+    and subtypes, and the player's record of the spells cast this turn --
+    not from the layer or the read path: no spell is cast beyond a
+    turn-scoped cap ("<players> can't cast more than N <filter> spells each
+    turn") that covers its caster and names it. A cap under a condition is
+    not restated. Observes only."""
+    from .effect_model import ModKind, SelectorKind
+    from .effect_spec import AmountKind, HostKind, Verb, iter_specs
+    from .rules_audit import check
+
+    def names(f, types, subtypes):
+        return (f is None or (f == "noncreature" and "creature" not in types)
+                or (f == "nonartifact" and "artifact" not in types)
+                or (f == "non_phyrexian" and "phyrexian" not in subtypes))
+
+    def kinds_of(t):
+        return ({ct.value for ct in t.card_types},
+                {str(st).lower() for st in t.subtypes or ()})
+
+    caps = []
+    for controller, p in enumerate(game.players):
+        for perm in p.battlefield:
+            if "canonist_active" in perm.instance_tags:
+                caps.append((None, "nonartifact", 1, perm.name))
+            faces = perm.template.effects.faces
+            face = faces[1] if perm.is_transformed and len(faces) > 1 \
+                else (faces[0] if faces else ())
+            for host in face:
+                if host.kind is not HostKind.STATIC:
+                    continue
+                for s in iter_specs(host.specs):
+                    mod = s.payload
+                    n = getattr(mod, "get", lambda k: None)("max")
+                    who = getattr(s.subject, "kind", None)
+                    if s.verb is not Verb.CONTINUOUS or s.condition is not None \
+                            or getattr(mod, "kind", None) is not ModKind.LIMIT \
+                            or mod.action != "cast" or s.residue \
+                            or getattr(n, "kind", None) is not AmountKind.LITERAL:
+                        continue
+                    covers = (who is SelectorKind.ALL_PLAYERS
+                              or (who is SelectorKind.PLAYER
+                                  and controller == player_idx)
+                              or (who is SelectorKind.OPPONENTS
+                                  and controller != player_idx))
+                    if covers:
+                        caps.append((who, mod.get("filter"), n.n, perm.name))
+    types, subtypes = kinds_of(card.template)
+    cast = game.players[player_idx].spells_cast_this_turn_kinds
+    for _who, f, n, source in caps:
+        if not names(f, types, subtypes):
+            continue
+        count = sum(1 for t, st in cast if names(f, t, st))
+        check("101.2/cast_limit", count < n,
+              f"{card.name} cast by P{player_idx + 1} after {count} such "
+              f"spell(s) this turn under {source}'s cap of {n}", game=game)
+
+
 def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
     """Rules audit (CR 101.2, 307.1), restated from the battlefield's
     printed statics -- each permanent's parsed specs on the face it shows,
@@ -788,16 +847,6 @@ class CastManager:
         if template.is_land:
             max_lands = 1 + player.extra_land_drops
             return player.lands_played_this_turn < max_lands
-
-        # Ethersworn Canonist: block nonartifact spells if one was already cast
-        if CardType.ARTIFACT not in template.card_types:
-            canonist_active = any(
-                "canonist_active" in c.instance_tags
-                for p in game.players for c in p.battlefield
-            )
-            if (canonist_active
-                    and player.nonartifact_spells_cast_this_turn >= 1):
-                return False
 
         is_main_phase = game.current_phase in (Phase.MAIN1, Phase.MAIN2)
         is_active = game.active_player == player_idx
@@ -1812,11 +1861,15 @@ class CastManager:
     def can_cast_plotted(game: "GameState", player_idx: int,
                          card: "CardInstance") -> bool:
         """A plotted card in exile may be cast (free, as a sorcery) on a turn
-        LATER than the one it was plotted on — never the same turn."""
+        LATER than the one it was plotted on — never the same turn — when
+        no cast prohibition or cap covers it (a free cast is still a cast,
+        CR 601.2, 101.2)."""
         return (card.zone == "exile"
                 and getattr(card, '_plotted', False)
                 and card in game.players[player_idx].exile
-                and game.turn_number > getattr(card, '_plotted_turn', 10**9))
+                and game.turn_number > getattr(card, '_plotted_turn', 10**9)
+                and CastManager.free_cast_allowed(game, player_idx,
+                                                  card.template))
 
     @staticmethod
     def cast_plotted(game: "GameState", player_idx: int,
@@ -2764,6 +2817,8 @@ class CastManager:
             # CR 101.2 / 307.1: no printed restriction on when players may
             # cast covers this cast.
             _audit_cast_timing(game, player_idx, card)
+            # CR 101.2: no spell is cast beyond a turn-scoped cap.
+            _audit_cast_limit(game, player_idx, card)
             # CR 601.2c: every target the spell requires was chosen.
             _audit_required_targets_chosen(game, card, targets)
         if _audit_on() and targets:
@@ -2837,8 +2892,8 @@ class CastManager:
 
         game.stack.push(stack_item)
         player.spells_cast_this_turn += 1
-        if CardType.ARTIFACT not in template.card_types:
-            player.nonartifact_spells_cast_this_turn += 1
+        from .rules_query import spell_kind
+        player.spells_cast_this_turn_kinds.append(spell_kind(template))
         game._global_storm_count += 1
 
         # ── Lock permanents that counter on cast (Chalice family) ──

@@ -39,7 +39,10 @@ class PlayerState:
     poison_counters: int = 0
     # Tracking
     spells_cast_this_turn: int = 0
-    nonartifact_spells_cast_this_turn: int = 0
+    # What each spell cast this turn was as it was cast (CR 601.2): its card
+    # types and subtypes, lowercased, in cast order. A turn-scoped cast cap
+    # (CR 101.2) counts the ones its filter names (rules_query).
+    spells_cast_this_turn_kinds: List[tuple] = field(default_factory=list)
     creatures_died_this_turn: int = 0
     # CR 702.139 revolt: "a permanent left the battlefield under your control
     # this turn". Broader than creatures_died_this_turn — a fetchland crack,
@@ -463,7 +466,7 @@ class PlayerState:
         self.lands_played_this_turn = 0
         self.extra_land_drops = 0
         self.spells_cast_this_turn = 0
-        self.nonartifact_spells_cast_this_turn = 0
+        self.spells_cast_this_turn_kinds = []
         self.creatures_died_this_turn = 0
         self.permanents_left_battlefield_this_turn = 0
         self.life_gained_this_turn = 0
@@ -508,7 +511,7 @@ class PlayerState:
         self.cards_drawn_this_turn = 0
         self.cards_drawn_in_draw_step = 0
         self.spells_cast_this_turn = 0
-        self.nonartifact_spells_cast_this_turn = 0
+        self.spells_cast_this_turn_kinds = []
         self.removal_evokes_resolved_this_turn = 0
         self._landfall_count_this_turn = 0
 
