@@ -9,8 +9,8 @@ Three turn-scoped shapes, each enforced in ONE place:
 Attack locks are enforced in `CombatManager.valid_attackers` (the single
 enumeration seam `game.get_valid_attackers` and the engine share); damage
 prevention in `CombatManager.resolve_combat_damage`. All three are
-turn-scoped `PlayerState` flags reset by `reset_turn_tracking`, mirroring
-`silenced_this_turn`.
+THIS_TURN Effects (engine/effect_model.py) that expire as the game turn
+ends; the `PlayerState` attributes are views over them.
 
 Card/oracle strings are fixture carriers only; the rule under test is the
 combat-prevention class, so this must hold for a card the pool has never
@@ -89,7 +89,8 @@ def test_locks_clear_at_the_turn_boundary():
     _creature(game, 0)
     game.players[0].cannot_attack_this_turn = True
     assert CombatManager.valid_attackers(game, 0) == []
-    game.players[0].reset_turn_tracking()
+    # The turn ends and the next begins (the clock owns the expiry).
+    game.cleanup_step(); game.active_player = 1; game.untap_step(1)
     assert CombatManager.valid_attackers(game, 0)  # lock lifted next turn
 
 

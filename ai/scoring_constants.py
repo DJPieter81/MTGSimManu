@@ -836,18 +836,20 @@ Used by `_choose_targets` burn-vs-creature decision in
 # `ai.llm_decision_scorer.weight(arch, CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)`.
 
 ETB_LAND_FROM_HAND_MANA_VALUE: float = 1.0
-"""Rules-constant: mana-equivalent credit applied to the projected snapshot
-when a creature's ETB puts a land card from the player's hand onto the
-battlefield ('etb_land_from_hand' tag -- oracle-driven, no card names).
+"""Rules-constant: mana-equivalent credit for one land card put from the
+player's hand onto the battlefield (CR 305.4), by a spell, an enter
+trigger or an activation (`ai.land_put`, read from the typed host -- no
+card names).
 
-Derivation: the land enters tapped, so it produces zero mana the turn it
-enters.  On every subsequent turn ``my_mana`` is reset to ``my_total_lands``
+Derivation: a land put tapped produces zero mana the turn it enters.  On
+every subsequent turn ``my_mana`` is reset to ``my_total_lands``
 (snapshot_adapter.py pass action; finisher_simulator.py land-drop action).
 One extra land is therefore worth exactly 1.0 mana in the next turn's budget
 -- the same unit finisher_simulator.py uses when crediting a land-drop action
 (``my_mana += 1, my_total_lands += 1``).
 
-Used by ``_project_spell`` in ``ai/ev_evaluator.py``.
+Read through ``ai.land_put`` by ``_project_spell`` in ``ai/ev_evaluator.py``
+and by ``activation_candidates`` in ``ai/activation_ev.py``.
 """
 
 LANDFALL_TRIGGER_VALUE: float = 3.0
@@ -4796,6 +4798,13 @@ and counted, never credited to either deck.
 The name is kept because `tests/test_wr_baseline_anchor.py` and
 `tools/refresh_wr_baseline.py` rebind it to neutralise the valve.
 """
+
+SEEDED_REPLAY_TIMEOUT_SECONDS: float = 600.0
+"""Rules-constant: the budget a seeded replay rebinds GAME_TIMEOUT_SECONDS
+to, far above any legitimate game (the slowest recorded is ~4 s), so a
+recorded outcome is a function of the seed alone. One home, outside the
+test tree, so the anchor test, the baseline refresher, the digest tool and
+the sharded matrix driver share it without importing pytest."""
 
 SHOCK_LETHAL_LIFE_THRESHOLD: int = 2
 """Rules-constant: life total below which the AI should not

@@ -1,0 +1,296 @@
+{
+ "entries": [
+  {
+   "status": "fixed",
+   "label": "Built",
+   "title": "One clause grammar for every card's rules text (2026-09-29 → 10-02)",
+   "summary": "Card text is now parsed once, by one grammar, into typed effects: twelve closed sub-grammars (targets, amounts, conditions, durations, destinations, payloads and more) under a five-layer spine. 72% of the 44,316 effect clauses in the Modern pool are typed; the rest are marked unparsed rather than guessed. Every card's parse is lazy, so a game parses only the cards it touches.",
+   "details": [
+    "Location: engine/effect_grammar/, engine/effect_spec.py, engine/effect_views.py, engine/effect_resolver.py",
+    "Proof of neutrality: 26 seeded games byte-identical before and after every stage; legacy field equivalence measured over 2.85 million comparisons",
+    "Records: docs/design/2026-09-29_clause_and_trigger_grammar.md, docs/design/effect_grammar_census.md"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Temporal model and planeswalkers (2026-09-27 → 09-29)",
+   "summary": "Every temporary rule is one Effect with a duration on one event clock: cast prohibitions and permissions, cost reductions, draw limits, attack and block restrictions, combat-damage prevention, \"until your next turn\". Effects on an object end when it leaves (CR 400.7). Creatures can attack planeswalkers, loyalty lines resolve through the clause resolver, and the AI values a loyalty line by projecting its clause on the same scale as a spell.",
+   "details": [
+    "Location: engine/turn_clock.py, engine/rules_query.py, engine/continuous_effects.py, engine/clause_resolver.py, ai/pw_ability.py",
+    "Counted targets are one requirement with a count (CR 115.1 / 601.2c); bounce is one typed class",
+    "Records: docs/design/2026-09-28_temporal_state_model.md, docs/design/rules-foundation-sweep-tracker.md"
+   ]
+  },
+  {
+   "status": "p1",
+   "label": "Rejected",
+   "title": "An LLM-built tag cache cannot write game rules (2026-10-02)",
+   "summary": "A decision model classified every registered-deck card's mechanic tags. On a same-seed full matrix one deck gained 3.3 points from a single wrong answer: a creature tagged as gaining life on every draw, which the engine then enforced. The cache was not adopted; the lasting fix is to move the five engine rules that read classifier tags onto the parsed effects.",
+   "details": [
+    "Measurement: full n=20 Bo3 matrix pre/post on the same seeds; one cell moved 65 → 45, replay-diagnosed at seed 51000",
+    "Records: docs/design/rules-foundation-sweep-tracker.md (Jev oracle-tag cache A/B)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Rules enforcement as a system 09-12 → 09-13: a runtime CR auditor, a coverage census, a single-owner ratchet, and the rules gaps they name",
+   "summary": "The engine now notices when it breaks a rule. An opt-in runtime auditor records CR-phrased invariants across a whole matrix run; a generated census ranks every keyword the engine does not yet model; a single-owner ratchet pins each rule to one code path. The gaps that census pointed at were closed in the same pass: land types are read from the continuous-effects layer (domain and fetch under Blood Moon / Leyline, CR 305.7 / 613), combat damage is stepped per creature so first-strike blockers and blockers of first-strikers deal their damage (CR 510.2 / 510.4 / 702.7b), a spell with a required target is not cast without a legal one and every ETB target goes through the solver (CR 601.2c, hexproof), a soft counter becomes a hard counter when its printed board condition holds (ferocious, CR 601.2b), and any-target burn applies its printed conditional upgrade (metalcraft, CR 608.2).",
+   "details": [
+    "Location: engine/rules_audit.py, tools/keyword_coverage.py, tools/check_single_owner.py, engine/mana_payment.py + continuous_effects.py, engine/combat_manager.py, engine/cast_manager.py + target_solver.py, engine/spell_resolution.py + oracle_parser.py",
+    "2026-09-13 matrix (n=60 per pairing, 18 000 Bo3 matches) vs 09-12: all movements sub-3pp — Creatures Toolbox 17.9 → 20.8 and Broodscale 60.7 → 62.5 (per-creature first strike), Grixis 53.8 → 55.7, Domain Zoo 69.4 → 71.6 (ferocious hard-counters, rules-correct), Boros Ponza 51.3 → 49.2 (domain under its own Blood Moon); auditor read 0 rule violations across 18 000 matches, 31 of 96 calibration checks in band",
+    "Records: docs/design/rules-foundation-sweep-tracker.md (Meta refresh 2026-09-13; Z1–Z3, R1–R3, K3, KD), docs/design/rules_coverage.md"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Rules-foundation sweep 09-06 → 09-12: load-invariant game budget, hybrid mana, counter triage, combat tricks, twenty-two units",
+   "summary": "Every measurement is now machine-independent (a CPU-time budget replaces the wall-clock deadline; drawn and aborted games are credited to nobody and stamped into every results file). Hybrid mana pips are pips, not generic (CR 107.4e / 601.2f) — the free-Manamorphose engine that inflated Storm is gone. Control decks counter per unanswered threat and answer instant-speed casts; known lock permanents fold into P(resolve); pump instants, a post-block priority window, protection, X-bound removal legality, flashback zones, dies/cast/token triggers, loot discards, and a nine-deck mulligan cap derived from the manabase.",
+   "details": [
+    "Location: engine/game_budget.py, engine/mana.py + mana_payment.py + cast_manager.py, ai/response.py, ai/ev_evaluator.py, engine/game_runner.py combat steps, engine/oracle_parser.py trigger classes, decks/gameplans/*.json",
+    "2026-09-12 matrix (n=60 per pairing, 18 000 Bo3 matches) vs 09-06: Ruby Storm 63.5 → 55.2 (in band), Boros Energy 68.8 → 61.8 (in band), Izzet Prowess 52.3 → 61.2, Hollow One 28.3 → 34.0, Goryo's 41.5 → 47.2, Living End 52.3 → 56.8; Domain Zoo 60.2 → 69.4 (above band — four opponent-side units corrected play without moving a Zoo cell; loop-break doc written)",
+    "Records: docs/design/rules-foundation-sweep-tracker.md, docs/diagnostics/2026-09-06_wall_clock_deadline_load_invariance.md, docs/diagnostics/2026-09-12_zoo_lane_loop_break.md"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Band loops (Zoo, Pinnacle Affinity): nine rules-and-valuation classes, replay-diagnosed",
+   "summary": "Two self-paced loops fixed what Bo3 replays showed, one class-sized mechanic per iteration: Saga chapter timing and the response window before the final-chapter sacrifice, \"with mana cost\" excludes lands, lands in hand count as mana sources for a search, killing an equipped creature removes only its own power, caster-chosen hand attacks valued by the best card they take, a \"target player\" discard can target its caster, forced basic land type as a continuous effect, burn damage from the parsed amount, cycling credited only when the deck can return the body.",
+   "details": [
+    "Location: engine/saga.py, ai/mana_planner.py, ai/ev_player.py block scorer, ai/hand_denial.py, engine/continuous_effects.py, ai/card_classes.py",
+    "2026-09-06 matrix vs 09-04: Pinnacle Affinity 67.1 → 61.5, Domain Zoo 65.6 → 60.2 (OUT → IN band), 4c Omnath 68.5 → 59.0, Creatures Toolbox 10.4 → 21.9, Grixis Reanimator 43.8 → 53.1; calibration 30 → 38 of 96 checks in band",
+    "Records: docs/diagnostics/2026-09-05_zoo_band_loop_break.md, docs/diagnostics/2026-09-06_pinnacle_band_loop_close.md"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Generic mechanic classes: equipment/team keyword grants, plot, impulse, revolt, targeted removal",
+   "summary": "Six silently-no-op mechanic families built as generic, typed-field-driven classes (no card names) — expanding the fraction of Modern the engine models correctly.",
+   "details": [
+    "Equipment keyword grants (172 cards): Affinity + Izzet Prowess equipment now grant trample/haste/lifelink — WR moved, game-log-verified",
+    "Targeted removal typed path fixed ~96 unregistered removal-spell no-ops; impulse/library-dig (retired 4 allowlist gaps); revolt counter (Fatal Push); plot deferred-cast; static team keyword anthem (121 cards)",
+    "All failing-test-first; card-name-registry baseline 95 → 89; a new narrow-typed-field ratchet + honest AST oracle-runtime ratchet close two guardrail blind spots"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Activated-ability subsystem (tranches 1-3)",
+   "summary": "Tap, sacrifice-self, sacrifice-another, and discard activation costs are now payable — 358 oracle-parsed abilities graduated from inert to usable.",
+   "details": [
+    "Location: engine activation subsystem + ai scoring hooks",
+    "Tranche 1-2: tap + sacrifice-self costs",
+    "Tranche 3: sacrifice-another and discard costs",
+    "Acceptance measured honestly: Creatures Toolbox verdict REFUTED the tranche-3 hypothesis (15.0 → 14.8) — the effect-kind whitelist is the actual gate (docs/diagnostics/2026-08-26_tranche3_toolbox_acceptance.md)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Soft-counter tax-payability + holdback re-spec",
+   "summary": "Tax counters check payability before discounting; holdback re-specced on lost value. Counter-holding control decks rose 5-7pp.",
+   "details": [
+    "Location: ai/bhi.py + ai/response.py discount path",
+    "Azorius Control (WST v2) 46.8 → 52.9, WST +6pp, Jeskai Blink +4.8pp",
+    "Aggro/tempo softened correspondingly — the fingerprint is directionally right"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Land-sacrifice tutor payoff gate",
+   "summary": "Fetch-and-sacrifice shapes score only when a reachable payoff exists, not merely a legal fizzle floor. Amulet Titan +4.8pp, the matrix's largest mover.",
+   "details": [
+    "Location: parse-once typed field + ai scoring gate (PR #552)",
+    "Amulet Titan 29.6 → 34.4 field WR at n=20",
+    "Every other deck within ±1.4pp — the fix is surgical"
+   ]
+  },
+  {
+   "status": "p1",
+   "label": "P1 Open",
+   "title": "Domain Zoo structural verdict (aggregate diagnosis)",
+   "summary": "Root-caused across every control loss at once instead of one replay at a time: control loses on resource economy even when it sequences correctly. The band loops brought Zoo to 60.2% (09-06); the 09-12 n=60 matrix reads 69.4% again after four opponent-side units corrected play without moving a Zoo cell — the loop-break doc names the residual (Toolbox's unbounded-mana engine has no outlet; re-banding Zoo on the weighted field is an open decision).",
+   "details": [
+    "Method: aggregate-diagnosis over all Zoo-vs-control losses",
+    "Verdict: economy gap is structural, not a scoring bug",
+    "See docs/diagnostics/2026-08-26_decider_loss_root_cause.md"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Creature deployment for aggro",
+   "summary": "Guide of Souls now +2.6 EV (was -7.6). Aggro decks deploy T1 one-drops correctly.",
+   "details": [
+    "Location: ai/ev_evaluator.py — removal projection",
+    "Before: Ragavan -7.6 EV (projected removal killed it)",
+    "After: Ragavan +8.2 EV, Guide of Souls +2.6 EV",
+    "Impact: Boros Energy 64% WR (was ~30%)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Goryo's Vengeance combo chain",
+   "summary": "Full combo fires: Faithful Mending → bin Griselbrand → Goryo's → draw 14 cards.",
+   "details": [
+    "Location: ai/combo_chain.py + engine/card_effects.py",
+    "Faithful Mending correctly discards to graveyard",
+    "Goryo's Vengeance targets creature in GY",
+    "Griselbrand: pay 7 life → draw 7, repeat"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "First strike combat simulation",
+   "summary": "Two-phase damage correctly models first strike vs regular combat.",
+   "details": [
+    "Location: ai/turn_planner.py — _simulate_combat()",
+    "Phase 1: first/double strike creatures deal damage",
+    "Phase 2: SBA check, then regular damage",
+    "Fixes: Ragavan surviving 1/1 blocks"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Chalice of the Void X selection",
+   "summary": "Now adaptive — picks X based on opponent's CMC distribution.",
+   "details": [
+    "Location: engine/game_state.py:1354-1370",
+    "Scans opponent decklist CMC curve",
+    "Picks X = mode of opponent's spell CMCs",
+    "Before: hardcoded X=1 every game"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "6 high-impact interaction effects",
+   "summary": "T3feri (bounce+draw), Supreme Verdict (uncounterable wipe), Blood Moon, Goblin Bombardment, Celestial Purge, Thraben Charm.",
+   "details": [
+    "Location: engine/card_effects.py (174 new lines, 115 total registered effects)",
+    "T3feri: bounce best threat + draw — fixes Jeskai Blink",
+    "Supreme Verdict: uncounterable board wipe — fixes control matchups",
+    "Blood Moon: strips non-R production from opponent only, boards out vs R-aggro",
+    "Impact: Boros vs ETron 80% (Blood Moon wrecks Tron lands)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Storm patience + combo sequencing",
+   "summary": "Storm decks now wait for critical mana before going off. Shock lands + reanimate priority fixed.",
+   "details": [
+    "Location: ai/ev_player.py + engine/card_effects.py",
+    "Storm: patience threshold prevents premature fizzles",
+    "Combo: shock lands tap correctly during chain",
+    "Reanimate: priority ordering fixed for Goryo's + Living End"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Threat-based removal targeting",
+   "summary": "Removal now prioritizes Cranial Plating and equipment over vanilla creatures. Counters fire vs Affinity threats.",
+   "details": [
+    "Location: ai/ev_player.py + ai/response.py",
+    "_threat_score() evaluates: equipment > engines > evasion > power",
+    "Cranial Plating: top removal priority",
+    "Kappa Cannoneer: counter-worthy threat",
+    "Impact: Affinity opponents now interact correctly"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Blood Moon shared CardDatabase corruption",
+   "summary": "Blood Moon was corrupting shared card templates, breaking all subsequent games. Now uses instance-level overrides.",
+   "details": [
+    "Location: engine/card_database.py + engine/game_state.py",
+    "Critical: Blood Moon modified shared CardDatabase templates",
+    "Fix: per-game instance overrides, never touch templates",
+    "Impact: Boros 94.9% → 78.6% (opponents could cast spells again)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Construct Token power scaling",
+   "summary": "Construct Tokens now scale with artifact count correctly. Sent Affinity to 91.9% WR.",
+   "details": [
+    "Location: engine/card_effects.py + engine/game_state.py",
+    "Construct Token: P/T = artifact count (was static 0/0)",
+    "Nettlecyst Germ token: now 0/0 base + equipment P/T",
+    "Impact: Affinity 85% → 91.9% (correct token scaling)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Guide of Souls energy exploit",
+   "summary": "Was auto-producing energy on ETB and attack without meeting conditions. Now only triggers on actual lifegain events.",
+   "details": [
+    "Location: engine/card_effects.py",
+    "Before: free energy every turn, Boros 94% WR",
+    "After: energy only from lifegain triggers",
+    "Impact: Boros 94% → 78.6% → 72.6% (honest WR)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Urza's Saga Ch.III legend rule",
+   "summary": "Saga tutor was creating duplicate legendary artifacts, then legend rule killed both. Now checks existing copies.",
+   "details": [
+    "Location: engine/card_effects.py",
+    "Before: tutor Mox Opal #2 → legend rule kills both",
+    "After: skip tutor if legendary copy exists",
+    "Impact: Affinity no longer self-destructs tutoring"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Planeswalker EV scoring",
+   "summary": "Planeswalkers now scored by loyalty abilities and board impact. 4c Omnath jumped 29% → 56% WR.",
+   "details": [
+    "Location: ai/ev_player.py",
+    "Before: Wrenn and Six = -0.1 EV (no PW case)",
+    "After: PW base EV by loyalty + ability assessment",
+    "Impact: 4c Omnath 29% → 56%, Jeskai Blink improved"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Wrath cast on empty board",
+   "summary": "X-cost board wipe gate v3: returns -999 EV when no opponent creatures present. Three iterations to stabilize.",
+   "details": [
+    "Location: ai/ev_evaluator.py + ai/ev_player.py",
+    "Gate v1: opp_creature_count == 0 check",
+    "Gate v2: include token creatures",
+    "Gate v3: stable across 3 matrix reruns",
+    "Impact: Azorius no longer wastes wraths"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Fixed",
+   "title": "Storm ritual mid-chain penalty",
+   "summary": "Chain projection and combo EV bypass landed; Ruby Storm recovered from ~29% to 65.0% field WR (above its 40-55 band) — then the hybrid-mana rules fix removed the free-Manamorphose engine and the 09-12 matrix reads 55.2%, at the band's edge.",
+   "details": [
+    "Location: ai/ev_player.py + ai/combo_chain.py; engine/mana.py (hybrid pips)",
+    "Storm patience threshold prevents premature fizzles",
+    "Mid-chain rituals no longer penalized — chain EV projected as a unit",
+    "2026-09-06 matrix: 65.0% field WR; 2026-09-12 matrix (n=60): 55.2% (band 40-55)"
+   ]
+  }
+ ]
+}

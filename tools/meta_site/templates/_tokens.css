@@ -1,0 +1,61 @@
+/* Layout concept: a tournament judge's scoresheet. Cool paper ground,
+   ink type, results carried by a red-to-green heat scale; violet ink is
+   the one accent and never encodes a result. */
+:root {
+  --paper: #f3f4f1;          /* page ground */
+  --sheet: #fbfbf9;          /* raised surfaces (tables, drawer) */
+  --rule: #d9dcd5;           /* hairlines */
+  --ink: #17191d;            /* primary text */
+  --ink-2: #4a4f57;          /* secondary text */
+  --ink-3: #7b818a;          /* captions */
+  --accent: #5b3fd6;         /* violet ink: links, selection, focus */
+  --accent-soft: #ebe7fb;
+  --lose: #c2402f;           /* semantic: below band / losing */
+  --win: #1f7a4d;            /* semantic: above band / winning */
+  --even: #e9e6d8;           /* 50% on the heat scale */
+  --warn: #b7791f;           /* draws / aborts markers */
+  --heat-lo: 9 62% 52%;      /* hsl parts: 0% end of the heat scale */
+  --heat-mid: 48 20% 88%;    /* 50% */
+  --heat-hi: 152 52% 36%;    /* 100% end */
+  --heat-ink-dark: #17191d;
+  --heat-ink-light: #ffffff;
+  --shadow: 0 1px 2px rgb(23 25 29 / .06), 0 8px 24px rgb(23 25 29 / .08);
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --s-1: .75rem; --s-2: .875rem; --s-3: 1rem; --s-4: 1.25rem; --s-5: 1.75rem; --s-6: 2.5rem; --s-7: 3.75rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121417; --sheet: #191c20; --rule: #2b3037;
+    --ink: #e9eaec; --ink-2: #b4b9c1; --ink-3: #868c96;
+    --accent: #a593ff; --accent-soft: #2a2450;
+    --lose: #f0715f; --win: #4cc28a; --even: #34332c; --warn: #e0a645;
+    --heat-lo: 8 55% 40%; --heat-mid: 48 10% 24%; --heat-hi: 152 45% 34%;
+    --heat-ink-dark: #e9eaec; --heat-ink-light: #ffffff;
+    --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 8px 24px rgb(0 0 0 / .35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121417; --sheet: #191c20; --rule: #2b3037;
+  --ink: #e9eaec; --ink-2: #b4b9c1; --ink-3: #868c96;
+  --accent: #a593ff; --accent-soft: #2a2450;
+  --lose: #f0715f; --win: #4cc28a; --even: #34332c; --warn: #e0a645;
+  --heat-lo: 8 55% 40%; --heat-mid: 48 10% 24%; --heat-hi: 152 45% 34%;
+  --heat-ink-dark: #e9eaec; --heat-ink-light: #ffffff;
+  --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 8px 24px rgb(0 0 0 / .35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 var(--s-2)/1.55 var(--f-body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 650; letter-spacing: -.01em; text-wrap: balance; margin: 0; }
+.num, .mono { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+.label { font-size: var(--s-1); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; }
+.chip { display: inline-flex; align-items: center; gap: .3em; padding: .1em .55em; border-radius: 99px; font-size: var(--s-1); font-weight: 600; border: 1px solid var(--rule); color: var(--ink-2); background: var(--sheet); white-space: nowrap; }
+.verdict-in { color: var(--win); border-color: color-mix(in srgb, var(--win) 40%, transparent); }
+.verdict-below, .verdict-above { color: var(--lose); border-color: color-mix(in srgb, var(--lose) 40%, transparent); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

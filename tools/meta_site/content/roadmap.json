@@ -1,0 +1,29 @@
+{
+ "items": [
+  {
+   "title": "Grammar stage 5: measure and prove",
+   "state": "next",
+   "body": "Lock the census and equivalence baselines, re-run the seeded digest and both suite halves, and record the exit criteria in the design doc."
+  },
+  {
+   "title": "Effect families switch to the grammar",
+   "state": "planned",
+   "body": "Twelve families (removal, damage, card draw, tokens, counters, pump, restrictions, mana, …) move from per-shape parsers to the one dispatcher, each with a failing test and a byte-identical or rules-correct game digest. The effect-parser ratchet may only fall."
+  },
+  {
+   "title": "Triggers on an event bus",
+   "state": "planned",
+   "body": "TriggerSpec over the same grammar, real trigger stack items in APNAP order, and upkeep and end-step triggers for the roughly 940 pool cards that have them."
+  },
+  {
+   "title": "Engine rules stop reading classifier tags",
+   "state": "planned",
+   "body": "On-draw triggers, ETB surveil and graveyard return, impulse draw and the sorcery-speed lockout read parsed effects; tags remain AI hints only."
+  },
+  {
+   "title": "Marvel Super Heroes in the card database",
+   "state": "blocked",
+   "body": "The set is still missing; the refresh needs an environment that can reach mtgjson.com."
+  }
+ ]
+}

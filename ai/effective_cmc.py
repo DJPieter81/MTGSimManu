@@ -214,9 +214,10 @@ def _count_cost_reducers(
         return 0
     # Local import to keep the AI/engine boundary explicit and avoid
     # a hard import-time dependency on engine internals.
-    from engine.oracle_resolver import count_cost_reducers as _engine_count
+    # The one read path for cost deltas (statics and temporary rules).
+    from engine import rules_query
 
-    return _engine_count(game, player_idx, template)
+    return rules_query.cost_delta(game, player_idx, template)
 
 
 def _self_cost_reduction(
@@ -331,8 +332,9 @@ def effective_cmc(
     # ── Step 3: on-board cost reducers ──────────────────────────────
     reducers = _count_cost_reducers(game, player_idx, template)
     if reducers > 0:
-        # Cost reducers can drive a spell to {0} (Storm rituals
-        # become free under enough medallions).  Clamp at 0.
+        # A generic reduction reaches the generic component only; the
+        # pip floor below keeps every coloured, colourless and hybrid
+        # pip owed (CR 601.2f).
         paid = max(0, paid - reducers)
 
     # ── Step 3b: self-scaling own-cost reduction ────────────────────
@@ -342,6 +344,13 @@ def effective_cmc(
     own_reduction = _self_cost_reduction(game, player_idx, template)
     if own_reduction > 0:
         paid = max(0, paid - own_reduction)
+
+    # CR 601.2f: no generic reduction touches a coloured, colourless or
+    # hybrid pip -- the floor the engine charges (`CastManager.can_cast`
+    # floors its quantity at `ManaCost.non_generic_pips`). Without it a
+    # {1}{R} ritual read as free under two reducers.
+    if template.mana_cost is not None:
+        paid = max(paid, template.mana_cost.non_generic_pips)
 
     # Recompute the generic-portion-remaining after reducers ate
     # into it.  Delve/affinity/improvise can't drive paid below
@@ -404,8 +413,87 @@ def effective_cmc(
     return int(paid)
 
 
+def reducer_reduction(reducer: "CardInstance",
+                      template: "CardTemplate") -> int:
+    """The generic reduction a reducer permanent's own typed rules give a
+    spell its controller casts ("red spells you cast cost {1} less"): every
+    `cost_reduction_rules` rule for its controller that names the spell,
+    matched by the one matcher (`oracle_resolver._cost_rule_applies`, CR
+    601.2f)."""
+    from engine.oracle_resolver import _cost_rule_applies
+    return sum(rule['amount']
+               for rule in (getattr(reducer.template, 'cost_reduction_rules',
+                                    None) or ())
+               if rule.get('who') == 'you'
+               and _cost_rule_applies(rule, template))
+
+
+def generic_reduction(template: "CardTemplate", game: "GameState" = None,
+                      player_idx: int = 0, reducers=()) -> int:
+    """The generic reduction a spell of `template` gets: the reductions in
+    play (`rules_query.cost_delta`, as `effective_cmc` reads them) and what
+    each reducer in `reducers` takes off it by its rule."""
+    return (_count_cost_reducers(game, player_idx, template)
+            + sum(reducer_reduction(r, template) for r in reducers))
+
+
+def chain_cost(card: "CardInstance", game: "GameState" = None,
+               player_idx: int = 0, reducers=()) -> int:
+    """The mana a chain projection pays for `card`: the AI's cost estimate
+    now (`effective_cmc`, with the reductions in play and the pip floor),
+    less what each reducer in `reducers` -- a reducer permanent the
+    projection casts first -- takes off it by its rule, never below the
+    card's coloured, colourless and hybrid pips (CR 601.2f). A stand-in
+    with no mana cost to read pays its printed value."""
+    if getattr(card.template, 'mana_cost', None) is None:
+        return int(card.template.cmc or 0)
+    if getattr(game, 'continuous_effects', None) is None:
+        game = None            # a stand-in that shows no reductions
+    return with_reducers(effective_cmc(card, game=game,
+                                       player_idx=player_idx),
+                         card, reducers)
+
+
+def with_reducers(paid: int, card: "CardInstance", reducers) -> int:
+    """`paid` less what each reducer in `reducers` takes off `card` by its
+    rule, never below the card's non-generic pips (CR 601.2f). The step a
+    chain takes when it casts a reducer before the card."""
+    extra = sum(reducer_reduction(r, card.template) for r in reducers)
+    if extra <= 0:
+        return paid
+    paid = max(0, paid - extra)
+    if getattr(card.template, 'mana_cost', None) is not None:
+        paid = max(paid, card.template.mana_cost.non_generic_pips)
+    return paid
+
+
+def cast_mode_of(card: "CardInstance", snap=None, *,
+                 game: "GameState" = None, player_idx: int = 0) -> str:
+    """How a cast of `card` now is paid: `CAST_MODE_EVOKE` when its
+    printed evoke cost can be paid (`engine.cast_manager.CastManager.
+    evoke_payable`, the engine's own check) and its mana cost cannot
+    (`snap.my_mana` short of its normal effective cost) -- a cast now is
+    then an evoke (CR 702.74a), whose creature is sacrificed as it
+    enters. `CAST_MODE_NORMAL` otherwise: with both payable the AI
+    hard-casts (`ai.board_eval._eval_evoke` refuses that evoke)."""
+    if card.template.evoke_cost is None or game is None or snap is None:
+        return CAST_MODE_NORMAL
+    from engine.cast_manager import CastManager
+    if not CastManager.evoke_payable(game, player_idx, card):
+        return CAST_MODE_NORMAL
+    if snap.my_mana >= effective_cmc(card, snap, game=game,
+                                     player_idx=player_idx):
+        return CAST_MODE_NORMAL
+    return CAST_MODE_EVOKE
+
+
 __all__ = [
     "effective_cmc",
+    "chain_cost",
+    "with_reducers",
+    "generic_reduction",
+    "reducer_reduction",
+    "cast_mode_of",
     "CAST_MODE_NORMAL",
     "CAST_MODE_EVOKE",
     "CAST_MODE_FREE",

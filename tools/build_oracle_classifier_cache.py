@@ -71,6 +71,7 @@ if str(ROOT) not in sys.path:
 
 from ai.llm_agents import build_agent
 from ai.llm_budgets import select_budget_usd
+from ai.llm_schemas import decision_to_tags
 from ai.oracle_classifier import SCHEMA_VERSION, Tag
 
 
@@ -224,7 +225,9 @@ def classify_one(
     user_prompt = build_classify_input(card)
     result = agent.run_sync(user_prompt)
     classification = result.output
-    tags = _coerce_tags(classification.tags, card.get("name", "<unknown>"))
+    raw = (classification.tags if hasattr(classification, "tags")
+           else decision_to_tags(classification))
+    tags = _coerce_tags(raw, card.get("name", "<unknown>"))
     sha = _oracle_sha(card.get("text", ""))
     return tags, sha
 

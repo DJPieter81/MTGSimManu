@@ -7,7 +7,7 @@ is a plain LIFO. Resolution lives in ResolutionManager
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, TYPE_CHECKING, Callable
+from typing import Callable, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 from enum import Enum
 
 if TYPE_CHECKING:
@@ -33,8 +33,16 @@ class StackItem:
     # For spells, the CardInstance itself is the source
     # For abilities, the source is the permanent that has the ability
     ability: Optional[Ability] = None
-    # Modes chosen (for modal spells)
-    modes_chosen: List[int] = field(default_factory=list)
+    # The modes a modal spell's controller chose as it was cast (CR
+    # 601.2b; `engine.modal_spell.choose_modes`), in printed order. None
+    # when no cast recorded a choice; a copy shares it (CR 707.10).
+    modes_chosen: Optional[List[int]] = None
+    # The players chosen as the spell was cast for each chosen mode's
+    # player target (CR 601.2c; `engine.modal_spell.choose_mode_players`):
+    # mode index -> one tuple of player indices per player-only target
+    # requirement of that mode, in printed order. None when no cast
+    # recorded a choice.
+    mode_players: Optional[Dict[int, Tuple[Tuple[int, ...], ...]]] = None
     # X value for X spells
     x_value: int = 0
     # Whether this was evoked
@@ -58,12 +66,48 @@ class StackItem:
     # illegal fizzles. Player-target markers (negative ids) have no
     # zone and are never snapshotted.
     target_zones: Dict[int, str] = field(default_factory=dict)
+    # CR 400.7 support: the battlefield entry (`battlefield_entry_seq`)
+    # of each permanent target when it was chosen. A permanent that left
+    # the battlefield and came back is a new object -- an illegal target on
+    # resolution (CR 608.2b) even though it is back in its zone.
+    target_entry_seqs: Dict[int, int] = field(default_factory=dict)
 
     @property
     def name(self) -> str:
         if self.item_type == StackItemType.SPELL:
             return self.source.name
         return f"{self.source.name} ability"
+
+    @property
+    def mana_value(self) -> int:
+        """The spell's mana value on the stack (CR 202.3e): its printed mana
+        value plus the value chosen for each {X} in its mana cost (X is 0
+        everywhere but the stack)."""
+        t = self.source.template
+        cost = getattr(t, "mana_cost", None)
+        x_pips = getattr(cost, "x_count", 0) if cost is not None else 0
+        return (t.cmc or 0) + x_pips * max(0, int(self.x_value or 0))
+
+
+def snapshot_targets(game: "GameState", targets) -> Tuple[Dict[int, str],
+                                                           Dict[int, int]]:
+    """CR 608.2b / 400.7: what each card target is when it is chosen -- the
+    zone it occupies and, for a permanent, its battlefield entry. The one
+    snapshot casting and activating both record, so the resolution re-check
+    reads the same thing for a spell and an ability. Player markers
+    (negative ids) and non-card entries have neither."""
+    zones: Dict[int, str] = {}
+    entries: Dict[int, int] = {}
+    for tid in targets or ():
+        if not isinstance(tid, int) or isinstance(tid, bool) or tid <= 0:
+            continue
+        card = game.get_card_by_id(tid)
+        if card is None:
+            continue
+        zones[tid] = card.zone
+        if card.zone == "battlefield":
+            entries[tid] = card.battlefield_entry_seq
+    return zones, entries
 
 
 class Stack:

@@ -16,14 +16,16 @@ Two scopes are pinned here:
     paragraph must keep matching;
   * sentence scope (period/newline-split) for amount extraction — with
     two "deals N damage" clauses, the amount comes from the sentence
-    carrying the dispatching trigger phrase.
+    carrying the dispatching trigger phrase. (The on-draw amount parse
+    was retired in unit D: a draw trigger is a typed host carrying its
+    own amount; tests/test_draw_triggers_from_text.py pins the rule.)
 
 These tests are rule-phrased: every predicate test uses synthetic
 oracle text, never a real card name. The shared primitive under test
 is ``engine/oracle_clauses.py``; the converted call sites are
 ``engine/oracle_parser.py`` (legacy tagger), ``engine/oracle_resolver.py``
 (spell / attack / dies triggers), ``ai/ev_evaluator.py`` (this-turn-value
-fallbacks) and ``engine/zone_transfer.py`` (on-draw amount parse).
+fallbacks).
 """
 from __future__ import annotations
 
@@ -299,57 +301,6 @@ def test_reveal_and_discard_in_separate_abilities_does_not_discard():
     assert victim_card in game.players[1].hand, (
         "discard fired although 'reveals'/'hand' and 'discard' live in "
         "different ability paragraphs")
-
-
-# ─── amount extraction: parse from the trigger's clause ─────────────
-
-
-def test_on_draw_amount_parsed_from_draw_clause_not_first_damage_clause():
-    """Two 'deals N damage' clauses (ETB clause with one amount, on-draw
-    clause with another): the on-draw handler must read the amount from
-    the clause carrying the draw-trigger phrase."""
-    from engine.zone_transfer import _parse_amount_or_assert
-    game = _fresh_game()
-    card = _make_card(
-        game, "SyntheticTwoDamageClauses",
-        "When this creature enters, it deals 3 damage to any target.\n"
-        "Whenever an opponent draws a card, this creature deals 1 damage "
-        "to that player.",
-        controller=0)
-    amount = _parse_amount_or_assert(
-        card, r"deals?\s+(\d+)\s+damage", "ON_DRAW_DAMAGE",
-        trigger_phrase="draw")
-    assert amount == 1, (
-        f"amount parsed from the wrong clause (got {amount}, want the "
-        f"on-draw clause's 1)")
-
-
-def test_on_draw_amount_single_match_whole_text_fallback_unchanged():
-    """Exactly one regex match anywhere keeps the legacy whole-text
-    parse — current tagged cards stay byte-identical."""
-    from engine.zone_transfer import _parse_amount_or_assert
-    game = _fresh_game()
-    card = _make_card(
-        game, "SyntheticSingleDamageClause",
-        "Whenever an opponent draws a card, this creature deals 2 damage "
-        "to that player.",
-        controller=0)
-    amount = _parse_amount_or_assert(
-        card, r"deals?\s+(\d+)\s+damage", "ON_DRAW_DAMAGE",
-        trigger_phrase="draw")
-    assert amount == 2
-
-
-def test_on_draw_amount_assert_on_desync_contract_kept():
-    from engine.zone_transfer import _parse_amount_or_assert
-    game = _fresh_game()
-    card = _make_card(game, "SyntheticNoDamageClause",
-                      "Whenever an opponent draws a card, you gain 1 life.",
-                      controller=0)
-    with pytest.raises(AssertionError):
-        _parse_amount_or_assert(
-            card, r"deals?\s+(\d+)\s+damage", "ON_DRAW_DAMAGE",
-            trigger_phrase="draw")
 
 
 # ─── AI this-turn-value fallbacks are clause-scoped ─────────────────

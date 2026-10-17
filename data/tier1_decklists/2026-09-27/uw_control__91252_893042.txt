@@ -1,0 +1,40 @@
+// UW Control — mtgtop8 event=91252 deck=893042
+3 Arid Mesa
+4 Flooded Strand
+1 Geier Reach Sanitarium
+1 Godless Shrine
+2 Hallowed Fountain
+2 Island
+2 Meticulous Archive
+1 Monumental Henge
+1 Mystic Gate
+1 Otawara, Soaring City
+2 Plains
+1 Polluted Delta
+1 Thundering Falls
+4 Solitude
+2 Consult the Star Charts
+3 Day's Undoing
+1 Force of Negation
+1 Lórien Revealed
+1 March of Otherworldly Light
+4 Orim's Chant
+2 Prismatic Ending
+3 Silence
+2 Sink into Stupor
+2 Spell Snare
+2 Supreme Verdict
+2 Wrath of the Skies
+1 Isochron Scepter
+4 Narset, Parter of Veils
+4 Teferi, Time Raveler
+
+Sideboard
+1 Kaheera, the Orphanguard
+1 Beza, the Bounding Spring
+4 Consign to Memory
+3 High Noon
+3 Mystical Dispute
+1 Spell Snare
+1 Surgical Extraction
+1 Wrath of the Skies

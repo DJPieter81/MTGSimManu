@@ -44,6 +44,8 @@ class CardRole:
     is_arcane: bool = False   # has Arcane subtype (can receive splice)
     splice_cost: int = 0      # cost to splice onto an Arcane spell (0 = no splice)
     splice_mana: int = 0      # mana produced when spliced (from ritual_mana)
+    splice_paid: int = 0      # the splice cost after the reductions in play
+    splice_pips: int = 0      # the splice cost's non-generic pips (CR 601.2f)
 
 
 @dataclass
@@ -54,7 +56,7 @@ class ChainOutcome:
     final_mana: int           # mana left at end
     storm_count: int          # number of spells cast
     cards_drawn: int          # cards drawn during chain
-    medallions_after: int     # cost reducers on board after chain
+    medallions_after: int     # reducers the chain counts beyond the game's
     payoff_name: Optional[str]  # name of payoff if chain includes one (last spell)
     payoff_deals_damage: bool   # does the payoff deal direct damage?
     payoff_has_storm: bool      # does the payoff have storm keyword?
@@ -77,21 +79,21 @@ class ChainOutcome:
             return self.storm_count * STORM_TOKEN_PAYOFF_PER_COPY
         return 0
 
-def classify_card(card, available_mana: int, medallion_count: int,
-                  payoff_names: Set[str]) -> Optional[CardRole]:
-    """Classify what a card does mechanically. No preferences."""
-    from engine.cards import Keyword, Color
+def classify_card(card, available_mana: int, payoff_names: Set[str], *,
+                  game: "GameState" = None, player_idx: int = 0,
+                  reducers=()) -> Optional[CardRole]:
+    """Classify what a card does mechanically. No preferences.
+
+    Its cost is the AI's cost estimate (`effective_cmc.chain_cost`, unit
+    CC): the reductions `game` shows, and `reducers` -- reducer permanents
+    the chain counts beyond them (the ones in play when no game is
+    given)."""
+    from engine.cards import Keyword
+    from ai.effective_cmc import chain_cost
 
     t = card.template
     tags = getattr(t, 'tags', set())
-    cmc = t.cmc or 0
-    oracle = (getattr(t, 'oracle_text', '') or '').lower()
-
-    # Medallion reduction for red instants/sorceries
-    reduction = 0
-    if (t.is_instant or t.is_sorcery) and Color.RED in t.color_identity:
-        reduction = medallion_count
-    effective_cost = max(0, cmc - reduction)
+    effective_cost = chain_cost(card, game, player_idx, reducers)
 
     # Mana production (from oracle-derived template property)
     ritual_data = getattr(t, 'ritual_mana', None)
@@ -100,8 +102,6 @@ def classify_card(card, available_mana: int, medallion_count: int,
 
     # Cost reducer (permanent that reduces future costs)
     is_reducer = 'cost_reducer' in tags and not t.is_instant and not t.is_sorcery
-    if is_reducer:
-        effective_cost = cmc  # reducers don't benefit from themselves
 
     # Storm keyword
     has_storm = Keyword.STORM in getattr(t, 'keywords', set())
@@ -118,6 +118,14 @@ def classify_card(card, available_mana: int, medallion_count: int,
     _sc = getattr(t, 'splice_cost', None)
     splice_cost_cmc = _sc.cmc if _sc is not None else 0
     splice_mana = ritual_data[1] if (ritual_data and splice_cost_cmc > 0) else 0
+    # The splice cost under the reductions in play, read once per
+    # projection (CR 601.2f: never below its pips).
+    splice_pips = _sc.non_generic_pips if _sc is not None else 0
+    splice_paid = 0
+    if splice_cost_cmc > 0 and splice_mana > 0:
+        from ai.effective_cmc import generic_reduction
+        splice_paid = max(splice_pips, splice_cost_cmc - generic_reduction(
+            t, game, player_idx, reducers))
 
     return CardRole(
         name=t.name,
@@ -131,6 +139,8 @@ def classify_card(card, available_mana: int, medallion_count: int,
         is_arcane=is_arcane,
         splice_cost=splice_cost_cmc,
         splice_mana=splice_mana,
+        splice_paid=splice_paid,
+        splice_pips=splice_pips,
     )
 
 
@@ -139,20 +149,26 @@ def classify_card(card, available_mana: int, medallion_count: int,
 def _simulate_sequence(
     sequence: List[Tuple["CardInstance", CardRole]],
     starting_mana: int,
-    starting_medallions: int,
     base_storm: int = 0,
     all_classified: List[Tuple["CardInstance", CardRole]] = None,
+    *,
+    game: "GameState" = None,
+    player_idx: int = 0,
+    reducers=(),
 ) -> Optional[ChainOutcome]:
     """Simulate casting spells in order. Returns None if sequence is unaffordable.
 
     base_storm: spells already cast this turn (from game._global_storm_count).
     all_classified: full classified hand for splice-onto-Arcane checks.
+    Each spell costs its classified cost -- the AI's cost estimate under
+    `game`'s reductions and `reducers` (`classify_card`) -- less what every
+    reducer the sequence has cast before it takes off (`with_reducers`).
     """
-    from engine.cards import Color
+    from ai.effective_cmc import reducer_reduction, with_reducers
 
     mana = starting_mana
     storm = base_storm
-    medallions = starting_medallions
+    cast_reducers = []
     names = []
     mana_trace = []
     cards_drawn = 0
@@ -171,12 +187,10 @@ def _simulate_sequence(
                        and id(c) not in seq_ids]
 
     for card, role in sequence:
-        # Recalculate cost with current medallion count
+        # The cost under every reducer in play now (the board's, and the
+        # ones this sequence has cast).
         t = card.template
-        reduction = 0
-        if (t.is_instant or t.is_sorcery) and Color.RED in t.color_identity:
-            reduction = medallions
-        cost = max(0, (t.cmc or 0) - reduction)
+        cost = with_reducers(role.effective_cost, card, cast_reducers)
 
         if cost > mana:
             return None  # can't afford — chain breaks
@@ -188,20 +202,22 @@ def _simulate_sequence(
 
         # ── Splice onto Arcane: if this spell is Arcane, splice spliceable
         # cards from hand. Splicing adds their effect (mana) without
-        # consuming the card. Pay splice cost (reduced by medallions).
+        # consuming the card. Pay splice cost, reduced as the spliced
+        # card's own reductions read it, never below its pips (CR 601.2f).
         if role.is_arcane and spliceable:
             for splice_card, splice_role in spliceable:
-                s_reduction = 0
-                if Color.RED in splice_card.template.color_identity:
-                    s_reduction = medallions
-                splice_eff_cost = max(0, splice_role.splice_cost - s_reduction)
+                splice_eff_cost = max(
+                    splice_role.splice_pips,
+                    splice_role.splice_paid - sum(
+                        reducer_reduction(r, splice_card.template)
+                        for r in cast_reducers))
                 if splice_eff_cost <= mana:
                     mana -= splice_eff_cost
                     mana += splice_role.splice_mana
                     # Splice doesn't count as casting a spell (no storm increment)
 
         if role.is_cost_reducer:
-            medallions += 1
+            cast_reducers.append(card)
         if role.draws_card:
             cards_drawn += 1
 
@@ -224,7 +240,7 @@ def _simulate_sequence(
         final_mana=mana,
         storm_count=storm,
         cards_drawn=cards_drawn,
-        medallions_after=medallions,
+        medallions_after=len(reducers) + len(cast_reducers),
         payoff_name=payoff_name,
         payoff_deals_damage=payoff_damage,
         payoff_has_storm=payoff_storm,
@@ -234,9 +250,12 @@ def _simulate_sequence(
 def find_all_chains(
     hand: List["CardInstance"],
     available_mana: int,
-    medallion_count: int,
     payoff_names: Set[str],
     base_storm: int = 0,
+    *,
+    game: "GameState" = None,
+    player_idx: int = 0,
+    reducers=(),
 ) -> List[ChainOutcome]:
     """Find ALL viable chains from the given hand and mana.
 
@@ -245,11 +264,17 @@ def find_all_chains(
 
     For hands <= 7 cards: exhaustive search (finisher always last).
     For larger hands: greedy heuristic only.
+
+    Each spell costs the AI's cost estimate (`effective_cmc.chain_cost`,
+    unit CC): the reductions `game` shows and `reducers` -- reducer
+    permanents beyond them (a reducer the projection casts first; with no
+    game, the reducers in play).
     """
+    costing = dict(game=game, player_idx=player_idx, reducers=reducers)
     # Classify cards
     classified = []
     for card in hand:
-        role = classify_card(card, available_mana, medallion_count, payoff_names)
+        role = classify_card(card, available_mana, payoff_names, **costing)
         if role:
             classified.append((card, role))
 
@@ -282,8 +307,9 @@ def find_all_chains(
 
                     # Fuel-only chain (no payoff)
                     fuel_result = _simulate_sequence(list(perm), available_mana,
-                                                     medallion_count, base_storm,
-                                                     all_classified=ac)
+                                                     base_storm,
+                                                     all_classified=ac,
+                                                     **costing)
                     if fuel_result:
                         results.append(fuel_result)
 
@@ -291,16 +317,17 @@ def find_all_chains(
                     for pay_card, pay_role in payoffs:
                         full_seq = list(perm) + [(pay_card, pay_role)]
                         outcome = _simulate_sequence(full_seq, available_mana,
-                                                     medallion_count, base_storm,
-                                                     all_classified=ac)
+                                                     base_storm,
+                                                     all_classified=ac,
+                                                     **costing)
                         if outcome:
                             results.append(outcome)
 
         # Also try payoff-only (no fuel) if affordable
         for pay_card, pay_role in payoffs:
             outcome = _simulate_sequence([(pay_card, pay_role)], available_mana,
-                                         medallion_count, base_storm,
-                                         all_classified=ac)
+                                         base_storm, all_classified=ac,
+                                         **costing)
             if outcome:
                 results.append(outcome)
     else:
@@ -315,19 +342,34 @@ def find_all_chains(
         cantrips.sort(key=lambda x: x[1].effective_cost)
         other.sort(key=lambda x: x[1].effective_cost)
 
-        base = cost_reducers + rituals + cantrips + other
+        order = cost_reducers + rituals + cantrips + other
+
+        def _affordable(sequence, closer=None):
+            """The cards of `sequence`, in order, the mana pays as the
+            chain goes -- one it cannot pay is skipped, not the chain's
+            end -- keeping what `closer`, cast last, still needs."""
+            tail = [closer] if closer is not None else []
+            chosen = []
+            for item in sequence:
+                if _simulate_sequence(chosen + [item] + tail, available_mana,
+                                      base_storm, all_classified=ac,
+                                      **costing) is not None:
+                    chosen.append(item)
+            return chosen + tail
+
+        base = _affordable(order)
 
         # Fuel-only
-        fuel_result = _simulate_sequence(base, available_mana, medallion_count,
-                                         base_storm, all_classified=ac)
+        fuel_result = _simulate_sequence(base, available_mana, base_storm,
+                                         all_classified=ac, **costing)
         if fuel_result:
             results.append(fuel_result)
 
-        # With each payoff
+        # With each payoff, after the fuel the mana pays alongside it
         for pay_card, pay_role in payoffs:
-            outcome = _simulate_sequence(base + [(pay_card, pay_role)],
-                                         available_mana, medallion_count,
-                                         base_storm, all_classified=ac)
+            outcome = _simulate_sequence(
+                _affordable(order, (pay_card, pay_role)),
+                available_mana, base_storm, all_classified=ac, **costing)
             if outcome:
                 results.append(outcome)
 
@@ -337,8 +379,12 @@ def find_all_chains(
 def what_is_missing(
     hand: List["CardInstance"],
     available_mana: int,
-    medallion_count: int,
     payoff_names: Set[str],
+    *,
+    game: "GameState" = None,
+    player_idx: int = 0,
+    reducers=(),
+    reducer_deployed: bool = False,
 ) -> Dict[str, bool]:
     """Report what the combo is missing. Pure facts, no decisions.
 
@@ -351,14 +397,16 @@ def what_is_missing(
     """
     from engine.cards import Keyword
 
-    roles = [classify_card(c, available_mana, medallion_count, payoff_names) for c in hand]
+    roles = [classify_card(c, available_mana, payoff_names, game=game,
+                           player_idx=player_idx, reducers=reducers)
+             for c in hand]
     roles = [r for r in roles if r is not None]
 
     has_payoff = any(r.is_payoff for r in roles)
     has_fuel = any(r.mana_produced > 0 for r in roles)
     has_reducer_in_hand = any(r.is_cost_reducer for r in roles)
     can_cast = any(r.effective_cost <= available_mana for r in roles)
-    reducer_deployed = medallion_count > 0
+    reducer_deployed = reducer_deployed or bool(reducers)
 
     return {
         'has_payoff': has_payoff,

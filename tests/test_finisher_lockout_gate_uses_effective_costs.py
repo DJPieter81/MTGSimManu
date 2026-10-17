@@ -108,10 +108,11 @@ class TestFinisherLockoutGateUsesEffectiveCosts:
     the payoff cannot actually be locked out."""
 
     def test_gate_respects_cost_reducers_on_finisher(self, card_db):
-        """2 Ruby Medallions on board: Grapeshot's effective cost is 0
-        and Glimpse's is 1.  Casting Glimpse leaves 2 mana >= 0 — the
-        finisher CANNOT be locked out, so the gate must not penalise
-        the fuel spell.
+        """2 Ruby Medallions on board: Grapeshot's effective cost is 1
+        (its {R}: a generic reduction never reaches a coloured pip, CR
+        601.2f) and Glimpse's is 1.  Casting Glimpse leaves 2 mana >= 1
+        — the finisher CANNOT be locked out, so the gate must not
+        penalise the fuel spell.
 
         Verification (same technique as
         test_storm_finisher_priority_in_payoff): score Glimpse in
@@ -124,7 +125,7 @@ class TestFinisherLockoutGateUsesEffectiveCosts:
             board_names=["Ruby Medallion", "Ruby Medallion"])
         # Sanity: the effective-cost primitive sees the reducers.
         from ai.effective_cmc import effective_cmc
-        assert effective_cmc(grapeshot, None, game=game, player_idx=0) == 0
+        assert effective_cmc(grapeshot, None, game=game, player_idx=0) == 1
         assert Kw.STORM in grapeshot.template.keywords
 
         player = EVPlayer(player_idx=0, deck_name="Ruby Storm",
@@ -143,7 +144,7 @@ class TestFinisherLockoutGateUsesEffectiveCosts:
 
         delta = ev_glimpse_deploy - ev_glimpse_payoff
         assert abs(delta) < 1.0, (
-            f"With the finisher's effective cost at 0 (2 cost reducers), "
+            f"With the finisher's effective cost at 1 (2 cost reducers), "
             f"the finisher-lockout penalty must NOT fire on chain fuel. "
             f"Got delta={delta:.4f} (deploy={ev_glimpse_deploy:.4f}, "
             f"payoff={ev_glimpse_payoff:.4f}); a wrong firing is "

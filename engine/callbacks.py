@@ -15,7 +15,7 @@ to discover and present these costs — no mechanic-named callbacks.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Protocol
+from typing import TYPE_CHECKING, Any, List, Optional, Protocol, Sequence
 
 if TYPE_CHECKING:
     from engine.game_state import GameState
@@ -51,6 +51,25 @@ class GameCallbacks(Protocol):
         """Should this creature be evoked instead of hardcast?"""
         ...
 
+    def choose_exile_from_hand(
+        self, game: GameState, player_idx: int, spell: CardInstance,
+        candidates: List[CardInstance]
+    ) -> Optional[CardInstance]:
+        """Which card does a cost that exiles a card from the caster's
+        hand take (an evoke cost, CR 702.74a; "exile a blue card from your
+        hand rather than pay this spell's mana cost", CR 118.9)? One of
+        `candidates`, or None to decline paying the cost."""
+        ...
+
+    def should_exile_instead_of_paying(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        can_pay_mana: bool
+    ) -> bool:
+        """Pay this spell's alternative cost that exiles a card from hand
+        (CR 118.9) rather than its mana cost? `can_pay_mana` says whether
+        the mana cost could be paid instead."""
+        ...
+
     def should_kick(
         self, game: GameState, player_idx: int, card: CardInstance
     ) -> int:
@@ -64,6 +83,16 @@ class GameCallbacks(Protocol):
         can_normal: bool, can_dash: bool
     ) -> bool:
         """Should this creature be dashed instead of hardcast?"""
+        ...
+
+    def choose_x(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        max_x: int
+    ) -> Optional[int]:
+        """The value of X for this spell as it is cast (CR 107.3, 601.2b),
+        at most `max_x` (what the caster can pay); None to leave the
+        engine's default. Uniform per kind: any X the engine asks the
+        caster for."""
         ...
 
     def choose_discard(
@@ -107,6 +136,18 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_cost_exile(
+        self, game: GameState, player_idx: int, source: Any,
+        pool: List[CardInstance], n: int,
+    ) -> List[CardInstance]:
+        """Pick which `n` cards of the payer's graveyard pay an exile cost
+        (CR 601.2h): an activation's, a spell's additional cost, an escape's
+        other cards. `pool` is the graveyard the cost may take from; the
+        answer is `n` distinct cards of it, or the engine's default
+        (`default_cost_exile`) stands.
+        """
+        ...
+
     def choose_artifact_tutor_target(
         self, game: GameState, player_idx: int,
         eligible: List[CardInstance],
@@ -122,6 +163,15 @@ class GameCallbacks(Protocol):
         Returns one of the elements of `eligible`, or None if the
         list is empty (engine handles the no-target case).
         """
+        ...
+
+    def choose_copy_targets(
+        self, game: GameState, player_idx: int, item, remaining: int,
+    ) -> Optional[List[int]]:
+        """The targets for a copy of the spell `item` (CR 707.10c: its
+        controller may choose new ones), with `remaining` copies, this one
+        included, still to be made; None keeps the original's targets. The
+        engine refuses targets the spell could not have chosen."""
         ...
 
     def choose_mana_color(
@@ -153,6 +203,86 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_trigger_targets(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        spec: Any, req: Any, players: List[int],
+        permanents: List[CardInstance], x_value: int = 0,
+    ) -> List[Any]:
+        """Which targets does a triggered ability take for one slot as it
+        is put on the stack (CR 603.3d), or a chosen mode of a modal spell
+        for a requirement only a player satisfies, as the spell is cast
+        (CR 601.2c, `modal_spell.choose_mode_players`)?
+
+        Uniform per KIND: any trigger a carrier puts on the stack with a
+        target routes here. The engine has already narrowed the legal
+        choices (`target_solver.legal_slot_choices`): `players` (indices)
+        and `permanents`. `spec` is the typed EffectSpec the slot belongs
+        to, `req` its requirement, `x_value` the X paid for the spell (0
+        for a trigger). Return up to `req.count_max` of them; the engine
+        keeps only legal, distinct members and fills a required target the
+        answer leaves short (`default_trigger_targets`).
+        """
+        ...
+
+    def choose_harmonize_tapper(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        tappers: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Which untapped creature, if any, does the caster of a harmonize
+        spell tap to reduce its cost by that creature's power (CR
+        702.180b)? `tappers` are the creatures it may tap; None taps none."""
+        ...
+
+    def choose_cast_targets(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        requirements: List[Any], x_value: int = 0,
+    ) -> List[Any]:
+        """Which targets does a spell take as it is cast (CR 601.2c), when
+        the casting path left a target it requires unchosen? Every cast
+        path routes here through the cast procedure; `requirements` are
+        the spell's target requirements (the legality owner's parse),
+        `x_value` the X its caster can pay. Return the spell's whole
+        target list -- object ids and player markers. The engine refuses
+        the cast, before anything is paid, when the answer still leaves a
+        required target unchosen or names a choice no requirement admits.
+        """
+        ...
+
+    # ── Resolution-time choices (design doc 2026-09-29, A35) ──────────
+    # One channel per KIND of choice a resolving ability asks of its
+    # controller. `ctx` is the resolution context, `spec` the typed
+    # EffectSpec asking. The effect dispatcher asks `choose_optional_effect`
+    # and its card-flow executors ask `choose_cards` (unit E, enter
+    # triggers); `choose_amount` and `choose_division` have no caller yet
+    # and their default raises rather than guessing an answer
+    # (tests/test_effect_resolver_sequencing.py pins the callers).
+
+    def choose_optional_effect(self, ctx: Any, spec: Any) -> bool:
+        """Perform this optional ("you may") effect? True = perform."""
+        raise NotImplementedError
+
+    def choose_amount(self, ctx: Any, spec: Any, lo: int, hi: int,
+                      remaining_specs: Sequence[Any]) -> int:
+        """Pick a variable amount in [lo, hi] ("any number", "up to N",
+        pay-X-at-resolution). `remaining_specs` are the specs that resolve
+        after this one, so the answer can see what the amount feeds."""
+        raise NotImplementedError
+
+    def choose_cards(self, ctx: Any, spec: Any, pool: Sequence[Any],
+                     n: int) -> List[Any]:
+        """Pick up to `n` cards out of `pool`, the engine-enumerated legal
+        choices. Returning a non-member, a duplicate or more than `n` is
+        outside the contract: the engine keeps only the distinct members,
+        at most `n`, and a required choice the answer leaves short is
+        filled by `default_card_pick`."""
+        raise NotImplementedError
+
+    def choose_division(self, ctx: Any, spec: Any, slots: Sequence[Any],
+                        total: int) -> List[int]:
+        """Divide `total` among `slots` (CR 601.2d: fixed as targets are
+        chosen); one non-negative share per slot, summing to `total`."""
+        raise NotImplementedError
+
 
 class DefaultCallbacks:
     """Safe defaults: always tapped, first legal target, no evoke, no dash."""
@@ -174,6 +304,20 @@ class DefaultCallbacks:
     ) -> bool:
         return False
 
+    def choose_exile_from_hand(
+        self, game: GameState, player_idx: int, spell: CardInstance,
+        candidates: List[CardInstance]
+    ) -> Optional[CardInstance]:
+        """Default: the first card the cost may take, in hand order."""
+        return candidates[0] if candidates else None
+
+    def should_exile_instead_of_paying(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        can_pay_mana: bool
+    ) -> bool:
+        """Default: only when the mana cost cannot be paid."""
+        return not can_pay_mana
+
     def should_kick(
         self, game: GameState, player_idx: int, card: CardInstance
     ) -> int:
@@ -184,6 +328,12 @@ class DefaultCallbacks:
         can_normal: bool, can_dash: bool
     ) -> bool:
         return can_dash and not can_normal
+
+    def choose_x(
+        self, game: GameState, player_idx: int, card: CardInstance,
+        max_x: int
+    ) -> Optional[int]:
+        return None
 
     def choose_discard(
         self, game: GameState, player_idx: int,
@@ -219,6 +369,13 @@ class DefaultCallbacks:
             (c.power or 0) if c.effective_is_creature else 0,
             c.template.cmc or 0))
 
+    def choose_cost_exile(
+        self, game: GameState, player_idx: int, source: Any,
+        pool: List[CardInstance], n: int,
+    ) -> List[CardInstance]:
+        """Default: the head of the pile (`default_cost_exile`)."""
+        return default_cost_exile(pool, n)
+
     def choose_artifact_tutor_target(
         self, game: GameState, player_idx: int,
         eligible: List[CardInstance],
@@ -250,6 +407,13 @@ class DefaultCallbacks:
             return (is_mana, is_artifact_scaler, cmc)
 
         return max(eligible, key=_rank)
+
+    def choose_copy_targets(
+        self, game: GameState, player_idx: int, item, remaining: int,
+    ) -> Optional[List[int]]:
+        """Default: a copy keeps the original's targets (CR 707.10c: new
+        ones are its controller's option, never required)."""
+        return None
 
     def choose_mana_color(
         self, game: GameState, player_idx: int, source: CardInstance,
@@ -294,3 +458,122 @@ class DefaultCallbacks:
         if not eligible:
             return None
         return max(eligible, key=default_tutor_rank)
+
+    def choose_trigger_targets(self, game, player_idx, source, spec, req,
+                               players, permanents, x_value=0):
+        """Default: `default_trigger_targets`, printed data only."""
+        return default_trigger_targets(player_idx, req, players, permanents)
+
+    def choose_harmonize_tapper(self, game, player_idx, card, tappers):
+        """Default: the greatest power, the first in battlefield order on a
+        tie -- printed data only."""
+        return default_harmonize_tapper(tappers)
+
+    def choose_cast_targets(self, game, player_idx, card, requirements,
+                            x_value=0):
+        """Default: `default_cast_targets`, printed data only."""
+        return default_cast_targets(game, player_idx, card, requirements,
+                                    x_value)
+
+    # Resolution-time choices (A35).
+    def choose_optional_effect(self, ctx, spec) -> bool:
+        """Default: perform. The controller takes what the text offers --
+        what every legacy resolver did with the optional effects it
+        resolved. AI implementations decline where performing would hurt."""
+        return True
+
+    def choose_amount(self, ctx, spec, lo, hi, remaining_specs) -> int:
+        raise NotImplementedError
+
+    def choose_cards(self, ctx, spec, pool, n):
+        """Default: `default_card_pick`, printed card data only."""
+        return default_card_pick(pool, n)
+
+    def choose_division(self, ctx, spec, slots, total):
+        raise NotImplementedError
+
+
+def default_trigger_targets(player_idx: int, req: Any, players: Sequence[int],
+                            permanents: Sequence[Any]) -> List[Any]:
+    """The engine's default trigger target pick for one slot: the
+    opponent's face when the slot admits that player (the legacy owners'
+    rule for a player-admitting slot, A36), then the opponents'
+    permanents, then the controller's own, each in battlefield order, up
+    to the slot's count (at least one). No scoring: a deterministic
+    reading, never a strategic one."""
+    n = max(1, int(getattr(req, "count_max", 1) or 1))
+    opp = [p for p in players if p != player_idx]
+    order = opp + [c for c in permanents if c.controller != player_idx] + \
+        [c for c in permanents if c.controller == player_idx] + \
+        [p for p in players if p == player_idx]
+    return order[:n]
+
+
+def default_cost_exile(pool: Sequence[Any], n: int) -> List[Any]:
+    """The engine's default payment of an exile-from-your-graveyard cost:
+    the first `n` cards of the pile, in zone order. No scoring: every card
+    pays an untyped cost alike as far as the rules are concerned."""
+    return list(pool)[:max(0, n)]
+
+
+def default_harmonize_tapper(tappers: Sequence[Any]) -> Optional[Any]:
+    """The creature a harmonize cast taps by default (CR 702.180b): the
+    greatest power, the first in battlefield order on a tie; none when no
+    creature has power to give."""
+    best = max(tappers, key=lambda c: c.power or 0, default=None)
+    return best if best is not None and (best.power or 0) > 0 else None
+
+
+def default_cast_targets(game: Any, player_idx: int, card: Any,
+                         requirements: Sequence[Any],
+                         x_value: Optional[int] = None) -> List[Any]:
+    """The engine's default announcement of a spell's targets (CR 601.2c)
+    for each requirement that binds whatever is chosen: the opponent when
+    it admits a player and admits that one, else the caster; then the
+    legal objects the legality owner enumerates, the opponents' before
+    the caster's own, up to the requirement's count. No scoring: a
+    deterministic reading, never a strategic one."""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    from .target_solver import (binds_whatever_is_chosen,
+                                enumerate_legal_targets, slot_admits_player)
+    chosen: List[Any] = []
+    for req in requirements:
+        if not binds_whatever_is_chosen(req):
+            continue
+        order: List[Any] = [marker for marker, player in (
+            (PLAYER_TARGET_OPPONENT, 1 - player_idx),
+            (PLAYER_TARGET_SELF, player_idx))
+            if slot_admits_player(req, player, player_idx)]
+        objects = enumerate_legal_targets(game, player_idx, req, exclude=card,
+                                          x_ceiling=x_value, source=card)
+        order += [c.instance_id for c in objects if c.controller != player_idx]
+        order += [c.instance_id for c in objects if c.controller == player_idx]
+        chosen += [t for t in order if t not in chosen][:req.count_min]
+    return chosen
+
+
+def default_card_pick(pool: Sequence[Any], n: int) -> List[Any]:
+    """The engine's default card choice: up to `n` of `pool` by its own
+    delivery ranking (`activated_effects.default_tutor_rank`, the ranking
+    `DefaultCallbacks.choose_tutor_target` delivers by), highest first, ties
+    in pool order. Printed card data only -- a deterministic reading, never
+    a strategic one."""
+    from .activated_effects import default_tutor_rank
+    if n <= 0:
+        return []
+    return sorted(pool, key=default_tutor_rank, reverse=True)[:n]
+
+
+def default_search_finds(pool: Sequence[Any]) -> List[Any]:
+    """The cards a search for "any number of" / "all" cards finds by
+    default: every card of the pile, in zone order (CR 701.19b lets a
+    searcher miss cards in a hidden zone; the engine's reading finds them
+    all). No scoring."""
+    return list(pool)
+
+
+def default_alternative(options: Sequence[Any]) -> int:
+    """The option of a choice its controller makes on resolution ("your
+    choice of A or B", A19, CR 608.2d) the engine takes by default: the
+    first printed. No scoring."""
+    return 0

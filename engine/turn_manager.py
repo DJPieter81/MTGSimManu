@@ -170,15 +170,10 @@ class TurnManager:
             if ("untap" in otext
                     and "during each other player's untap step" in otext):
                 card.untap()
-        player.reset_turn_tracking()
-        # CR "this turn" window is a single game-turn clock shared by both
-        # players: the non-active player's per-turn EVENT tallies must also
-        # reset at this boundary, or a value from their own prior turn (a
-        # fetchland crack granting Revolt, life gained, etc.) leaks through
-        # the active player's entire turn and is read at instant speed.
-        # The full reset (with the silence/flashback lifecycle) stays with
-        # the active player only.
-        game.players[1 - player_idx].reset_cross_turn_event_counters()
+        # Every turn-boundary reset and expiry is a clock subscriber
+        # (engine/turn_clock.py), in the order they used to run here.
+        from .turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.TURN_BEGINS, player_idx))
         # Recalculate extra land drops from permanents on battlefield
         # (Azusa gives +2, Dryad of the Ilysian Grove gives +1)
         extra = 0
@@ -190,20 +185,10 @@ class TurnManager:
         game._global_storm_count = 0
 
     def end_of_turn_cleanup(self, game: "GameState") -> None:
-        """End-of-turn delayed triggers: Ragavan "may cast this turn"
-        cleanup, Dash return-to-hand, Goryo's end-of-turn exile."""
-        # Ragavan "may cast this turn": if card is still in hand, exile it
-        for player in game.players:
-            to_exile = [c for c in list(player.hand)
-                        if getattr(c, "_ragavan_return_to_exile", False)]
-            for card in to_exile:
-                player.hand.remove(card)
-                card.zone = "exile"
-                player.exile.append(card)
-                card._ragavan_return_to_exile = False
-                game.log.append(f"T{game.display_turn}: "
-                                f"{card.name} returned to exile (uncast)")
-
+        """End-of-turn delayed triggers: Dash return-to-hand, warp exile,
+        Goryo's end-of-turn exile. (A "until end of turn, you may cast
+        that card" permission ends in the cleanup step with the turn's
+        other "until end of turn" effects, CR 514.2.)"""
         # Dash: return dashed creatures to their owner's hand
         for player in game.players:
             dashed_creatures = [c for c in player.battlefield
@@ -216,9 +201,12 @@ class TurnManager:
                 game.log.append(
                     f"T{game.display_turn}: {card.name} returned to hand (Dash)")
 
-        # Warp: exile warped permanents at the beginning of the end step.
-        # The creature may be cast again from exile on a later turn (the
-        # _warped flag persists on the CardInstance so can_cast recognises it).
+        # Warp (CR 702.185a): exile warped permanents at the beginning of
+        # the end step; "its owner may cast this card after the current turn
+        # has ended for as long as it remains exiled" -- a permission to
+        # cast it from exile, from the next turn on, through the one
+        # rule-effect store (leaving exile ends it, CR 400.7).
+        from .effect_model import PERMANENT, permit_play
         for player in game.players:
             warped_creatures = [c for c in player.battlefield
                                 if getattr(c, '_warped', False)]
@@ -229,6 +217,11 @@ class TurnManager:
                 )
                 game.log.append(
                     f"T{game.display_turn}: {card.name} exiled (Warp)")
+                if card.zone == "exile":
+                    game.continuous_effects.register_effect(permit_play(
+                        card.owner, [card.instance_id], "cast", PERMANENT,
+                        source_id=card.instance_id,
+                        from_turn=game.turn_number + 1))
 
         # Delayed "exile it at the beginning of the next end step" riders
         # (temporary reanimation / put-onto-battlefield effects).
@@ -268,8 +261,8 @@ class TurnManager:
         # that named "the next end step" / "your next end step" whatever
         # subsystem created it. Placed LAST so those two keep their exact
         # existing ordering relative to the Dash/Warp/Ragavan blocks.
-        from .delayed_triggers import DelayedTriggerStep
-        game.fire_delayed_triggers(DelayedTriggerStep.END_STEP)
+        from .turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.END_STEP, game.active_player))
 
     def cleanup_step(self, game: "GameState") -> None:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
@@ -281,8 +274,9 @@ class TurnManager:
         """
         active = game.players[game.active_player]
 
-        # Clean up end-of-turn continuous effects
-        game.continuous_effects.cleanup_end_of_turn()
+        # End-of-turn expiry is a clock subscriber (engine/turn_clock.py).
+        from .turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.CLEANUP, game.active_player))
 
         # Discard to hand size via the callback
         from .constants import MAX_HAND_SIZE

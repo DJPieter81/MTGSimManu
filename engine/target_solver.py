@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import FrozenSet, List, Literal, Optional, TYPE_CHECKING
+from typing import FrozenSet, List, Literal, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .cards import CardInstance
@@ -54,7 +54,8 @@ class TargetRequirement:
                         {"permanent"}, {"permanent_nonland"}, {"card"},
                         {"spell"}, {"player"}, {"any"} (Lightning Bolt
                         — creature OR planeswalker OR player).
-        supertype:      "legendary" / "nonlegendary" / "basic" / "snow"
+        supertype:      "legendary" / "nonlegendary" / "basic" /
+                        "nonbasic" / "snow"
                         / None.
         subtype:        lowercase SUBTYPE the target must have ("forest",
                         "gate", "goblin", "equipment") or None. Distinct
@@ -94,6 +95,13 @@ class TargetRequirement:
     # ceiling supplied the requirement is unbounded (resolution-time
     # checks still apply).
     max_mana_value_is_x: bool = False
+    # Any other printed mana-value qualifier on the target (CR 115.1,
+    # 601.2c): (op, of, n) -- "with mana value 2" ("==", "literal", 2),
+    # "4 or greater" (">=", "literal", 4), "X" ("==", "x", 0: the X the
+    # caster chooses), "less than or equal to the number of cards in its
+    # controller's graveyard" ("<=", "controller_graveyard", 0). Compared
+    # with the object's mana value -- a spell's on the stack (CR 202.3e).
+    mana_value_bound: Optional[Tuple[str, str, int]] = None
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -150,6 +158,9 @@ _GRAVEYARD_PATTERN = re.compile(
     # name — any reanimation-shaped effect with this clause parses it.
     r"(?:\s+with\s+(?:total\s+)?mana\s+value\s+(?P<mv>\d+)\s+or\s+less)?"
     r"\s+(?:from|in)\s+(?P<scope>your|a)\s+graveyard"
+    # "other than a basic land card" (Surgical Extraction): the target is
+    # any card there but a basic land.
+    r"(?P<nonbasic>\s+other\s+than\s+a\s+basic\s+land\s+card)?"
 )
 
 # Loose graveyard fallback — same source-zone phrase but without the
@@ -167,37 +178,53 @@ _GRAVEYARD_ZONE_HINTS = (
     "in your graveyard",
 )
 
-# Battlefield compound patterns — same dispatch order as the existing
-# _battlefield_legal_targets() helper.
-_BATTLEFIELD_COMPOUND = [
-    # Three-type compound (Teferi Time Raveler's -3, March of Otherworldly
-    # Light, Angelic Purge, Banishing Stroke, … — 13 cards in the pool).
-    # Listed FIRST so the two-type and single-type patterns below cannot
-    # capture just "artifact" and silently narrow a three-type target set
-    # down to artifacts only.
-    ("target artifact, creature, or enchantment",
-     frozenset({"artifact", "creature", "enchantment"})),
-    ("target artifact or creature",     frozenset({"artifact", "creature"})),
-    ("target artifact or enchantment",  frozenset({"artifact", "enchantment"})),
-    ("target creature or planeswalker", frozenset({"creature", "planeswalker"})),
-    # Land-destruction compound form (Pillage class): castable off either
-    # permanent type — CR 601.2c needs only one legal target among the union.
-    ("target artifact or land",         frozenset({"artifact", "land"})),
-]
+# Battlefield compound targets: a list of two or more permanent types
+# joined by commas and a final "or" ("target artifact or creature",
+# "target artifact, creature, enchantment, or planeswalker") is the union
+# of its types — one grammar for every length, with the optional
+# controller scope that may follow it.
+_TYPE_WORD = r"(?:artifact|creature|enchantment|planeswalker|land|battle)"
+_COMPOUND_RE = re.compile(
+    rf"\btarget\s+({_TYPE_WORD}(?:\s*,\s*(?:or\s+)?{_TYPE_WORD})*\s*,?\s+or\s+{_TYPE_WORD})"
+    r"(\s+(?:an\s+opponent|that\s+player)\s+controls?|\s+you\s+control)?\b")
 
-# "target [non]land permanent" / "target permanent" — supertype-aware.
+
+def _compound_matches(oracle_l: str):
+    for m in _COMPOUND_RE.finditer(oracle_l):
+        types = frozenset(re.findall(_TYPE_WORD, m.group(1)))
+        scope_phrase = (m.group(2) or "").strip()
+        scope = ("you" if scope_phrase.startswith("you")
+                 else "opponent" if scope_phrase else "any")
+        yield m, types, scope
+
+
+# "target [non]land permanent" / "target permanent" — supertype-aware,
+# with the controller it names ("an opponent controls", CR 115.1).
 _PERMANENT_PATTERN = re.compile(
     r"target\s+(nonland\s+)?permanent\b"
+    r"(?:\s+(?P<scope>you\s+control|an\s+opponent\s+controls))?"
 )
 
 # Single-type battlefield targets (excluding "creature" — that one needs
 # special handling for "target creature you control" / "an opponent
 # controls").
+# The qualifiers a single-type target prints around its type word are
+# part of what it admits (CR 115.1, 601.2c): a supertype negation
+# ("nonbasic land") and the controller it names ("you control", "an
+# opponent controls"). A negation word that is not a supertype stays
+# unread (a lead, not approximated).
+_CONTROLLER_SUFFIX = (r"(?:\s+(?P<scope>you\s+control|an\s+opponent\s+"
+                      r"controls))?")
+_NEGATED_SUPERTYPES = {"nonbasic": "nonbasic",
+                       "nonlegendary": "nonlegendary"}
 _SINGLE_TYPE_BATTLEFIELD = [
-    ("artifact",     re.compile(r"\btarget\s+artifact\b")),
-    ("enchantment",  re.compile(r"\btarget\s+enchantment\b")),
-    ("planeswalker", re.compile(r"\btarget\s+planeswalker\b")),
-    ("land",         re.compile(r"\btarget\s+(?:non\w+\s+)?land\b")),
+    ("artifact",     re.compile(r"\btarget\s+artifact\b" + _CONTROLLER_SUFFIX)),
+    ("enchantment",  re.compile(r"\btarget\s+enchantment\b"
+                                + _CONTROLLER_SUFFIX)),
+    ("planeswalker", re.compile(r"\btarget\s+planeswalker\b"
+                                + _CONTROLLER_SUFFIX)),
+    ("land",         re.compile(r"\btarget\s+(?:(?P<neg>non\w+)\s+)?land\b"
+                                + _CONTROLLER_SUFFIX)),
 ]
 
 # Creature with explicit owner scope. Order: scoped first, then bare.
@@ -247,7 +274,130 @@ def _detect_mode_group(oracle_l: str, hit_idx: int,
     return 1
 
 
+# "Any number of target …" (CR 115.1): no upper bound on the count.
+ANY_NUMBER = 1 << 30
+
+_NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+                 "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+_PLURAL_TARGET_NOUNS = re.compile(
+    r"\b(creatures|permanents|artifacts|enchantments|lands|planeswalkers|cards"
+    r"|spells|players|opponents|battles)\b")
+_TARGET_SPAN = re.compile(r"\btarget\b[^.;•\n]*")
+_COUNT_BEFORE = re.compile(
+    r"(?:(up to) (\w+)|(one) or (two|three)|(any number) of|(\w+))\s+$")
+
+
+def _singularize_targets(oracle_l: str) -> str:
+    """Rewrite plural target nouns to singular (and "and/or" to "or") inside
+    each target phrase, keeping every index in place (a plural noun loses
+    its "s" to a space), so one singular grammar parses both."""
+    def _span(m):
+        t = _PLURAL_TARGET_NOUNS.sub(lambda n: n.group(1)[:-1] + " ", m.group(0))
+        return t.replace("and/or", "    or")
+    return _TARGET_SPAN.sub(_span, oracle_l)
+
+
+def _singularize_targets_located(oracle_text: str):
+    """`_singularize_targets(oracle_text.lower())` plus its offset map:
+    `offsets[i]` is the input-text index of normalised index `i`
+    (`offsets[len(norm)] == len(oracle_text)`). Singularisation keeps every
+    index in place, so the map only absorbs `str.lower()` length changes
+    (a character whose lowercase form is longer, e.g. U+0130)."""
+    lowered = oracle_text.lower()
+    norm = _singularize_targets(lowered)
+    if len(lowered) == len(oracle_text):
+        offsets = range(len(norm) + 1)
+    else:
+        m = []
+        for i, ch in enumerate(oracle_text):
+            m.extend([i] * len(ch.lower()))
+        m.append(len(oracle_text))
+        offsets = m
+    return norm, offsets
+
+
+def _count_before(text: str, idx: int):
+    """(count_min, count_max) from the words just before a target phrase:
+    "up to N" → (0, N), "one or two" → (1, 2), "any number of" → (0, ∞),
+    "N" → (N, N); None when no count word precedes it."""
+    m = _COUNT_BEFORE.search(text[max(0, idx - 24):idx])
+    if m is None:
+        return None
+    if m.group(1):
+        n = _NUMBER_WORDS.get(m.group(2)) or (int(m.group(2)) if m.group(2).isdigit() else None)
+        return None if n is None else (0, n)
+    if m.group(3):
+        return (1, _NUMBER_WORDS[m.group(4)])
+    if m.group(5):
+        return (0, ANY_NUMBER)
+    w = m.group(6)
+    n = _NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
+    return None if n is None or n == 1 else (n, n)
+
+
+def _parse_placed(oracle_text: str):
+    """The one placement owner. Returns `[(req, norm_start, norm_end)]` in
+    parse() order plus the normalised-to-input offset map; each start is the
+    occurrence parse() claimed for the requirement's phrase (and read its
+    count before, and its mana-value ceiling after), -1 when the phrase was
+    not found."""
+    if not oracle_text:
+        return [], range(1)
+    norm, offsets = _singularize_targets_located(oracle_text)
+    reqs = _parse_singular(norm)
+    import dataclasses as _dc
+    # Each requirement reads the count before ITS occurrence of its phrase:
+    # longer phrases claim their text first, and an occurrence inside an
+    # already-claimed phrase is not this requirement's.
+    claimed: list = []
+    where = {}
+    for i in sorted(range(len(reqs)), key=lambda i: -len(reqs[i].raw_phrase or "")):
+        phrase = reqs[i].raw_phrase
+        start = norm.find(phrase) if phrase else -1
+        while start >= 0 and any(a <= start < b for a, b in claimed):
+            start = norm.find(phrase, start + 1)
+        if start >= 0:
+            claimed.append((start, start + len(phrase)))
+        where[i] = start
+    out = []
+    for i, r in enumerate(reqs):
+        idx = where[i]
+        counts = _count_before(norm, idx) if idx >= 0 else None
+        if counts is not None:
+            r = _dc.replace(r, count_min=counts[0], count_max=counts[1],
+                            is_optional=r.is_optional or counts[0] == 0)
+        elif r.is_optional and r.count_min == 1:
+            # "up to one target X": zero or one (CR 115.1).
+            r = _dc.replace(r, count_min=0)
+        end = idx + len(r.raw_phrase or "") if idx >= 0 else -1
+        out.append((_with_mana_value_ceiling(norm, r, end), idx, end))
+    return out, offsets
+
+
+def parse_located(oracle_text: str) -> List[Tuple[TargetRequirement, int]]:
+    """`parse()` with each requirement's start in the input text: the
+    occurrence parse() itself claimed (never a second search), -1 when its
+    phrase was not found. Order is parse() order, not printed order."""
+    placed, offsets = _parse_placed(oracle_text)
+    return [(r, offsets[s] if s >= 0 else -1) for r, s, _ in placed]
+
+
+def parse_spans(oracle_text: str) -> List[Tuple[TargetRequirement, int, int]]:
+    """`parse_located()` plus each requirement's end offset, both in
+    input-text coordinates; (-1, -1) when the phrase was not found."""
+    placed, offsets = _parse_placed(oracle_text)
+    return [(r, offsets[s], offsets[e]) if s >= 0 else (r, -1, -1)
+            for r, s, e in placed]
+
+
 def parse(oracle_text: str) -> List[TargetRequirement]:
+    """Parse all target requirements from an oracle text, each with its
+    count (CR 115.1 / 601.2c): plural and counted target phrases are the
+    same requirement as their singular form with count_min / count_max."""
+    return [r for r, _ in parse_located(oracle_text)]
+
+
+def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
     """Parse all target requirements from an oracle text.
 
     Returns an empty list when no targets are required (draw, mill,
@@ -286,6 +436,21 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         hint_text = strip_reminder_text(oracle_text).lower()
         if any(h in hint_text for h in _GRAVEYARD_ZONE_HINTS):
             gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
+            # A target's zone is named by its own sentence (CR 115.1):
+            # the graveyard phrase must follow the target phrase before
+            # the sentence ends -- "... among cards in your graveyard" in
+            # a later delirium / threshold sentence does not move a
+            # battlefield target into the graveyard.
+            if gy_match is not None:
+                end = len(oracle_l)
+                for stop in (".", "\n"):
+                    at = oracle_l.find(stop, gy_match.end())
+                    if at != -1:
+                        end = min(end, at)
+                sentence = strip_reminder_text(
+                    oracle_l[gy_match.start():end])
+                if not any(h in sentence for h in _GRAVEYARD_ZONE_HINTS):
+                    gy_match = None
     if gy_match is not None:
         super_word = (gy_match.group(1) or "").strip() or None
         type_word = gy_match.group(2)
@@ -293,6 +458,8 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         # fallback has neither, so groupdict() safely returns {} and
         # both fall through to their existing inference below.
         gd = gy_match.groupdict()
+        if gd.get("nonbasic"):
+            super_word = "nonbasic"
         mv_word = gd.get("mv")
         max_mv = int(mv_word) if mv_word else None
         # Source-zone scope: the strict pattern's named 'scope' group,
@@ -353,64 +520,72 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             mode_group=_detect_mode_group(oracle_l, spell_match.start(),
                                           modal_start),
             raw_phrase=spell_match.group(0),
+            mana_value_bound=_mana_value_bound(
+                oracle_l[spell_match.end():]),
         ))
         # A counterspell may also target a permanent in modal text
         # (rare). Keep scanning so modal patterns are not lost.
 
     # ── 3. Battlefield compound targets ─────────────────────────────
-    for phrase, types in _BATTLEFIELD_COMPOUND:
-        idx = oracle_l.find(phrase)
-        if idx >= 0:
-            out.append(TargetRequirement(
-                zone="battlefield",
-                types=types,
-                owner_scope="any",
-                is_optional=_is_optional_at(oracle_l, idx),
-                mode_group=_detect_mode_group(oracle_l, idx, modal_start),
-                raw_phrase=phrase,
-            ))
+    for m, types, scope in _compound_matches(oracle_l):
+        # An "instead" alternative (a kicked / conditional replacement)
+        # re-states the same target rather than adding a second one.
+        sentence_start = oracle_l.rfind(".", 0, m.start()) + 1
+        sentence = oracle_l[sentence_start:oracle_l.find(".", m.end()) % (len(oracle_l) + 1)]
+        if "instead" in sentence and any(
+                r.types == types and r.owner_scope == scope for r in out):
+            continue
+        out.append(TargetRequirement(
+            zone="battlefield",
+            types=types,
+            owner_scope=scope,
+            is_optional=_is_optional_at(oracle_l, m.start()),
+            mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
+            raw_phrase=m.group(0),
+        ))
 
     # ── 4. "target permanent" / "target nonland permanent" ──────────
     perm_match = _PERMANENT_PATTERN.search(oracle_l)
     if perm_match is not None:
         kind = "permanent_nonland" if perm_match.group(1) else "permanent"
+        perm_scope = perm_match.group("scope") or ""
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({kind}),
-            owner_scope="any",
+            owner_scope=("you" if perm_scope.startswith("you")
+                         else "opponent" if perm_scope else "any"),
             is_optional=_is_optional_at(oracle_l, perm_match.start()),
             mode_group=_detect_mode_group(oracle_l, perm_match.start(),
                                           modal_start),
             raw_phrase=perm_match.group(0),
         ))
 
-    # ── 5. Creature with owner scope ────────────────────────────────
-    you_ctrl = _CREATURE_YOU_CONTROL.search(oracle_l)
-    opp_ctrl = _CREATURE_OPP_CONTROL.search(oracle_l)
-    bare_creature = _CREATURE_BARE.search(oracle_l)
-    if you_ctrl is not None:
-        out.append(TargetRequirement(
-            zone="battlefield",
-            types=frozenset({"creature"}),
-            owner_scope="you",
-            is_optional=_is_optional_at(oracle_l, you_ctrl.start()),
-            mode_group=_detect_mode_group(oracle_l, you_ctrl.start(),
-                                          modal_start),
-            raw_phrase=you_ctrl.group(0),
-        ))
-    elif opp_ctrl is not None:
-        out.append(TargetRequirement(
-            zone="battlefield",
-            types=frozenset({"creature"}),
-            owner_scope="opponent",
-            is_optional=_is_optional_at(oracle_l, opp_ctrl.start()),
-            mode_group=_detect_mode_group(oracle_l, opp_ctrl.start(),
-                                          modal_start),
-            raw_phrase=opp_ctrl.group(0),
-        ))
-    elif (bare_creature is not None
-          and not _is_inside_compound(oracle_l, bare_creature.start())
-          and not _is_target_creature_spell(oracle_l, bare_creature.start())):
+    # ── 5. Creature targets, each with its owner scope ─────────────
+    # Every distinct creature target phrase is its own requirement ("up to
+    # two target creatures you control each deal damage … to target
+    # creature an opponent controls" has two).
+    scoped_spans = []
+    for pat, scope in ((_CREATURE_YOU_CONTROL, "you"),
+                       (_CREATURE_OPP_CONTROL, "opponent")):
+        m = pat.search(oracle_l)
+        if m is not None:
+            scoped_spans.append((m.start(), m.end()))
+            out.append(TargetRequirement(
+                zone="battlefield",
+                types=frozenset({"creature"}),
+                owner_scope=scope,
+                is_optional=_is_optional_at(oracle_l, m.start()),
+                mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
+                raw_phrase=m.group(0),
+            ))
+    for bare_creature in _CREATURE_BARE.finditer(oracle_l):
+        if (any(a <= bare_creature.start() < b for a, b in scoped_spans)
+                or _is_inside_compound(oracle_l, bare_creature.start())
+                or _is_target_creature_spell(oracle_l, bare_creature.start())):
+            continue
+        if scoped_spans and "another target creature" not in oracle_l[
+                max(0, bare_creature.start() - 8):bare_creature.end()]:
+            continue
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({"creature"}),
@@ -420,6 +595,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
                                           modal_start),
             raw_phrase=bare_creature.group(0),
         ))
+        break
 
     # ── 6. Single-type battlefield targets ──────────────────────────
     for token, pat in _SINGLE_TYPE_BATTLEFIELD:
@@ -431,10 +607,14 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         # too). Compound entries always come first in `out`.
         if _already_covered_by_compound(out, token):
             continue
+        gd = m.groupdict()
+        scope_phrase = gd.get("scope") or ""
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({token}),
-            owner_scope="any",
+            supertype=_NEGATED_SUPERTYPES.get(gd.get("neg") or ""),
+            owner_scope=("you" if scope_phrase.startswith("you")
+                         else "opponent" if scope_phrase else "any"),
             is_optional=_is_optional_at(oracle_l, m.start()),
             mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
             raw_phrase=m.group(0),
@@ -467,7 +647,6 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=player_match.group(0),
         ))
 
-    _attach_mana_value_bound(oracle_l, out)
     return out
 
 _MV_BOUND_AFTER_RE = re.compile(
@@ -475,26 +654,95 @@ _MV_BOUND_AFTER_RE = re.compile(
     r"\s+with mana value (x|\d+) or less")
 
 
-def _attach_mana_value_bound(oracle_l: str, reqs: List[TargetRequirement]) -> None:
-    """Attach a trailing "with mana value N/X or less" clause to the
-    battlefield requirement it follows (CR 601.2c: the printed ceiling is
-    part of the target's legality). Numeric ceilings populate
-    `max_mana_value`; an X ceiling sets `max_mana_value_is_x`, bound at
-    enumeration time by the caller's affordable X."""
+# A spell target's (or a permanent target's) printed mana-value qualifier,
+# right after its phrase: a number or X, exactly or with "or less" / "or
+# greater", or "less than or equal to the number of cards in its
+# controller's graveyard" (read off the singularised text, where "cards"
+# may stand as "card" padded to its length).
+_MV_QUALIFIER_RE = re.compile(
+    r"^\s+with (?:mana value|converted mana cost) "
+    r"(?:(?P<gy>less than or equal to the number of cards?\s+in its "
+    r"controller['\u2019]s graveyard)"
+    r"|(?P<n>x|\d+) or (?P<dir>less|fewer|greater|more)\b"
+    r"|(?P<exact>x|\d+)(?![\w/]))")
+
+
+def _mana_value_bound(after: str) -> Optional[Tuple[str, str, int]]:
+    """The (op, of, n) mana-value bound printed at the start of `after`, or
+    None when there is none (see `TargetRequirement.mana_value_bound`)."""
+    m = _MV_QUALIFIER_RE.match(after)
+    if m is None:
+        return None
+    if m.group("gy"):
+        return ("<=", "controller_graveyard", 0)
+    word = m.group("n") or m.group("exact")
+    of, n = ("x", 0) if word == "x" else ("literal", int(word))
+    if m.group("exact") is not None:
+        return ("==", of, n)
+    return ("<=" if m.group("dir") in ("less", "fewer") else ">=", of, n)
+
+
+def _mana_value_bound_holds(req: TargetRequirement, mv: int,
+                            object_controller: int, game,
+                            x_ceiling: Optional[int] = None) -> bool:
+    """Does an object of mana value `mv`, controlled by
+    `object_controller`, meet the requirement's printed mana-value bound
+    (CR 115.1, 601.2c)? An X bound reads the most X the caster can pay
+    (`x_ceiling`; with none supplied it is not yet bound -- the caster
+    chooses X as the spell is cast, CR 601.2b)."""
+    bound = req.mana_value_bound
+    if bound is None:
+        return True
+    op, of, n = bound
+    if of == "x":
+        if x_ceiling is None:
+            return True
+        op, n = ("<=" if op == "==" else op), x_ceiling
+    elif of == "controller_graveyard":
+        if game is None:
+            return True
+        n = len(game.players[object_controller].graveyard)
+    return {"==": mv == n, "<=": mv <= n, ">=": mv >= n}[op]
+
+
+def spell_target_admits(game, req: TargetRequirement, item,
+                        x_ceiling: Optional[int] = None) -> bool:
+    """Is the spell `item` on the stack one a stack-zone requirement admits:
+    a spell of a kind it names, within its printed mana-value bound at the
+    spell's mana value on the stack (CR 115.1, 202.3e)? The one predicate
+    castability, enumeration, the cast and the AI read."""
+    from .stack import StackItemType as _SIT
+    if req.zone != "stack" or item.item_type != _SIT.SPELL:
+        return False
+    return (_spell_token_matches(item.source, req.types)
+            and _mana_value_bound_holds(req, item.mana_value, item.controller,
+                                        game, x_ceiling))
+
+
+def _with_mana_value_ceiling(norm: str, req: TargetRequirement,
+                             end: int) -> TargetRequirement:
+    """`req` with the trailing "with mana value N/X or less" clause that
+    follows its phrase where parse() placed it (ending at `end`; CR 601.2c:
+    the printed ceiling is part of the target's legality). Read at that
+    occurrence only -- never at the phrase's first occurrence, which can be
+    inside another requirement's longer phrase. Battlefield requirements
+    only. A numeric ceiling populates `max_mana_value`; an X ceiling sets
+    `max_mana_value_is_x`, bound at enumeration time by the caller's
+    affordable X."""
     import dataclasses as _dc
-    for n, req in enumerate(reqs):
-        if req.zone != "battlefield" or not req.raw_phrase:
-            continue
-        idx = oracle_l.find(req.raw_phrase)
-        if idx < 0:
-            continue
-        m = _MV_BOUND_AFTER_RE.match(oracle_l[idx + len(req.raw_phrase):])
-        if m is None:
-            continue
-        if m.group(1) == "x":
-            reqs[n] = _dc.replace(req, max_mana_value_is_x=True)
-        elif req.max_mana_value is None:
-            reqs[n] = _dc.replace(req, max_mana_value=int(m.group(1)))
+    if req.zone != "battlefield" or not req.raw_phrase or end < 0:
+        return req
+    m = _MV_BOUND_AFTER_RE.match(norm[end:])
+    if m is None:
+        bound = _mana_value_bound(norm[end:])
+        if bound is not None and bound[1] == "controller_graveyard":
+            return _dc.replace(req, mana_value_bound=bound)
+        return req
+    if m.group(1) == "x":
+        return _dc.replace(req, max_mana_value_is_x=True)
+    if req.max_mana_value is None:
+        return _dc.replace(req, max_mana_value=int(m.group(1)))
+    return req
 
 
 def _types_for_word(type_word: str) -> FrozenSet[str]:
@@ -518,13 +766,8 @@ def _is_inside_compound(oracle_l: str, idx: int) -> bool:
     phrase like "target artifact or creature" or "target creature or
     planeswalker"? Avoids double-counting bare creature when the
     compound already fired."""
-    for compound, _ in _BATTLEFIELD_COMPOUND:
-        if "creature" not in compound:
-            continue
-        c_idx = oracle_l.find(compound)
-        if c_idx < 0:
-            continue
-        if c_idx <= idx <= c_idx + len(compound):
+    for m, types, _scope in _compound_matches(oracle_l):
+        if "creature" in types and m.start() <= idx <= m.end():
             return True
     return False
 
@@ -594,6 +837,23 @@ def _matches_type(card: "CardInstance", types: FrozenSet[str],
     return False
 
 
+def _matches_current_type(card: "CardInstance",
+                          types: FrozenSet[str]) -> bool:
+    """A permanent's types are its current ones (CR 613.1d, 712.8): the
+    face it shows -- a transformed permanent's back face -- and the types
+    an effect adds. Does one of them, or the "permanent" / "nonland
+    permanent" words, answer a battlefield requirement's type?"""
+    current = {t.value for t in card.effective_card_types}
+    for tok in types:
+        if tok in ("permanent", "card"):
+            return True
+        if tok == "permanent_nonland" and "land" not in current:
+            return True
+        if tok in current:
+            return True
+    return False
+
+
 def _blocked_by_hexproof(card: "CardInstance", controller: int) -> bool:
     """CR 702.11d — a permanent with hexproof can't be the target of a
     spell or ability an OPPONENT controls (your own spells can still
@@ -637,6 +897,57 @@ def can_be_targeted(card: "CardInstance", source, controller: int) -> bool:
     return True
 
 
+def slot_admits_player(req: TargetRequirement, player_idx: int,
+                       controller: int) -> bool:
+    """Does a target slot admit this player? "Any target" and "target
+    player" do (CR 115.4), within the slot's controller scope ("target
+    opponent" admits only an opponent of `controller`). One owner for the
+    check, read by the binding on resolution and the AI's aim alike."""
+    if not set(req.types) & {"any", "player"}:
+        return False
+    scope = getattr(req, "owner_scope", "any")
+    return not ((scope == "opponent" and player_idx == controller)
+                or (scope == "you" and player_idx != controller))
+
+
+def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
+                          controller: int) -> bool:
+    """Does a target slot admit this permanent by its CURRENT types (CR
+    608.2b reads them on resolution, CR 601.2c when it is chosen)? "Any
+    target" admits a creature or a planeswalker (CR 115.4); a typed slot
+    admits its own types; the slot's controller scope applies. Whether the
+    source may target it is `can_be_targeted`'s question, not this one."""
+    scope = getattr(req, "owner_scope", "any")
+    if (scope == "opponent" and card.controller == controller) or \
+            (scope == "you" and card.controller != controller):
+        return False
+    types = set(req.types)
+    if "permanent" in types:
+        return True                # every object on the battlefield is one
+    current = {t.value for t in card.effective_card_types}
+    if "permanent_nonland" in types and "land" not in current:
+        return True
+    admitted = ({"creature", "planeswalker"} if "any" in types
+                else types - {"player"})
+    return bool(current & admitted)
+
+
+def slot_admits_kind(req: TargetRequirement, card: "CardInstance") -> bool:
+    """Does a target slot name the kind of object `card` is -- a spell the
+    slot's spell types admit, or one of its printed card types -- whatever
+    its legality now (zone, controller, protection)? The slot a target
+    that became illegal was chosen for: it stays there and is not affected
+    when the spell resolves (CR 608.2b)."""
+    from .cards import CardType
+    if req.zone == "stack":
+        return spell_matches(req, card)
+    t = card.template
+    if "any" in req.types and (t.is_creature
+                               or CardType.PLANESWALKER in t.card_types):
+        return True
+    return _matches_type(card, frozenset(req.types), req.zone)
+
+
 def _matches_supertype(card: "CardInstance",
                        supertype: Optional[str]) -> bool:
     """Filter by supertype. None = no filter. Mirrors the legendary /
@@ -652,6 +963,8 @@ def _matches_supertype(card: "CardInstance",
         return Supertype.LEGENDARY not in supertypes
     if supertype == "basic":
         return Supertype.BASIC in supertypes
+    if supertype == "nonbasic":
+        return Supertype.BASIC not in supertypes
     if supertype == "snow":
         return Supertype.SNOW in supertypes
     return True
@@ -768,6 +1081,12 @@ def _spell_token_matches(item_source: "CardInstance",
     return False
 
 
+def spell_matches(req: TargetRequirement, spell: "CardInstance") -> bool:
+    """A spell on the stack is of a kind a stack-zone requirement names
+    ("target sorcery spell", "target creature spell")."""
+    return req.zone == "stack" and _spell_token_matches(spell, req.types)
+
+
 def has_legal_target(game: "GameState", controller: int,
                      req: TargetRequirement,
                      exclude: Optional["CardInstance"] = None,
@@ -801,27 +1120,76 @@ def has_legal_target(game: "GameState", controller: int,
                 continue
             if exclude is not None and item.source is exclude:
                 continue
-            if _spell_token_matches(item.source, req.types):
+            if spell_target_admits(game, req, item, x_ceiling):
                 return True
         return False
 
-    for card in _zone_cards(game, controller, req):
-        if exclude is not None and card is exclude:
-            continue
-        if not _matches_type(card, req.types, req.zone):
-            continue
-        if not _matches_supertype(card, req.supertype):
-            continue
-        if not _matches_subtype(card, req.subtype):
-            continue
-        if req.zone == "battlefield" and not can_be_targeted(card, source, controller):
-            continue
-        # Owner already pre-filtered by _zone_cards.
-        if req.max_mana_value_is_x and x_ceiling is not None and \
-                (card.template.cmc or 0) > x_ceiling:
-            continue  # CR 601.2c: beyond the X the caster can pay
-        return True
-    return False
+    return any(_admits_card(card, req, controller, exclude, x_ceiling, source)
+               for card in _zone_cards(game, controller, req))
+
+
+def _admits_card(card: "CardInstance", req: TargetRequirement,
+                 controller: int, exclude: Optional["CardInstance"],
+                 x_ceiling: Optional[int],
+                 source: Optional["CardInstance"]) -> bool:
+    """CR 601.2c / 115.1: does a requirement admit this card of its zone
+    (the zone and owner scope `_zone_cards` already applied) as a target --
+    its types, supertype and subtype, the source may target it (hexproof,
+    protection: battlefield only), and its mana value within the printed
+    bound and within the X the caster can pay? The one predicate
+    castability (`has_legal_target`), the enumeration
+    (`enumerate_legal_targets`) and the cast (`target_admitted`) read."""
+    if exclude is not None and card is exclude:
+        return False
+    if req.zone == "battlefield":
+        if not _matches_current_type(card, req.types):
+            return False
+    elif not _matches_type(card, req.types, req.zone):
+        return False
+    if not _matches_supertype(card, req.supertype):
+        return False
+    if not _matches_subtype(card, req.subtype):
+        return False
+    if req.zone == "battlefield" and not can_be_targeted(card, source,
+                                                         controller):
+        return False
+    mv = card.template.cmc or 0
+    if req.max_mana_value is not None and mv > req.max_mana_value:
+        return False
+    if req.max_mana_value_is_x and x_ceiling is not None and mv > x_ceiling:
+        return False                # beyond the X the caster can pay
+    return _mana_value_bound_holds(req, mv, card.controller,
+                                   getattr(card, "_game_state", None),
+                                   x_ceiling)
+
+
+def choose_targets(game: "GameState", controller: int, req: TargetRequirement,
+                   preferred=None, key=None, hostile: bool = True,
+                   exclude: Optional["CardInstance"] = None,
+                   source: Optional["CardInstance"] = None) -> List["CardInstance"]:
+    """Up to ``req.count_max`` distinct legal targets (CR 115.3, 601.2c):
+    the chosen ids that are legal first, in order, then — to fill the count
+    — the remaining legal candidates by ``key`` (highest first; default
+    mana value). ``hostile`` leaves the controller's own permanents out of
+    the fill unless the requirement is scoped to them. The one place a
+    counted target set is chosen."""
+    candidates = enumerate_legal_targets(game, controller, req,
+                                         exclude=exclude, source=source)
+    by_id = {c.instance_id: c for c in candidates}
+    chosen: List["CardInstance"] = []
+    for tid in (preferred or []):
+        c = by_id.get(tid) if isinstance(tid, int) else None
+        if c is not None and all(c is not x for x in chosen):
+            chosen.append(c)
+    limit = max(1, req.count_max or 1)
+    if len(chosen) < limit:
+        def _ctrl(c):
+            return c.controller if c.controller is not None else c.owner
+        pool = [c for c in candidates if all(c is not x for x in chosen)
+                and (not hostile or req.owner_scope == "you" or _ctrl(c) != controller)]
+        pool.sort(key=key or (lambda c: c.template.cmc or 0), reverse=True)
+        chosen.extend(pool[:limit - len(chosen)])
+    return chosen[:limit]
 
 
 def enumerate_legal_targets(game: "GameState", controller: int,
@@ -851,30 +1219,116 @@ def enumerate_legal_targets(game: "GameState", controller: int,
                 continue
             if exclude is not None and item.source is exclude:
                 continue
-            if _spell_token_matches(item.source, req.types):
+            if spell_target_admits(game, req, item, x_ceiling):
                 out.append(item.source)
         return out
 
-    out = []
-    for card in _zone_cards(game, controller, req):
-        if exclude is not None and card is exclude:
+    return [card for card in _zone_cards(game, controller, req)
+            if _admits_card(card, req, controller, exclude, x_ceiling,
+                            source)]
+
+
+def legal_slot_choices(game: "GameState", controller: int,
+                       req: TargetRequirement,
+                       source: Optional["CardInstance"] = None,
+                       ) -> Tuple[List[int], List["CardInstance"]]:
+    """(players, permanents) a target slot may name now (CR 115.4, 601.2c,
+    603.3d): the players the slot admits within its controller scope
+    (`slot_admits_player`) and the battlefield permanents it admits by
+    their current types (`slot_admits_permanent`) that `source` may target
+    (`can_be_targeted`: hexproof, protection). One owner for the choices a
+    triggered ability's target is picked from as it is put on the stack;
+    a slot in another zone keeps `enumerate_legal_targets`."""
+    players = [p for p in range(len(game.players))
+               if slot_admits_player(req, p, controller)]
+    if req.zone not in ("any", "battlefield"):
+        return players, enumerate_legal_targets(game, controller, req,
+                                                source=source)
+    permanents = []
+    for p in game.players:
+        for card in p.battlefield:
+            if not slot_admits_permanent(req, card, controller):
+                continue
+            if not can_be_targeted(card, source, controller):
+                continue
+            if not _matches_supertype(card, req.supertype) \
+                    or not _matches_subtype(card, req.subtype):
+                continue
+            if req.max_mana_value is not None and \
+                    (card.template.cmc or 0) > req.max_mana_value:
+                continue
+            permanents.append(card)
+    return players, permanents
+
+
+def target_admitted(game: "GameState", controller: int,
+                    requirements: List[TargetRequirement], target,
+                    exclude: Optional["CardInstance"] = None,
+                    x_ceiling: Optional[int] = None,
+                    source: Optional["CardInstance"] = None) -> bool:
+    """CR 601.2c: is an object chosen as a target a legal choice for some
+    requirement of the spell -- a spell of a kind a stack requirement
+    names, a permanent "any target" or a typed battlefield slot admits
+    (`slot_admits_permanent`, the source may target it), or a card of the
+    requirement's zone it admits (`_admits_card`)? A player marker
+    (a negative id) is not an object: True when some requirement admits
+    the player it names, within its controller scope ("target opponent"
+    is not its caster, CR 115.1). None of the spell's own requirements
+    admit it: False."""
+    if isinstance(target, int) and target < 0:
+        player = player_index_for_target(game, controller, target)
+        return player is not None and any(
+            slot_admits_player(r, player, controller) for r in requirements)
+    obj = game.get_card_by_id(target) if isinstance(target, int) else None
+    if obj is None:
+        return False
+    for req in requirements:
+        if req.zone == "stack":
+            if any(item.source is obj
+                   and spell_target_admits(game, req, item, x_ceiling)
+                   for item in game.stack.items):
+                return True
+        elif req.zone == "any":
+            if obj.zone == "battlefield" and \
+                    slot_admits_permanent(req, obj, controller) and \
+                    can_be_targeted(obj, source, controller):
+                return True
+        elif obj.zone == req.zone and \
+                any(c is obj for c in _zone_cards(game, controller, req)) and \
+                _admits_card(obj, req, controller, exclude, x_ceiling, source):
+            return True
+    return False
+
+
+def binds_whatever_is_chosen(req: TargetRequirement) -> bool:
+    """A requirement the spell has whatever its caster chooses: not an
+    "up to" or optional one, not a mode's (CR 700.2a: a mode's targets
+    bind only when that mode is chosen), and for at least one target."""
+    return (not req.is_optional and req.mode_group is None
+            and req.count_min > 0)
+
+
+def required_targets_chosen(game: "GameState", controller: int,
+                            requirements: List[TargetRequirement], targets,
+                            exclude: Optional["CardInstance"] = None,
+                            x_ceiling: Optional[int] = None,
+                            source: Optional["CardInstance"] = None) -> bool:
+    """CR 601.2c: the caster announces a target for every target the
+    spell requires. Each requirement that binds whatever is chosen
+    (`binds_whatever_is_chosen`) admits at least its minimum count of
+    distinct chosen targets. One object or player may be chosen for
+    different instances of the word "target"; within one instance the
+    targets are distinct."""
+    for req in requirements:
+        if not binds_whatever_is_chosen(req):
             continue
-        if not _matches_type(card, req.types, req.zone):
-            continue
-        if not _matches_supertype(card, req.supertype):
-            continue
-        if not _matches_subtype(card, req.subtype):
-            continue
-        if req.zone == "battlefield" and not can_be_targeted(card, source, controller):
-            continue
-        if req.max_mana_value is not None and \
-                (card.template.cmc or 0) > req.max_mana_value:
-            continue
-        if req.max_mana_value_is_x and x_ceiling is not None and \
-                (card.template.cmc or 0) > x_ceiling:
-            continue  # CR 601.2c: beyond the X the caster can pay
-        out.append(card)
-    return out
+        admitted = {t for t in (targets or ())
+                    if target_admitted(game, controller, [req], t,
+                                       exclude=exclude, x_ceiling=x_ceiling,
+                                       source=source)}
+        if len(admitted) < req.count_min:
+            return False
+    return True
 
 
 def has_legal_target_for_spell(game: "GameState", controller: int,
@@ -950,3 +1404,32 @@ def targeted_player(game: "GameState", controller: int,
         if idx is not None:
             return idx
     return (1 - controller) if default_opponent else None
+
+
+def pick_resolution_target(game: "GameState", controller: int,
+                           source: "CardInstance", candidates,
+                           preferred=(), key=None) -> Optional["CardInstance"]:
+    """The permanent a resolving spell or ability acts on — the one owner
+    of a handler's target choice.
+
+    CR 601.2c / 608.2b: the target chosen when it was put on the stack
+    (`preferred`) is the one it affects while still legal. When none was
+    chosen then, the pick made here is the best legal candidate (`key`,
+    highest first): never one `source` may not target (hexproof,
+    protection — `can_be_targeted`), never one whose ward its controller
+    would not get past, and it meets that ward now (CR 702.21a) — an
+    unpaid ward counters the effect, so the pick is None."""
+    legal = [c for c in candidates if can_be_targeted(c, source, controller)]
+    by_id = {c.instance_id: c for c in legal}
+    for tid in (preferred or ()):
+        if tid in by_id:
+            return by_id[tid]      # met ward when it was put on the stack
+    from ai.ward_targeting import ward_rules_out_target
+    pool = [c for c in legal
+            if not ward_rules_out_target(game, controller, source, c, mana_committed=0)]
+    if not pool:
+        return None
+    pick = max(pool, key=key) if key is not None else pool[0]
+    from .optional_costs import ward_gate
+    survives, _ = ward_gate(game, source, controller, [pick.instance_id])
+    return pick if survives else None

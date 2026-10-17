@@ -646,7 +646,8 @@ class CombatPlanner:
         """
         from ai.block_assignment import coverage_pass, optimize_pass
 
-        total_incoming = sum(a.power for a in attackers)
+        from ai.clock import unblocked_reach
+        total_incoming = unblocked_reach(attackers)
         sorted_attackers = sorted(attackers, key=lambda a: a.power, reverse=True)
 
         def _can_block_fn(attacker, blocker):

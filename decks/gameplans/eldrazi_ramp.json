@@ -9,12 +9,10 @@
         "enablers": [],
         "payoffs": [
           "Devourer of Destiny",
-          "Emrakul, the Promised End",
-          "Herigast, Erupting Nullkite"
+          "Emrakul, the Promised End"
         ],
         "interaction": [
           "Kozilek's Command",
-          "Kozilek's Return",
           "Ugin, Eye of the Storms"
         ]
       }
@@ -25,8 +23,7 @@
       "card_roles": {
         "payoffs": [
           "Devourer of Destiny",
-          "Emrakul, the Promised End",
-          "Herigast, Erupting Nullkite"
+          "Emrakul, the Promised End"
         ],
         "enablers": [
           "Malevolent Rumble",
@@ -44,7 +41,6 @@
   "mulligan_keys": [
     "Emrakul, the Promised End",
     "Kozilek's Command",
-    "Kozilek's Return",
     "Sowing Mycospawn"
   ],
   "mulligan_min_lands": 2,

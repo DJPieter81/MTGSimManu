@@ -21,7 +21,7 @@ matching the manager pattern used across engine/*.py.
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Set
 
 from .cards import (COUNTER_KIND_MINUS,
     CardInstance, CardTemplate, CardType, Keyword, Supertype, Color,
@@ -32,6 +32,140 @@ from .player_state import TOKEN_DEFS
 
 if TYPE_CHECKING:
     from .game_state import GameState
+
+
+# ─── PRINTED TOKENS (CR 111.3, 111.4) ────────────────────────────────
+
+# The card types, supertypes and colours a token's creator may print that
+# the token owner builds; any other refuses the spec (`printed_token`).
+_TOKEN_CARD_TYPES = {"artifact": CardType.ARTIFACT,
+                     "creature": CardType.CREATURE,
+                     "enchantment": CardType.ENCHANTMENT}
+_TOKEN_SUPERTYPES = {s.value: s for s in Supertype}
+_TOKEN_COLORS = {"W": Color.WHITE, "U": Color.BLUE, "B": Color.BLACK,
+                 "R": Color.RED, "G": Color.GREEN}
+_TOKEN_KEYWORDS = {k.value: k for k in Keyword}
+
+
+def _literal(amount):
+    """The printed integer of a LITERAL amount; None otherwise."""
+    from .effect_spec import AmountKind
+    if amount is None or amount.kind is not AmountKind.LITERAL \
+            or amount.quantity is not None or amount.ref is not None \
+            or amount.inner is not None:
+        return None
+    return amount.n
+
+
+def _granted_mana_units(granted) -> "List[List[str]] | None":
+    """The mana units of a token's granted abilities when every one is a
+    "Sacrifice this <permanent>: Add <mana>" mana ability -- the derivation
+    that types a card's own (`mana_units.sacrifice_units`); [] for none;
+    None for any other ability, which the token owner does not build."""
+    from .effect_spec import HostKind
+    from .mana_units import sacrifice_units
+    if not granted:
+        return []
+    for h in granted:
+        cost = dict(h.cost.items) if h.cost is not None else {}
+        if h.kind is not HostKind.MANA_ABILITY or not cost.get("sacrifice_self"):
+            return None
+    return sacrifice_units(granted) or None
+
+
+def printed_token(spec) -> "dict | None":
+    """The characteristics a token's creator defines (CR 111.3), as the
+    token owner builds them from the typed `TokenSpec`: its card types,
+    supertypes, subtypes, colours, printed power and toughness, keywords
+    and granted "Sacrifice this token: Add <mana>" abilities (as
+    `sacrifice_mana_units`). An unnamed token is named for its subtypes
+    plus "Token" (CR 111.4). None for a predefined token, a copy, a named
+    token, a power or toughness that is not printed, a keyword with a
+    parameter or one the engine does not type, or any other granted
+    ability: the owner builds none of those from the spec."""
+    from .effect_spec import TokenSpec
+    if not isinstance(spec, TokenSpec) or spec.predefined is not None \
+            or spec.copy_of is not None or spec.copy_except \
+            or spec.name is not None or not spec.types \
+            or any(t not in _TOKEN_CARD_TYPES for t in spec.types) \
+            or any(s not in _TOKEN_SUPERTYPES for s in spec.supertypes) \
+            or any(c not in _TOKEN_COLORS for c in spec.colors):
+        return None
+    creature = "creature" in spec.types
+    power, toughness = _literal(spec.power), _literal(spec.toughness)
+    if creature and (power is None or toughness is None):
+        return None
+    if not creature and (spec.power is not None or spec.toughness is not None):
+        return None
+    keywords = set()
+    for name, param in spec.keywords:
+        if param is not None or name not in _TOKEN_KEYWORDS:
+            return None
+        keywords.add(_TOKEN_KEYWORDS[name])
+    units = _granted_mana_units(spec.granted)
+    if units is None:
+        return None
+    subtypes = [w.title() for w in spec.subtypes]
+    return {
+        "name": " ".join(subtypes or [t.title() for t in spec.types]) + " Token",
+        "card_types": [_TOKEN_CARD_TYPES[t] for t in spec.types],
+        "supertypes": [_TOKEN_SUPERTYPES[s] for s in spec.supertypes],
+        "subtypes": subtypes,
+        "colors": {_TOKEN_COLORS[c] for c in spec.colors},
+        "power": power,
+        "toughness": toughness,
+        "keywords": keywords,
+        "sacrifice_mana_units": units,
+        # The token's text is its granted abilities (CR 111.3).
+        "oracle_text": " ".join(h.text.replace("~", "this token")
+                                for h in spec.granted),
+    }
+
+
+def observer_matches(spec: dict, creature: CardInstance) -> bool:
+    """Does a typed dies observer's filter admit the dying creature? Only
+    the subtype filter of "one or more other <subtype>s you control die"
+    narrows it (CR 205.3, read from the creature's own subtypes); the scope
+    (whose creature) is checked by the caller."""
+    wanted = spec.get("subtypes")
+    if not wanted:
+        return True
+    return any(st.lower() in wanted for st in creature.effective_subtypes)
+
+
+def _prints_observer(perm: CardInstance, spec: dict) -> bool:
+    """A self-transforming observer is printed on the face that transforms
+    (CR 712.8): a permanent showing its back face has no such trigger."""
+    return not (spec["kind"] == "transform_self"
+                and getattr(perm, "is_transformed", False))
+
+
+def _audit_dies_observers(game: "GameState", creature: CardInstance,
+                          controller: int, fired: set) -> None:
+    """CR 603.2, restated from the raw fields (not from `observer_matches`):
+    a creature's death triggers every dies observer on the battlefield whose
+    scope covers its controller and whose subtype (if any) is one of the
+    creature's own -- whatever the creature's text. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    dying = {st.lower() for st in creature.effective_subtypes}
+    for p_idx, player in enumerate(game.players):
+        for perm in player.battlefield:
+            spec = perm.template.creature_dies_observer
+            if not spec or not _prints_observer(perm, spec):
+                continue
+            scope = spec["scope"]
+            if (scope == "you" and controller != p_idx) or \
+                    (scope == "opponent" and controller == p_idx):
+                continue
+            wanted = spec.get("subtypes")
+            if wanted and not dying & set(wanted):
+                continue
+            rules_audit.check(
+                "603.2/dies_observer", id(perm) in fired,
+                f"{creature.name} died and {perm.name}'s observer "
+                f"({spec['kind']}) did not trigger", game=game)
 
 
 class PermanentEffects:
@@ -303,8 +437,18 @@ class PermanentEffects:
     def create_token(game: "GameState", controller: int, token_type: str,
                      count: int = 1, power: int = None, toughness: int = None,
                      extra_keywords: Set[Keyword] = None,
-                     source_oracle: str = None) -> List[CardInstance]:
+                     source_oracle: str = None,
+                     subtypes: List[str] = None,
+                     colors: Set[Color] = None,
+                     token_spec=None) -> List[CardInstance]:
         """Create token creatures on the battlefield.
+
+        With `token_spec`, a typed `TokenSpec` its creator prints, the
+        token has exactly the characteristics `printed_token` builds from it
+        (CR 111.3, 111.4) -- no text is read; the other arguments are
+        unused.
+        The player who creates a token is its owner and it enters under
+        their control (CR 111.2).
 
         Generic-first design (post-Phase-1C-followup): when
         ``source_oracle`` is provided, the spawning card's oracle
@@ -319,6 +463,11 @@ class PermanentEffects:
         caller. Future cleanup will migrate every caller to pass
         source_oracle so TOKEN_DEFS can be retired.
         """
+        if token_spec is not None:
+            built = printed_token(token_spec)
+            if built is None:
+                raise ValueError(f"the token owner builds no {token_spec!r}")
+            return PermanentEffects._put_tokens(game, controller, count, built)
         tokens = []
         # Generic path: parse from the spawning card's oracle text.
         spec = None
@@ -369,6 +518,8 @@ class PermanentEffects:
             t_toughness = toughness
         if extra_keywords:
             kw_set |= extra_keywords
+        if colors:
+            t_colors = set(colors)
 
         # Oracle text on the generated template — when source_oracle
         # carries a "with 'gets +N/+N for each artifact ...'" clause,
@@ -402,6 +553,7 @@ class PermanentEffects:
                 colors=set(t_colors),
                 tags={"token", "creature"},
                 oracle_text=token_oracle,
+                subtypes=list(subtypes or ()),
             )
             template.has_artifact_count_scaling = _art_scale
             # A token created "with '<ability>'" carries that ability. When it
@@ -439,18 +591,96 @@ class PermanentEffects:
                             f"Create {count}x {t_name} token(s)")
         return tokens
 
+    @staticmethod
+    def _put_tokens(game: "GameState", controller: int, count: int,
+                    built: dict) -> List[CardInstance]:
+        """Put `count` tokens with the characteristics `built`
+        (`printed_token`) onto the battlefield under `controller`'s control
+        (CR 111.2). Each enters like any permanent: its own and every
+        watcher's enter triggers fire (CR 603.6a)."""
+        tokens = []
+        creature = CardType.CREATURE in built["card_types"]
+        for _ in range(count):
+            template = CardTemplate(
+                name=built["name"],
+                card_types=list(built["card_types"]),
+                supertypes=list(built["supertypes"]),
+                subtypes=list(built["subtypes"]),
+                mana_cost=ManaCost(),
+                power=built["power"],
+                toughness=built["toughness"],
+                keywords=set(built["keywords"]),
+                colors=set(built["colors"]),
+                tags={"token", "creature"} if creature else {"token"},
+                oracle_text=built["oracle_text"],
+            )
+            template.sacrifice_mana_units = [
+                list(u) for u in built["sacrifice_mana_units"]]
+            instance = CardInstance(template=template, owner=controller,
+                                    controller=controller,
+                                    instance_id=game.next_instance_id(),
+                                    zone="battlefield")
+            instance.is_token = True
+            instance._game_state = game
+            instance.enter_battlefield()
+            game.players[controller].battlefield.append(instance)
+            game._handle_permanent_etb(instance, controller)
+            tokens.append(instance)
+        if count > 0:
+            kind = built["name"][:-len(" Token")]
+            game.log.append(f"T{game.display_turn} P{controller+1}: "
+                            f"Create {count}x {kind} token(s)")
+        return tokens
+
+    @staticmethod
+    def amass(game: "GameState", controller: int, n: int,
+              subtype: str) -> CardInstance:
+        """CR 701.47a, "Amass [subtype] N": if `controller` controls no
+        Army creature, create a 0/0 black [subtype] Army creature token
+        (through `create_token`, the token owner: it enters like any
+        permanent); then put N +1/+1 counters on an Army creature they
+        control (through `add_plus_counters`, the counter funnel). The one
+        owner of amass. Its "becomes a [subtype] in addition" clause for an
+        Army of another subtype is not modelled. Returns the Army."""
+        kind = subtype.title()
+        army = next((c for c in game.players[controller].battlefield
+                     if c.effective_is_creature
+                     and "Army" in (c.effective_subtypes or ())), None)
+        if army is None:
+            army = PermanentEffects.create_token(
+                game, controller, f"{kind} Army", power=0, toughness=0,
+                subtypes=[kind, "Army"], colors={Color.BLACK})[0]
+        army.add_plus_counters(n, game)
+        game.log.append(f"T{game.display_turn} P{controller+1}: amass "
+                        f"{kind}s {n} -- {army.name} is "
+                        f"{army.power}/{army.toughness}")
+        return army
+
     # ─── PLANESWALKER ABILITIES ──────────────────────────────────
 
 
     @staticmethod
-    def _creature_dies(game: "GameState", creature: CardInstance):
-        """Handle a creature dying."""
+    def _creature_dies(game: "GameState", creature: CardInstance,
+                       cause: str = ""):
+        """Handle a creature dying: put into a graveyard from the
+        battlefield by any means (CR 700.4). The zone funnel hands every
+        such move here; the move itself goes back through the funnel as
+        the death (`dying=True`)."""
         owner = creature.owner
         controller = creature.controller
 
+        # CR 614.6 / 700.4: a static "would die / would be put into a
+        # graveyard, exile it instead" (asked of the zone funnel's one
+        # matcher) replaces the death: the creature is exiled and did not
+        # die, so undying, persist and modular -- dies triggers -- and
+        # every death count, trigger and observer below stay silent.
+        exiled_instead = game.zone_mgr.graveyard_exile_source(
+            game, creature, "battlefield") is not None
+
         # Replacement effects: counters must be readable BEFORE any cleanup.
         # Undying (CR 702.94): return to battlefield with +1/+1 counter if no +1/+1 counter.
-        if Keyword.UNDYING in creature.keywords and creature.plus_counters == 0:
+        if (not exiled_instead and Keyword.UNDYING in creature.keywords
+                and creature.plus_counters == 0):
             if creature in game.players[controller].battlefield:
                 game.players[controller].battlefield.remove(creature)
             creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
@@ -467,7 +697,8 @@ class PermanentEffects:
             return
 
         # Persist (CR 702.78): return to battlefield with -1/-1 counter if no -1/-1 counter.
-        if Keyword.PERSIST in creature.keywords and creature.minus_counters == 0:
+        if (not exiled_instead and Keyword.PERSIST in creature.keywords
+                and creature.minus_counters == 0):
             if creature in game.players[controller].battlefield:
                 game.players[controller].battlefield.remove(creature)
             creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
@@ -516,7 +747,10 @@ class PermanentEffects:
 
         # Route zone mutation through the funnel: single owner of battlefield→graveyard
         # list mutation, zone attribute, and leaving-battlefield cleanup.
-        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")
+        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard",
+                                cause=cause, dying=True)
+        if exiled_instead:
+            return                       # it did not die (CR 700.4)
         game.players[controller].creatures_died_this_turn += 1
 
         # Modular death trigger: transfer captured counters to best artifact creature.
@@ -564,15 +798,20 @@ class PermanentEffects:
         observer's attached creature or on itself (subtype bonus honoured),
         drain, gain, draw — through the engine's own funnels (the counter
         funnel fires counters-placed triggers; life loss reaches the SBA)."""
+        fired: set = set()
         for p_idx, player in enumerate(game.players):
             for perm in list(player.battlefield):
                 spec = perm.template.creature_dies_observer
-                if not spec or perm.zone != "battlefield":
+                if not spec or perm.zone != "battlefield" \
+                        or not _prints_observer(perm, spec):
                     continue
                 if spec["scope"] == "you" and controller != p_idx:
                     continue
                 if spec["scope"] == "opponent" and controller == p_idx:
                     continue
+                if not observer_matches(spec, creature):
+                    continue
+                fired.add(id(perm))
                 kind = spec["kind"]
                 if kind in ("counter_attached", "counter_self"):
                     target = perm
@@ -598,9 +837,10 @@ class PermanentEffects:
                         f"T{game.display_turn} P{p_idx+1}: {perm.name} — "
                         f"{creature.name} died → +{amount}/+{amount} counter(s) on {target.name}")
                 elif kind == "drain":
-                    for o_idx, opp in enumerate(game.players):
+                    from .damage import lose_life
+                    for o_idx in range(len(game.players)):
                         if o_idx != p_idx:
-                            opp.life -= spec["amount"]
+                            lose_life(game, o_idx, spec["amount"])
                     if spec["gain"]:
                         PermanentEffects.gain_life(game, p_idx, spec["gain"])
                     game.log.append(
@@ -614,10 +854,20 @@ class PermanentEffects:
                 elif kind == "draw":
                     game.draw_cards(p_idx, spec["draw"])
                     if spec["lose_life"]:
-                        player.life -= spec["lose_life"]
+                        from .damage import lose_life
+                        lose_life(game, p_idx, spec["lose_life"])
                         game.check_state_based_actions()
+                elif kind == "transform_self":
+                    # "You may exile <this>, then return it to the
+                    # battlefield transformed": a new object (CR 400.7)
+                    # through the zone funnel. The engine performs the
+                    # optional exile, as the resolver it replaces did.
+                    from .oracle_resolver import _transform_permanent
+                    _transform_permanent(game, perm, p_idx,
+                                         returns_as_new_object=True)
                 if game.game_over:
                     return
+        _audit_dies_observers(game, creature, controller, fired)
 
 
     @staticmethod
