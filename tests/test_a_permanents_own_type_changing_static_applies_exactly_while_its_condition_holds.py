@@ -293,3 +293,38 @@ def test_the_audit_is_silent_when_the_types_follow_the_condition(
     _put(game, card_db, KAITO, controller=1)
     _recalc(game)
     assert "613.1d/self_type_change" not in [f["rule"] for f in audit.drain()]
+
+
+# ── The damage-result audit reads the types an effect sets or removes ─
+# (CR 120.3c, 120.3e, 613.1d): its restated types are the ones the
+# permanent has now, so a walker its own static makes only a creature takes
+# damage as a creature, and a god that isn't a creature takes none.
+
+def _printed_type_routing(self, amount, source):          # the defect
+    if CardType.PLANESWALKER in self.template.card_types:
+        self.loyalty_counters -= amount
+        return
+    if CardType.CREATURE in self.template.card_types:
+        self.damage_marked += amount
+
+
+def test_the_damage_audit_is_silent_for_the_types_a_static_sets_or_removes(
+        card_db, audit):
+    game = _game(active=0)
+    kaito = _put(game, card_db, KAITO)
+    heliod = _put(game, card_db, HELIOD)
+    _recalc(game)
+    assert not heliod.effective_is_creature
+    deal_damage(_permanent(game, 1), kaito, 2)
+    deal_damage(_permanent(game, 1), heliod, 2)
+    assert "120.3/damage_result" not in [f["rule"] for f in audit.drain()]
+
+
+def test_the_damage_audit_records_damage_routed_by_the_printed_types(
+        card_db, audit, monkeypatch):
+    monkeypatch.setattr(CardInstance, "take_damage", _printed_type_routing)
+    game = _game(active=0)
+    kaito = _put(game, card_db, KAITO)
+    _recalc(game)
+    deal_damage(_permanent(game, 1), kaito, 2)
+    assert "120.3/damage_result" in [f["rule"] for f in audit.drain()]

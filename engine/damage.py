@@ -277,14 +277,19 @@ def _audit_damage_result(perm: Any, amount: int, before: tuple,
     """CR 120.3c, 120.3e, 712.8, restated from raw fields: damage dealt to
     a permanent marks that much damage on it while it is a creature, and
     removes that many loyalty counters while it is a planeswalker, by the
-    types it has now -- its back face's while transformed, plus any an
-    effect adds, a creature while animated. Observation only."""
+    types it has now -- its back face's while transformed, or the ones an
+    effect sets in their place, plus any an effect adds and less any an
+    effect says it isn't (CR 613.1d), a creature while animated.
+    Observation only."""
     from .cards import CardType
     from .rules_audit import check as _audit_check
     t = perm.template
     face = (t.back_face_types if perm.is_transformed and t.back_face_types
             else t.card_types)
-    types = set(face) | set(perm.cem_types_added)
+    if perm.cem_types_set is not None:
+        face = perm.cem_types_set
+    types = ((set(face) | set(perm.cem_types_added))
+             - set(perm.cem_types_removed))
     creature = CardType.CREATURE in types or perm.is_animated
     walker = CardType.PLANESWALKER in types
     marked, loyalty = before
