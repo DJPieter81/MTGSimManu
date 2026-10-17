@@ -161,3 +161,9 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
   - Its auditor surfaced a pre-existing engine defect: a permanent that left the battlefield kept the colour an effect gave it (unit OB, `9bda2eb`).
 - **Loop-break count:** two Dimir-targeted units (EE, TD) without movement since CP. A third without movement halts Dimir code. Before one is built, the WST v2 control-mirror trace (Dimir decking itself by T21–23) is the deeper Bo3 root cause.
 - **The WST v2 trace (2026-10-16, above)** names the layer system: Kaito, Bane of Nightmares is never a creature during his controller's turn. That licenses the third Dimir unit, CN: a permanent whose static ability makes it a creature while a condition holds is one exactly then. It is sized and built per the abstraction contract, and measured against this cell.
+- **Unit CN** (`efd8fae`, tracker): Kaito, Bane of Nightmares is now the 3/4 hexproof Ninja his text makes him during Dimir's turn.
+  - **Measured (`cn-post`): Dimir Midrange 40.5 → 50.2, inside its band (45–60) for the first time.** All 39 changed cells are Dimir's.
+  - Replayed cell-exact: vs Boros Ponza 10 → 19 of 20, vs Azorius Blink 3 → 9 of 20. Three flipped seeds were root-caused and checked by an adversarial rules audit: the flip is Kaito's unblocked attacks, and his handling is rules-correct.
+  - The same audit found engine defects shared by both arms, recorded as leads in the tracker. Two helped Dimir decisively in the replayed games: High Noon's cast cap is unenforced, and Spell Snare countered spells outside its bound.
+- **Loop-break count:** reset; CN moved Dimir into its band.
+- **Unit XV** (`d30f005`) removes one of those helps: Spell Snare and Drown in the Loch now counter only spells within their printed bound. Its arm (`xv-post`) measures whether Dimir stays in band without them.

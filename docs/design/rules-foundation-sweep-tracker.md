@@ -10240,8 +10240,89 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 - **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). The parser ratchet is unchanged.
 - **Chunks at `efd8fae`:** 5161 + 2766 passed, nothing failed.
 
+**Measured** (`cn-post` arm against `dt-post`, 600 cells each):
+- **Dimir Midrange 40.5 → 50.2 (+9.7), now inside its band (45–60).** Every other deck is within ±1.8. All 39 changed cells are Dimir's.
+- The band miss is 42.2 → 37.8 pp, and four decks are out of band instead of five.
+- **Audit violations 0 → 209, all `120.3/damage_result`, and all the auditor's own defect.** Replayed (Dimir vs Azorius Blink s52000): Kaito, a 3/4 creature on his controller's turn, was dealt 1 damage. He marked it and kept his loyalty, which is what his rulings require.
+  - The audit restated a permanent's types from its face plus the types an effect adds. It never read the types an effect sets or removes.
+  - Fixed in `f015d96` with two red-first tests. Observation only.
+- **Replayed cell-exact** (pre `bc247e7`, post `efd8fae`); both reproduce the arm:
+  - Dimir vs Boros Ponza 10 → 19 of 20;
+  - Dimir vs Azorius Blink 3 → 9 of 20.
+  - Every changed seed turns a Dimir loss into a win.
+- **Three flipped seeds** (Ponza s51000 and s52000, Blink s51500) were root-caused by one analyst each and checked by an adversarial rules auditor.
+  - The flip is Kaito's attacks: 3 a turn, unblocked against Ponza's creatureless board. In s51000 that is 18 of the 20 damage in game 2.
+  - Kaito is rules-correct throughout:
+    - a creature and hexproof only on Dimir's turn;
+    - summoning-sick the turn he arrives;
+    - one sorcery-speed activation per turn;
+    - a planeswalker on the opponent's turn, losing loyalty to Galvanic Discharge, Erode and Avatar Roku's attack;
+    - damage while a creature removes no loyalty;
+    - sweepers on the opponent's turn correctly miss him.
+- **The auditors also found engine defects shared by both arms** (leads below). Two help Dimir decisively: High Noon's cast cap is not enforced (s51000 game 2), and Spell Snare counters warped Starfield Shepherds (s51500; fixed by unit XV).
+
 **Leads, not built:**
 - **A god that stops being a creature keeps its God subtype.** CR 205.1a removes subtypes with their type, and the engine has no creature-type list to tell them apart.
 - **A loyalty ability that counts what happened this turn** (Kaito's 0: "draw a card for each opponent who lost life this turn") is activated in the first main phase, before the combat damage it counts. It should come in the second main phase.
 - **A permanent's own conditional keyword or P/T static** ("as long as ..., ~ gets +2/+2 and has flying"; 377 pool cards with the type-changing ones) is applied only where it rides on a type change. Dragon's Rage Channeler's delirium flying is never granted: its legacy grant mutates a computed keyword set.
 - **A permanent that stops being a creature mid-combat** is not removed from combat (CR 506.4). Rusted Relic is the one in the class whose condition can fail mid-combat.
+
+- **Found by the cn-post replay audit, shared by both arms:**
+  - **A turn-scoped cast cap from a static** ("each player can't cast more than one spell each turn", High Noon) is not enforced. The only cap is the name-keyed Ethersworn Canonist tag. Decisive in s51000 game 2.
+  - **The runner's Expedition Map routine** (`game_runner._activate_utility_artifacts`) fires on any permanent whose text says sacrifice, search and land. It sacrifices Demolition Field and Field of Ruin for a missing Tron land and performs nothing else.
+  - **A check land's condition** ("enters tapped unless you control a Plains or an Island") is never checked; it always enters tapped.
+  - **Murktide Regent's leave-the-graveyard trigger** misses instants and sorceries exiled by another spell's delve. **Tamiyo's "whenever ~ attacks, investigate"** never resolves. **Ocelot Pride's end-step token trigger** never fires.
+  - **The Legend of Roku's chapter I** never resolves (its name-keyed handler misses the double-faced name). **Avatar Roku** is made a hasty mana-value-0 token, not the transformed Saga (CR 712.8e: mana value 4), so Fatal Push without revolt kills it.
+  - **Relic of Progenitus** has an invented enter trigger: it exiles the opponent's graveyard for free and draws a card.
+  - **State-based actions are checked mid-resolution** by the energy-damage clause (unit DT's call, CR 704.3). The zero-loyalty action is logged as 704.5p, not 704.5i.
+  - **Display:** the board header lists a permanent whose static makes it a creature under both Creatures and Other (it buckets by the printed type).
+  - **AI:** Solitude is evoked into a board whose only creature is hexproof (`board_eval._eval_evoke` checks only that the opponent has creatures). Kaito's 0 is activated before the combat damage it counts (above).
+
+## Unit XV: a target's mana-value qualifier is read at the object's mana value, on the stack with its X (CR 115.1, 601.2c, 202.3e; 2026-10-17)
+
+**Source:** the same WST v2 trace that licensed CN (`docs/diagnostics/2026-10-14_dimir_midrange_root_cause.md`, s50000 game 1, T9). Spell Snare ("counter target spell with mana value 2") countered Wan Shi Tong, Librarian cast for X=6. The trace names it as its own unit: the defect helps Dimir, so it is not the cause of the cell.
+
+**Rule:**
+- A target's printed mana-value qualifier is part of the target's requirement (CR 115.1, 601.2c). "With mana value 2" admits only a spell of mana value 2; "4 or greater", "1 or less" and "X" bound it the same way.
+- "Less than or equal to the number of cards in its controller's graveyard" reads the graveyard of the object's controller.
+- On the stack a spell's mana value counts the value chosen for its X (CR 202.3e): {X}{U}{U} cast for X=6 has mana value 8. An alternative cost (warp, evoke) leaves it unchanged (CR 118.9c).
+
+**Defect:**
+- The stack-target parser read "target <type> spell" and dropped the phrase after it, so every bounded counter admitted any spell.
+- The AI's counter check read no qualifier either.
+- Drown in the Loch's graveyard bound was read on neither of its targets.
+- Before the fix, Spell Snare countered Quantum Riddler (warp; mana value 5), Past in Flames (4), an evoked Wistfulness (5) and Dragon's Rage Channeler (1).
+
+**Class:** 14 pool cards with 25 pool texts:
+- Spell Snare, Drown in the Loch, Disdainful Stroke, Minor Misstep, Spell Blast, Spell Burst, Horribly Awry, Spell Queller, Thoughtbind, Change the Equation, Kozilek, the Great Distortion and Spellstutter Sprite, and two second faces: Hypnotic Sprite's adventure (Mesmeric Glare) and Runescale Stormbrood's omen (Chilling Screech).
+- Registered: Spell Snare (Dimir Midrange MB ×2, Azorius Control MB ×2 and SB ×1, Domain Zoo SB ×2, Izzet Prowess SB ×2) and Drown in the Loch (Dimir Midrange MB ×2).
+
+**Steps:**
+- **Stack:** `StackItem.mana_value` is the printed mana value plus the X chosen for each {X} pip.
+- **Owner** (`engine/target_solver`):
+  - `TargetRequirement.mana_value_bound` holds `(op, of, n)`, typed at parse from the phrase right after the target. The forms are exact, "or less" / "or greater", X, and the object's controller's graveyard count.
+  - `spell_target_admits` is the one predicate that castability, enumeration, the cast check and the AI read.
+  - The permanent-target admission reads the same bound.
+- **AI:** `ResponseDecider._counter_can_target` asks the engine's requirement.
+- **Auditor:** `202.3e/spell_target_mana_value` at the cast seam, restated from raw fields: the printed mana value, the X pips, the X chosen and the printed bound. A bound of X is the caster's choice and is not restated.
+
+**Tests:** 12, in `tests/test_a_targets_mana_value_qualifier_is_read_at_the_objects_mana_value.py`; 10 were red first. The two admitted exact cases (Counterspell and Lightning Helix under Spell Snare) pass either way, as pins.
+
+**Pins:** (`d30f005`)
+- **Target-parse capture:** re-recorded. 25 pool texts change, every one a mana-value-qualified target now read.
+  - The capture's canonical form now reads a field added after the capture only when it is set. The other 16955 texts keep their digests.
+  - The loyalty-walker pin shares that form and is unchanged.
+- **Spec equivalence:** Sink into Stupor's known `bounce_target` disagreement is the same disagreement, checked with the new field stripped. Its digest moves only because the requirement gained a field.
+- **Digest:** re-recorded after replay. Three rosters change, each first diverging where Spell Snare no longer counters a spell outside its bound:
+  - Dimir vs Domain Zoo s57000 (Quantum Riddler);
+  - Ruby Storm vs Dimir s50500 (Past in Flames; the game now goes to Dimir);
+  - Living End vs Dimir s59000 (an evoked Wistfulness; the match now goes to Dimir).
+- **Anchor:** one flip, replayed anchor-exact and accepted. In Izzet Prowess vs Dimir s50500, Spell Snare countered Dragon's Rage Channeler on T2; Prowess now wins on T9.
+- **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged.
+- **Chunks at `d30f005`:** 5175 + 2766 passed, nothing failed.
+
+**Measured:** by the `xv-post` arm (pre = `cn-post`).
+
+**Leads, not built:**
+- **A bound of a defined X** ("mana value X or less, where X is the number of Faeries you control"; Kozilek's "discard a card with mana value X") is typed as X and stays unbounded, as before. It needs the defined count read as the bound.
+- **Change the Equation's second mode** ("target red or green spell with mana value 6 or less") is not parsed: the stack-target pattern knows no colour word. Its first mode's bound now applies to both.
