@@ -59,12 +59,20 @@ def pool_texts(db) -> set:
     return texts
 
 
+# Fields added to TargetRequirement after the capture was taken: canonical
+# only when set, so a requirement that does not read one keeps the digest it
+# was captured with, and a re-capture moves exactly the texts that read it.
+_ADDED_AFTER_CAPTURE = ("mana_value_bound",)
+
+
 def canonical_requirement(r) -> tuple:
     """Field-by-field, frozensets sorted: independent of hash seed."""
     import dataclasses
     out = []
     for f in dataclasses.fields(r):
         v = getattr(r, f.name)
+        if f.name in _ADDED_AFTER_CAPTURE and v == f.default:
+            continue
         if isinstance(v, frozenset):
             v = tuple(sorted(v))
         out.append((f.name, v))

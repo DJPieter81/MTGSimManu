@@ -95,6 +95,13 @@ class TargetRequirement:
     # ceiling supplied the requirement is unbounded (resolution-time
     # checks still apply).
     max_mana_value_is_x: bool = False
+    # Any other printed mana-value qualifier on the target (CR 115.1,
+    # 601.2c): (op, of, n) -- "with mana value 2" ("==", "literal", 2),
+    # "4 or greater" (">=", "literal", 4), "X" ("==", "x", 0: the X the
+    # caster chooses), "less than or equal to the number of cards in its
+    # controller's graveyard" ("<=", "controller_graveyard", 0). Compared
+    # with the object's mana value -- a spell's on the stack (CR 202.3e).
+    mana_value_bound: Optional[Tuple[str, str, int]] = None
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -513,6 +520,8 @@ def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
             mode_group=_detect_mode_group(oracle_l, spell_match.start(),
                                           modal_start),
             raw_phrase=spell_match.group(0),
+            mana_value_bound=_mana_value_bound(
+                oracle_l[spell_match.end():]),
         ))
         # A counterspell may also target a permanent in modal text
         # (rare). Keep scanning so modal patterns are not lost.
@@ -645,6 +654,71 @@ _MV_BOUND_AFTER_RE = re.compile(
     r"\s+with mana value (x|\d+) or less")
 
 
+# A spell target's (or a permanent target's) printed mana-value qualifier,
+# right after its phrase: a number or X, exactly or with "or less" / "or
+# greater", or "less than or equal to the number of cards in its
+# controller's graveyard" (read off the singularised text, where "cards"
+# may stand as "card" padded to its length).
+_MV_QUALIFIER_RE = re.compile(
+    r"^\s+with (?:mana value|converted mana cost) "
+    r"(?:(?P<gy>less than or equal to the number of cards?\s+in its "
+    r"controller['\u2019]s graveyard)"
+    r"|(?P<n>x|\d+) or (?P<dir>less|fewer|greater|more)\b"
+    r"|(?P<exact>x|\d+)(?![\w/]))")
+
+
+def _mana_value_bound(after: str) -> Optional[Tuple[str, str, int]]:
+    """The (op, of, n) mana-value bound printed at the start of `after`, or
+    None when there is none (see `TargetRequirement.mana_value_bound`)."""
+    m = _MV_QUALIFIER_RE.match(after)
+    if m is None:
+        return None
+    if m.group("gy"):
+        return ("<=", "controller_graveyard", 0)
+    word = m.group("n") or m.group("exact")
+    of, n = ("x", 0) if word == "x" else ("literal", int(word))
+    if m.group("exact") is not None:
+        return ("==", of, n)
+    return ("<=" if m.group("dir") in ("less", "fewer") else ">=", of, n)
+
+
+def _mana_value_bound_holds(req: TargetRequirement, mv: int,
+                            object_controller: int, game,
+                            x_ceiling: Optional[int] = None) -> bool:
+    """Does an object of mana value `mv`, controlled by
+    `object_controller`, meet the requirement's printed mana-value bound
+    (CR 115.1, 601.2c)? An X bound reads the most X the caster can pay
+    (`x_ceiling`; with none supplied it is not yet bound -- the caster
+    chooses X as the spell is cast, CR 601.2b)."""
+    bound = req.mana_value_bound
+    if bound is None:
+        return True
+    op, of, n = bound
+    if of == "x":
+        if x_ceiling is None:
+            return True
+        op, n = ("<=" if op == "==" else op), x_ceiling
+    elif of == "controller_graveyard":
+        if game is None:
+            return True
+        n = len(game.players[object_controller].graveyard)
+    return {"==": mv == n, "<=": mv <= n, ">=": mv >= n}[op]
+
+
+def spell_target_admits(game, req: TargetRequirement, item,
+                        x_ceiling: Optional[int] = None) -> bool:
+    """Is the spell `item` on the stack one a stack-zone requirement admits:
+    a spell of a kind it names, within its printed mana-value bound at the
+    spell's mana value on the stack (CR 115.1, 202.3e)? The one predicate
+    castability, enumeration, the cast and the AI read."""
+    from .stack import StackItemType as _SIT
+    if req.zone != "stack" or item.item_type != _SIT.SPELL:
+        return False
+    return (_spell_token_matches(item.source, req.types)
+            and _mana_value_bound_holds(req, item.mana_value, item.controller,
+                                        game, x_ceiling))
+
+
 def _with_mana_value_ceiling(norm: str, req: TargetRequirement,
                              end: int) -> TargetRequirement:
     """`req` with the trailing "with mana value N/X or less" clause that
@@ -660,6 +734,9 @@ def _with_mana_value_ceiling(norm: str, req: TargetRequirement,
         return req
     m = _MV_BOUND_AFTER_RE.match(norm[end:])
     if m is None:
+        bound = _mana_value_bound(norm[end:])
+        if bound is not None and bound[1] == "controller_graveyard":
+            return _dc.replace(req, mana_value_bound=bound)
         return req
     if m.group(1) == "x":
         return _dc.replace(req, max_mana_value_is_x=True)
@@ -1043,7 +1120,7 @@ def has_legal_target(game: "GameState", controller: int,
                 continue
             if exclude is not None and item.source is exclude:
                 continue
-            if _spell_token_matches(item.source, req.types):
+            if spell_target_admits(game, req, item, x_ceiling):
                 return True
         return False
 
@@ -1081,7 +1158,9 @@ def _admits_card(card: "CardInstance", req: TargetRequirement,
         return False
     if req.max_mana_value_is_x and x_ceiling is not None and mv > x_ceiling:
         return False                # beyond the X the caster can pay
-    return True
+    return _mana_value_bound_holds(req, mv, card.controller,
+                                   getattr(card, "_game_state", None),
+                                   x_ceiling)
 
 
 def choose_targets(game: "GameState", controller: int, req: TargetRequirement,
@@ -1140,7 +1219,7 @@ def enumerate_legal_targets(game: "GameState", controller: int,
                 continue
             if exclude is not None and item.source is exclude:
                 continue
-            if _spell_token_matches(item.source, req.types):
+            if spell_target_admits(game, req, item, x_ceiling):
                 out.append(item.source)
         return out
 
@@ -1205,8 +1284,9 @@ def target_admitted(game: "GameState", controller: int,
         return False
     for req in requirements:
         if req.zone == "stack":
-            if any(item.source is obj for item in game.stack.items) and \
-                    _spell_token_matches(obj, req.types):
+            if any(item.source is obj
+                   and spell_target_admits(game, req, item, x_ceiling)
+                   for item in game.stack.items):
                 return True
         elif req.zone == "any":
             if obj.zone == "battlefield" and \

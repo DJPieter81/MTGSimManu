@@ -404,6 +404,52 @@ def _audit_targets_admitted(game: "GameState", card, targets,
               f"requirement of it admits", game=game)
 
 
+def _audit_spell_targets_mana_value(game: "GameState", card, targets) -> None:
+    """Rules audit (CR 115.1, 601.2c, 202.3e), restated from the raw fields
+    -- the printed mana value, the cost's X pips and the X chosen for the
+    spell, and the requirement's printed bound -- not from the legality
+    owner's predicate: a spell an instant or sorcery is cast at, under
+    requirements that each print a mana-value qualifier, has a mana value
+    on the stack (X included) that one of those qualifiers admits. A bound
+    of X is the caster's choice and is not restated. Observes only."""
+    from .rules_audit import check
+    from .stack import StackItemType
+    from .target_solver import parse
+    t = card.template
+    if not (t.is_instant or t.is_sorcery):
+        return
+    reqs = [r for r in parse(t.oracle_text or "") if r.zone == "stack"]
+    if not reqs or any(r.mana_value_bound is None for r in reqs):
+        return
+    for tid in targets or ():
+        if not isinstance(tid, int) or isinstance(tid, bool) or tid <= 0:
+            continue
+        item = next((i for i in game.stack.items
+                     if i.item_type == StackItemType.SPELL
+                     and i.source.instance_id == tid), None)
+        if item is None:
+            continue
+        st = item.source.template
+        x_pips = getattr(st.mana_cost, "x_count", 0) if st.mana_cost else 0
+        mv = (st.cmc or 0) + x_pips * max(0, item.x_value or 0)
+        fits = False
+        for r in reqs:
+            op, of, n = r.mana_value_bound
+            if of == "x":
+                fits = True
+                break
+            if of == "controller_graveyard":
+                n = len(game.players[item.controller].graveyard)
+            if (op == "==" and mv == n) or (op == "<=" and mv <= n) \
+                    or (op == ">=" and mv >= n):
+                fits = True
+                break
+        check("202.3e/spell_target_mana_value", fits,
+              f"{card.name} cast at {item.source.name} (mana value {mv} on "
+              f"the stack), which none of its mana-value bounds admits",
+              game=game)
+
+
 def _audit_required_targets_chosen(game: "GameState", card, targets) -> None:
     """Rules audit (CR 601.2c), restated from the requirements' raw fields,
     not from the legality owner's predicate: an instant or sorcery is cast
@@ -2747,6 +2793,9 @@ class CastManager:
                                      f"graveyard; its target is a permanent",
                                      game=game)
             _audit_targets_admitted(game, card, targets, player_idx)
+            # CR 202.3e: a spell target is within the printed mana-value
+            # bound at its mana value on the stack.
+            _audit_spell_targets_mana_value(game, card, targets)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,

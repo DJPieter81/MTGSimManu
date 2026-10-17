@@ -78,6 +78,16 @@ class StackItem:
             return self.source.name
         return f"{self.source.name} ability"
 
+    @property
+    def mana_value(self) -> int:
+        """The spell's mana value on the stack (CR 202.3e): its printed mana
+        value plus the value chosen for each {X} in its mana cost (X is 0
+        everywhere but the stack)."""
+        t = self.source.template
+        cost = getattr(t, "mana_cost", None)
+        x_pips = getattr(cost, "x_count", 0) if cost is not None else 0
+        return (t.cmc or 0) + x_pips * max(0, int(self.x_value or 0))
+
 
 def snapshot_targets(game: "GameState", targets) -> Tuple[Dict[int, str],
                                                            Dict[int, int]]:

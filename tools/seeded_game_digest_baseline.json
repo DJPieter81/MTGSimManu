@@ -1,5 +1,5 @@
 {
-  "combined": "7159c0d916a1581f586c52769bbb54c363fd57cdbaf4ce6f2a3835d2d53e6949",
+  "combined": "751ddc16d1574be8f6dd7e8ce0389ef2e4460a87e0d65d309f4c1210d63741c2",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -45,9 +45,9 @@
       "winner": "Grixis Reanimator"
     },
     "bo1|Dimir Midrange|Domain Zoo|57000": {
-      "lines": 578,
-      "sha256": "040b2e2e20ca08d7a2cc031eb3329de30e86bd49a82f93c553f7ddfce7a78417",
-      "turns": 9,
+      "lines": 514,
+      "sha256": "8e14da0b50fcc67b36f4ed823b931045861cb6f0c5c8fc23846eb20f34934d03",
+      "turns": 8,
       "winner": "Domain Zoo"
     },
     "bo1|Domain Zoo|Eldrazi Tron|51000": {
@@ -93,10 +93,10 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 1008,
-      "sha256": "e0b59f52c20af3c55726293061582b88280f161d2a70b2fafd26c1c74954e361",
+      "lines": 820,
+      "sha256": "973870d686b589b08577cedae5a7bdf4a83eb2733149708a93f1d3087e1ac28a",
       "turns": 11,
-      "winner": "Ruby Storm"
+      "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
       "lines": 731,
@@ -153,17 +153,23 @@
       "winner": "Jeskai Blink"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
-      "lines": 728,
-      "sha256": "6edfea67b3007134e0c7a46d926e730037f763fe49d7667180138f4285d52c3b",
+      "lines": 708,
+      "sha256": "a633ee7a9870aa696a52746ae6cad8b23e7fb512d678c43e36e4559cb2fcbdca",
       "turns": 11,
       "winner": "Living End"
     },
     "bo3|Living End|Dimir Midrange|59000|g2": {
-      "lines": 667,
-      "sha256": "8d3b53e35719bbc229918df3470dc17fe84b9d119039495e5bd78c408a3d0345",
-      "turns": 11,
-      "winner": "Living End"
+      "lines": 411,
+      "sha256": "e5bc80be514834c6d837231f7f29c2921aeba3a96529ba062e568cea72a66669",
+      "turns": 7,
+      "winner": "Dimir Midrange"
+    },
+    "bo3|Living End|Dimir Midrange|59000|g3": {
+      "lines": 761,
+      "sha256": "6db0ad1d9f42e365384f92eeb52d3d164096e55f4c2c9c6b8270d1b1921590ec",
+      "turns": 12,
+      "winner": "Dimir Midrange"
     }
   },
-  "n_games": 27
+  "n_games": 28
 }
