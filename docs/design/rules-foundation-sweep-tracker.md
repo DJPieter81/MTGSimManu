@@ -10326,3 +10326,55 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 **Leads, not built:**
 - **A bound of a defined X** ("mana value X or less, where X is the number of Faeries you control"; Kozilek's "discard a card with mana value X") is typed as X and stays unbounded, as before. It needs the defined count read as the bound.
 - **Change the Equation's second mode** ("target red or green spell with mana value 6 or less") is not parsed: the stack-target pattern knows no colour word. Its first mode's bound now applies to both.
+
+## Unit CAP: a turn-scoped cast cap stops a spell beyond its count, counted over the turn's casts (CR 101.2, 604.1; 2026-10-17)
+
+**Source:** the cn-post replay audit (unit CN, above). In Dimir Midrange vs Boros Ponza s51000 game 2, under High Noon ("Each player can't cast more than one spell each turn"), Dimir cast two Murktide Regents on T6, and Kaito plus Thoughtseize on T7.
+
+**Rule:**
+- A static "<players> can't cast more than N spells each turn" binds the players it names while its source is on the battlefield (CR 101.2, 604.1, 611.3a). A player who has cast N such spells this turn can't cast another.
+- The count is of the spells the player has cast this turn, including those cast before the cap arrived. It starts again each turn.
+- A filtered cap ("noncreature", "nonartifact", "non-Phyrexian") counts and stops only the spells its filter names.
+- "You can't ..." binds its controller only.
+- A free cast is still a cast (CR 601.2).
+
+**Defect:**
+- The grammar typed the unfiltered cap as LIMIT-cast, and nothing applied it.
+- It read a filtered cap as a prohibition with a filter no reader knows.
+- The only cap the engine enforced was Ethersworn Canonist's: a name-keyed tag that the cast gate read beside a nonartifact-only counter.
+
+**Class:** 12 pool cards say "can't cast more than one" or "can't cast additional".
+- **Applied (9):** High Noon, Rule of Law, Archon of Emeria, Eidolon of Rhetoric, Deafening Silence, Phyrexian Censor, Moderation and Colfenor's Plans from their typed text, and Ethersworn Canonist through its tag.
+- **Refused (3):** Curse of Exhaustion (an enchanted player), Hedonist's Trove (a cap on spells cast "this way") and Conduit of Worlds (a one-shot from an activation).
+- **Registered:** High Noon (Boros Ponza MB ×1; Boros Energy, Jeskai Blink, Azorius Control and Boros Ponza SB), Rule of Law (Boros Ponza SB ×1), Ethersworn Canonist (Pinnacle Affinity SB ×2).
+
+**Steps:**
+- **Grammar:** the cap's payload reads its spell filter. A cap on spells cast "this way" is not this shape.
+- **Player state:** `spells_cast_this_turn_kinds` records each spell cast this turn as it was cast (its types and subtypes). `cast_spell` appends to it, and it is reset with the turn's other counts. It replaces the nonartifact-only counter.
+- **Layer:** the printed-rules reader yields LIMIT-cast records beside the prohibitions, for a subject of you, each opponent or each player, a printed count and a known filter. Canonist's tag carries its nonartifact cap to the same effect.
+- **One owner:** `rules_query.cast_prohibited`, which `can_cast`, `free_cast_allowed` and `cast_is_prohibited` all ask, answers the cap too (`cast_cap_reached`).
+  - The Canonist-only gate in `can_cast` is removed.
+  - A plotted card's castability now asks `free_cast_allowed`, so no prohibition or cap is offered past.
+- **Auditor:** `101.2/cast_limit` at the cast seam, restated from the permanents' typed static hosts, the legacy tag, the spell's printed types and the turn's record.
+
+**Tests:** 16, in `tests/test_a_turn_scoped_cast_cap_stops_a_spell_beyond_its_count.py`; 12 were red first. These pass either way, as pins: off the battlefield, the already-typed unfiltered grammar case, the "this way" refusal and the audit's silent case.
+
+**Review:** an independent three-lens pass (rules, cast routes, contract), each finding checked by a skeptic.
+- **Fixed:** the plotted route; two stale comments.
+- **Recorded below:** cascade's mass-reanimate shortcut (two reviewers); the AI's chain estimates.
+- **Refuted as pre-existing:** a changeling as non-Phyrexian; Canonist's handler under ETB suppression.
+
+**Pins:** (`bf5460f`)
+- **Digest:** byte-identical (28 games).
+- **Anchor:** 29 passed.
+- **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged.
+- **Chunks at `bf5460f`:** 5191 + 2766 passed, nothing failed.
+
+**Measured:** by the `cap-post` arm (pre = `xv-post`).
+
+**Leads, not built:**
+- **Cascade's mass-reanimate shortcut:** a Living End hit is resolved without being cast. It gets no stack, no cast record and no storm count, and cast caps can't see it. Every other hit resolves inline with no priority, so a cascaded spell can never be countered. This is unit CS (next).
+- **The AI's storm-chain and finisher-reach estimates** (`ai/ev_evaluator._estimate_combo_chain` and kin) count spells beyond a cap the engine now enforces. A probe shows the gap changes what the AI plays.
+- **Ethersworn Canonist's wording** ("each player who has cast a nonartifact spell this turn ...") is a player set narrowed by a relative clause, which the grammar refuses. Its name-keyed enter handler stays until the grammar reads one. Under ETB suppression the tag, and with it the cap, is lost.
+- **A changeling spell** reads as non-Phyrexian; the filter reads printed subtypes only (CR 702.73a).
+- **The three refused shapes:** an enchanted-player cap (Curse of Exhaustion), a cap on a permission's own casts (Hedonist's Trove), and a this-turn cap from an activation (Conduit of Worlds).
