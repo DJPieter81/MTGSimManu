@@ -167,3 +167,4 @@ Each unit lands with its red tests, ratchets, digest and anchor, and a same-seed
   - The same audit found engine defects shared by both arms, recorded as leads in the tracker. Two helped Dimir decisively in the replayed games: High Noon's cast cap is unenforced, and Spell Snare countered spells outside its bound.
 - **Loop-break count:** reset; CN moved Dimir into its band.
 - **Unit XV** (`d30f005`) removes one of those helps: Spell Snare and Drown in the Loch now counter only spells within their printed bound. Its arm (`xv-post`) measures whether Dimir stays in band without them.
+  - **Measured (`xv-post`): Dimir Midrange 50.2 → 44.9, 0.1 below its band.** Replayed cell-exact (vs Boros Ponza 19 → 9 of 20). The flipped seeds first diverge where Spell Snare no longer counters a spell outside its bound, such as a hard-cast Solitude. Rules-correct. This is a rules unit, not a Dimir unit, so the loop-break count is unchanged.

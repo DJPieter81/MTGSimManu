@@ -10321,7 +10321,21 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 - **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged.
 - **Chunks at `d30f005`:** 5175 + 2766 passed, nothing failed.
 
-**Measured:** by the `xv-post` arm (pre = `cn-post`).
+**Measured** (`xv-post` arm against `cn-post`, 600 cells each):
+- **Movers:** Azorius Control 34.4 → 27.3 (−7.1) and Dimir Midrange 50.2 → 44.9 (−5.3), the two decks that run Spell Snare main deck. Every other deck is within ±1.5.
+- **Audit violations 209 → 0:** the damage-result audit fix (`f015d96`) works.
+- **Band miss** is 37.8 → 41.6 pp:
+  - Azorius Control is 2.7 below its band (30–70).
+  - Dimir Midrange is 0.1 below its band (45–60), within the arm's noise.
+  - XV is a rules unit, so this does not count toward Dimir's loop-break.
+- **Replayed cell-exact** (pre `efd8fae`, post `d30f005`); each reproduces the arm:
+  - Dimir vs Boros Ponza 19 → 9 of 20;
+  - Azorius Control vs Affinity 11 → 4;
+  - WST v2 vs Azorius Control 10 → 17.
+- **One flipped seed per cell.** Each first diverges where Spell Snare is no longer cast at a spell outside its bound:
+  - a hard-cast Solitude, mana value 5 (Ponza s52500, game 2 T8; WST v2 s51500, game 2 T11);
+  - a warped Pinnacle Emissary, mana value 3 (Affinity s50500, T2).
+  - Rules-correct. The decks had been leaning on Spell Snare as a universal counter.
 
 **Leads, not built:**
 - **A bound of a defined X** ("mana value X or less, where X is the number of Faeries you control"; Kozilek's "discard a card with mana value X") is typed as X and stays unbounded, as before. It needs the defined count read as the bound.
