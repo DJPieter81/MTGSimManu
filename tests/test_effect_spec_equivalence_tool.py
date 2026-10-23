@@ -1776,7 +1776,10 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         "planeswalker_manager:UNCLASSIFIED",
         # unit CT: a permanent's cast trigger the cast carrier performs
         # from its typed host (Artist's Talent's rummage)
-        "cast:dispatch"}
+        "cast:dispatch",
+        # unit BT: a permanent's beginning-of-step trigger the step carrier
+        # performs from its typed host (Emperor of Bones, Haliya)
+        "step:dispatch"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

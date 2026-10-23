@@ -95,6 +95,10 @@ FAMILY_EDICT = "edict"
 # dispatch_cast_triggers`): a permanent's typed "whenever <player> casts a
 # <kind> spell" ability.
 FAMILY_CAST_TRIGGER = "cast_trigger"
+# The beginning-of-step carrier's family (unit BT, `effect_carrier.
+# dispatch_step_triggers`): a permanent's typed "at the beginning of
+# <step>" ability.
+FAMILY_STEP_TRIGGER = "step_trigger"
 FAMILIES = frozenset({FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                       FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                       FAMILY_STACK_MANA, FAMILY_TRIGGER})
@@ -740,6 +744,39 @@ def strict_cast_trigger(h: AbilityEffects) -> bool:
     return False
 
 
+# The beginning-of-step carrier (unit BT, `effect_carrier.
+# dispatch_step_triggers`): the verbs it resolves -- each an executor
+# another family already runs -- and the slot zones it picks a trigger's
+# targets in ("exile up to one target card from a graveyard" picks in a
+# graveyard, unit GX).
+_STEP_TRIGGER_VERBS = frozenset({
+    Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW,
+    Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.EXILE, Verb.MILL,
+    Verb.SURVEIL})
+_STEP_TARGET_ZONES = _TRIGGER_TARGET_ZONES | {"graveyard"}
+
+
+def strict_step_trigger(h: AbilityEffects) -> bool:
+    """A beginning-of-step host the step carrier takes (A38): a TRIGGERED
+    host whose head the grammar typed (`TriggerHead.step_event`), every
+    spec one of `_STEP_TRIGGER_VERBS` with no residue or sub-ability -- its
+    intervening "if" aside, which the dispatcher checks as the ability
+    triggers and again as it resolves (CR 603.4) -- an exile only of a
+    target card in a graveyard, and every target slot one the carrier
+    picks as the trigger is put on the stack."""
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or h.trigger.step_event is None \
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+        return False
+    bare = h
+    if h.trigger.intervening_if is not None:
+        bare = dataclasses.replace(h, trigger=dataclasses.replace(
+            h.trigger, intervening_if=None))
+    return (_strict_host(bare, _STEP_TRIGGER_VERBS, conditions=True)
+            and all(s.verb is not Verb.EXILE or _graveyard_target_exile(s)
+                    for s in iter_specs(h.specs)))
+
+
 def strict_edict(h: AbilityEffects) -> bool:
     """Every spec an edict: a SACRIFICE, unconditional, its shape the
     SACRIFICE executor's (a player set or a chosen player sacrifices a
@@ -760,6 +797,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_TYPE_CHANGE: strict_type_change,
     FAMILY_EDICT: strict_edict,
     FAMILY_CAST_TRIGGER: strict_cast_trigger,
+    FAMILY_STEP_TRIGGER: strict_step_trigger,
 })
 
 

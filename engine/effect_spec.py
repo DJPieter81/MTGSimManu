@@ -620,6 +620,17 @@ class CastEvent:
 
 
 @dataclass(**_FROZEN)
+class StepEvent:
+    """The step a beginning-of-step head names (CR 603.2, 501.1): `step` is
+    the step's `game_state.Phase` value ('upkeep', 'draw', 'main1' for the
+    precombat main phase, 'begin_combat', 'end_step'), and `whose` the turn
+    it triggers on, relative to the ability's controller ('you', 'opponent'
+    or 'each'). "That player" in the body is the active player."""
+    step: str
+    whose: str
+
+
+@dataclass(**_FROZEN)
 class TriggerHead:
     event_hints: Tuple[EventHint, ...] = ()      # disjunctive heads keep every hint (A11)
     raw: str = ""
@@ -646,6 +657,10 @@ class TriggerHead:
     # turn", "that targets ~", "with mana value ...") or a spell kind the
     # table does not read.
     cast: Optional[CastEvent] = None
+    # The step a BEGINNING_OF head names, from a closed table of step
+    # phrases (`structure._step_event`); None for a phrase the table does
+    # not read ("enchanted player's upkeep", "your second main phase").
+    step_event: Optional[StepEvent] = None
 
 
 @dataclass(**_FROZEN)

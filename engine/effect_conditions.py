@@ -22,7 +22,8 @@ from typing import Any, Callable, Optional
 
 from .cards import CardType, Keyword, Supertype
 from .effect_spec import (Amount, AmountKind, CardFilter, Condition,
-                          ConditionKind, Quantity, QuantityKind, Ref, RefKind)
+                          ConditionKind, Quantity, QuantityKind, Ref, RefKind,
+                          Selector, SelectorKind)
 
 
 # Thresholds of the two ability-word conditions legacy burn upgrades carry
@@ -361,6 +362,47 @@ def state_condition_holds(game: Any, controller: int, cond: Condition,
     else:
         count = graveyard_card_types(game, controller)
     return _OPS[cond.op](count, _literal(cond.n))
+
+
+# The turn's life tallies a HISTORY condition reads ("if you gained life this
+# turn", "if an opponent lost life this turn"), kept by the life owners
+# (`damage.lose_life`, the lifelink hook, `PermanentEffects.gain_life`) and
+# cleared for every player as each turn begins.
+_LIFE_TALLIES = {"life_gained": "life_gained_this_turn",
+                 "life_lost": "life_lost_this_turn"}
+_HISTORY_PLAYER_SETS = frozenset({SelectorKind.PLAYER, SelectorKind.OPPONENTS,
+                                  SelectorKind.ALL_PLAYERS})
+
+
+def history_condition_supported(cond: Condition) -> bool:
+    """The HISTORY conditions evaluated here: the life a player gained or
+    lost this turn, compared with a printed number ("if you gained 3 or more
+    life this turn", "if an opponent lost life this turn"), for you, an
+    opponent or any player."""
+    if not isinstance(cond, Condition) or cond.kind is not ConditionKind.HISTORY:
+        return False
+    if cond.pred not in _LIFE_TALLIES or cond.op not in _OPS \
+            or _literal(cond.n) is None or cond.filter is not None \
+            or cond.ref is not None or cond.cost is not None or cond.children:
+        return False
+    p = cond.payer
+    return (isinstance(p, Selector) and p.kind in _HISTORY_PLAYER_SETS
+            and p.player is None and p.filter is None and p.obj is None)
+
+
+def history_condition_holds(game: Any, controller: int,
+                            cond: Condition) -> bool:
+    """Evaluate a supported HISTORY condition for `controller` now: some
+    player of the set it names ("you", "an opponent", "a player") has the
+    turn's tally its predicate reads at the printed bound."""
+    tally = _LIFE_TALLIES[cond.pred]
+    kind = cond.payer.kind
+    players = [i for i in range(len(game.players))
+               if kind is SelectorKind.ALL_PLAYERS
+               or (i == controller) == (kind is SelectorKind.PLAYER)]
+    n = _literal(cond.n)
+    return any(_OPS[cond.op](getattr(game.players[i], tally), n)
+               for i in players)
 
 
 # The counters an OBJECT condition on its own permanent counts: one kind,

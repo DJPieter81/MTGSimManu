@@ -108,7 +108,8 @@ from engine.effect_model import Modification
 from engine.effect_spec import (Amount, CastEvent, CombatDamageEvent,
                                 Condition, CostSnapshot, DrawEvent,
                                 EventHint, HostKind, KeywordSpec, Stage,
-                                TriggerHead, Unmodelled, freeze_cost)
+                                StepEvent, TriggerHead, Unmodelled,
+                                freeze_cost)
 from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
                                   split_activation_riders,
                                   strip_reminder_text)
@@ -509,6 +510,47 @@ def _combat_damage_event(head: str) -> Optional[CombatDamageEvent]:
                              recipient=_RECIPIENTS[m.group("to")])
 
 
+# A beginning-of-step head (CR 603.2, 501.1): the closed table of step
+# phrases, to the step's `game_state.Phase` value and the turn it triggers
+# on relative to the ability's controller. "Each", "each player's" and "the"
+# name every player's turn; "on your turn" is part of the event, not an
+# intervening "if". A phrase the table does not read -- the attached
+# player's upkeep, the second main phase, a chosen player's upkeep -- leaves
+# the head untyped.
+_STEP_EVENTS = {
+    phrase: StepEvent(step=step, whose=whose)
+    for phrase, step, whose in (
+        ("your upkeep", "upkeep", "you"),
+        ("each upkeep", "upkeep", "each"),
+        ("each player's upkeep", "upkeep", "each"),
+        ("each opponent's upkeep", "upkeep", "opponent"),
+        ("your draw step", "draw", "you"),
+        ("each player's draw step", "draw", "each"),
+        ("each opponent's draw step", "draw", "opponent"),
+        ("your first main phase", "main1", "you"),
+        ("each player's first main phase", "main1", "each"),
+        ("combat on your turn", "begin_combat", "you"),
+        ("each combat", "begin_combat", "each"),
+        ("combat on each opponent's turn", "begin_combat", "opponent"),
+        ("your end step", "end_step", "you"),
+        ("each end step", "end_step", "each"),
+        ("the end step", "end_step", "each"),
+        ("each player's end step", "end_step", "each"),
+        ("each opponent's end step", "end_step", "opponent"),
+    )}
+
+
+def _step_event(head: str) -> Optional[StepEvent]:
+    """The step the head's one BEGINNING_OF disjunct names, read from the
+    closed table (`_STEP_EVENTS`); None when the head has no such
+    disjunct, more than one, or a step phrase the table does not read."""
+    parts = [_part_hints(p) for p in _DISJUNCT_RE.split(head)]
+    phrases = [s for hints, s in parts if EventHint.BEGINNING_OF in hints]
+    if len(phrases) != 1:
+        return None
+    return _STEP_EVENTS.get(phrases[0])
+
+
 def _event_hints(head: str) -> Tuple[Tuple[EventHint, ...], str]:
     out, step = [], ""
     for part in _DISJUNCT_RE.split(head):
@@ -816,9 +858,10 @@ def _head(hints, raw: str, **kw) -> TriggerHead:
     combat = (_combat_damage_event(raw)
               if EventHint.COMBAT_DAMAGE_TO_PLAYER in hints else None)
     cast = _cast_event(raw) if EventHint.SPELL_CAST in hints else None
+    step = _step_event(raw) if EventHint.BEGINNING_OF in hints else None
     return TriggerHead(event_hints=hints, raw=raw, names_player=player,
                        names_object=obj, draw=draw, combat_damage=combat,
-                       cast=cast, **kw)
+                       cast=cast, step_event=step, **kw)
 
 
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:

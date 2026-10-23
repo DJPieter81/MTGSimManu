@@ -45,7 +45,8 @@ depends on set iteration order).
 
 ``--closure`` lists every legacy handler (the clause_resolver registry, the
 planeswalker_manager kind branches, the activation effect kinds, the ETB
-carriers and `resolve_self_cast_trigger`) with the hosts its legacy gate
+carriers, the trigger carriers -- draw, combat damage, cast and
+beginning-of-step -- and `resolve_self_cast_trigger`) with the hosts its legacy gate
 accepts -- their verbs and sub-ability kinds, split into registered-deck
 mainboard, sideboard and pool -- the earliest family step at which every verb
 has an executor (section 14) and whether the host matches the family's strict
@@ -768,6 +769,12 @@ COMBAT_DAMAGE_DISPATCH_APPLY = \
 # resolver that runs every watcher's cast triggers.
 CAST_DISPATCH_HANDLER = "cast:dispatch"
 CAST_DISPATCH_APPLY = "engine.oracle_resolver:resolve_spell_cast_trigger"
+# The beginning-of-step carrier (`effect_carrier.dispatch_step_triggers`,
+# unit BT): its pairs are the hosts `effect_carrier.step_plan` takes, on
+# every face (the carrier reads the face shown), through the clock's
+# STEP_BEGINS subscriber.
+STEP_DISPATCH_HANDLER = "step:dispatch"
+STEP_DISPATCH_APPLY = "engine.turn_clock:_perform_step_triggers"
 SELF_CAST_HANDLER = "oracle_resolver.resolve_self_cast_trigger"
 SELF_CAST_APPLY = "engine.oracle_resolver:resolve_self_cast_trigger"
 # The dispatcher entry point a switched apply reaches (section 10,
@@ -1027,9 +1034,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     cast_dispatch_switched = _is_switched(_resolve_path(CAST_DISPATCH_APPLY))
     combat_dispatch_switched = _is_switched(
         _resolve_path(COMBAT_DAMAGE_DISPATCH_APPLY))
+    step_dispatch_switched = _is_switched(_resolve_path(STEP_DISPATCH_APPLY))
     from engine.effect_carrier import (ETB_FAMILIES, activation_family,
                                        cast_plan, combat_damage_plan,
-                                       draw_plan, etb_plan, loyalty_family)
+                                       draw_plan, etb_plan, loyalty_family,
+                                       step_plan)
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1159,6 +1168,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         for h, family in cast_plan(ce.front()) or ():
             out.append(_pair(CAST_DISPATCH_HANDLER, family, t, h,
                              _host_label(h), part, cast_dispatch_switched))
+        for face in ce.faces:
+            for h, family in step_plan(face) or ():
+                out.append(_pair(STEP_DISPATCH_HANDLER, family, t, h,
+                                 _host_label(h), part,
+                                 step_dispatch_switched))
         # the spell's own cast triggers
         if "when you cast this spell" in _printed_text(t):
             for h in ce.front():

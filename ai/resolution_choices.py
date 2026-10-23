@@ -92,6 +92,15 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
             top = [p for p in players if values[p] == best]
             if len(top) < len(players):
                 return top[:1]
+    if getattr(spec, "verb", None) is Verb.EXILE and permanents \
+            and not players and getattr(req, "zone", None) == "graveyard":
+        # An exile of a target card from a graveyard aims at the cards whose
+        # removal is worth most to their owners -- the one owner of that
+        # choice, as for a resolving effect's graveyard exile (`pick_cards`).
+        from ai.graveyard_removal import pick_removals
+        n = max(1, int(getattr(req, "count_max", 1) or 1))
+        return pick_removals(game, player_idx, list(permanents), n,
+                             int(getattr(req, "count_min", 0) or 0))
     if getattr(spec, "verb", None) in (Verb.EXILE, Verb.DESTROY) \
             and permanents and not players:
         # A removal of a target permanent aims at the opposing permanent

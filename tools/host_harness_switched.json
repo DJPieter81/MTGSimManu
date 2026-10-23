@@ -11800,6 +11800,582 @@
     "LOYALTY:0:2"
    ],
    "reason": "unit UG: the line's colour qualifier is the requirement's colour bound, no longer grammar residue, so the loyalty carrier destroys the target permanent it chose; the legacy planeswalker manager left the line unclassified and performed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Akroan Horse",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Arcbound Overseer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Ascendant Dustspeaker",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Avabruck Caretaker // Hollowhenge Huntmaster",
+    "TRIGGERED:1:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Biogenic Ooze",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Bitterbloom Bearer",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Bitterblossom",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Blessing of Leeches",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Broodheart Engine",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Butterbur, Bree Innkeeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Chief Warg's Company",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Cloistered Youth // Unholy Fiend",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Doctor Doom",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Dogged Pursuit",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Doomsday Excruciator",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Dragonmaster Outcast",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Drana's Emissary",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Dross Harvester",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Egon, God of Death // Throne of Death",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Emperor of Bones",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Essence Anchor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Fountain of Renewal",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Goblin Assault",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Goblin Rabblemaster",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "God-Pharaoh's Statue",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Graveborn Muse",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Hanweir Militia Captain // Westvale Cult Leader",
+    "TRIGGERED:1:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Herald of Torment",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Honden of Infinite Rage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Jin-Gitaxias, Core Augur",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Kinbinding",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Master of the Wild Hunt",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Mindwhisker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Mindwrack Demon",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Mindwrack Harpy",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Morcant's Eyes",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Moroii",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Nyx Weaver",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Nyx-Fleece Ram",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Obsessive Pursuit",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Ophiomancer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Overbeing of Myth",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Phyrexian Arena",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Pitiless Horde",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Platoon Dispenser",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Priest of the Blood Rite",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Reaver Drone",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Risen Necroregent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Roaring Furnace // Steaming Sauna",
+    "TRIGGERED:1:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Sanctum of Stone Fangs",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Sandwurm Convergence",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Scourge of Numai",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Sinister Monolith",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Smaug the Magnificent",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Splinterfright",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Staff of Nin",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Startled Relic Sloth",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Sultai Ascendancy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Tendershoot Dryad",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "The Arkenstone // Seek the Heart",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "The Immortal Sun",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "The Theorist, Jace Beleren",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Thopter Spy Network",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Thrumming Hivepool",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Titans' Nest",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Tithing Blade // Consuming Sepulcher",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Trove of Temptation",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Unholy Annex // Ritual Chamber",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Uurg, Spawn of Turg",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Verdant Force",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Victory's Envoy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Vilespawn Spider",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
   }
  ],
  "pairs": [
@@ -13667,6 +14243,91 @@
    "planeswalker_manager:UNCLASSIFIED",
    "Vivien, Arkbow Ranger",
    "LOYALTY:0:2"
+  ],
+  [
+   "step:dispatch",
+   "Angelic Accord",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Crested Sunmare",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Dawnstrike Vanguard",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Demonic Rising",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Eriette of the Charmed Apple",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Flight-Deck Coordinator",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Gibbering Fiend",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Griffin Aerie",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Haliya, Guided by Light",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Indulging Patrician",
+   "TRIGGERED:0:2"
+  ],
+  [
+   "step:dispatch",
+   "Inventors' Fair",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Regal Bloodlord",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Resplendent Angel",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "step:dispatch",
+   "Sami, Ship's Engineer",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "The Book of Exalted Deeds",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "The Book of Vile Darkness",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Valkyrie Harbinger",
+   "TRIGGERED:0:2"
   ]
  ],
  "seeds": [

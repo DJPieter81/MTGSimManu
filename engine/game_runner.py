@@ -895,6 +895,9 @@ class GameRunner:
                     # delayed draw is in hand for every decision this turn.
                     from engine.turn_clock import Clock, ClockEvent, emit
                     emit(game, ClockEvent(Clock.UPKEEP, active))
+                    self._step_begins(game, active, Phase.UPKEEP)
+                    if game.game_over:
+                        break
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
@@ -929,6 +932,12 @@ class GameRunner:
                             _emit("DRAW", pidx=active,
                                   actor=game.players[active].deck_name,
                                   card=card_name)
+                        # CR 504.1-504.2: the draw-step triggers trigger
+                        # after the turn's draw; a skipped draw step (CR
+                        # 103.8a) triggers nothing.
+                        self._step_begins(game, active, Phase.DRAW)
+                        if game.game_over:
+                            break
                     else:
                         _vlog(f'  [Draw] Skipped (first turn on play)')
 
@@ -940,6 +949,9 @@ class GameRunner:
                     # main phase begins (after the draw step), and the
                     # chapter that number reaches triggers now.
                     self._process_saga_chapters(game, active)
+                    if game.game_over:
+                        break
+                    self._step_begins(game, active, Phase.MAIN1)
                     if game.game_over:
                         break
                     prev_lands = len(game.players[active].lands)
@@ -967,6 +979,9 @@ class GameRunner:
                     _emit(KIND_PHASE, phase="BeginCombat", pidx=active)
                     for p in game.players:
                         p.mana_pool.empty()
+                    self._step_begins(game, active, Phase.BEGIN_COMBAT)
+                    if game.game_over:
+                        break
                     self._opponent_instant_window(game, opponent_ai, ai)
 
                 elif step == TurnStep.DECLARE_ATTACKERS:
@@ -1103,6 +1118,9 @@ class GameRunner:
                     game.current_phase = Phase.END_STEP
                     _vlog(f'  [End Step]')
                     _emit(KIND_PHASE, phase="EndStep", pidx=active)
+                    self._step_begins(game, active, Phase.END_STEP)
+                    if game.game_over:
+                        break
                     # Sacrifice outlets convert creatures into lethal damage.
                     self._activate_lethal_damage_outlets(game, active)
                     if game.game_over:
@@ -1373,6 +1391,14 @@ class GameRunner:
                     spell_on_stack=True,
                     spell_is_creature=spell_template.is_creature if spell_template else False,
                     opp_mana_available=responder_mana)
+
+    @staticmethod
+    def _step_begins(game: GameState, active: int, step: Phase) -> None:
+        """CR 603.2: as a step of `active`'s turn begins, the printed "at
+        the beginning of <step>" abilities trigger (the clock's STEP_BEGINS
+        subscribers; the step carrier, unit BT)."""
+        from engine.turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.STEP_BEGINS, active, step=step.value))
 
     def _combat_trick_window(self, game: GameState, active_ai: AIPlayer,
                              opponent_ai: AIPlayer, combat_mgr,

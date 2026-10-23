@@ -22,6 +22,8 @@ host that can take this path to a harness-identical run
 from __future__ import annotations
 
 import functools
+import operator
+import weakref
 
 from typing import Any, Iterable, Optional, Sequence
 
@@ -245,19 +247,21 @@ def loyalty_family(ability: Any, host: Any) -> Optional[str]:
 
 
 def intervening_if_holds_now(game: Any, source: Any, controller: int,
-                             host: Any) -> bool:
+                             host: Any, event: Any = None) -> bool:
     """Does `host`'s intervening "if" (CR 603.4) hold now for `controller`,
     `source` being the object whose ability it is -- asked of the
     dispatcher's own evaluator (`effect_resolver.holds`)? True for a host
-    without one. The AI reads it to value a trigger before it triggers (a
-    loyalty line's "when you do" trigger, unit RX); only a host the
-    dispatcher can execute is asked."""
+    without one. `event` is the trigger event ("that player"), when the
+    ability triggers on one. The AI reads it to value a trigger before it
+    triggers (a loyalty line's "when you do" trigger, unit RX); a carrier
+    reads it as the ability triggers (the step carrier, unit BT); only a
+    host the dispatcher can execute is asked."""
     head = getattr(host, "trigger", None)
     if head is None or head.intervening_if is None:
         return True
     probe = er.Resolution(game=game, source=er.handle_of(source),
                           controller=controller, ability=host, chosen=(),
-                          source_object=source)
+                          event=event, source_object=source)
     return bool(er.holds(probe, head.intervening_if))
 
 
@@ -925,6 +929,268 @@ def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],
             rules_audit.census("603.2/cast_trigger_unresolved", src.name,
                                detail=h.trigger.raw, game=game)
             return
+
+
+# ── The beginning-of-step carrier (unit BT, CR 603.2, 603.3b, 603.4) ──
+
+# The strict shape the step carrier takes (`effect_views.
+# strict_step_trigger`, A38) and the family label its resolutions carry.
+STEP_FAMILY = "step_trigger"
+
+
+def step_matches(event: Any, step: str, controller: int, active: int) -> bool:
+    """Does step `step` of `active`'s turn trigger a head typed `event`
+    (`effect_spec.StepEvent`) on a permanent `controller` controls? "Your"
+    names the controller's own turn, "each opponent's" an opponent's turn,
+    "each" every player's turn (CR 603.2)."""
+    if event.step != step:
+        return False
+    if event.whose == "you":
+        return active == controller
+    if event.whose == "opponent":
+        return active != controller
+    return True
+
+
+def _step_family(h: Any) -> Optional[str]:
+    """`STEP_FAMILY` when the beginning-of-step host `h` is in its strict
+    shape and executable; None otherwise."""
+    from .effect_views import STRICT
+    if h.trigger is None or not STRICT[STEP_FAMILY](h) \
+            or not er.can_execute(h, STEP_FAMILY):
+        return None
+    return STEP_FAMILY
+
+
+def _step_hosts(face_hosts: Iterable[Any]) -> tuple:
+    from .effect_spec import EventHint, HostKind
+    return tuple(h for h in face_hosts
+                 if h.kind is HostKind.TRIGGERED and h.trigger is not None
+                 and EventHint.BEGINNING_OF in h.trigger.event_hints)
+
+
+def step_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The step carrier's plan for one face: ``[(host, family)]`` for every
+    host whose head is a BEGINNING_OF event, when each is takeable
+    (`_step_family`); None when the face has no such host or any one is
+    not (a card is taken whole or not at all, so no trigger of it resolves
+    twice or not at all). One owner, read by the carrier, the closure and
+    the harness."""
+    hosts = _step_hosts(face_hosts)
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = _step_family(h)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def _step_faces(template: Any) -> tuple:
+    """Per face of `template`: ``(plan, hosts)`` -- the step carrier's plan
+    (`step_plan`) and the face's BEGINNING_OF hosts. Read once per parse:
+    memoised on the template against its parsed-effects object, in the
+    template's `_effects*` memo family, since the carrier asks it of every
+    permanent at every step."""
+    effects = getattr(template, "_effects", None)
+    if effects is None:
+        effects = getattr(template, "effects", None)
+    hit = getattr(template, "_effects_step_faces", None)
+    if hit is not None and hit[0] is effects:
+        return hit[1]
+    faces = []
+    for face in getattr(effects, "faces", None) or ():
+        hosts = _step_hosts(face)
+        faces.append((step_plan(face) if hosts else None, hosts))
+    out = tuple(faces)
+    try:
+        template._effects_step_faces = (effects, out)
+    except AttributeError:       # a stand-in that takes no attribute
+        pass
+    return out
+
+
+def dispatch_step_triggers(game: Any, step: str) -> set:
+    """The beginning-of-step carrier (CR 603.2, 603.3b, 603.4): as step
+    `step` of the active player's turn begins, each permanent's
+    beginning-of-step abilities whose typed head names that step and turn
+    (`step_matches`) trigger once. An intervening "if" is checked as the
+    ability triggers and again as it resolves; targets are chosen as it is
+    put on the stack (`trigger_targets`). All of them trigger before any
+    resolves -- a permanent that enters meanwhile does not trigger -- and
+    they resolve in stack order: the active player's are put on the stack
+    first, so the non-active player's resolve first (CR 603.3b). "That
+    player" is the active player. A card whose step triggers the carrier
+    cannot take resolves none of them; the rules audit records it
+    (`603.2/step_trigger_unresolved`). Returns the instance ids of the
+    permanents whose step triggers the carrier took."""
+    taken: set = set()
+    if not er.dispatch_enabled():
+        return taken
+    active = game.active_player
+    event = er.TriggerEvent(player=active)
+    _audit_step_once(game, step)
+    triggered = []
+    order = [active] + [p for p in range(len(game.players)) if p != active]
+    for idx in order:
+        for src in list(game.players[idx].battlefield):
+            template = getattr(src, "template", None)
+            if template is None or getattr(template, "is_loyalty_clause",
+                                           False):
+                continue
+            faces = _step_faces(template)
+            if not faces:
+                continue
+            face = 1 if getattr(src, "is_transformed", False) \
+                and len(faces) > 1 else 0
+            plan, hosts = faces[face]
+            if not hosts:
+                continue
+            controller = src.controller
+            if plan is None:
+                _audit_unresolved_step_trigger(game, src, hosts, step,
+                                               controller, active)
+                continue
+            taken.add(src.instance_id)
+            for h, family in plan:
+                if not step_matches(h.trigger.step_event, step, controller,
+                                    active):
+                    continue
+                holds = intervening_if_holds_now(game, src, controller, h,
+                                                 event=event)
+                _audit_step_intervening_if(game, src, controller, h, holds,
+                                           "as it triggers")
+                if not holds:
+                    continue
+                chosen = trigger_targets(game, src, controller, h)
+                if chosen is None:
+                    continue
+                triggered.append((src, er.handle_of(src), controller, h,
+                                  family, chosen))
+    # CR 603.3b: the active player's triggers are put on the stack first,
+    # so the non-active player's resolve first.
+    triggered.sort(key=lambda t: t[2] == active)
+    for src, handle, controller, h, family, chosen in triggered:
+        restated = _restated_life_history(
+            game, controller, h.trigger.intervening_if)
+        performed = er.resolve_ability(game, handle, controller, h, chosen,
+                                       family=family, event=event,
+                                       source_object=src)
+        if restated is False:
+            _audit_step_intervening_if(game, src, controller, h,
+                                       not performed, "as it resolves")
+        _audit_step_named_turn(game, src, controller, h, step, active)
+        if game.game_over:
+            break
+        # CR 117.3b, 704.3: after each resolves, a player would receive
+        # priority -- state-based actions are checked before the next one
+        # resolves (a creature dealt lethal damage is gone by then).
+        game.check_state_based_actions()
+        if game.game_over:
+            break
+    return taken
+
+
+def _audit_unresolved_step_trigger(game: Any, src: Any, hosts: Iterable[Any],
+                                   step: str, controller: int,
+                                   active: int) -> None:
+    """Rules audit, a census once per card: a beginning-of-step head of
+    `src` names this step and turn (or is a step head the grammar could not
+    type), but no carrier resolves the card's step triggers -- the trigger
+    silently does nothing (CR 603.2)."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    for h in hosts:
+        se = h.trigger.step_event
+        if se is None or step_matches(se, step, controller, active):
+            rules_audit.census("603.2/step_trigger_unresolved", src.name,
+                               detail=h.trigger.raw, game=game)
+            return
+
+
+def _restated_life_history(game: Any, controller: int,
+                           cond: Any) -> Optional[bool]:
+    """A HISTORY intervening "if" over the turn's life tallies ("if you
+    gained life this turn"), restated from the raw condition fields and the
+    players' raw tallies -- never through the evaluator; None for any other
+    condition."""
+    from .effect_spec import ConditionKind
+    ops = {">=": operator.ge, "<=": operator.le, "==": operator.eq,
+           ">": operator.gt, "<": operator.lt}
+    tallies = {"life_gained": "life_gained_this_turn",
+               "life_lost": "life_lost_this_turn"}
+    if cond is None or cond.kind is not ConditionKind.HISTORY \
+            or cond.pred not in tallies or cond.op not in ops:
+        return None
+    n = getattr(cond.n, "n", None)
+    payer = getattr(getattr(cond, "payer", None), "kind", None)
+    players = {"PLAYER": [controller],
+               "OPPONENTS": [i for i in range(len(game.players))
+                             if i != controller],
+               "ALL_PLAYERS": list(range(len(game.players)))
+               }.get(getattr(payer, "name", None))
+    if not isinstance(n, int) or players is None:
+        return None
+    return any(ops[cond.op](getattr(game.players[i], tallies[cond.pred]), n)
+               for i in players)
+
+
+def _audit_step_intervening_if(game: Any, src: Any, controller: int,
+                               host: Any, collected: bool, when: str) -> None:
+    """CR 603.4, restated from the raw turn tallies: a step trigger with an
+    intervening "if" over the turn's life is put on the stack exactly when
+    the condition holds as the step begins, and does nothing as it
+    resolves when the condition no longer holds. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    restated = _restated_life_history(game, controller,
+                                      host.trigger.intervening_if)
+    if restated is None:
+        return
+    rules_audit.check("603.4/step_trigger_intervening_if",
+                      collected == restated,
+                      f"{src.name}: {host.trigger.intervening_if.raw!r} is "
+                      f"{restated} {when}", game=game)
+
+
+# The (turn, step) pairs the step carrier was asked about, per game, while
+# the rules audit is on (observation only: never read by the engine).
+_STEPS_DISPATCHED: "weakref.WeakKeyDictionary" = weakref.WeakKeyDictionary()
+
+
+def _audit_step_once(game: Any, step: str) -> None:
+    """CR 603.2: each step of each turn begins once, so its triggers
+    trigger once. Restated from the game's turn number and the step."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    key = (game.turn_number, step)
+    seen = _STEPS_DISPATCHED.setdefault(game, set())
+    rules_audit.check("603.2/step_trigger_once", key not in seen,
+                      f"step {step} of turn {game.turn_number} dispatched "
+                      f"twice", game=game)
+    seen.add(key)
+
+
+def _audit_step_named_turn(game: Any, src: Any, controller: int, host: Any,
+                           step: str, active: int) -> None:
+    """CR 603.2, restated from the raw head: a performed step trigger's
+    head names this step, on this turn -- the controller's own for "your",
+    an opponent's for "each opponent's", any for "each"."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    se = host.trigger.step_event
+    own = active == controller
+    named = (se is not None and se.step == step
+             and {"you": own, "opponent": not own}.get(se.whose, True))
+    rules_audit.check("603.2/step_trigger_once", named,
+                      f"{src.name}: {host.trigger.raw!r} performed at "
+                      f"{step} of player {active + 1}'s turn", game=game)
 
 
 def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:

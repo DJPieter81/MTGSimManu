@@ -32,6 +32,8 @@ def test_turn_boundary_resets_are_clock_subscribers_in_order():
                                           "flashback_grants_expiry"]
     assert subscribers(Clock.UPKEEP) == ["delayed_triggers_upkeep"]
     assert subscribers(Clock.END_STEP) == ["delayed_triggers_end_step"]
+    # unit BT: the printed "at the beginning of <step>" abilities
+    assert subscribers(Clock.STEP_BEGINS) == ["printed_step_triggers"]
 
 
 def test_a_direct_untap_step_still_runs_the_turn_resets():

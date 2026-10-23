@@ -2260,6 +2260,51 @@
    "UNMODELLED": 3
   }
  },
+ "step:dispatch": {
+  "deck_hosts": [
+   {
+    "card": "Emperor of Bones",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Haliya, Guided by Light",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 89,
+  "family": "step_trigger",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 87,
+   "sideboard": 0
+  },
+  "steps": {
+   "E1": 24,
+   "E2": 3,
+   "E3": 26,
+   "E4": 36
+  },
+  "strict": 89,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CREATE_TOKEN": 28,
+   "CREATE_TOKEN,LOSE_LIFE": 3,
+   "DRAW": 10,
+   "DRAW,LOSE_LIFE": 3,
+   "GAIN_LIFE": 4,
+   "GAIN_LIFE,LOSE_LIFE": 6,
+   "LOSE_LIFE": 12,
+   "MILL": 5,
+   "PUT_COUNTERS": 5,
+   "SURVEIL": 7
+  }
+ },
  "targeted_pump": {
   "deck_hosts": [
    {

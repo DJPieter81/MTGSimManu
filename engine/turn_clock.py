@@ -25,6 +25,10 @@ class Clock(Enum):
     UPKEEP = "upkeep"
     END_STEP = "end_step"
     CLEANUP = "cleanup"
+    # A step of `player`'s turn begins (`ClockEvent.step`, its
+    # `game_state.Phase` value): the printed "at the beginning of <step>"
+    # abilities trigger (CR 603.2).
+    STEP_BEGINS = "step_begins"
 
 
 @dataclass(frozen=True)
@@ -35,6 +39,8 @@ class ClockEvent:
     # by `emit`: a duration that counts turns ("until the end of your next
     # turn") reads it.
     turn: Optional[int] = None
+    # The step a STEP_BEGINS event begins (its `game_state.Phase` value).
+    step: Optional[str] = None
 
 
 _SUBSCRIBERS: Dict[Clock, List[Tuple[str, Callable]]] = {k: [] for k in Clock}
@@ -135,6 +141,14 @@ def _fire_upkeep_delayed(game, ev):
 def _fire_end_step_delayed(game, ev):
     from .delayed_triggers import DelayedTriggerStep
     game.fire_delayed_triggers(DelayedTriggerStep.END_STEP)
+
+
+@subscribe(Clock.STEP_BEGINS, "printed_step_triggers")
+def _perform_step_triggers(game, ev):
+    # CR 603.2: a permanent's printed "at the beginning of <step>" abilities
+    # trigger as that step begins (unit BT, the step carrier).
+    from .effect_carrier import dispatch_step_triggers
+    dispatch_step_triggers(game, ev.step)
 
 
 @subscribe(Clock.CLEANUP, "rule_effects_expiry")

@@ -74,6 +74,10 @@ FAMILY_REMOVAL = "removal"
 # dispatch_cast_triggers`): what a permanent's "whenever <player> casts a
 # <kind> spell" ability performs.
 FAMILY_CAST_TRIGGER = "cast_trigger"
+# The beginning-of-step carrier's family (unit BT, `effect_carrier.
+# dispatch_step_triggers`): what a permanent's "at the beginning of <step>"
+# ability performs.
+FAMILY_STEP_TRIGGER = "step_trigger"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -92,7 +96,12 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE}),
             FAMILY_CAST_TRIGGER: frozenset({Verb.DISCARD, Verb.DRAW,
-                                            Verb.EXILE})}
+                                            Verb.EXILE}),
+            FAMILY_STEP_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
+                                            Verb.GAIN_LIFE, Verb.DRAW,
+                                            Verb.CREATE_TOKEN,
+                                            Verb.PUT_COUNTERS, Verb.EXILE,
+                                            Verb.MILL, Verb.SURVEIL})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -1096,7 +1105,8 @@ execute_exile.supports = _exile_supported
 # target's, in a cast trigger (unit UG); every other exile shape is
 # unrestricted, as before.
 execute_exile.allowed_families = (
-    lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS})
+    lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS,
+                         FAMILY_STEP_TRIGGER})
     if graveyard_target_exile(s)
     else frozenset({FAMILY_CAST_TRIGGER}) if exile_target_supported(s)
     else None)
@@ -1820,6 +1830,13 @@ def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
 
 evaluate_state.supports = conditions.state_condition_supported
 
+
+def evaluate_history(ctx: Resolution, cond: Condition) -> bool:
+    return conditions.history_condition_holds(ctx.game, ctx.controller, cond)
+
+
+evaluate_history.supports = conditions.history_condition_supported
+
 # The card types an OBJECT condition's filter may name ("if it was a
 # creature card", "... an instant or sorcery card").
 _CARD_TYPE_VALUES = frozenset(t.value for t in CardType)
@@ -2429,3 +2446,4 @@ EXECUTOR_FILTER_KEYS[Verb.SEARCH] |= frozenset(
     + [("named", t) for t in _TARGET_REFS])
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
 CONDITION_EVALUATORS[ConditionKind.OBJECT] = evaluate_object
+CONDITION_EVALUATORS[ConditionKind.HISTORY] = evaluate_history

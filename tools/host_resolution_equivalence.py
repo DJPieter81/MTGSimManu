@@ -354,32 +354,38 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
             # the loyalty carrier takes its typed host (unit LY)
             ok.append(HostCase(template.name, label, "LOYALTY",
                                (h.face, h.loyalty_slot)))
-        elif h.kind is HostKind.TRIGGERED and h.face == 0 and \
-                h.trigger is not None and (
+        elif h.kind is HostKind.TRIGGERED and h.trigger is not None and ((
+                h.face == 0 and (
                     EventHint.SELF_ENTERS in h.trigger.event_hints or (
                         EventHint.DRAW in h.trigger.event_hints
                         and h.trigger.draw is not None) or (
                         h.trigger.combat_damage is not None
                         and h.trigger.combat_damage.dealer == "self") or (
-                        h.trigger.cast is not None)):
+                        h.trigger.cast is not None)))
+                or h.trigger.step_event is not None):
             # an enter trigger: its legacy apply is the enter resolver; a
             # typed draw trigger: a draw (a head naming both -- "When ~
             # enters and whenever an opponent draws" -- has both cases); a
             # typed combat-damage trigger dealt by the source itself: the
             # source dealing combat damage to the opponent
-            if EventHint.SELF_ENTERS in h.trigger.event_hints:
+            if h.face == 0 and EventHint.SELF_ENTERS in h.trigger.event_hints:
                 ok.append(HostCase(template.name, label, "ETB", h.index))
-            if EventHint.DRAW in h.trigger.event_hints and \
+            if h.face == 0 and EventHint.DRAW in h.trigger.event_hints and \
                     h.trigger.draw is not None:
                 ok.append(HostCase(template.name, label, "DRAW", h.index))
-            if h.trigger.combat_damage is not None and \
+            if h.face == 0 and h.trigger.combat_damage is not None and \
                     h.trigger.combat_damage.dealer == "self":
                 ok.append(HostCase(template.name, label, "COMBAT_DAMAGE",
                                    h.index))
-            if h.trigger.cast is not None:
+            if h.face == 0 and h.trigger.cast is not None:
                 # a typed cast trigger (unit CT): its caster casting a
                 # spell of its kind
                 ok.append(HostCase(template.name, label, "CAST", h.index))
+            if h.trigger.step_event is not None:
+                # a typed beginning-of-step trigger (unit BT), on either
+                # face: the step it names beginning on the turn it names
+                ok.append(HostCase(template.name, label, "STEP",
+                                   (h.face, h.index)))
         else:
             skipped.append(HostCase(template.name, label, h.kind.name))
     return ok, skipped
@@ -394,6 +400,14 @@ def _cast_head(template, case: HostCase):
     from engine.effect_spec import HostKind
     return next(h.trigger.cast for h in template.effects.front()
                 if h.kind is HostKind.TRIGGERED and h.index == case.key)
+
+
+def _step_head(template, case: HostCase):
+    """The typed step event of a STEP case's host, on its face."""
+    from engine.effect_spec import HostKind
+    face, index = case.key
+    return next(h.trigger.step_event for h in template.effects.faces[face]
+                if h.kind is HostKind.TRIGGERED and h.index == index)
 
 
 def _draw_head(template, case: HostCase):
@@ -419,6 +433,8 @@ def legacy_place(game, template, case: HostCase):
         if case.key[0] == 1:
             card.is_transformed = True
         card.loyalty_counters = template.loyalty or 0
+    if case.kind == "STEP" and case.key[0] == 1:
+        card.is_transformed = True        # a back face's step trigger
     return card
 
 
@@ -527,6 +543,26 @@ def legacy_apply(game, template, case: HostCase) -> Any:
         from engine.combat_manager import CombatManager
         return CombatManager.combat_damage_triggers(
             game, card, CONTROLLER, 1 - CONTROLLER)
+    if case.kind == "STEP":
+        # the step the head names begins on the turn it names -- the
+        # controller's own for "your" and "each", an opponent's for "each
+        # opponent's": the clock's STEP_BEGINS subscribers run
+        from engine.game_state import Phase
+        from engine.turn_clock import Clock, ClockEvent, emit
+        ev = _step_head(template, case)
+        active = 1 - CONTROLLER if ev.whose == "opponent" else CONTROLLER
+        # whose turn and step it is are the case's setting, not its effect:
+        # restored once the step's triggers have resolved, so a trigger that
+        # does nothing leaves the board as it found it
+        turn = (game.active_player, game.priority_player, game.current_phase)
+        game.active_player = game.priority_player = active
+        game.current_phase = Phase(ev.step)
+        try:
+            return emit(game, ClockEvent(Clock.STEP_BEGINS, active,
+                                         step=ev.step))
+        finally:
+            game.active_player, game.priority_player, \
+                game.current_phase = turn
     from engine.planeswalker_manager import PlaneswalkerManager
     face, slot = case.key
     attr = "loyalty_abilities" if face == 0 else \
@@ -653,7 +689,7 @@ SWITCHED_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
 # (a head naming both an enter and a draw event).
 _HANDLER_CASE_KIND = {"etb:dispatch": "ETB", "draw:dispatch": "DRAW",
                       "combat_damage:dispatch": "COMBAT_DAMAGE",
-                      "cast:dispatch": "CAST"}
+                      "cast:dispatch": "CAST", "step:dispatch": "STEP"}
 
 
 def legacy_only_apply(game, template, case: HostCase) -> Any:
@@ -687,15 +723,30 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
     divergences: List[Divergence] = []
     undispatched: List[List[str]] = []
     no_case: List[List[str]] = []
+    refused_at_trigger: List[List[str]] = []
     entered = [0]
+    refused = [0]
     real = er.resolve_ability
+    from engine import effect_carrier as ec
+    real_if = ec.intervening_if_holds_now
 
     def counting(*a, **k):
         entered[0] += 1
         return real(*a, **k)
 
+    def checking(*a, **k):
+        # A carrier that checks an intervening "if" as the ability triggers
+        # (the step carrier, CR 603.4) has entered the new path even when
+        # the condition fails: it refuses the ability there, by the
+        # dispatcher's own evaluator.
+        held = real_if(*a, **k)
+        if not held:
+            refused[0] += 1
+        return held
+
     t0 = time.process_time()
     er.resolve_ability = counting
+    ec.intervening_if_holds_now = checking
     try:
         for p in pairs:
             key = [p.handler, p.card, p.host]
@@ -707,7 +758,7 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
             if case is None:
                 no_case.append(key)
                 continue
-            before = entered[0]
+            before, before_refused = entered[0], refused[0]
             divs = compare_host(built, t, case, seeds=seeds,
                                 left=legacy_only_apply, right=legacy_apply)
             divergences += divs
@@ -715,17 +766,23 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
                 # per pair: two handlers that take one host (a switched
                 # clause and the dispatched carrier) each diverge
                 diverging.append(key)
-            if entered[0] == before:
+            if entered[0] == before and refused[0] == before_refused:
                 undispatched.append(key)
             elif not divs:
                 proven.append(key)
+                if entered[0] == before:
+                    # proven only as refused: its intervening "if" holds on
+                    # no board, so the new path refuses it as it triggers
+                    refused_at_trigger.append(key)
     finally:
         er.resolve_ability = real
+        ec.intervening_if_holds_now = real_if
     return {"pairs": len(pairs), "proven": sorted(proven),
             "diverging": sorted(diverging),
             "boards": list(built), "seeds": list(seeds),
             "divergences": [dataclasses.asdict(d) for d in divergences],
             "undispatched": sorted(undispatched), "no_case": sorted(no_case),
+            "refused_at_trigger": sorted(refused_at_trigger),
             "cpu_s": round(time.process_time() - t0, 2)}
 
 
@@ -823,7 +880,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"{rep['cpu_s']} s CPU")
             print(f"  {len(diverging)} diverging pairs, "
                   f"{len(diverging) - len(unexplained)} of them intended "
-                  f"changes with a recorded reason")
+                  f"changes with a recorded reason; "
+                  f"{len(rep['refused_at_trigger'])} proven only as refused "
+                  f"at trigger (an intervening if that holds on no board)")
             for k in unexplained[:20]:
                 print(f"  UNEXPLAINED divergence {list(k)}")
             for k in rep["undispatched"][:20] + rep["no_case"][:20]:
