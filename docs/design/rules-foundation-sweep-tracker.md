@@ -10840,7 +10840,12 @@ Registered: Supreme Verdict ×9, Dovin's Veto ×6, Chandra, Awakened Inferno ×1
   - The first run failed six tests: the four grammar and harness pins above, plus `test_extraction_performance`.
   - That perf test passes alone on a quiet machine (19 s), and CI deselects it.
 
-**Measured:** by the `ug-post` arm (pre = `uc-post`).
+**Measured:** by the `ug-post` arm (pre = `uc-post`, same seeds, n=20 Bo3, all 25 shards, 0 aborted cells).
+- **The decks that carry Ugin:** Eldrazi Tron +4.7 (56.4 → 61.0) and Eldrazi Ramp +2.2 (56.9 → 59.1).
+- **Everyone else:** 4/5c Control −1.4, and every other deck within 0.7. No deck moves more than 5 pp.
+- **55 cells change.** The largest are 4/5c Control against Eldrazi Tron (40 → 15) and against Eldrazi Ramp (60 → 35).
+- **Replayed cell-exact** from the pinned worktrees: the 4/5c Control vs Eldrazi Tron cell reproduces (8/20 → 3/20). In the first flipped seed (s51000, game 1), the first divergence is Ugin exiling Wrenn and Six on a colourless cast (T13). 4/5c Control loses that game instead of winning it.
+- **Audit:** findings 511 → 486, as Ugin's 36 `603.2/cast_trigger_unresolved` rows are gone. Violations stay at 0, `701.13a/target_exiled` included. Band misses stay at 0.
 
 **Leads, not built:**
 - **UG.2, the spell's own "when you cast ~" exile** (Devourer of Destiny ×10, Ugin's own, Ulamog's "exile two target permanents"). It stays on the legacy self-cast resolver, which picks its own target and ignores hexproof.
@@ -10848,3 +10853,57 @@ Registered: Supreme Verdict ×9, Dovin's Veto ×6, Chandra, Awakened Inferno ×1
   - Under that carrier the AI's pick (`permanent_threat`) chose Ulamog's targets differently: two lands over two Leyline Bindings.
 - **`permanent_threat` values a permanent that holds an exiled card "until it leaves" at its own contribution only,** not the card its removal returns (Leyline Binding, O-Ring class).
 - **"Whenever you cast a <kind> spell" triggers resolve inline as the spell is cast,** not on the stack above it.
+
+## Unit MS.2: a modal spell is cast only with modes its controller may choose; a mode that prints an untyped target is never one (CR 601.2b-c, 700.2a; 2026-10-23)
+
+**Source:** the uc-post audit ranking. After UG, the one `unhandled/mode` row left was Untimely Malfunction's (23 of 25 shards). A replay showed why: Ruby Storm Wishes for it from the sideboard and casts it with no target ("Cast Untimely Malfunction (1R) … Resolve … moved stack -> graveyard"). The cast still counts for storm and sets off Artist's Talent.
+
+**Rule:** a modal spell's modes are chosen as it is cast, then a target for each target those modes require (CR 601.2b-c). A mode whose targets can't be chosen can't be chosen (CR 700.2a). So a spell whose header asks for more modes than its controller may choose can't be cast.
+
+The engine knows a mode's targets only from its typed requirements. Each counted target word a clause prints is one requirement (the grammar's F11). A mode that prints more target words than it has typed requirements has a target the engine cannot check, so it is refused, as a mode whose cost the engine does not pay already is.
+
+**Defect:**
+- **Such a mode read as needing no target.**
+  - `legal_modes` always admitted it.
+  - `has_untargeted_mode` counted it, so `required_targets` dropped every mode requirement and the spell was castable with none.
+  - The engine's completion then chose that mode, and it resolved as nothing.
+- **Untimely Malfunction** prints "change the target of target spell or ability with a single target" and has no typed requirement for it. With an empty board and stack no mode of it can be chosen, yet it was cast.
+- **The cast gates had no notion of mode count.**
+  - `has_legal_target_for_spell` ORs across the mode groups.
+  - Nothing checked that the announced targets open as many modes as the header asks for.
+
+**Class:** 96 pool modal spells print 124 modes with an untyped target, and 18 of them print only such modes.
+- **Performance:** forced through the resolver with six generic target sets, none is performed soundly. 119 resolve as nothing. 5 report a performance when handed only a player marker for a mode that targets an object ("return target spell or creature to its owner's hand"), so a legacy branch acted without the target the mode prints.
+- **Registered:**
+  - Kozilek's Command's graveyard-exile mode (Eldrazi Tron ×4, Eldrazi Ramp ×4, Broodscale Bloodchief ×4);
+  - Thraben Charm's graveyard mode (Boros Energy ×2, Hollow One sideboard ×2);
+  - Untimely Malfunction's redirect mode (Ruby Storm sideboard ×1, fetched by Wish).
+
+**Steps:**
+- **The typed read:** `modal_spell.untyped_target_modes` returns the modes whose counted target words outnumber their typed requirements. It is read once per parse, memoised in the template's `_effects*` family against its typed spell host.
+- **One predicate,** `_open`, decides whether a mode may be chosen: no unpaid cost, no untyped target, each object target admitted. Its readers:
+  - `legal_modes` (the chosen targets admit it);
+  - `has_untargeted_mode`;
+  - the new `castable` (some legal target exists).
+- **Castability:** `CastManager.targets_allow_cast` is the one target gate the normal and madness routes of `can_cast` share. A modal spell also needs `castable`.
+- **The announcement:** `required_targets_chosen` (read by `announced_targets` and by the AI's announcer) needs `modes_choosable`: the chosen targets open as many modes as the header asks for. A free cast skips `can_cast` but not the announcement.
+- **Auditor:** unit MS's `700.2a/modes_chosen` now also restates, from the raw mode text and its typed requirements, that no performed mode prints an untyped target.
+
+**Tests:** 11, in `tests/test_a_modal_spell_is_cast_only_with_modes_its_controller_may_choose.py`; 8 were red first. These pass either way, as pins: a typed mode chosen with its target, a typed untargeted mode still opening a cast, and the audit's silent case.
+
+**Pins:** (`21ddb2f`)
+- **Digest:** byte-identical (27 games). **Anchor:** 29 passed.
+- **Unchanged:**
+  - spec equivalence, the census and the parser ratchet;
+  - the harness (1847 pairs: 373 proven, 1474 intended);
+  - every ratchet. Oracle-runtime parse stays 155, since the shared gate reads the same parse.
+- **The 476 tests** in every file that reads the modal owner, the target gates or the registered carriers pass.
+- **Per-match CPU, Boros Energy vs Eldrazi Tron (n = 4):** 1.56 → 1.55 s.
+- **Chunks at `21ddb2f`:** 5325 + 2766 passed, nothing failed.
+
+**Measured:** by the `ms2-post` arm (pre = `ug-post`).
+
+**Leads, not built:**
+- **The Wish delivery does not ask castability.** `choose_tutor_delivery` ranks a sideboard card by its delivery value, so a Wish may still fetch a Malfunction it cannot cast this turn. A card brought from outside the game is played this turn or never (CR 400.11a).
+- **The imprint copy's target gate** (`GameRunner`, the Scepter route) reads the legality owner's parse without the modal owner. An imprinted modal spell is held to its modes only when the copy is cast.
+- **The 124 untyped targets themselves:** unknown verbs ("change the target of"), tribal and other unparsed types, and "target players' graveyards". Typing one returns its mode to play.
