@@ -10494,7 +10494,15 @@ The hit is a spell cast this turn. It obeys every restriction on casting while i
 - **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). Spec equivalence, the census and the parser ratchet are unchanged, and the 806 audit-enabled tests pass.
 - **Chunks at `5446842`:** 5221 + 2766 passed, nothing failed.
 
-**Measured:** by the `cs-post` arm (pre = `pb-post`).
+**Measured** (`cs-post` arm against `pb-post`, 600 cells each):
+- **Living End 61.7 → 58.8. Every other deck is within ±1.2,** the Azorius Control family gaining 0.8 to 1.2. All 32 changed cells are Living End's. Band miss is 43.8 → 42.9 pp.
+- **Replayed cell-exact; both directions are rules-correct:**
+  - **vs Azorius Control (WST v2): 15 → 8 of 20.** At s50000 the cascaded Living End can't be cast under Teferi, Time Raveler, because the stack holds its trigger. Before CS it was resolved in place, ignoring him. Chalice of the Void on 0 counters it too.
+  - **vs Dimir Midrange: 12 → 16 of 20.** Countering the cascade spell no longer stops the cascade. At s53500, Dimir's Counterspell takes the cascaded Living End and Violent Outburst resolves, where it used to counter Outburst and stop both. At s50500, a cascaded Living End returns nothing, and Dimir counters the Agent instead.
+- **Audit violations 4104 → 4210:**
+  - The `117.4` residual (4176) now includes the cast hits.
+  - 34 were `702.85a/cascade_hit_cast`, all in Living End against the Azorius Control family. Each is the audit's own false positive: a cascaded Living End countered on cast by Chalice on 0, then exiled instead by Rest in Peace or Sanctifier en-Vec (CR 614.6).
+  - **Fixed in `06d2244`.** The audit asks that nothing exiled is in a hand and that the cards not cast are at the bottom; a cast hit is wherever the stack put it. The fix lands with a test that is red against the old audit.
 
 **Leads, not built:**
 - **The inline Chalice counter is not a trigger.** On a non-active player's cast, APNAP would order it after cascade; the end state is the same.
@@ -10504,3 +10512,56 @@ The hit is a spell cast this turn. It obeys every restriction on casting while i
 - **Multiple and granted cascade** (CR 702.85c; The First Sliver, Maelstrom Nexus).
 - **The 2023 wording** ("the resulting spell's mana value") for split, adventure and modal double-faced hits.
 - **Subtlety's and Spell Queller's raw zone writes.**
+
+## Unit PB.2: a spell cast by any route is offered to the other player before it resolves (CR 117.3b, 117.3c, 117.4, 514.3a, 603.3b; 2026-10-23)
+
+**Source:** unit PB's auditor. The `pb-post` arm's 4104 `117.4/priority_before_resolution` violations were its residual: spells cast by routes that resolved what they cast themselves.
+
+**Rule:** a spell cast while an ability or effect resolves goes on the stack like any other. Players receive priority, and it resolves only once every player has passed. Two further cases:
+- **Several upkeep triggers:** spells they cast (suspended cards whose last counters come off together, rebound cards) are cast one trigger at a time. Each spell resolves before the next trigger does (CR 603.3b), so two are never on the stack together.
+- **The cleanup step:** a cleanup step whose discard puts anything on the stack ends there. Players receive priority, and once the stack is empty another cleanup step begins (CR 514.3a).
+
+**Defect:** five routes bypassed the one drain:
+- **Suspend** (`CastManager.tick_suspend_upkeep`): the last-counter cast was drained inline, along with anything beneath it.
+- **The imprint copy** (`GameRunner._process_imprint_copy_activations`): the copy was resolved directly. This was nearly all of PB's residual: Isochron Scepter's copies of Silence and Orim's Chant.
+- **The plotted cast** (the main phase's `cast_plotted` arm): no window and no drain. The spell sat on the stack through the next decision, and through the end of the phase when there was none.
+- **Cleanup madness** (`TurnManager.cleanup_step`): drained inline.
+- **Rebound recasts:** all were cast before any resolved. A second Ephemerate aimed at the creature the first returned was then aimed at an object that no longer existed (CR 400.7).
+
+**Class:** every spell cast by a route other than the main phase's own cast:
+- suspend: 53 pool cards;
+- plot: 31;
+- madness: 41;
+- rebound: 26;
+- imprint copies: 2.
+
+Registered:
+- Living End (Living End suspend MB ×3, Inevitable Betrayal SB ×2);
+- Izzet Prowess (Slickshot Show-Off ×4);
+- Hollow One (Blazing Rootwalla ×4);
+- the six Ephemerate decks (19 copies);
+- Azorius Control (Isochron Scepter ×1).
+
+**Steps:**
+- **Suspend:** the inline drain is deleted. The spell stays on the stack, and the runner passes its drain as `after_cast`, which runs after each card's cast.
+- **Rebound:** the runner drains after each recast.
+- **Imprint copy:** the copy resolves through `_resolve_stack_loop`.
+- **Plotted cast:** the arm offers the window and drains, exactly as the cast arm does.
+- **Cleanup:** `cleanup_step` returns False, before damage is removed, when its discard put anything on the stack. The runner's new `_cleanup_step` drains through the loop and begins another cleanup step until one completes, bounded by `MAX_STACK_RESOLVES`.
+- **One owner:** `_resolve_stack_loop` is now the only caller of `resolve_stack` in `engine/` and `ai/`, pinned by an AST test.
+
+**Tests:** 8, in `tests/test_a_spell_cast_by_any_route_is_offered_before_it_resolves.py`; all 8 were red first. Each route test also asserts that the 117.4 auditor is silent. Two older pins that encoded the inline drains are corrected to the rule: the suspend tick and the cleanup madness test.
+
+**Pins:** (`07cf0ee`)
+- **Digest:** byte-identical (27 games; none reaches these routes).
+- **Anchor:** 29 passed.
+- **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). Spec equivalence, the census and the parser ratchet are unchanged, and the 815 audit-enabled tests pass.
+- **CPU:** Azorius Control vs Grixis Reanimator, 4 matches, 3.58 → 3.61 s per match. On the same games the `117.4` residual falls 2 → 0 (Silence copies).
+- **Chunks at `07cf0ee`:** 5230 + 2766 passed, nothing failed.
+
+**Measured:** by the `pb2-post` arm (pre = `cs-post`).
+
+**Leads, not built:**
+- **A suspended or plotted card is cast from a hand.** Both routes move the card exile → hand → stack, so a cast-from-hand rider applies to it, and a plotted cast that fails leaves the card in its owner's hand.
+- **The controller of the top object** is never asked whether to hold priority over its own spell (from unit PB).
+- **The Scepter holder's activation timing:** the copy is fired after the active player's rebound recasts have resolved, never in response to them.
