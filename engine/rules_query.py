@@ -324,3 +324,93 @@ def object_prohibited(game: "GameState", card, action: str) -> bool:
                 and e.selector.covers_object(card)):
             return True
     return False
+
+
+# ── Countering ───────────────────────────────────────────────────────
+
+# The spell descriptions a "can't be countered" prohibition is read over: a
+# spell (zone stack) of any of `types` or none of `not_types` (CR 205.2a),
+# controlled by the prohibition's controller ("you control") or anyone.
+COUNTER_FILTER_KEYS = frozenset({"zone", "types", "not_types", "controller"})
+
+
+def counter_text(template) -> tuple:
+    """`template`'s counter text: ``(prints_uncounterable, grants)``, where
+    `grants` holds, per face, the spell descriptions its printed statics say
+    "can't be countered" (`continuous_effects._face_counter_grants`). Read
+    once per parse of the card: memoised on the template against its
+    parsed-effects object, which is taken without re-deriving its parse key
+    -- a card's printed text is fixed during a game, and these are read on
+    every cast the AI weighs."""
+    effects = getattr(template, "_effects", None)
+    if effects is None:
+        effects = getattr(template, "effects", None)
+    hit = getattr(template, "_effects_counter_text", None)
+    if hit is not None and hit[0] is effects:
+        return hit[1]
+    faces = getattr(effects, "faces", None) or ()
+    from engine.continuous_effects import _face_counter_grants
+    from engine.effect_spec import HostKind
+    text = (bool(faces) and any(
+                h.kind is HostKind.STATIC and h.from_zone == "stack"
+                and "uncounterable" in h.flags for h in faces[0]),
+            tuple(_face_counter_grants(face) for face in faces))
+    try:
+        # A memo of the parse, in the template's `_effects*` memo family:
+        # it derives from `_effects` alone and never changes a field.
+        template._effects_counter_text = (effects, text)
+    except AttributeError:       # a stand-in that takes no attribute
+        pass
+    return text
+
+
+def prints_uncounterable(template) -> bool:
+    """The spell's own "This spell can't be countered" (CR 101.2): a static
+    ability that functions on the stack (CR 113.6), parsed as a STATIC host
+    from the stack whose flags hold `uncounterable`. A conditional one ("If
+    X is 5 or more, ...") is not parsed as one, so it is never read."""
+    return counter_text(template)[0]
+
+
+def _spell_described(effect, controller: int, template) -> bool:
+    """Does a "can't be countered" prohibition's description name a spell
+    of `template` that `controller` controls? Read over the vocabulary in
+    `COUNTER_FILTER_KEYS`; a description with anything else names none
+    (fail closed)."""
+    f = dict(effect.selector.filter or ())
+    if set(f) - COUNTER_FILTER_KEYS or f.get("zone") != "stack":
+        return False
+    if f.get("controller") not in (None, "you") or (
+            f.get("controller") == "you" and controller != effect.controller):
+        return False
+    types = {ct.value for ct in template.card_types}
+    if f.get("types") and not types & set(f["types"]):
+        return False
+    return not (f.get("not_types") and types & set(f["not_types"]))
+
+
+def spell_can_be_countered(game: "GameState", controller: int,
+                           template) -> bool:
+    """Can a spell of `template` that `controller` controls be countered
+    (CR 101.2, 701.6a)? Not when it prints "This spell can't be countered"
+    (`prints_uncounterable`). Nor while a "can't be countered" prohibition
+    whose description names it applies: a permanent's "<kind> spells [you
+    control] can't be countered", derived while the permanent is there, or
+    one a resolved effect left. Every counter reads this, and so does the
+    AI."""
+    if prints_uncounterable(template):
+        return False
+    from engine.continuous_effects import counter_prohibitions
+    from engine.effect_model import SelectorKind
+    return not any(e.selector.kind is SelectorKind.FILTER
+                   and _spell_described(e, controller, template)
+                   for e in counter_prohibitions(game))
+
+
+def can_be_countered(game: "GameState", item) -> bool:
+    """`spell_can_be_countered` for a stack object. An ability can always be
+    countered: nothing the read path takes says otherwise."""
+    from engine.stack import StackItemType
+    if item.item_type is not StackItemType.SPELL or item.source is None:
+        return True
+    return spell_can_be_countered(game, item.controller, item.source.template)

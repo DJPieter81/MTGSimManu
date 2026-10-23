@@ -118,6 +118,16 @@ class ResponseDecider:
                 seen_ids.add(src.instance_id)
         return candidate_sources
 
+    def _responses_that_can_answer(self, game: "GameState",
+                                   stack_item: "StackItem", instants):
+        """The candidates that can answer `stack_item`: a counterspell
+        answers only a spell that can be countered (CR 101.2; the engine's
+        own rule, `rules_query.can_be_countered`)."""
+        from engine.rules_query import can_be_countered
+        if can_be_countered(game, stack_item):
+            return instants
+        return [c for c in instants if "counterspell" not in c.template.tags]
+
     def decide_response(self, game: "GameState", stack_item: "StackItem",
                         pick_removal_target_fn: Optional[Callable] = None) -> Optional[Tuple["CardInstance", List[int]]]:
         """Decide whether and how to respond to a stack item.
@@ -145,10 +155,7 @@ class ResponseDecider:
 
         instants = self._enumerate_response_candidates(game, stack_item)
 
-        # "Can't be countered" — don't try counterspells against these
-        threat_oracle = (stack_item.source.template.oracle_text or '').lower()
-        if "can't be countered" in threat_oracle or "can\u2019t be countered" in threat_oracle:
-            instants = [c for c in instants if "counterspell" not in c.template.tags]
+        instants = self._responses_that_can_answer(game, stack_item, instants)
 
         if not instants:
             if self.strategic_logger:

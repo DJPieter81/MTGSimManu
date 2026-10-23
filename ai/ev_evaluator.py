@@ -3018,10 +3018,10 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
     # the value in; we never re-query.  Slow path: caller didn't
     # supply one — fall back to BHI / static density approximation
     # for callers that don't pre-compute it.
-    oracle = (t.oracle_text or '').lower()
+    from engine.rules_query import prints_uncounterable, spell_can_be_countered
     can_counter = (projected.opp_mana >= COUNTER_ESTIMATED_COST
-                   and "can't be countered" not in oracle
-                   and "can’t be countered" not in oracle)
+                   and (spell_can_be_countered(game, player_idx, t)
+                        if game is not None else not prints_uncounterable(t)))
     if p_interaction is None:
         if bhi is not None and bhi._initialized:
             p_interaction = bhi.get_interaction_probability(
@@ -3409,9 +3409,11 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     # subtracts from 1 instead of re-querying.  Per the abstraction
     # contract: ONE call site in `_score_spell`, no scattered
     # category-specific queries.
-    _t_oracle = (card.template.oracle_text or '').lower()
-    _can_counter = ("can't be countered" not in _t_oracle
-                    and "can’t be countered" not in _t_oracle)
+    # CR 101.2: the engine's own rule, read before the cast.
+    from engine.rules_query import prints_uncounterable, spell_can_be_countered
+    _can_counter = (spell_can_be_countered(game, player_idx, card.template)
+                    if game is not None
+                    else not prints_uncounterable(card.template))
     _is_creature_target = bool(card.template.is_creature)
     if bhi is not None and bhi._initialized:
         p_interaction = bhi.get_interaction_probability(

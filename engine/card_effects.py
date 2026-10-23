@@ -1633,6 +1633,13 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
                     f"T{game.display_turn} P{controller+1}: "
                     f"Consign to Memory fizzles (spell is colored)")
                 continue
+            from .rules_query import can_be_countered
+            if not can_be_countered(game, stack_item):
+                # CR 101.2: a spell that can't be countered is not.
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{stack_item.source.name} can't be countered")
+                break
             countered = game.stack.items.pop(i)
             if is_triggered:
                 # A countered triggered ability simply ceases to exist —

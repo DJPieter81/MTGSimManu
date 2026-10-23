@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, List
 from .cards import CardType, Keyword, Supertype, Ability, AbilityType
 from .card_effects import EFFECT_REGISTRY, EffectTiming
 from .stack import StackItem, StackItemType
+from . import rules_query as _rules_query
 
 if TYPE_CHECKING:
     from .cards import CardInstance
@@ -59,6 +60,66 @@ def _enter_with_sunburst(game: "GameState", card: "CardInstance",
     game.log.append(f"T{game.display_turn} P{item.controller+1}: "
                     f"{card.name} enters with {colours} {kind} counter(s) "
                     f"(sunburst)")
+
+
+def uncounterable_restated(game: "GameState", controller: int, card) -> bool:
+    """CR 101.2, restated for the auditors from the raw parsed effects, not
+    from `rules_query.spell_can_be_countered`: the spell's own STATIC stack
+    host flagged `uncounterable`, or a battlefield permanent's printed
+    static "<description> can't be countered" whose description (zone
+    stack; any of its types, none of its excluded types; "you control")
+    names the spell. Observes only."""
+    from .effect_model import DurationKind, Modification, ModKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    faces = getattr(getattr(card.template, "effects", None), "faces", None)
+    if faces and any(h.kind is HostKind.STATIC and h.from_zone == "stack"
+                     and "uncounterable" in h.flags for h in faces[0]):
+        return True
+    types = {ct.value for ct in card.template.card_types}
+    for p in game.players:
+        for perm in p.battlefield:
+            pf = getattr(getattr(perm.template, "effects", None), "faces", None)
+            if not pf:
+                continue
+            face = pf[1] if getattr(perm, "is_transformed", False) \
+                and len(pf) > 1 else pf[0]
+            for h in face:
+                if h.kind is not HostKind.STATIC or h.from_zone != "battlefield":
+                    continue
+                for s in iter_specs(h.specs):
+                    m = s.payload
+                    if s.verb is not Verb.CONTINUOUS or s.residue \
+                            or not isinstance(m, Modification) \
+                            or m.kind is not ModKind.PROHIBIT \
+                            or m.action != "be_countered" or s.condition \
+                            or s.subject is None:
+                        continue
+                    f = dict(getattr(s.subject, "filter", None) or ())
+                    if set(f) - {"zone", "types", "not_types", "controller"} \
+                            or f.get("zone") != "stack" \
+                            or f.get("controller") not in (None, "you") \
+                            or (s.duration is not None and s.duration.kind
+                                is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+                        continue
+                    if f.get("controller") == "you" and perm.controller != controller:
+                        continue
+                    if f.get("types") and not types & set(f["types"]):
+                        continue
+                    if f.get("not_types") and types & set(f["not_types"]):
+                        continue
+                    return True
+    return False
+
+
+def _audit_uncounterable(game: "GameState", stack_item, card) -> None:
+    """Rules audit (CR 101.2): a spell moved off the stack as countered is
+    one that can be countered (`uncounterable_restated`). Observes only."""
+    from .rules_audit import check, enabled
+    if not enabled():
+        return
+    check("101.2/uncounterable",
+          not uncounterable_restated(game, stack_item.controller, card),
+          f"{card.name} countered though it can't be countered", game=game)
 
 
 def _audit_sunburst(game: "GameState", card: "CardInstance",
@@ -264,6 +325,7 @@ class ResolutionManager:
         ability items is unchanged here — out of scope for this fix.)
         """
         if stack_item.item_type == StackItemType.SPELL:
+            _audit_uncounterable(game, stack_item, countered_card)
             ResolutionManager._move_resolved_spell_off_stack(game, countered_card)
         else:
             # Countered activated/triggered ability: the source is a permanent
@@ -364,8 +426,11 @@ class ResolutionManager:
             t in _pt_ward for t in (CardType.CREATURE, CardType.ARTIFACT,
                                     CardType.ENCHANTMENT, CardType.PLANESWALKER))
         _is_aura_ward = getattr(card.template, 'aura_enchant_restriction', None) is not None
+        # A spell that can't be countered is not countered by ward either
+        # (CR 101.2, 702.21a): its controller pays nothing.
         _ward_can_counter = not (item.item_type == StackItemType.SPELL
-                                 and _is_permanent_spell_ward and not _is_aura_ward)
+                                 and _is_permanent_spell_ward and not _is_aura_ward) \
+            and _rules_query.can_be_countered(game, item)
         from . import optional_costs as _oc
         _survives, _ward_paid_ids = (
             _oc.ward_gate(game, card, item.controller, item.targets)
@@ -1153,6 +1218,13 @@ class ResolutionManager:
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (can't counter creature)")
                 elif target_template and target_kind == 'instant_or_sorcery_spell' and not (target_template.is_instant or target_template.is_sorcery):
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (wrong target type)")
+                elif target_item is not None and \
+                        not _rules_query.can_be_countered(game, target_item):
+                    # CR 101.2: "can't be countered" beats the counter; a
+                    # tax is not even offered.
+                    game.log.append(
+                        f"T{game.display_turn}: {target_item.source.name} "
+                        f"can't be countered")
                 elif target_item is not None:
                     stack_item = target_item
                     countered_card = stack_item.source

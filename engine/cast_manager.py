@@ -567,8 +567,10 @@ def _audit_cast_counter(game: "GameState", card, stack_item) -> None:
                 continue
             covering.append(perm.name)
     if covering:
+        from .spell_resolution import uncounterable_restated
         check("603.2/cast_counter",
-              not any(i is stack_item for i in game.stack.items),
+              uncounterable_restated(game, stack_item.controller, card)
+              or not any(i is stack_item for i in game.stack.items),
               f"{card.name} left on the stack under {covering}", game=game)
 
 
@@ -1585,6 +1587,9 @@ class CastManager:
         battlefield is a certainty, not a hidden-hand belief: before the AI
         read it, it fed card after card into a visible Chalice (2026-09-08).
         """
+        from . import rules_query
+        if not rules_query.spell_can_be_countered(game, player_idx, template):
+            return None                 # CR 101.2: it can't be countered
         # An X spell's mana value on the stack is chosen with its X as it
         # is cast (CR 202.3e, 601.2b): read here at the largest X its caster
         # can pay once the rest of the cost is paid.
@@ -3117,6 +3122,13 @@ class CastManager:
             stack_item.mana_spent, stack_item.colors_spent)
         CastManager._spend_once_each_turn(game, locks)
         lock = locks[0] if locks else None
+        from . import rules_query as _rq
+        if lock is not None and not _rq.can_be_countered(game, stack_item):
+            # CR 101.2: the counter triggers -- a once-each-turn one is
+            # spent -- and does nothing to a spell that can't be countered.
+            game.log.append(f"T{game.display_turn}: {card.name} can't be "
+                            f"countered ({lock.name})")
+            lock = None
         if lock is not None:
             opp_idx = lock.controller
             charge = lock.other_counters.get("charge", 0)

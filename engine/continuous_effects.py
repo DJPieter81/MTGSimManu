@@ -908,6 +908,46 @@ def _face_prohibitions(hosts) -> tuple:
     return tuple(out)
 
 
+def _printed_counter_grants(perm) -> tuple:
+    """The "<description> can't be countered" prohibitions a permanent's
+    printed static abilities state, on the face it shows (CR 101.2, 604.1):
+    one spell description per prohibition (`rules_query.counter_text`)."""
+    from .rules_query import counter_text
+    faces = counter_text(perm.template)[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _face_counter_grants(hosts) -> tuple:
+    """One face's "can't be countered" spell descriptions. A description
+    outside the read path's vocabulary (`rules_query.COUNTER_FILTER_KEYS`:
+    a characteristic bound, a colour), a condition, a duration other than
+    the permanent's presence, or residue yields nothing."""
+    from .effect_model import DurationKind, Modification, ModKind, SelectorKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    from .rules_query import COUNTER_FILTER_KEYS
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC or host.from_zone != "battlefield":
+            continue
+        for s in iter_specs(host.specs):
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or s.residue or mod.kind is not ModKind.PROHIBIT \
+                    or mod.action != "be_countered" or s.condition is not None \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD) \
+                    or getattr(s.subject, "kind", None) is not SelectorKind.FILTER:
+                continue
+            f = dict(s.subject.filter or ())
+            if set(f) - COUNTER_FILTER_KEYS or f.get("zone") != "stack" \
+                    or f.get("controller") not in (None, "you"):
+                continue
+            out.append(tuple(s.subject.filter))
+    return tuple(out)
+
+
 # A cast cap's filters the read path knows (rules_query.cast_filter_admits).
 _CAP_FILTERS = frozenset({None, "noncreature", "nonartifact", "non_phyrexian"})
 
@@ -997,6 +1037,38 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                     WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
                     controller=controller, timestamp=perm.instance_id,
                     condition=cond))
+    return out
+
+
+def _counter_grant_effects(controller: int, perm) -> list:
+    """CR 101.2: a permanent's "<kind> spells [you control] can't be
+    countered", as rule effects that cover the spells they describe while
+    the permanent is there (`rules_query.spell_can_be_countered`)."""
+    from .effect_model import (Effect, Modification, ModKind, OriginKind,
+                               Selector, SelectorKind, WHILE_SOURCE)
+    return [Effect(Selector(SelectorKind.FILTER, player=controller,
+                            filter=described),
+                   Modification(ModKind.PROHIBIT, action="be_countered"),
+                   WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                   controller=controller, timestamp=perm.instance_id)
+            for described in _printed_counter_grants(perm)]
+
+
+def counter_prohibitions(game: "GameState") -> list:
+    """The "can't be countered" rule effects in force: the stored ones a
+    resolved effect left and the static ones permanents have now (CR
+    611.3a). This is the one read of the `be_countered` action. Its static
+    effects are derived here alone, not in `_derive_static_rule_effects`,
+    which every cast and cost query runs, because only a counter or a cast
+    the AI weighs asks."""
+    from .effect_model import ModKind
+    out = [e for e in game.continuous_effects._rule_effects
+           if e.modification.kind is ModKind.PROHIBIT
+           and e.modification.action == "be_countered"]
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            if _printed_counter_grants(perm):
+                out.extend(_counter_grant_effects(controller, perm))
     return out
 
 
