@@ -10396,3 +10396,49 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 - **Ethersworn Canonist's wording** ("each player who has cast a nonartifact spell this turn ...") is a player set narrowed by a relative clause, which the grammar refuses. Its name-keyed enter handler stays until the grammar reads one. Under ETB suppression the tag, and with it the cap, is lost.
 - **A changeling spell** reads as non-Phyrexian; the filter reads printed subtypes only (CR 702.73a).
 - **The three refused shapes:** an enchanted-player cap (Curse of Exhaustion), a cap on a permission's own casts (Hedonist's Trove), and a this-turn cap from an activation (Conduit of Worlds).
+
+## Unit PB: every spell is offered to the other player before it resolves (CR 117.3b, 117.3c, 117.4; 2026-10-23)
+
+**Source:** the cascade mapping for unit CS. A cascade trigger on top of its spell would leave neither the spell nor its hit answerable, because the runner gave no priority between resolutions.
+
+**Rule:** after a spell is cast, and after any object resolves, players receive priority again. The top object resolves only once every player has passed in succession. So these are each the top object, in turn, while the other player holds priority, before any of them resolves:
+- a spell put on the stack while another object resolves;
+- a response cast in a window;
+- a spell left on top once the objects above it have resolved.
+
+**Defect:**
+- `GameRunner._resolve_stack_loop` resolved the whole stack with no priority between resolutions.
+- Only a main-phase cast, and an instant window's first cast, was ever offered. A response could never be answered.
+- A spell cast while another object resolved (a rebound recast, a cascade hit), or left beneath a resolved ability, was never offered at all.
+- The instant windows (`_cast_instant_removal`) carried their own inline copies of the drain.
+
+**Class:** every spell that reaches the top of the stack.
+
+**Steps:**
+- `StackItem.priority_offered`: the player who doesn't control the spell has held priority while it was the top object.
+- `AICallbacks.player_ai(idx)`: the seat's AI, or None. A game with no AI bound asks no one, as before.
+- `_offer_response_window` marks the top object before its sorcery-timing early return. A responder held back by Teferi still holds priority.
+- **One owner, `_resolve_stack_loop`:** before each resolution, an unoffered spell on top is offered to the other player (`_offer_priority_over_top`). A response is a new top object and is offered in turn. Windows and resolutions are each bounded by `constants.MAX_STACK_RESOLVES`, with the game budget checked on every pass.
+- The instant windows' inline drains use the loop.
+- **Auditor:** `117.4/priority_before_resolution` at the resolution seam, restated from the item's record and the bound seats.
+
+**Tests:** 9, in `tests/test_each_spell_is_offered_to_the_other_player_before_it_resolves.py`; 5 were red first. These pass either way, as pins: the sorcery-timing hold, the no-AI drain, a single offer and the audit's silent case.
+
+**Pins:** (`814dd12`)
+- **Digest:** re-recorded after replay. 15 games change by added `[Priority] … passes` lines only. Each new window is a response offered back to the player it answers, and every one is a pass. With those lines stripped, each log is byte-identical.
+- **Anchor:** one turn-only drift (10 → 11), replayed anchor-exact. In WST v2 vs Boros Energy s50000, Boros now answers a Dovin's Veto with Galvanic Discharge on Wan Shi Tong. The winner is unchanged.
+- **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). Spec equivalence, the census and the parser ratchet are unchanged, and the 785 audit-enabled tests pass.
+- **CPU:** Dimir vs Azorius Control, 4 matches, 3.80 → 3.94 s per match.
+- **Chunks at `814dd12`:** 5200 + 2766 passed, nothing failed.
+
+**Measured:** by the `pb-post` arm (pre = `cap-post`).
+
+**Leads, not built:**
+- **Engine drains outside the runner,** which are the auditor's residual:
+  - the suspend cast's drain (`cast_manager.tick_suspend_upkeep`);
+  - the cleanup madness drain (`turn_manager.cleanup_step`);
+  - the imprint copy's single resolve (`game_runner`);
+  - cascade's inline hit (unit CS, next).
+- **The `cast_plotted` arm** offers no window and never drains.
+- **The controller of the top object** is never asked whether to hold priority over its own spell. `decide_response` is written for the responder.
+- **Counter-back windows are mostly passes:** the decider prices a counterspell by its own projection, not by the spell it answers.
