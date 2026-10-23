@@ -235,7 +235,8 @@ class BoardPool:
             "creature": lambda t: _types(t) == {"creature"},
             "artifact": lambda t: _types(t) == {"artifact"},
             "enchantment": lambda t: _types(t) == {"enchantment"},
-            "colorless": lambda t: _types(t) == {"artifact"},
+            "colorless": lambda t: _types(t) == {"artifact"}
+            and not colors(t),
             "multicolored": lambda t: _types(t) == {"instant"}
             and len(colors(t)) >= 2,
         }

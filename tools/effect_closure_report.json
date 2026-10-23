@@ -782,23 +782,32 @@
     "part": "mainboard",
     "step": "E3",
     "strict": true
+   },
+   {
+    "card": "Ugin, Eye of the Storms",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
    }
   ],
-  "executable": 16,
+  "executable": 18,
   "family": "cast_trigger",
   "hosts": {
-   "mainboard": 1,
-   "pool": 15,
+   "mainboard": 2,
+   "pool": 16,
    "sideboard": 0
   },
   "steps": {
+   "E2": 2,
    "E3": 16
   },
-  "strict": 16,
+  "strict": 18,
   "sub_kinds": {},
   "verb_sets": {
    "DISCARD,DRAW": 2,
-   "DRAW": 14
+   "DRAW": 14,
+   "EXILE": 2
   }
  },
  "cast_prohibition": {
@@ -1895,7 +1904,7 @@
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
     "step": "E2",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Emrakul, the Promised End",
@@ -1923,7 +1932,7 @@
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
     "step": "E2",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Ulamog, the Ceaseless Hunger",
@@ -1949,7 +1958,7 @@
    "E6": 7,
    "none": 27
   },
-  "strict": 5,
+  "strict": 8,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 2,
@@ -2170,25 +2179,25 @@
     "strict": true
    }
   ],
-  "executable": 14,
+  "executable": 15,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
-   "pool": 13,
+   "pool": 14,
    "sideboard": 0
   },
   "steps": {
-   "E2": 4,
+   "E2": 5,
    "E3": 4,
    "E4": 3,
    "E5": 3
   },
-  "strict": 14,
+  "strict": 15,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 3,
    "CREATE_TOKEN": 1,
-   "DESTROY": 2,
+   "DESTROY": 3,
    "MILL": 3,
    "MOVE,REVEAL": 1,
    "PUT_COUNTERS": 2,

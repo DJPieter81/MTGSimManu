@@ -4,7 +4,6 @@
   "deck_removal_ready_share": 0.2016,
   "deck_removal_typed_share": 0.8798,
   "deck_residue_by_code": {
-   "target.colored": 3,
    "target.exclude_source": 4,
    "target.keyword:flying": 1,
    "target.scope:not_you": 2,
@@ -37,7 +36,6 @@
    "TRIGGER_EMBEDDED": 2
   },
   "residue_by_code": {
-   "target.colored": 7,
    "target.conjunctive_types": 23,
    "target.dependent_controller": 41,
    "target.exclude_source": 258,
@@ -93,7 +91,7 @@
   "residue_by_polarity": {
    "NARROWING": 296,
    "UNPARSED": 294,
-   "WIDENING": 814
+   "WIDENING": 807
   },
   "typed_share": 0.7395,
   "typed_share_by_host_kind": {
@@ -1193,7 +1191,7 @@
     1
    ]
   ],
-  "residue": 1404,
+  "residue": 1397,
   "specs": 44381,
   "sub_abilities": [
    [
@@ -1235,7 +1233,7 @@
   ],
   "typed": 32819,
   "unmodelled": 11562,
-  "unmodelled_row_count": 1973,
+  "unmodelled_row_count": 1956,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1472,6 +1470,12 @@
     34
    ],
    [
+    "TARGET",
+    "destroy",
+    "patterns.uncovered_target:target",
+    33
+   ],
+   [
     "CONDITION",
     "",
     "condition.unparsed:a",
@@ -1590,14 +1594,8 @@
     "have",
     "filter.unparsed:you",
     24
-   ],
-   [
-    "RECOGNIZED_UNSUPPORTED",
-    "flip a coin",
-    "lexicon.unsupported:flip_a_coin",
-    24
    ]
   ]
  },
- "session": "2026-10-16"
+ "session": "2026-10-23"
 }

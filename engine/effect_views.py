@@ -714,9 +714,10 @@ def strict_trigger(h: AbilityEffects) -> bool:
 
 def strict_cast_trigger(h: AbilityEffects) -> bool:
     """A cast-triggered host whose head the grammar typed (`TriggerHead.
-    cast`), with no intervening-if, that performs one of the closed
-    card-flow shapes the cast carrier runs: a plain draw, or a rummage --
-    an optional discard whose "if you do" branch draws (CR 603.2, 608.2c)."""
+    cast`), with no intervening-if, that performs one of the closed shapes
+    the cast carrier runs: a plain draw; a rummage, an optional discard
+    whose "if you do" branch draws (CR 603.2, 608.2c); or the exile of a
+    target permanent (CR 701.13a)."""
     if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
             or h.trigger.cast is None or h.trigger.intervening_if is not None:
         return False
@@ -733,6 +734,9 @@ def strict_cast_trigger(h: AbilityEffects) -> bool:
                 and s.then[0].verb is Verb.DRAW
                 and "if_you_do" in s.then[0].flags
                 and not s.then[0].then and not s.then[0].otherwise)
+    if s.verb is Verb.EXILE:
+        return (not s.then and s.target is not None
+                and s.target.zone == "battlefield")
     return False
 
 

@@ -391,7 +391,12 @@ def _tail_code(row: str, m, req: TargetRequirement):
     if row == "counter":
         return "target.state:counter"
     if row == "colored":
-        return _COLORED
+        # "that's one or more colors" / "multicolored" / "monocolored" is
+        # the requirement's colour bound when the solver read it there
+        # (`TargetRequirement.color_bound`, CR 115.1, 105.2).
+        bound = getattr(req, "color_bound", None)
+        return None if bound is not None and bound[0] in (
+            "colored", "multicolored", "monocolored") else _COLORED
     if row == "thats":
         w = m.group("w")
         if w in _THATS:

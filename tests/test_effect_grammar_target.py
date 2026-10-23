@@ -161,10 +161,17 @@ def test_a_target_phrase_the_solver_cannot_parse_is_unmodelled_not_untargeted():
 
 # ── A21: consumption and residue with a polarity ───────────────────────
 
+def test_a_colour_qualifier_the_requirement_carries_is_consumed():
+    """Unit UG: "that's one or more colors" is the requirement's colour
+    bound (unit CQ, CR 115.1), so it is consumed, not residue."""
+    host = "exile up to one target permanent that's one or more colors."
+    r = _parse(host, "up to one target permanent that's one or more colors")
+    assert r.value is not None and r.value.residue == ()
+    (req,) = r.value.requirements
+    assert req.color_bound == ("colored", "")
+
+
 @pytest.mark.parametrize("host,phrase,code,polarity", [
-    ("exile up to one target permanent that's one or more colors.",
-     "up to one target permanent that's one or more colors",
-     "target.colored", WIDENING),
     ("tap target permanent that player controls.",
      "target permanent that player controls", "target.dependent_controller",
      WIDENING),

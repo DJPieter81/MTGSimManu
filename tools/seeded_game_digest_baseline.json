@@ -1,5 +1,5 @@
 {
-  "combined": "c84ad9beff046c77780af918134917632ee8fa78ca0be0314270c876f331108e",
+  "combined": "8534965698a372a930859dc34776e8389cbb007fc8e20768dd836553af7fefd8",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -147,9 +147,9 @@
       "winner": "Eldrazi Tron"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g3": {
-      "lines": 1836,
-      "sha256": "064e8a6ac970f655ca2c8059a3fbf13453583683a2f23f73dcee6d0353d68881",
-      "turns": 27,
+      "lines": 1967,
+      "sha256": "01bcd7fa1b3325f0c22bd7cc7a5382eb13598a173e61625e6c1becce953a25fa",
+      "turns": 30,
       "winner": "Eldrazi Tron"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {

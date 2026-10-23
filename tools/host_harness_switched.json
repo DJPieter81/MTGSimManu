@@ -3244,6 +3244,22 @@
   {
    "pair": [
     "cast:dispatch",
+    "Ugin, Eye of the Storms",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UG: the cast trigger exiles the target permanent it chose -- a coloured permanent the requirement admits, its colour qualifier the requirement's colour bound -- through the cast carrier's exile of a target permanent; the legacy cast resolver performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Ugin, Eye of the Storms // Ugin, Eye of the Storms",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UG: the cast trigger exiles the target permanent it chose -- a coloured permanent the requirement admits, its colour qualifier the requirement's colour bound -- through the cast carrier's exile of a target permanent; the legacy cast resolver performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Vedalken Archmage",
     "TRIGGERED:0:0"
    ],
@@ -11776,6 +11792,14 @@
     "LOYALTY:1:1"
    ],
    "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): its controller creates a Food token."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Ugin, the Ineffable",
+    "LOYALTY:0:2"
+   ],
+   "reason": "unit UG: the line's colour qualifier is the requirement's colour bound, no longer grammar residue, so the loyalty carrier destroys the target permanent it chose; the legacy planeswalker manager left the line unclassified and performed nothing"
   }
  ],
  "pairs": [

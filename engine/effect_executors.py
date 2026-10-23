@@ -91,7 +91,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE}),
-            FAMILY_CAST_TRIGGER: frozenset({Verb.DISCARD, Verb.DRAW})}
+            FAMILY_CAST_TRIGGER: frozenset({Verb.DISCARD, Verb.DRAW,
+                                            Verb.EXILE})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -934,13 +935,62 @@ def _audit_graveyard_targets_exiled(ctx: Resolution, cards) -> None:
                       game=ctx.game)
 
 
+def exile_target_supported(s: EffectSpec) -> bool:
+    """"Exile [up to N] target <permanent>": the permanents chosen for the
+    slot, the controller choosing (CR 701.13a)."""
+    req = s.target
+    return (s.verb is Verb.EXILE and req is not None
+            and s.target_slot is not None and req.zone == "battlefield"
+            and req.mode_group is None and not req.max_mana_value_is_x
+            and _plain_participants(s) and not s.flags and s.actor is None
+            and s.ref is None and s.amount is None and s.subject is None
+            and s.other is None)
+
+
+def _exile_targets(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """Each chosen permanent still a legal target (CR 608.2b) moves from
+    the battlefield to exile through the zone funnel (CR 701.13a)."""
+    source = _source_object(ctx)
+    cause = getattr(source, "name", "")
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    out = {}
+    for value in slot:
+        perm = _bind_recipient(ctx, s.target, source, value)
+        if perm is None or isinstance(perm, int):
+            continue
+        controller, h = perm.controller, handle_of(perm)
+        if ctx.game.zone_mgr.move_card(ctx.game, perm, "battlefield", "exile",
+                                       cause=cause):
+            ctx.game.log.append(
+                f"T{ctx.game.display_turn} P{ctx.controller+1}: "
+                f"{cause} exiles {perm.name}")
+            out.setdefault(controller, []).append(h)
+        _audit_target_exiled(ctx, perm)
+    return Outcome(bool(out), {p: tuple(v) for p, v in out.items()})
+
+
+def _audit_target_exiled(ctx: Resolution, perm: Any) -> None:
+    """CR 701.13a, restated from the zones: a permanent the exile owner
+    was asked to exile -- the chosen target, still legal -- is no longer
+    on the battlefield. Observation only."""
+    from . import rules_audit
+    if rules_audit.enabled():
+        rules_audit.check(
+            "701.13a/target_exiled",
+            all(perm is not p for pl in ctx.game.players
+                for p in pl.battlefield),
+            f"{getattr(_source_object(ctx), 'name', '?')} left "
+            f"{perm.name} on the battlefield", game=ctx.game)
+
+
 def _exile_supported(s: EffectSpec) -> bool:
     """The top N of a library, the controller's whole hand, the ability's
     own permanent ("exile ~"), the cards an earlier instruction found
-    ("exile them"), or the cards chosen in a graveyard. Any other exile is
-    refused."""
+    ("exile them"), the cards chosen in a graveyard, or the permanents
+    chosen on the battlefield. Any other exile is refused."""
     return (_exile_top_supported(s) or _exile_hand_supported(s)
-            or self_exile(s) or exile_found(s) or graveyard_target_exile(s))
+            or self_exile(s) or exile_found(s) or graveyard_target_exile(s)
+            or exile_target_supported(s))
 
 
 def _exile_them(ctx: Resolution, s: EffectSpec) -> Outcome:
@@ -1022,6 +1072,8 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
         return _exile_them(ctx, s)
     if graveyard_target_exile(s):
         return _exile_graveyard_targets(ctx, s)
+    if exile_target_supported(s):
+        return _exile_targets(ctx, s)
     if _is_your_hand(s.filter):
         return _exile_hand(ctx)
     n = _amount(ctx, s)
@@ -1040,11 +1092,14 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
 
 execute_exile.supports = _exile_supported
 # A graveyard target's exile runs in the card-flow family, and beside a
-# token or counter instruction in that family (unit GX); every other exile
-# shape is unrestricted, as before.
+# token or counter instruction in that family (unit GX); a battlefield
+# target's, in a cast trigger (unit UG); every other exile shape is
+# unrestricted, as before.
 execute_exile.allowed_families = (
     lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS})
-    if graveyard_target_exile(s) else None)
+    if graveyard_target_exile(s)
+    else frozenset({FAMILY_CAST_TRIGGER}) if exile_target_supported(s)
+    else None)
 # An enter trigger's graveyard target nobody chose is its controller's pick
 # through `choose_cards` (A36), as for the graveyard MOVE.
 execute_exile.picks_unbound_slots = True

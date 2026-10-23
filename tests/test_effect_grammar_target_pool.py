@@ -295,16 +295,17 @@ def test_registered_deck_target_witnesses_read_exactly_the_printed_rule(card_db)
             assert all(q in got for q in r.value.requirements), (card, r)
         return host, r
 
-    # A21: a colour class the requirement does not carry is WIDENING residue.
+    # A21 (unit UG): a colour class the requirement carries -- its colour
+    # bound (unit CQ) -- is consumed, not residue.
     _, r = slot("Ugin, Eye of the Storms",
                 "up to one target permanent that's one or more colors")
     (req,) = r.value.requirements
     assert req.types == frozenset({"permanent"}) and req.count_min == 0
-    assert r.value.residue == ("target.colored",)
+    assert req.color_bound == ("colored", "") and r.value.residue == ()
     assert r.amount == Amount(AmountKind.UP_TO, n=1)
     _, r = slot("Devourer of Destiny",
                 "target permanent that's one or more colors")
-    assert r.value.residue == ("target.colored",) and r.amount is None
+    assert r.value.residue == () and r.amount is None
 
     # A21: the solver keeps the spell of a spell-or-permanent union (the
     # design's witness row; the card is in the pool, not a registered list).

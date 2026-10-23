@@ -2419,7 +2419,7 @@
   },
   {
    "card": "Ugin, Eye of the Storms",
-   "class": "A21 target residue",
+   "class": "A21 target colour bound",
    "face": 0,
    "host": {
     "kind": "TRIGGERED",
@@ -2430,16 +2430,14 @@
      {
       "verb": "EXILE",
       "target_slot": 0,
-      "residue": [
-       "target.colored"
-      ]
+      "residue": []
      }
     ]
    }
   },
   {
    "card": "Devourer of Destiny",
-   "class": "A21 target residue",
+   "class": "A21 target colour bound",
    "face": 0,
    "host": {
     "kind": "TRIGGERED",
@@ -2450,9 +2448,7 @@
      {
       "verb": "EXILE",
       "target_slot": 0,
-      "residue": [
-       "target.colored"
-      ]
+      "residue": []
      }
     ]
    }

@@ -92,6 +92,22 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
             top = [p for p in players if values[p] == best]
             if len(top) < len(players):
                 return top[:1]
+    if getattr(spec, "verb", None) in (Verb.EXILE, Verb.DESTROY) \
+            and permanents and not players:
+        # A removal of a target permanent aims at the opposing permanent
+        # whose removal swings its controller's position most
+        # (`ai.permanent_threat`); "up to" a count takes none rather than
+        # one of the caster's own, and a required one the caster's least.
+        from ai.permanent_threat import permanent_threat
+
+        def threat(c):
+            return permanent_threat(c, game.players[c.controller], game)
+        n = max(1, int(getattr(req, "count_max", 1) or 1))
+        opposing = [c for c in permanents if c.controller != player_idx]
+        if opposing:
+            return sorted(opposing, key=threat, reverse=True)[:n]
+        need = int(getattr(req, "count_min", 0) or 0)
+        return sorted(permanents, key=threat)[:need]
     if getattr(spec, "verb", None) is Verb.DAMAGE:
         from ai.damage_targets import choose_damage_recipient
         from engine.effect_conditions import amount_value

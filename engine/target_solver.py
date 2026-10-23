@@ -1006,14 +1006,20 @@ def slot_admits_player(req: TargetRequirement, player_idx: int,
 
 def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
                           controller: int) -> bool:
-    """Does a target slot admit this permanent by its CURRENT types (CR
-    608.2b reads them on resolution, CR 601.2c when it is chosen)? "Any
+    """Does a target slot admit this permanent by its CURRENT types and
+    colours (CR 608.2b reads them on resolution, CR 601.2c when it is
+    chosen)? "Any
     target" admits a creature or a planeswalker (CR 115.4); a typed slot
     admits its own types; the slot's controller scope applies. Whether the
     source may target it is `can_be_targeted`'s question, not this one."""
     scope = getattr(req, "owner_scope", "any")
     if (scope == "opponent" and card.controller == controller) or \
             (scope == "you" and card.controller != controller):
+        return False
+    # The colour qualifier, read from the colours the permanent shows now
+    # (CR 115.1, 105.2), on every slot as on a spell's own targets.
+    if getattr(req, "color_bound", None) is not None \
+            and not color_bound_holds(req, card.colors):
         return False
     types = set(req.types)
     if "permanent" in types:
