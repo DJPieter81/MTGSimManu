@@ -307,6 +307,24 @@ class ResolutionManager:
                      game=game)
 
     @staticmethod
+    def _audit_priority_before_resolution(game: "GameState", item) -> None:
+        """Rules audit (CR 117.3b-c, 117.4), restated from the item's own
+        record and the bound seats: a spell resolves only after the player
+        who doesn't control it held priority while it was the top object.
+        A game with no AI bound to that seat asks no one and is not
+        restated. Observes only."""
+        from .rules_audit import check, enabled
+        from .stack import StackItemType
+        if not enabled() or item.item_type is not StackItemType.SPELL:
+            return
+        player_ai = getattr(game.callbacks, "player_ai", None)
+        if player_ai is None or player_ai(1 - item.controller) is None:
+            return
+        check("117.4/priority_before_resolution", item.priority_offered,
+              f"{item.source.name} resolved without P{2 - item.controller} "
+              f"holding priority over it", game=game)
+
+    @staticmethod
     def resolve_stack(game: "GameState"):
         """Resolve the top item on the stack."""
         if game.stack.is_empty:
@@ -315,6 +333,7 @@ class ResolutionManager:
         item = game.stack.pop()
         card = item.source
         template = card.template
+        ResolutionManager._audit_priority_before_resolution(game, item)
 
         # CR 702.21a — Ward: "Whenever this permanent becomes the
         # target of a spell or ability an opponent controls, counter

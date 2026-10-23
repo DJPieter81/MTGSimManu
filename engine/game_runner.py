@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from .game_state import GameState, Phase, PHASE_ORDER, PlayerState
 from .cards import CardTemplate, CardInstance, Keyword, CardType, Supertype
 from .card_database import CardDatabase
-from .stack import StackItem
+from .stack import StackItem, StackItemType
 from .turn_manager import TurnManager, TurnStep
 
 from .combat_manager import CombatManager
@@ -308,6 +308,11 @@ class AICallbacks(GameCallbacks):
         """The players' AIs, by seat: a cast's targets are announced by its
         caster's own picker (`choose_cast_targets`)."""
         self._players = {ai.player_idx: ai for ai in ais}
+
+    def player_ai(self, idx):
+        """The AI bound to this seat, or None (CR 117.3: who holds priority
+        is asked through it)."""
+        return getattr(self, "_players", {}).get(idx)
 
     def choose_cast_targets(self, game, player_idx, card, requirements,
                             x_value=0):
@@ -1256,23 +1261,50 @@ class GameRunner:
         decider.last_decision = None
 
     def _resolve_stack_loop(self, game: GameState):
-        """Resolve all items on the stack, checking SBAs after each.
+        """Resolve the stack, checking SBAs after each resolution.
 
-        Per CR 117.4: If all players pass in succession and the stack
-        is not empty, the top item resolves. Then SBAs are checked,
-        triggers are put on the stack, and the active player gets priority.
+        CR 117.3b-c, 117.4: after a spell is cast and after any object
+        resolves, players receive priority again; the top object resolves
+        only once every player has passed. So before a spell resolves, the
+        player who doesn't control it is offered a response while it is
+        the top object (`_offer_priority_over_top`) -- a spell put on the
+        stack while another object resolved, a response, a spell left on
+        top beneath a resolved ability alike. A response is a new top
+        object and is offered in turn.
         """
-        _max_resolves = 100  # safety valve
-        _resolves = 0
-        while not game.stack.is_empty and _resolves < _max_resolves:
+        from .constants import MAX_STACK_RESOLVES
+        resolves = windows = 0
+        while not game.stack.is_empty and resolves < MAX_STACK_RESOLVES:
             if game_budget.expired(game):
                 game.stack.items.clear()
                 return
+            if windows < MAX_STACK_RESOLVES and \
+                    self._offer_priority_over_top(game):
+                windows += 1
+                continue
             game.resolve_stack()
             game.check_state_based_actions()
-            _resolves += 1
+            resolves += 1
             if game.game_over:
                 return
+
+    def _offer_priority_over_top(self, game: GameState) -> bool:
+        """Offer the player who doesn't control the top spell a response
+        while it is the top object (CR 117.3b-c), once per spell. False --
+        and nothing asked -- when the top object is not a spell, its offer
+        has been made, or a seat has no AI to ask."""
+        top = game.stack.top
+        if top is None or top.item_type is not StackItemType.SPELL \
+                or top.priority_offered:
+            return False
+        player_ai = getattr(game.callbacks, "player_ai", None)
+        caster = player_ai(top.controller) if player_ai else None
+        responder = player_ai(1 - top.controller) if player_ai else None
+        if caster is None or responder is None:
+            return False
+        self._offer_response_window(game, caster_ai=caster,
+                                    responder_ai=responder)
+        return True
 
     def _offer_response_window(self, game: GameState, caster_ai: AIPlayer,
                                responder_ai: AIPlayer) -> None:
@@ -1288,15 +1320,18 @@ class GameRunner:
         A responder a rule effect restricts to sorcery timing (CR 101.2,
         307.1; `rules_query.sorcery_speed_only`) has no window here.
         """
-        # The one read path: a responder restricted to sorcery timing has
-        # no window while a spell is on the stack.
-        from . import rules_query
-        if rules_query.sorcery_speed_only(game, responder_ai.player_idx):
-            return
         if game.stack.is_empty:
             return
         top = game.stack.top
         if not top:
+            return
+        # CR 117.3b-c: the responder holds priority over this object now,
+        # whether or not a rule lets it cast anything.
+        top.priority_offered = True
+        # The one read path: a responder restricted to sorcery timing has
+        # no window while a spell is on the stack.
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, responder_ai.player_idx):
             return
         response = responder_ai.decide_response(game, top)
         # Emit RESPONSE_DECISION onto the structured replay log (W0-H).
@@ -1547,11 +1582,9 @@ class GameRunner:
                         # (CR 117.3d) — this window is not exempt.
                         self._offer_response_window(
                             game, caster_ai=opponent_ai, responder_ai=active_ai)
-                        while not game.stack.is_empty:
-                            game.resolve_stack()
-                            game.check_state_based_actions()
-                            if game.game_over:
-                                return
+                        self._resolve_stack_loop(game)
+                        if game.game_over:
+                            return
                         cast_count += 1
 
         # End-step only: flash creatures — WHICH one (if any) is the AI's
@@ -1575,11 +1608,9 @@ class GameRunner:
                 if success:
                     self._offer_response_window(
                         game, caster_ai=opponent_ai, responder_ai=active_ai)
-                    while not game.stack.is_empty:
-                        game.resolve_stack()
-                        game.check_state_based_actions()
-                        if game.game_over:
-                            return
+                    self._resolve_stack_loop(game)
+                    if game.game_over:
+                        return
                     cast_count += 1
 
     def _execute_main_phase(self, game: GameState, ai: AIPlayer,

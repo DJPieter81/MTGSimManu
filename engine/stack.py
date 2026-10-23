@@ -71,6 +71,10 @@ class StackItem:
     # the battlefield and came back is a new object -- an illegal target on
     # resolution (CR 608.2b) even though it is back in its zone.
     target_entry_seqs: Dict[int, int] = field(default_factory=dict)
+    # CR 117.3b-c, 117.4: the player who doesn't control this spell has
+    # held priority while it was the top object of the stack. Set by the
+    # runner's response window; read by the stack drain and its auditor.
+    priority_offered: bool = False
 
     @property
     def name(self) -> str:
