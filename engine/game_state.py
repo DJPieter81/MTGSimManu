@@ -625,10 +625,12 @@ class GameState:
         """CR 702.170: cast a plotted card from exile for free on a later turn."""
         return CastManager.cast_plotted(self, player_idx, card, targets)
 
-    def tick_suspend_upkeep(self, player_idx: int) -> None:
+    def tick_suspend_upkeep(self, player_idx: int, after_cast=None) -> None:
         """LE-E2: upkeep hook — decrement one counter on each suspended
-        card the player controls; when the last is removed, cast for free."""
-        CastManager.tick_suspend_upkeep(self, player_idx)
+        card the player controls; when the last is removed, cast for free.
+        The cast spell is left on the stack for the players (CR 117.3c);
+        `after_cast` (the runner's drain) runs after each cast."""
+        CastManager.tick_suspend_upkeep(self, player_idx, after_cast)
 
     def play_land(self, player_idx: int, card: CardInstance):
         LandManager.play_land(self, player_idx, card)
@@ -1057,8 +1059,10 @@ class GameState:
     def end_of_turn_cleanup(self):
         self.turn_mgr.end_of_turn_cleanup(self)
 
-    def cleanup_step(self):
-        self.turn_mgr.cleanup_step(self)
+    def cleanup_step(self) -> bool:
+        """False when the step's discard put anything on the stack
+        (CR 514.3a: priority, then another cleanup step)."""
+        return self.turn_mgr.cleanup_step(self)
 
     def switch_active_player(self):
         self.active_player = 1 - self.active_player

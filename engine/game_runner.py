@@ -911,7 +911,8 @@ class GameRunner:
                     # player's suspended cards; cast free when the last
                     # counter is removed. See
                     # docs/diagnostics/2026-04-24_living_end_consolidated_findings.md.
-                    game.tick_suspend_upkeep(active)
+                    game.tick_suspend_upkeep(
+                        active, after_cast=self._resolve_stack_loop)
                     if game.game_over:
                         break
                     game.process_triggers()
@@ -1126,7 +1127,7 @@ class GameRunner:
                         # expiry) was skipped by CR 723; cleanup does it.
                         game.end_of_turn_cleanup()
                         game.end_turn_requested = False
-                    game.cleanup_step()
+                    self._cleanup_step(game)
                     # Discard to hand size
                     p = game.players[active]
                     if len(p.hand) > 7 and getattr(game, 'verbose', False):
@@ -1285,6 +1286,19 @@ class GameRunner:
             game.resolve_stack()
             game.check_state_based_actions()
             resolves += 1
+            if game.game_over:
+                return
+
+    def _cleanup_step(self, game: GameState) -> None:
+        """CR 514: the cleanup step. A discard to hand size that puts
+        anything on the stack (a madness cast) gives players priority;
+        once the stack is empty another cleanup step begins (CR 514.3a).
+        The stack resolves through the one drain (CR 117.3b, 117.4)."""
+        from .constants import MAX_STACK_RESOLVES
+        for _ in range(MAX_STACK_RESOLVES):
+            if game.cleanup_step() or game.game_over:
+                return
+            self._resolve_stack_loop(game)
             if game.game_over:
                 return
 
@@ -1698,7 +1712,14 @@ class GameRunner:
             elif action == "plot":
                 game.plot_card(ai.player_idx, card)
             elif action == "cast_plotted":
-                game.cast_plotted(ai.player_idx, card, targets)
+                # A plotted card's cast is a cast (CR 702.170d): the
+                # opponent is offered it and the stack resolves before the
+                # next decision, exactly as in the cast arm (CR 117.3c-d,
+                # 117.4).
+                if game.cast_plotted(ai.player_idx, card, targets):
+                    self._offer_response_window(game, caster_ai=ai,
+                                                responder_ai=opponent_ai)
+                    self._resolve_stack_loop(game)
             elif action == "equip":
                 # targets[0] = creature instance_id to equip to
                 if targets:
@@ -2014,6 +2035,11 @@ class GameRunner:
             game.cast_spell(active, rc, free_cast=True)
             game.log.append(f"T{game.display_turn} P{active+1}: "
                             f"Rebound {rc.name}")
+            # Each rebound card's trigger casts it, and that spell resolves
+            # before the next card's trigger does (CR 603.3b, 117.4).
+            self._resolve_stack_loop(game)
+            if game.game_over:
+                return
 
     def _process_saga_chapters(self, game: GameState, active: int):
         """Add this turn's lore counters and fire the chapters they reach.
@@ -2193,6 +2219,9 @@ class GameRunner:
           non-optional requirement (CR 601.2c) — a counter-pattern
           imprint simply does not auto-fire into an empty stack.
         - The {2} cost goes through the real payment solver.
+        - The cast copy is a spell on the stack like any other: it
+          resolves through the one drain, which offers it to the other
+          player first (CR 117.3c, 117.4).
         - The resolved copy ceases to exist (handled in
           spell_resolution via `_is_spell_copy`), it never enters
           the graveyard.
@@ -2266,7 +2295,7 @@ class GameRunner:
             game.cast_spell(active, copy, free_cast=True)
             game.log.append(f"T{game.display_turn} P{active+1}: "
                             f"{card.template.name} copies {imp}")
-            game.resolve_stack()
+            self._resolve_stack_loop(game)
             if game.game_over:
                 return
 

@@ -1935,11 +1935,18 @@ class CastManager:
         return game.cast_spell(player_idx, card, targets=targets, free_cast=True)
 
     @staticmethod
-    def tick_suspend_upkeep(game: "GameState", player_idx: int) -> None:
+    def tick_suspend_upkeep(game: "GameState", player_idx: int,
+                            after_cast=None) -> None:
         """Remove one time counter from each suspended card controlled by
         player_idx. When the last counter is removed, cast the spell for
         free via the standard cast_spell free-cast path so existing
         cascade / trigger wiring applies uniformly.
+
+        The cast spell stays on the stack: players receive priority and it
+        resolves through the runner's one drain, which offers it to the
+        other player first (CR 117.3c, 117.4). `after_cast` is that drain:
+        each card's trigger casts it, and the spell resolves before the next
+        card's trigger does (CR 603.3b), so it runs after each cast.
         """
         player = game.players[player_idx]
         # Copy the list — suspend resolution mutates exile.
@@ -1978,11 +1985,8 @@ class CastManager:
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Suspend {card.template.name} fizzles (no cast)")
                 continue
-            # Resolve the stack immediately so the suspend cast fully
-            # completes before the rest of the upkeep processes.
-            while not game.stack.is_empty:
-                game.resolve_stack()
-                game.check_state_based_actions()
+            if after_cast is not None:
+                after_cast(game)
                 if game.game_over:
                     return
 

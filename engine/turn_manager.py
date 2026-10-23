@@ -264,13 +264,18 @@ class TurnManager:
         from .turn_clock import Clock, ClockEvent, emit
         emit(game, ClockEvent(Clock.END_STEP, game.active_player))
 
-    def cleanup_step(self, game: "GameState") -> None:
+    def cleanup_step(self, game: "GameState") -> bool:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
         max hand size, remove combat damage, empty mana pools.
 
         Discard is delegated via the GameCallbacks.choose_discard
         protocol; the AI callbacks install ai.discard_advisor, the
         default callback picks highest-CMC.
+
+        False when the discard put anything on the stack: the step ends
+        there, players receive priority, and once the stack is empty
+        another cleanup step begins (CR 514.3a) -- the runner drains it
+        (`GameRunner._cleanup_step`). True when the step completed.
         """
         active = game.players[game.active_player]
 
@@ -288,14 +293,11 @@ class TurnManager:
                 game.active_player, card, cause="discard to hand size")
 
         # CR 514.3a: if the discard put anything on the stack (a madness
-        # cast made as the reflexive trigger resolved), it resolves now
-        # and the cleanup continues — the turn does not end with a
-        # spell still pending.
-        while not game.stack.is_empty:
-            game.resolve_stack()
-            game.check_state_based_actions()
-            if game.game_over:
-                return
+        # cast made as the reflexive trigger resolved), players receive
+        # priority and it resolves; another cleanup step follows -- the
+        # turn does not end with a spell still pending.
+        if not game.stack.is_empty:
+            return False
 
         # Remove damage from creatures
         for player in game.players:
@@ -305,3 +307,4 @@ class TurnManager:
         # Empty mana pools
         for player in game.players:
             player.mana_pool.empty()
+        return True

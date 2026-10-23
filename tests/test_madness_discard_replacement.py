@@ -309,8 +309,8 @@ class TestDiscardSitesUseFunnel:
 
     def test_cleanup_hand_size_discard_offers_madness(self):
         """Discarding to maximum hand size is a discard event too (CR 514.1);
-        the madness spell goes on the stack and resolves before the turn ends
-        (CR 514.3a)."""
+        the madness spell goes on the stack, players receive priority, and
+        it resolves before another cleanup step begins (CR 514.3a)."""
         game = _make_game()
         game.current_phase = Phase.CLEANUP
         p = game.players[0]
@@ -322,10 +322,12 @@ class TestDiscardSitesUseFunnel:
             ManaCost(generic=4, red=1), ManaCost(), "{0}"))
         assert len(p.hand) == MAX_HAND_SIZE + 1
 
-        game.cleanup_step()
+        assert game.cleanup_step() is False      # the step ends: priority
 
         assert len(p.hand) == MAX_HAND_SIZE
-        assert game.stack.is_empty, "cleanup must resolve the madness cast (CR 514.3a)"
+        _resolve_all(game)
+        assert game.cleanup_step() is True       # another cleanup step
+        assert game.stack.is_empty, "the madness cast resolves before the turn ends (CR 514.3a)"
         assert card in p.battlefield
 
 
