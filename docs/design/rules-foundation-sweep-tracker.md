@@ -10909,3 +10909,95 @@ The engine knows a mode's targets only from its typed requirements. Each counted
 - **The Wish delivery does not ask castability.** `choose_tutor_delivery` ranks a sideboard card by its delivery value, so a Wish may still fetch a Malfunction it cannot cast this turn. A card brought from outside the game is played this turn or never (CR 400.11a).
 - **The imprint copy's target gate** (`GameRunner`, the Scepter route) reads the legality owner's parse without the modal owner. An imprinted modal spell is held to its modes only when the copy is cast.
 - **The 124 untyped targets themselves:** unknown verbs ("change the target of"), tribal and other unparsed types, and "target players' graveyards". Typing one returns its mode to play.
+
+## Unit BT: a permanent's "at the beginning of <step>" ability is performed from its typed host, at that step, on the turn its head names (CR 603.2, 603.3b, 603.4; 2026-10-23)
+
+**Source:** the cn-post replay audit's leads, re-checked against real game logs.
+- Ocelot Pride (Boros Energy, Azorius Blink) never made its Cat. Boros gained life on T2-T4 and no end-step token appeared.
+- Abhorrent Oculus sat through the opponent's upkeep without manifesting.
+- Emperor of Bones never exiled a graveyard card, and Haliya never drew.
+
+The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase), and nothing read it. Delayed triggers, sagas, suspend and the Phelia handler have their own paths. No other printed step trigger was performed at all.
+
+**Rule:** as a step begins, every ability whose trigger event is that step of the named player's turn triggers once (CR 603.2).
+- An intervening "if" is checked as the ability triggers and again as it resolves (CR 603.4).
+- Targets are chosen as it is put on the stack (CR 603.3d).
+- The triggers go on the stack in APNAP order, so the non-active player's resolve first (CR 603.3b).
+- "That player" is the active player.
+- After each resolves a player would receive priority, so state-based actions are checked before the next one (CR 117.3b, 704.3).
+
+**Class:**
+- 1189 pool cards print 1257 beginning-of-step abilities.
+- The closed step table types 1218 heads in 17 phrases. Left untyped, and so refused:
+  - the attached player's upkeep (19);
+  - the second main phase (18);
+  - a chosen player's upkeep (1);
+  - "each combat this turn" (1).
+- **This cut takes 89 cards whole.** By step and turn: upkeep 46, end step 31, beginning of combat 8, draw step 3, first main phase 1. By verb: CREATE_TOKEN 32, LOSE_LIFE 26, DRAW 15, GAIN_LIFE 11, SURVEIL 7, PUT_COUNTERS 5, MILL 5, EXILE 3, DAMAGE 3.
+- 20 of them carry an intervening "if", and 7 sit on back faces.
+- **Registered and taken:** Emperor of Bones (Grixis Reanimator ×3), Haliya, Guided by Light (Azorius Blink ×2).
+- **Registered and refused, with a census row:**
+  - Ocelot Pride ×8: its city's-blessing rider of token copies is unmodelled;
+  - Abhorrent Oculus ×4: manifest dread;
+  - Static Prison ×1.
+
+**Steps:**
+- **The typed event:**
+  - `effect_spec.StepEvent(step, whose)`: the step is a `game_state.Phase` value, and whose turn is you, opponent or each.
+  - `TriggerHead.step_event` is read from a closed phrase table in the grammar (`structure._step_event`), per disjunct, so a mixed head ("when ~ enters and at the beginning of your upkeep") is typed for both of its carriers.
+- **The carrier:** `effect_carrier.step_plan` / `dispatch_step_triggers`.
+  - A face is taken whole or not at all, and the plan is memoised per parse in the template's `_effects*` family.
+  - Every trigger is collected before any resolves; a permanent that enters meanwhile does not trigger.
+  - `intervening_if_holds_now` takes the trigger event.
+- **The clock:** `Clock.STEP_BEGINS` carries the step. Its subscriber is the carrier, emitted by the runner as each of the five steps begins:
+  - upkeep, after the delayed triggers;
+  - draw, after the turn's draw (a skipped draw step triggers nothing);
+  - the first main phase, after the saga chapters;
+  - beginning of combat;
+  - end step, at its start (an ended turn's end step is skipped, CR 723.1d).
+- **Family:** `step_trigger`, with a strict shape (`effect_views.strict_step_trigger`) over executors other families already run. The intervening "if" is set aside for the shape and checked by the dispatcher. An exile is allowed only of a target card in a graveyard (unit GX's executor, whose `allowed_families` gains the step family).
+- **HISTORY conditions:** `effect_conditions.history_condition_supported` / `holds` read the turn's life tallies ("if you gained life this turn", "if an opponent lost life this turn"), for you, an opponent or any player.
+- **AI:** a graveyard-zone exile slot is aimed by the graveyard-removal owner (`ai.graveyard_removal.pick_removals`), as a resolving effect's already is. `permanent_threat` values every card off the battlefield at 0.
+- **Auditors:**
+  - `603.2/step_trigger_unresolved`: a census of a typed head the carrier cannot take, or an untyped one;
+  - `603.4/step_trigger_intervening_if`: restated from the raw condition fields and the players' raw life tallies, at trigger and at resolution;
+  - `603.2/step_trigger_once`: each step of each turn begins once, and a performed head names this step and turn, restated from the raw head.
+
+**Tests:** 30, in `tests/test_a_permanents_step_trigger_is_performed_from_its_typed_host.py`.
+- All 30 fail against the pre-unit worktree (`21ddb2f`).
+- The pins fail there only for want of the step hook: a "your upkeep" head on an opponent's upkeep, Ocelot Pride refused whole, and the audits' silent cases.
+- One test runs a real game and checks that each step begins once per turn, in order, with no draw step on the first turn on the play.
+
+**Pins:** (`124fa62`)
+- **Digest:** byte-identical (27 games). **Anchor:** 29 passed. No digest or anchor game reaches a taken step host.
+- **Harness:** 1936 pairs (89 new).
+  - 72 are intended, with the reason "no engine path performed a printed step trigger".
+  - 17 are proven identical, 15 of them only as refused at trigger: their intervening "if" holds on no harness board. The harness now counts the carrier's own intervening-if check as entering the new path and reports those pairs apart.
+  - The STEP case restores whose turn and step it is after the step's triggers, so a refused host is a no-op. The state digest hashes the active player.
+  - No-op fixture: 265 hosts, 69 no-op, floor 196.
+- **Spec equivalence:** gate parity 4985/1847/3138 → 5074/1936/3138; the closure report records the step carrier.
+- **Census, parser ratchet, loyalty dispatch and every ratchet:** unchanged.
+- **Test pins:** the clock-subscriber pin, the evaluator-set pin and the closure test's set of new-path handlers gain the new entries.
+- **Per-match CPU (n = 4):** flat. Grixis Reanimator vs Azorius Blink, the cell that carries both taken registered hosts, goes 1.64 → 1.68 s. Boros Energy vs Eldrazi Tron, a guard, goes 1.56 → 1.52 s.
+- **Chunks:** 5355 + 2766 passed at `124fa62`.
+  - The first run (`83230e7`) failed one test, the closure test's pin on the registered-deck handlers on the new path. It now names the step carrier.
+  - That file re-ran green from the re-pinned worktree (99 passed).
+
+**Measured:** by the `bt-post` arm (pre = `ms2-post`).
+
+**Leads, not built:**
+- **Ocelot Pride's rider needs two units:**
+  - AS, ascend and the city's blessing (CR 702.131): 24 ascend cards, and 14 with a typed blessing condition;
+  - TC, token copies (CR 707.2) with the "for each …, a copy of it" element anaphor: 198 cards print a token copy, 22 are typed but refused, and 15 use the for-each form.
+  With both, Ocelot's host becomes takeable.
+- **Manifest dread** (26 cards; Abhorrent Oculus). **Transform** at a step (119 step hosts).
+- **More shapes:**
+  - "Sacrifice ~" (47), counters on ~ (100), "unless you pay" (30);
+  - "that player" as the actor (14);
+  - more HISTORY predicates: died, entered, left the battlefield, descended;
+  - the attached player's step (19 heads), the second main phase (18).
+- **AI valuation does not read the carrier.** `_project_token_bonus` credits end-step tokens ignoring intervening ifs (and still credits Ocelot), and `has_recurring_draw_trigger` is a text regex. They should read `step_plan` through the existing primitives.
+- **Known deviations:**
+  - delayed upkeep and end-step triggers run before printed ones, whatever APNAP says;
+  - the late `Clock.END_STEP` emission inside `end_of_turn_cleanup` runs after the end-step instant window;
+  - step triggers resolve inline, with no stack window for responses, as every carrier's do.
