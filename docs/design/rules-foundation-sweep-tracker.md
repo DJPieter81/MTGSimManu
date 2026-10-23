@@ -10605,7 +10605,9 @@ Registered:
 - **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). The census and the parser ratchet are unchanged, and the 837 audit-enabled tests pass.
 - **Chunks at `7b6d00c`:** 5252 + 2766 passed, nothing failed.
 
-**Measured:** by the `cq-post` arm (pre = `pb2-post`).
+**Measured** (`cq-post` arm against `pb2-post`, 600 cells each): **no cell changed; every deck is unchanged.**
+- Band miss is 42.8 pp either way. There are no audit violations and no aborts.
+- This is as expected. CQ's registered carriers, Devourer of Destiny and Ugin, still resolve their self-cast exile on the legacy path, which picks its own target. Every other colour-qualified card is unregistered.
 
 **Leads, not built:**
 - **The legacy self-cast exile** (Devourer of Destiny, Ugin) picks its own coloured target without asking `can_be_targeted` (hexproof, protection, ward). It is a second target-pick path, and the next unit routes it through the typed requirement.
@@ -10614,3 +10616,51 @@ Registered:
 - **`counters_colorless_only`** is now a second reading of the qualifier the requirement carries.
 - **The target grammar does not consume a colour adjective,** so the hosts of the 38 SEMANTIC_FIX spells (and their activated and triggered kin) stay UNMODELLED(TARGET). Teaching it moves about 50 hosts onto the typed path. Eight of those (Executioner's Capsule, Sunlance, Ugin, the Ineffable among them) need harness proofs, and a dozen tier-A rows move.
 - **Per-type colour compounds** and "target black or red creature".
+
+## Unit LK: a permanent's cast-triggered counter counters the spell its text names, cast by any player it names, under its condition (CR 603.2, 701.6, 202.3e, 601.2h; 2026-10-23)
+
+**Source:** the cs-post audit ranking. Vexing Bauble is in the `603.2/cast_trigger_unresolved` census (38 games per arm), and nothing performs it. Reading the one lock predicate beside it found the Chalice defects.
+
+**Rule:** a cast-triggered counter names a set of players ("a player": the permanent's controller included; "an opponent": every other) and a kind of spell. It counters a spell of that kind as it is cast, under the condition it prints:
+- "with mana value equal to the number of charge counters", read at the spell's mana value on the stack, with its X (CR 202.3e);
+- "if no mana was spent to cast it": a free cast, a cost of 0 or reduced to 0, an alternative cost paid without mana;
+- "if no colored mana was spent";
+- "this ability triggers only once each turn".
+
+**Defect:**
+- **The one lock predicate (`CastManager.lock_that_counters`) read only the opponent's Chalice-family permanents,** at the spell's printed mana value. So a player's own Chalice never countered their own spell, and an X spell was read at X = 0.
+- **The no-mana counters (Vexing Bauble, Lavinia, Boromir) were performed by nothing,** so a free cast resolved under them: a cascade hit, an evoked elemental, a pitched spell.
+
+**Class:** 11 pool cards print a cast-triggered counter.
+- **Typed and performed:** Chalice of the Void, Vexing Bauble, Lavinia, Azorius Renegade, Boromir, Warden of the Tower, Void Mirror, Jin-Gitaxias, Progress Tyrant.
+- **Refused:** "counter it unless ..." (Chancellor of the Annex, Blood Funnel) and a counter with a rider (Dovescape).
+- **Not a permanent:** Jace, Unraveler of Secrets' emblem.
+- **Registered:** Chalice of the Void (×24) and Vexing Bauble (×11).
+
+**Steps:**
+- **`CardTemplate.cast_counter`** `(who, spell, condition, once_each_turn)`, parsed at load (`oracle_parser.parse_cast_counter`).
+- **Mana spent per cast:** the payment owner counts what it takes from a pool (`GameState.mana_paid_total`, monotonic), and the X path its inline payment. `cast_spell` records the difference as `StackItem.mana_spent`.
+- **One predicate, `CastManager.cast_counters`,** over every battlefield permanent, at the spell's mana value on the stack. `cast_spell` counters by it, and spends a once-each-turn counter's turn. `lock_that_counters`, the AI's P(countered) = 1 read, is the same predicate under an ordinary paid cast.
+- **Auditor `603.2/cast_counter`** at both cast exits, restated from the raw fields: a spell cast while a permanent's counter names it is not left on the stack.
+
+**Tests:** 19, in `tests/test_a_cast_triggered_counter_counters_the_spell_its_text_names.py`; 15 were red first. These pass either way, as pins: an opponent's Chalice, another mana value spared, a paid cast spared, and the audit's silent case.
+
+**Pins:**
+(`515e628`)
+- **Digest:** re-recorded after replay. Three rosters change, and each first divergence is the same rule: a player's own Chalice on 1 now counters, or the AI now holds, that player's own 1-drop.
+  - WST v2 vs Boros Energy s53500: Prismatic Ending.
+  - Domain Zoo vs Eldrazi Tron s51000: Vexing Bauble, replaced by Karn.
+  - Jeskai Blink vs Eldrazi Tron s59500, T23: Expedition Map. That match changes hands, 2–1 either way.
+- **Anchor:** one winner flip, replayed and accepted. Azorius Control vs Azorius Control (WST) s50000 goes from a WST win in 17 turns to a 30-turn draw.
+  - At T5 Azorius Control casts March of Otherworldly Light (X = 2) and Prismatic Ending (X = 1) past WST's Chalice on 1, read at their mana value on the stack.
+  - The old AI read every X spell at X = 0 and held them.
+  - A first version that read an X spell as undetermined, rather than at the largest X its caster can pay, cast March for X = 0 into the Chalice. It was replaced, and the test pins both cases.
+- **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). Spec equivalence, the census and the parser ratchet are unchanged, and the 856 audit-enabled tests pass.
+- **Chunks at `515e628`:** 5271 + 2766 passed, nothing failed.
+
+**Measured:** by the `lk-post` arm (pre = `cq-post`).
+
+**Leads, not built:**
+- **The counter is applied inline as the spell is cast,** not as a trigger on the stack (from unit CS). With APNAP the end state is the same.
+- **The AI's free-cast and evoke decisions do not read the no-mana counter.** An evoked elemental is offered into a Vexing Bauble.
+- **"Counter it unless that player pays"** (Chancellor of the Annex) and Dovescape's token rider.
