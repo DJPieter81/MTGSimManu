@@ -10658,9 +10658,80 @@ Registered:
 - **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). Spec equivalence, the census and the parser ratchet are unchanged, and the 856 audit-enabled tests pass.
 - **Chunks at `515e628`:** 5271 + 2766 passed, nothing failed.
 
-**Measured:** by the `lk-post` arm (pre = `cq-post`).
+**Measured:** by the `lk-post` arm (pre = `cq-post`, same seeds, n=20 Bo3, all 25 shards, 0 aborted cells). Every deck is within 2.0 pp, and the decks that carry the class move most:
+- Eldrazi Tron −2.0 (Chalice ×2 and Vexing Bauble in its main deck).
+- Azorius Control (WST) −1.8 and WST v2 −1.1 (Chalice ×4 each).
+- Azorius Control +1.4.
+- No deck moves more than 5 pp, so no cell-exact replay was due. 83 cells change, the largest by 25 pp at n = 20.
+- Audit findings rise 513 → 522, and violations stay at 0, `603.2/cast_counter` included. Band misses stay at 0.
 
 **Leads, not built:**
 - **The counter is applied inline as the spell is cast,** not as a trigger on the stack (from unit CS). With APNAP the end state is the same.
-- **The AI's free-cast and evoke decisions do not read the no-mana counter.** An evoked elemental is offered into a Vexing Bauble.
+- **The AI's free-cast and evoke decisions do not read the no-mana counter.** An evoked elemental is offered into a Vexing Bauble. Built as unit LR.
 - **"Counter it unless that player pays"** (Chancellor of the Annex) and Dovescape's token rider.
+
+## Unit LR: a cast-triggered counter is read under the mana the cast's route spends (AI; CR 603.2, 701.6, 601.2f-h, 118.9, 107.3b; 2026-10-23)
+
+**Source:** unit LK's lead. The engine counters a free cast under a Vexing Bauble, but the AI read the counter as if every cast were an ordinary one paying its mana value.
+
+**Rule (AI):** a cast that a permanent's cast-triggered counter counters loses its card for nothing. It is never a candidate, and a route choice declines it. Whether the counter names the cast depends on what the cast spends, and the route its caster pays it by decides that:
+- an ordinary cast spends the AI's cost estimate (`effective_cmc`), after its reductions: none for a spell they bring to {0} (CR 601.2f);
+- an evoke spends its evoke cost's mana, and none when the cost exiles a card (CR 702.74a);
+- an alternative cost that exiles a card from hand spends none (CR 118.9);
+- a graveyard cast pays its route's cost, and a flashback that sacrifices a land spends none (CR 702.33a);
+- a cascade hit is cast without paying its mana cost (CR 702.85a), and such a cast has X = 0 (CR 107.3b).
+
+**Defect:**
+- **The AI's one read (`CastManager.lock_that_counters`) assumed an ordinary paid cast.** It evoked Solitude, pitched Force of Negation, flashed back Lava Dart, cast Frogmite for {0} and credited a cascade hit, each into a Vexing Bauble.
+- **A combat trick was read as cast by the opposing player** (`1 - player_idx`), so a counter that names "an opponent" was read from the wrong side.
+- **The cost estimate's graveyard route charged the printed mana cost.** `CAST_MODE_FLASHBACK` was a placeholder.
+
+**Class:** the routes that can spend no mana, read against the 4 cast-triggered counters with a mana condition (Vexing Bauble ×11 registered; Lavinia, Boromir, Void Mirror), and Chalice for a free hit's X.
+- **Evoke by exile:** 3 creatures (Solitude, Subtlety, Endurance; ×52 registered). Fury and Grief are not in the pool.
+- **Exile alternative costs:** 6 (the five Forces and Snapback; ×24 registered).
+- **All-generic affinity spells:** 14 (Frogmite, Myr Enforcer, ...).
+- **Flashback costs with no mana:** 3 (Lava Dart ×4 in Izzet Prowess, Battle Screech, Group Project).
+- **Cascade cards' hits:** 18.
+
+**Steps:**
+- **`ai.effective_cmc.cast_mode_of` is the one route function,** built from the engine's own payability checks:
+  - a graveyard cast pays its route's cost (`CAST_MODE_FLASHBACK`, from `CastManager.graveyard_route_cost`);
+  - an evoke, when only the evoke cost can be paid;
+  - a pitch (`CAST_MODE_PITCH`, new), when the mana cost cannot be paid while the alternative exile cost can take a card;
+  - otherwise an ordinary cast.
+
+  `effective_cmc` charges each route: 0 for a pitch, and the graveyard route's cost with the reductions in play.
+- **`cast_spend` and `counter_on_cast`:** `cast_spend` gives the route's mana and its colours; `counter_on_cast` reads the engine's predicate under that spend. `lock_that_counters` takes the spend as parameters the AI supplies (`mana_spent`, `colors_spent`, `pays_x`). Its defaults are an ordinary cast, so the engine's own reads are unchanged.
+- **Readers:**
+  - the main-phase candidate filter;
+  - `compute_play_ev`'s P(countered) = 1;
+  - the response candidates;
+  - the runner's instant window;
+  - the combat trick, now read as cast by its own controller.
+- **Route choices:** `_eval_evoke` vetoes an evoke the counter names, and `exile_instead_of_paying` declines a pitch the counter names.
+- **The cascade projection** credits no hit that a counter counters under its free cast.
+
+**Tests:** 15, in `tests/test_a_cast_is_read_as_countered_under_the_mana_its_route_spends.py`, all red first.
+- **Reads (8):** red on the new primitive's import. Three of them are pins in substance, which the old read also satisfied: the hard cast, a reduction that keeps a coloured pip (the Storm-side case: Desperate Ritual under Ruby Medallion), and no counter in play.
+- **Behaviour (7):** the evoke veto, the pitch veto, the main-phase candidate, the response candidate, the instant window, the combat trick's caster, and the cascade projection.
+
+**Pins:** (`045d7a9`)
+- **Digest:** re-recorded after replay. One match changes: Azorius Control vs Ruby Storm s58500, winners unchanged (G1 8 → 9 turns, G2 12 → 29, G3 12 → 22).
+  - The first divergence is G1 T5: Ruby Storm flashes back Past in Flames instead of casting Hex Magic.
+  - The projection now charges the flashback cost (4 under Ruby Medallion), not the printed 3. That **raised** Past in Flames' score (0.042 → 0.333).
+  - `card_clock_impact`'s mana gating values a held card at `min(1, my_mana / 3)` of an average card, floored at 0.2. With the hand behind 2 to 6, the less mana a projection leaves, the smaller the hand-size penalty. So the dearer cast projects a better position.
+  - The charge is correct. The primitive is recorded below.
+- **Anchor:** unchanged (29 passed). Spec equivalence, the census and the parser ratchet are unchanged.
+- **Chunks at `045d7a9`:** 5285 + 2766 passed. The one first-run failure, `test_flashback_sacrifice_cost_is_priced`, assumed the graveyard cast was charged the printed {R}, so it encoded the old charge.
+  - The test now isolates the land overlay, and pins that this flashback spends no mana while the hand cast spends {R}.
+  - Its file and this unit's re-run green at the commit.
+
+**Measured:** by the `lr-post` arm (pre = `lk-post`).
+
+**Leads, not built:**
+- **`card_clock_impact` gates a held card's worth by the mana left this phase,** not by the mana its holder will have to cast it (its lands next turn). With the hand behind, every projection then rewards spending mana for nothing. Its literals 3.0 and 0.2 are catalogued in the EV orchestration audit (2026-09-16, C3).
+- **A Phyrexian pip paid with life spends no mana** (CR 107.4f), but the cost estimate charges the pip in mana.
+- **The suspend scoring** (`_score_suspend`) does not read the counter for the free cast it projects turns later.
+- **The opponent model (BHI)** still counts the opponent's pitch and free counterspells while our own no-mana counter is out.
+- **`position_value`'s sentinel cliff:** a slow clock scores below no clock, which made a combat trick against Jin-Gitaxias's 5/5 project at −48. The fix was falsified on 2026-08-30 and is not retried.
+- **Unit UC (next): a spell that can't be countered is countered anyway.** The engine's counter resolution and `cast_counters` both counter it (85 pool cards print "this spell can't be countered"; Supreme Verdict ×8 and Dovin's Veto ×6 are registered). The AI reads it by a runtime oracle substring in three places.
