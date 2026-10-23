@@ -1019,13 +1019,15 @@ class ResponseDecider:
         if (getattr(instant.template, 'counters_colorless_only', False)
                 and (target_spell.colors or set())):
             return False
-        # A printed mana-value qualifier ("target spell with mana value 2")
-        # is read by the engine's requirement, at the spell's mana value on
-        # the stack (CR 115.1, 202.3e).
+        # A printed mana-value or colour qualifier ("target spell with mana
+        # value 2", "target colorless spell") is read by the engine's
+        # requirement, at the spell's mana value on the stack and its
+        # colours (CR 115.1, 202.3e, 105.2).
         from engine.target_solver import parse as _parse_targets
         from engine.target_solver import spell_target_admits
         bounded = [r for r in _parse_targets(instant.template.oracle_text or "")
-                   if r.zone == "stack" and r.mana_value_bound is not None]
+                   if r.zone == "stack" and (r.mana_value_bound is not None
+                                             or r.color_bound is not None)]
         if bounded and not any(
                 spell_target_admits(getattr(stack_item.source, "_game_state",
                                             None), r, stack_item)

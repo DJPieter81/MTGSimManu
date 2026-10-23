@@ -971,7 +971,7 @@ KNOWN_DECK_DISAGREEMENTS = {
     "direct_damage_data": {"Goblin Bombardment": "caad058ce7a2"},
     # target.zone_union: legacy keeps one union member (design section 10)
     "bounce_target": {
-        "Sink into Stupor // Soporific Springs": "84c151a5206d"},
+        "Sink into Stupor // Soporific Springs": "d5da48714051"},
     # legacy refuses any text naming "this creature"
     "mass_graveyard_return": {"Tyvar, Jubilant Brawler": "5d5be987d596"},
     # the grammar refuses "target cards from graveyards" (no requirement)
@@ -1421,6 +1421,10 @@ UNMASKED_ROWS = {
     "graveyard_recursion_reads_exile_linked_return",
 }
 
+# Legacy-side semantic fixes: a rules unit made the legacy reading correct
+# ahead of the view, pinned by the test each row names.
+SEMANTIC_FIX_ROWS = {"target_color_qualifier_read_by_the_solver"}
+
 
 def test_the_committed_allowlist_is_valid_and_accounts_for_every_section_10_seed_row():
     t = _eq_tool()
@@ -1428,7 +1432,8 @@ def test_the_committed_allowlist_is_valid_and_accounts_for_every_section_10_seed
     assert t.validate_allowlist(rows) == []
     assert t.validate_unsurfaced(unsurfaced) == []
     ids = {r.id for r in rows} | {u["id"] for u in unsurfaced}
-    assert ids == SECTION_10_SEED_ROWS | REVIEW_ROWS | UNMASKED_ROWS
+    assert ids == (SECTION_10_SEED_ROWS | REVIEW_ROWS | UNMASKED_ROWS
+                   | SEMANTIC_FIX_ROWS)
     assert all(r.source.startswith("design doc section 10") for r in rows)
 
 

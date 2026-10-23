@@ -529,6 +529,54 @@ def _audit_cascade_triggers_on_cast(game: "GameState", card) -> None:
           game=game)
 
 
+def _audit_targets_color(game: "GameState", card, targets) -> None:
+    """Rules audit (CR 115.1, 601.2c, 105.2), restated from the raw fields
+    -- the requirement's printed colour qualifier and each chosen target's
+    colour fields (a colour-setting effect's colours, else the face that is
+    up, else the printed colours) -- not from the legality owner's
+    predicate: an instant or sorcery whose every requirement prints a
+    colour qualifier is cast only at objects whose colours one of those
+    qualifiers admits. Observes only."""
+    from .rules_audit import check
+    from .stack import StackItemType
+    from .target_solver import parse
+    t = card.template
+    if not (t.is_instant or t.is_sorcery):
+        return
+    reqs = parse(t.oracle_text or "")
+    if not reqs or any(r.color_bound is None for r in reqs):
+        return
+    for tid in targets or ():
+        if not isinstance(tid, int) or isinstance(tid, bool) or tid <= 0:
+            continue
+        item = next((i for i in game.stack.items
+                     if i.item_type == StackItemType.SPELL
+                     and i.source.instance_id == tid), None)
+        obj = item.source if item is not None else game.get_card_by_id(tid)
+        if obj is None:
+            continue
+        if obj.cem_colors_set is not None:
+            shown = set(obj.cem_colors_set)
+        elif obj.is_transformed and obj.template.back_face_colors is not None:
+            shown = set(obj.template.back_face_colors)
+        else:
+            shown = set(obj.template.colors)
+        letters = {c.value for c in shown} & set("WUBRG")
+        fits = False
+        for r in reqs:
+            op, letter = r.color_bound
+            fits = {"is": letter in letters, "non": letter not in letters,
+                    "colorless": not letters, "colored": bool(letters),
+                    "monocolored": len(letters) == 1,
+                    "multicolored": len(letters) >= 2}[op]
+            if fits:
+                break
+        check("115.1/target_color_qualifier", fits,
+              f"{card.name} cast at {obj.name} (colours "
+              f"{''.join(sorted(letters)) or 'none'}), which none of its "
+              f"colour qualifiers admits", game=game)
+
+
 def _audit_cascade_hit_cast(game: "GameState", controller: int, exiled,
                             rest, below, cast_before: int) -> None:
     """Rules audit (CR 702.85a, 117.3b), restated from the zones, the
@@ -2892,6 +2940,8 @@ class CastManager:
             # CR 202.3e: a spell target is within the printed mana-value
             # bound at its mana value on the stack.
             _audit_spell_targets_mana_value(game, card, targets)
+            # CR 105.2: a target has the colours its qualifier names.
+            _audit_targets_color(game, card, targets)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,

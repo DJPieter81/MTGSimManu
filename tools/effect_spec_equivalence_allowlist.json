@@ -153,6 +153,15 @@
    "cards": ["Yggdrasil, Rebirth Engine"],
    "reason": "The legacy flags read 'exile all creature cards from your graveyard' together with 'put a creature card exiled with ~ onto the battlefield' as graveyard recursion and reanimation; the card returns from exile (a linked MOVE), never from the graveyard, which is what the views read. Masked until 2026-10-10 by the card's refused 'exile the top N cards of your library' (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the impulse unit types that library position as the exile's object, which unmasks the pair.",
    "source": "design doc section 10, rows unmasked by typing library positions (2026-10-10)"
+  },
+  {
+   "id": "target_color_qualifier_read_by_the_solver",
+   "class": "SEMANTIC_FIX",
+   "fields": ["cast_targets"],
+   "cards": ["Brace for Impact", "Ceremonious Rejection", "Corpsehatch", "Cradle to Grave", "Dark Banishing", "Dark Betrayal", "Dark Withering", "Death Rattle", "Doom Blade", "Eradicate", "Execute", "Frazzle", "Gainsay", "Gideon's Defeat", "Glare of Heresy", "Guttural Response", "Hideous End", "Horobi's Whisper", "Hunt the Hunter", "Infernal Reckoning", "Jace's Defeat", "Murderous Spoils", "Neutralizing Blast", "Null Elemental Blast", "Premature Burial", "Psychotic Fury", "Pure // Simple", "Saltblast", "Sever Soul", "Slaughter Pact", "Slay", "Soul Reap", "Sultai Charm", "Sunlance", "Ultimate Price", "Vanishing Verse", "Vendetta", "Violet Pall"],
+   "test": "tests/test_a_targets_colour_qualifier_is_part_of_its_requirement.py::test_a_colour_qualifier_is_read_into_its_requirement",
+   "reason": "Unit CQ: target_solver reads a colour qualifier between \"target\" and its type word (\"target nonblack creature\", \"counter target colorless spell\") into the requirement's color_bound (CR 115.1, 105.2); before, the phrase parsed no requirement. The target grammar does not yet consume the adjective, so these hosts stay UNMODELLED(TARGET) and their SPELL host owns no target (Sultai Charm: its monocolored-creature mode). The grammar side is a lead.",
+   "source": "design doc section 10, a legacy-side semantic fix: unit CQ (docs/design/rules-foundation-sweep-tracker.md)"
   }
  ],
  "unsurfaced": [

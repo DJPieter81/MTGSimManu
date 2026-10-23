@@ -102,6 +102,12 @@ class TargetRequirement:
     # controller's graveyard" ("<=", "controller_graveyard", 0). Compared
     # with the object's mana value -- a spell's on the stack (CR 202.3e).
     mana_value_bound: Optional[Tuple[str, str, int]] = None
+    # A printed colour qualifier on the target (CR 115.1, 105.2): (op, c) --
+    # "red" ("is", "R"), "nonblack" ("non", "B"), "colorless" ("colorless",
+    # ""), "that's one or more colors" / "colored" ("colored", ""),
+    # "monocolored" ("monocolored", ""), "multicolored" ("multicolored",
+    # ""). Read at the colours the object shows now (CR 105.2b).
+    color_bound: Optional[Tuple[str, str]] = None
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -287,14 +293,96 @@ _COUNT_BEFORE = re.compile(
     r"(?:(up to) (\w+)|(one) or (two|three)|(any number) of|(\w+))\s+$")
 
 
+# A colour qualifier printed between "target" and the type word of a
+# battlefield or stack target (CR 105.2): a colour, its negation, or a count
+# of colours. Not one of a per-type colour compound ("target red creature or
+# red planeswalker"), and not a card target in a graveyard or hand ("target
+# black card", "target multicolored permanent card"), which stay unread.
+_COLOR_WORD = (r"(?:non)?(?:white|blue|black|red|green)"
+               r"|colorless|colored|monocolored|multicolored")
+_COLOR_BEFORE_TYPE = re.compile(
+    rf"\btarget ({_COLOR_WORD}) "
+    r"(?=(?:nonland |nonartifact |noncreature )?"
+    r"(?:creature|permanent|spell|artifact|enchantment|planeswalker|land"
+    r"|instant|sorcery)\b(?!(?:\s+or\s+\w+)?\s+card\b)"
+    rf"(?!\w*\s*,?\s+or\s+(?:{_COLOR_WORD})\b))")
+
+
 def _singularize_targets(oracle_l: str) -> str:
     """Rewrite plural target nouns to singular (and "and/or" to "or") inside
     each target phrase, keeping every index in place (a plural noun loses
-    its "s" to a space), so one singular grammar parses both."""
+    its "s" to a space), so one singular grammar parses both. A colour
+    qualifier between "target" and its type word moves in front of
+    "target" ("nonblack target creature", the same characters), so the
+    type grammar reads the phrase and the placement reads the qualifier
+    just before it (`_color_before`)."""
     def _span(m):
         t = _PLURAL_TARGET_NOUNS.sub(lambda n: n.group(1)[:-1] + " ", m.group(0))
+        t = _COLOR_BEFORE_TYPE.sub(lambda c: f"{c.group(1)} target ", t)
         return t.replace("and/or", "    or")
     return _TARGET_SPAN.sub(_span, oracle_l)
+
+
+_COLOR_LETTER = {"white": "W", "blue": "U", "black": "B", "red": "R",
+                 "green": "G"}
+_COLOR_BEFORE_RE = re.compile(rf"(?:^|(?<=\s))({_COLOR_WORD}) $")
+_COLOR_AFTER_RE = re.compile(
+    r"^\s+that['’]s\s+(?:an?\s+)?"
+    r"(one or more colors|colorless|multicolored|monocolored|colored)\b")
+
+
+def _color_bound_of(word: str) -> Tuple[str, str]:
+    """The `TargetRequirement.color_bound` a colour qualifier word prints."""
+    if word in ("colorless", "colored", "monocolored", "multicolored"):
+        return (word, "")
+    if word.startswith("non"):
+        return ("non", _COLOR_LETTER[word[3:]])
+    return ("is", _COLOR_LETTER[word])
+
+
+def _color_before(norm: str, idx: int):
+    """The colour qualifier `_singularize_targets` moved in front of the
+    target phrase at `idx`, and where it starts (the count words precede
+    it); (None, idx) when there is none."""
+    m = _COLOR_BEFORE_RE.search(norm[max(0, idx - 16):idx])
+    if m is None:
+        return None, idx
+    word = m.group(1)
+    return _color_bound_of(word), idx - len(word) - 1
+
+
+def _color_after(norm: str, end: int) -> Optional[Tuple[str, str]]:
+    """A trailing "that's one or more colors / colorless / multicolored /
+    monocolored" on the target phrase ending at `end`."""
+    m = _COLOR_AFTER_RE.match(norm[end:]) if end >= 0 else None
+    if m is None:
+        return None
+    word = m.group(1)
+    return ("colored", "") if word == "one or more colors" \
+        else _color_bound_of(word)
+
+
+def color_bound_holds(req: "TargetRequirement", colors) -> bool:
+    """Do these colours meet the requirement's printed colour qualifier
+    (CR 105.2)? `colors` is what the object shows now (`CardInstance.
+    colors`); colourless is no colour (CR 105.2c)."""
+    bound = req.color_bound
+    if bound is None:
+        return True
+    from .mana import COLOR_CHARS
+    shown = {getattr(c, "value", c) for c in colors or ()} & COLOR_CHARS
+    op, letter = bound
+    if op == "is":
+        return letter in shown
+    if op == "non":
+        return letter not in shown
+    if op == "colorless":
+        return not shown
+    if op == "colored":
+        return bool(shown)
+    if op == "monocolored":
+        return len(shown) == 1
+    return len(shown) >= 2                    # multicolored
 
 
 def _singularize_targets_located(oracle_text: str):
@@ -362,7 +450,8 @@ def _parse_placed(oracle_text: str):
     out = []
     for i, r in enumerate(reqs):
         idx = where[i]
-        counts = _count_before(norm, idx) if idx >= 0 else None
+        color, before = _color_before(norm, idx) if idx >= 0 else (None, idx)
+        counts = _count_before(norm, before) if idx >= 0 else None
         if counts is not None:
             r = _dc.replace(r, count_min=counts[0], count_max=counts[1],
                             is_optional=r.is_optional or counts[0] == 0)
@@ -370,7 +459,11 @@ def _parse_placed(oracle_text: str):
             # "up to one target X": zero or one (CR 115.1).
             r = _dc.replace(r, count_min=0)
         end = idx + len(r.raw_phrase or "") if idx >= 0 else -1
-        out.append((_with_mana_value_ceiling(norm, r, end), idx, end))
+        r = _with_mana_value_ceiling(norm, r, end)
+        color = color or _color_after(norm, end)
+        if color is not None:
+            r = _dc.replace(r, color_bound=color)
+        out.append((r, idx, end))
     return out, offsets
 
 
@@ -715,6 +808,7 @@ def spell_target_admits(game, req: TargetRequirement, item,
     if req.zone != "stack" or item.item_type != _SIT.SPELL:
         return False
     return (_spell_token_matches(item.source, req.types)
+            and color_bound_holds(req, item.source.colors)
             and _mana_value_bound_holds(req, item.mana_value, item.controller,
                                         game, x_ceiling))
 
@@ -1149,6 +1243,8 @@ def _admits_card(card: "CardInstance", req: TargetRequirement,
     if not _matches_supertype(card, req.supertype):
         return False
     if not _matches_subtype(card, req.subtype):
+        return False
+    if not color_bound_holds(req, card.colors):
         return False
     if req.zone == "battlefield" and not can_be_targeted(card, source,
                                                          controller):
