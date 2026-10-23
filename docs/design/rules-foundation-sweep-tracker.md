@@ -10442,3 +10442,59 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 - **The `cast_plotted` arm** offers no window and never drains.
 - **The controller of the top object** is never asked whether to hold priority over its own spell. `decide_response` is written for the responder.
 - **Counter-back windows are mostly passes:** the decider prices a counterspell by its own projection, not by the spell it answers.
+
+## Unit CS: cascade is a cast trigger, and its hit is cast onto the stack (CR 702.85a, 603.3, 117.3b; 2026-10-23)
+
+**Source:** the CAP review (two of its three reviewers). A Living End hit was resolved without being cast. The three-explorer mapping then found the whole model wrong.
+
+**Rule:** cascade triggers when its spell is cast. The trigger goes on the stack above the spell, so countering the spell, whether on cast by a lock or later, leaves the cascade, and a spell that fizzles has already cascaded. When the trigger resolves:
+- its controller exiles cards from the top of the library until a nonland card of lower mana value appears;
+- they may cast it without paying its mana cost, onto the stack above the cascade spell;
+- the rest go to the bottom in a random order.
+
+The hit is a spell cast this turn. It obeys every restriction on casting while its cascade spell is still on the stack, and players may respond to it before it resolves.
+
+**Defect:**
+- Cascade ran during its spell's own resolution (`CastManager._handle_cascade`, called from `resolve_stack`).
+- A countered, Chalice-countered or fizzled cascade spell never cascaded.
+- The hit was moved to a hand, cast, and resolved inline: a drain of the whole stack, items below the spell included, before any player held priority. So a cascaded spell could never be answered, and a cast-from-hand rider (rebound) applied to it.
+- A mass-reanimation hit (Living End) was resolved in place by a runtime-oracle shortcut and never cast. It went on no stack, made no cast record, added no storm count, and was invisible to cast caps and to Chalice.
+
+**Class:** the 18 pool cards with the Cascade keyword (12 permanent sources, 6 instant or sorcery). Dispatch stays on the keyword: `is_cascade` also flags Bloodbraid Marauder's conditional cascade and Maelstrom Nexus's granted one, which stay refused. Registered: Living End (Shardless Agent ×4 and Violent Outburst ×4 main deck; its hits are Living End and, from the sideboard, Inevitable Betrayal).
+
+**Steps:**
+- **`CastManager.put_cast_triggers`,** at both exits of `cast_spell` (the Chalice-countered one included), puts a cascade spell's trigger on the stack above it. The trigger carries the spell's mana value as cast.
+- **`CastManager.resolve_cascade`** replaces `_handle_cascade`:
+  1. exile through the zone funnel until the hit;
+  2. cast the hit free from exile, asking `free_cast_allowed`, `additional_cost_ready` and the "you may cast" seam `decide_offered_cast`, onto the stack above the cascade spell;
+  3. shuffle the rest once and put them on the bottom.
+- **Deleted:** the mass-reanimate shortcut, the inline drain, the raw zone writes, the `GameState` wrapper and both resolution-time calls. Living End now resolves as any cast one does, through `clause_resolver._a_mass_reanimate`.
+- **A trigger and its spell share one card.** `Stack.spell_items`, `spell_item`, `top_spell` and `remove` serve the readers that mean "the spell": the generic counter path and its no-target fallback, Subtlety and Spell Queller.
+- **AI:** `_project_spell(on_stack=True)` prices a spell already on the stack without the cascade its trigger carries, and `evaluate_stack_threat` passes it. The dead `'cascade'`-tag branch is deleted; no card carries that tag.
+- **Auditors:**
+  - `702.85a/cascade_triggers_on_cast`, at the cast exits;
+  - `702.85a/cascade_hit_cast`, at the trigger's resolution: nothing exiled is left in exile or a hand, the rest are at the bottom, the cast count rose by one exactly when the hit was cast, and nothing below the trigger resolved inside it.
+
+**Tests:** 21, in `tests/test_cascade_is_a_cast_trigger_that_casts_its_hit_onto_the_stack.py`; 18 were red first. These pass either way, as pins: the cast count, the bottom order and the audits' silent case. The cast-timing test that called `_handle_cascade` directly now casts the spell and resolves its trigger, with its assertions unchanged.
+
+**Pins:** (`5446842`)
+- **Digest:** re-recorded after replay. Three Living End rosters change:
+  - The cascade's exiles are now logged by the zone funnel.
+  - The trigger resolves before its spell, so a cascaded Living End returns creatures before Violent Outburst pumps them.
+  - Living End vs Dimir s59000 game 2 flips to Living End. Dimir counters Shardless Agent, which used to stop the cascade. Now the cascaded Living End is cast, and Dimir answers it with Force of Negation and then counters the Agent too, spending two counters and a card on T5.
+  - All rules-correct.
+- **Anchor:** 29 passed, unchanged.
+- **Ratchets fall:** oracle-runtime parse 163 → 160 and zone mutation 39 → 36, with the baselines lowered.
+- **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). Spec equivalence, the census and the parser ratchet are unchanged, and the 806 audit-enabled tests pass.
+- **Chunks at `5446842`:** 5221 + 2766 passed, nothing failed.
+
+**Measured:** by the `cs-post` arm (pre = `pb-post`).
+
+**Leads, not built:**
+- **The inline Chalice counter is not a trigger.** On a non-active player's cast, APNAP would order it after cascade; the end state is the same.
+- **The caster's single P(countered)** for a cast with cast triggers: the AI won't cast Shardless Agent into a Chalice on 3, though the cascade still happens.
+- **The caster's cascade projection** ignores that the hit is cast with its cascade spell on the stack (Teferi).
+- **The AI never answers a trigger** (Consign to Memory), and a counter's target is a card id an ability shares with its source.
+- **Multiple and granted cascade** (CR 702.85c; The First Sliver, Maelstrom Nexus).
+- **The 2023 wording** ("the resulting spell's mana value") for split, adventure and modal double-faced hits.
+- **Subtlety's and Spell Queller's raw zone writes.**
