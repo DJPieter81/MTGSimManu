@@ -10726,7 +10726,10 @@ Registered:
   - The test now isolates the land overlay, and pins that this flashback spends no mana while the hand cast spends {R}.
   - Its file and this unit's re-run green at the commit.
 
-**Measured:** by the `lr-post` arm (pre = `lk-post`).
+**Measured:** by the `lr-post` arm (pre = `lk-post`, same seeds, n=20 Bo3, all 25 shards, 0 aborted cells). Every deck is within 1.5 pp:
+- Grixis Reanimator −1.5, Azorius Control (WST v2) −0.8, Hollow One +0.7, Eldrazi Ramp +0.7.
+- No deck moves more than 5 pp. 129 cells change, the largest by 30 pp at n = 20.
+- Audit findings 522 → 516, and violations stay at 0. Band misses stay at 0.
 
 **Leads, not built:**
 - **`card_clock_impact` gates a held card's worth by the mana left this phase,** not by the mana its holder will have to cast it (its lands next turn). With the hand behind, every projection then rewards spending mana for nothing. Its literals 3.0 and 0.2 are catalogued in the EV orchestration audit (2026-09-16, C3).
@@ -10735,3 +10738,64 @@ Registered:
 - **The opponent model (BHI)** still counts the opponent's pitch and free counterspells while our own no-mana counter is out.
 - **`position_value`'s sentinel cliff:** a slow clock scores below no clock, which made a combat trick against Jin-Gitaxias's 5/5 project at −48. The fix was falsified on 2026-08-30 and is not retried.
 - **Unit UC (next): a spell that can't be countered is countered anyway.** The engine's counter resolution and `cast_counters` both counter it (85 pool cards print "this spell can't be countered"; Supreme Verdict ×8 and Dovin's Veto ×6 are registered). The AI reads it by a runtime oracle substring in three places.
+
+## Unit UC: a spell that can't be countered is not countered by anything that would counter it (CR 101.2, 701.6a, 702.21a; 2026-10-23)
+
+**Source:** a lead found while scoping unit LR. `cast_counters` countered a spell that prints "This spell can't be countered", so the engine had no read of the rule anywhere.
+
+**Rule:** "can't be countered" is a "can't" effect, and it beats every instruction that would counter the spell (CR 101.2). None of these counter it, and it still resolves:
+- a counterspell aimed at it, which also offers no tax;
+- a cast-triggered counter that names it;
+- the ward trigger it sets off (CR 702.21a);
+- the counter of a colorless spell.
+
+A "triggers only once each turn" counter that it triggers is still spent for the turn.
+
+**Defect:**
+- **No counter path read it.** Supreme Verdict and Dovin's Veto were countered like any spell, and a permanent's "<kind> spells you control can't be countered" applied to nothing.
+- **The AI read it from a substring of the oracle text** in three places. A creature whose mana ability grants it to another spell (Delighted Halfling) read as uncounterable itself.
+
+**Class:** 82 pool spells print "This spell can't be countered", and 12 permanents grant it to the spells a description names:
+- creature spells you control (Prowling Serpopard, Rhythm of the Wild, ...);
+- creature spells (Leyline of Lifeforce, Gaea's Herald);
+- noncreature spells you control (Benevolent Geist);
+- instant and sorcery spells you control (Sphinx of the Final Word);
+- every spell you control or every spell (Chimil, Lier).
+
+Refused, and recorded:
+- a printed condition (Banefire's X ≥ 5, Exquisite Firecraft's spell mastery);
+- a grant tied to the mana that paid for the spell (Cavern of Souls, Boseiju, Delighted Halfling);
+- a characteristic bound (Spellbreaker Behemoth);
+- a turn-scoped grant (Veil of Summer, Autumn's Veil);
+- an activated one (Vexing Shusher).
+
+Registered: Supreme Verdict ×9, Dovin's Veto ×6, Chandra, Awakened Inferno ×1.
+
+**Steps:**
+- **The text is the effect grammar's, parsed once.** The spell's own STATIC stack host carries the `uncounterable` flag. A permanent's static PROHIBIT `be_countered` names a spell description (zone stack; any of its types, none of its excluded types; "you control" or anyone). `rules_query.counter_text` memoises both per template, against its parsed-effects object.
+- **One predicate,** `rules_query.spell_can_be_countered` / `can_be_countered`. It reads the spell's own text and the "can't be countered" rule effects in force: `continuous_effects.counter_prohibitions`, the stored ones plus the statics that permanents have now. Those statics are derived only where they are read.
+- **Every counter reads it:**
+  - the counterspell's resolution (no tax is offered);
+  - the cast-triggered counter (a once-each-turn one is still spent);
+  - ward;
+  - the counter of a colorless spell (Consign to Memory).
+- **The AI reads it too:** the response gate (`_responses_that_can_answer`), `compute_play_ev`, the opponent-response estimate and `lock_that_counters` all read the same predicate.
+- **Auditor** `101.2/uncounterable` at the countered-zone move, restated from the raw parsed effects. LK's `603.2/cast_counter` exempts such a spell by the same restatement.
+
+**Tests:** 20, in `tests/test_a_spell_that_cant_be_countered_is_not_countered.py`; 17 were red first. These pass either way, as pins: an ordinary spell countered, a grant sparing no other player's spell, and the audit's silent case.
+
+**Pins:** (`94e53c2`)
+- **Oracle-runtime-parse ratchet:** 160 → 155, from removing the five substring reads.
+- **Digest:** byte-identical (27 games). **Anchor:** 29 passed.
+- **Unchanged:** spec equivalence, the census, the parser ratchet and the harness (1844 pairs: 373 proven, 1471 intended). The 876 audit-enabled tests pass.
+- **Per-match CPU, WST vs WST v2 (n = 4):** 11.54 → 11.71 s, flat. The first cut derived the grants in every rule-effects read, about 25,000 per match, and cost 66%. Boros Energy vs Domain Zoo is flat too (1.25 → 1.17 s).
+- **Chunks at `94e53c2`:** 5306 + 2766 passed.
+  - The first run failed one test: the harness's template snapshot caught the memo, then stored as `_counter_text`.
+  - The memo now sits in the template's `_effects*` parse-memo family, which the snapshot excludes; that file re-ran green.
+
+**Measured:** by the `uc-post` arm (pre = `lr-post`).
+
+**Leads, not built:**
+- **A grant tied to the mana that paid for a spell** (Cavern of Souls, Boseiju, Delighted Halfling ×4 in Creatures Toolbox) needs the payment to record each source's rider.
+- **The turn-scoped grants** (Veil of Summer, Autumn's Veil): a resolved PROHIBIT `be_countered` is read once the dispatcher stores it, but Veil's host is unmodelled.
+- **An ability that can't be countered:** nothing in the vocabulary reads one, so every ability can be countered.
