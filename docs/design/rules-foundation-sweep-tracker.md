@@ -10559,9 +10559,58 @@ Registered:
 - **CPU:** Azorius Control vs Grixis Reanimator, 4 matches, 3.58 → 3.61 s per match. On the same games the `117.4` residual falls 2 → 0 (Silence copies).
 - **Chunks at `07cf0ee`:** 5230 + 2766 passed, nothing failed.
 
-**Measured:** by the `pb2-post` arm (pre = `cs-post`).
+**Measured** (`pb2-post` arm against `cs-post`, 600 cells each):
+- **Every deck is within ±0.3.** 12 cells changed, each by one game. No deck moved more than 5 pp, so no replay is due. Band miss is 42.9 → 42.8 pp.
+- **Audit violations 4210 → 0.** The whole `117.4/priority_before_resolution` residual is gone, so every spell in the arm was offered before it resolved. What remains is census, not violation: `603.2/cast_trigger_unresolved` (195) and `unhandled/mode` (24).
 
 **Leads, not built:**
 - **A suspended or plotted card is cast from a hand.** Both routes move the card exile → hand → stack, so a cast-from-hand rider applies to it, and a plotted cast that fails leaves the card in its owner's hand.
 - **The controller of the top object** is never asked whether to hold priority over its own spell (from unit PB).
 - **The Scepter holder's activation timing:** the copy is fired after the active player's rebound recasts have resolved, never in response to them.
+
+## Unit CQ: a target's colour qualifier is part of its requirement, read at the object's current colours (CR 115.1, 601.2c, 105.2; 2026-10-23)
+
+**Source:** the cs-post audit ranking. Ugin, Eye of the Storms' colourless-cast exile is in the `603.2/cast_trigger_unresolved` census, and nothing performs it. Its typed target read "target permanent": the trailing "that's one or more colors" was dropped, so any carrier that took the trigger would have exiled a colourless permanent.
+
+**Rule:** a target's printed colour qualifier is part of what the requirement admits, read at the colours the object shows now (its printed colour, the face that is up, any colour-setting effect):
+- "colorless" admits no colour (CR 105.2c);
+- "monocolored" exactly one colour (105.2a);
+- "multicolored" two or more (105.2b);
+- "that's one or more colors" or "colored" at least one;
+- "red" that colour, and "nonblack" anything but it.
+
+**Defect:** the target grammar read only "target <type>" with nothing between the two words.
+- A colour adjective hid the phrase: Doom Blade, Ceremonious Rejection, Infernal Reckoning and Neutralizing Blast parsed no requirement at all.
+- A trailing "that's one or more colors" was dropped: Ugin and Devourer of Destiny read a plain "target permanent".
+
+**Class:** 76 pool cards print a colour-qualified target. Registered: Devourer of Destiny (Eldrazi Tron ×4, Eldrazi Ramp ×3, Broodscale Bloodchief ×3) and Ugin, Eye of the Storms (Eldrazi Tron ×4, Eldrazi Ramp ×2).
+
+**Steps:**
+- **`TargetRequirement.color_bound`** `(op, colour)`, read by the one placement owner:
+  - `_singularize_targets` moves an adjective between "target" and its type word in front of "target", the same characters with every index in place, so the type grammar reads the phrase;
+  - `_parse_placed` reads that adjective just before the phrase it claimed (the count words come before it) and a trailing "that's one or more colors / colorless" after it.
+- **Admission:** `color_bound_holds` in the one legality owner, read by `_admits_card` (battlefield, graveyard, hand) and `spell_target_admits` (stack) at `CardInstance.colors`.
+- **The AI's counter check** reads colour-bound requirements through `spell_target_admits`, as it reads the mana-value bound.
+- **Refused, left unread rather than half-read:**
+  - a card target ("target black card from your graveyard", "target red instant or sorcery card"), because the graveyard branch claims a text whole;
+  - a per-type colour compound ("target red creature or red planeswalker").
+- **Auditor `115.1/target_color_qualifier`** at the cast audit, restated from the raw colour fields: an instant or sorcery whose every requirement prints a colour qualifier is cast only at objects one of them admits.
+
+**Tests:** 22, in `tests/test_a_targets_colour_qualifier_is_part_of_its_requirement.py`; 18 were red first. Four pass either way: the AI's counter check, which `counters_colorless_only` already covered, and the three refusal pins. They cover the parse, admission (battlefield, stack, current colours), real class members (Ceremonious Rejection, Doom Blade, the AI's counter check, Ugin and Devourer), the refusals, and the auditor both ways.
+
+**Pins:**
+- **Parse capture:** re-captured. Exactly the 113 pool texts that print a colour qualifier moved: 104 gain a requirement that was unread, and 9 gain the bound on the requirement they had. No requirement was lost.
+- **Spec equivalence:** the `cast_targets` report row compares this parse with the grammar's SPELL host. 38 instants and sorceries whose target the solver now reads ahead of the grammar move to a SEMANTIC_FIX allowlist row that names this unit's test. UNEXPLAINED is unchanged (317), and AGREE is locked in at 4442 → 4404. Sink into Stupor's pinned digest moves for the new field in the requirement's repr only.
+- **Digest:** byte-identical (27 games). **Anchor:** 29 passed.
+- **Harness:** unchanged (1844 pairs: 373 proven, 1471 intended). The census and the parser ratchet are unchanged, and the 837 audit-enabled tests pass.
+- **Chunks at `7b6d00c`:** 5252 + 2766 passed, nothing failed.
+
+**Measured:** by the `cq-post` arm (pre = `pb2-post`).
+
+**Leads, not built:**
+- **The legacy self-cast exile** (Devourer of Destiny, Ugin) picks its own coloured target without asking `can_be_targeted` (hexproof, protection, ward). It is a second target-pick path, and the next unit routes it through the typed requirement.
+- **Ugin's "whenever you cast a colorless spell" exile is performed by nothing.** The cast carrier runs only card-flow shapes. Class: 20 pool cards with a targeted removal cast trigger.
+- **The graveyard branch claims a text whole,** so a modal text's other targets are dropped (the Kolaghan's Command shape).
+- **`counters_colorless_only`** is now a second reading of the qualifier the requirement carries.
+- **The target grammar does not consume a colour adjective,** so the hosts of the 38 SEMANTIC_FIX spells (and their activated and triggered kin) stay UNMODELLED(TARGET). Teaching it moves about 50 hosts onto the typed path. Eight of those (Executioner's Capsule, Sunlance, Ugin, the Ineffable among them) need harness proofs, and a dozen tier-A rows move.
+- **Per-type colour compounds** and "target black or red creature".
