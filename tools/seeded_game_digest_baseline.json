@@ -1,5 +1,5 @@
 {
-  "combined": "4fe954b5acf65339fb47f69eacb3ed8f767ad13be388c0ce4fbff6da0da73ca2",
+  "combined": "3235168d08abaabc352ed66a439a98968303cbf755e6199381321f63af274bb0",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -81,8 +81,8 @@
       "winner": "4c Omnath"
     },
     "bo1|Living End|Jeskai Blink|54000": {
-      "lines": 653,
-      "sha256": "c5f932ef1892332a2bbf774d89e23320f1ad130974111360de183dd11d89bd53",
+      "lines": 747,
+      "sha256": "c0670f64c933345ee0acc7b02b2af254a4170c7c11ba2de78c446affe83e6825",
       "turns": 10,
       "winner": "Jeskai Blink"
     },
@@ -153,23 +153,17 @@
       "winner": "Jeskai Blink"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
-      "lines": 709,
-      "sha256": "6a2130317b5b8f60402797e6a9fc3548a04c80812515ac1bcc1404c4d4cceb77",
+      "lines": 767,
+      "sha256": "463c285a38d75d4eb4e42a0e451cf8da0fd994df73d53fd31563c4a17f10fb9b",
       "turns": 11,
       "winner": "Living End"
     },
     "bo3|Living End|Dimir Midrange|59000|g2": {
-      "lines": 413,
-      "sha256": "b4c3664f0167d7205070a11fe9338b2e13c0741611a97f71c05af805ea4c94c5",
-      "turns": 7,
-      "winner": "Dimir Midrange"
-    },
-    "bo3|Living End|Dimir Midrange|59000|g3": {
-      "lines": 765,
-      "sha256": "4979821a5d8eac96626eb458716e2f92a080375426b16af6db0fc4a321cddd0e",
-      "turns": 12,
-      "winner": "Dimir Midrange"
+      "lines": 612,
+      "sha256": "59873ff63d6bd42f31b82060c09770af55034786ec98f6f0f094a92533dfd477",
+      "turns": 8,
+      "winner": "Living End"
     }
   },
-  "n_games": 28
+  "n_games": 27
 }

@@ -1202,7 +1202,10 @@ class ResponseDecider:
         snap = snapshot_from_game(game, opp_idx)
         archetype = getattr(self, 'opp_archetype', 'midrange')
         current = evaluate_board(snap, archetype)
-        projected = _project_spell(source, snap, None, game, opp_idx)
+        # A stack object has been cast: its cast triggers (cascade) are
+        # objects of their own, answered or not on their own.
+        projected = _project_spell(source, snap, None, game, opp_idx,
+                                   on_stack=True)
         after = evaluate_board(projected, archetype)
         threat = after - current  # positive = opponent's position improved
 
@@ -1245,21 +1248,14 @@ class ResponseDecider:
             from ai.ev_evaluator import creature_threat_value
             threat += sum(creature_threat_value(c, snap) for c in me.creatures)
 
-        # Cascade / reanimate: the actual threat is the creature or spell
-        # they cheat into play. Approximate as card_clock_impact × a few
-        # turns — both mechanics replace a card with a bigger one, so
-        # value ≈ mana we'd save × mana_clock_impact.
+        # Reanimate: the actual threat is the creature they cheat into
+        # play.
         from ai.clock import card_clock_impact, mana_clock_impact
         snap_for_clock = snap  # already built above at opp_idx
         oracle = (template.oracle_text or '').lower()
         subtypes = getattr(template, 'subtypes', [])
         opp_player = game.players[opp_idx]
 
-        if 'cascade' in getattr(template, 'tags', set()):
-            # Cascade ~= 1 free spell at cmc - 1 mana. Value = saved mana
-            # + expected threat value of what they cast.
-            saved_mana = max(1, (template.cmc or 2) - 1)
-            threat += saved_mana * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
         if 'reanimate' in getattr(template, 'tags', set()):
             # Reanimate value = threat value of the biggest creature in
             # opp graveyard (oracle-driven, not hardcoded).

@@ -2092,12 +2092,17 @@ def _expires_this_turn(game, player_idx, card) -> bool:
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
                    game: "GameState" = None, player_idx: int = 0,
-                   as_ability: bool = False) -> EVSnapshot:
+                   as_ability: bool = False,
+                   on_stack: bool = False) -> EVSnapshot:
     """Project the board state after casting a spell (without mutating game state).
 
     ``as_ability``: project the same effect as an activated ability (a
     loyalty line's clause) — no card leaves the hand, no mana is paid and
-    no spell is cast (storm)."""
+    no spell is cast (storm).
+
+    ``on_stack``: the spell is already on the stack -- cast, so the
+    triggers it had as it was cast (cascade, CR 702.85a) are objects of
+    their own, not part of what its resolution does."""
     t = card.template
     tags = getattr(t, 'tags', set())
     # The cast spends a held card -- except a card whose permission ends
@@ -2780,8 +2785,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     #
     # When a cascade spell is cast, the engine exiles library cards
     # until a non-land spell with lower CMC is found, then casts it for
-    # free.  `_free_cast_opportunity` is set by `engine/cast_manager.py`
-    # only AFTER resolution, so the candidate-scoring pass sees nothing.
+    # free.  The hit is cast by the spell's cast trigger, so the
+    # candidate-scoring pass sees nothing of it on the board.
     # The spell ends up valued as a vanilla N-mana creature, which is
     # catastrophic for cascade-into-finisher decks (Living End: the
     # cascaded finisher is the whole point of the card).
@@ -2795,7 +2800,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # surface the big graveyard swing).  Compact proxy: net power +
     # net creature count.  No per-card tables, no magic numbers.
     is_cascade = t.is_cascade  # typed field on CardTemplate, populated at DB load
-    if is_cascade and game:
+    if is_cascade and game and not on_stack:
         cascade_cmc = t.cmc or 0
         me = game.players[player_idx]
         # Cards cascade can legally hit: non-land spells with lower CMC.

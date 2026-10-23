@@ -126,7 +126,7 @@ def test_a_madness_cast_against_a_sorcery_timing_restriction_goes_to_the_graveya
 def test_a_cascade_hit_that_cannot_be_cast_goes_to_the_bottom_with_the_rest(card_db):
     """A cascade hit its caster may not cast (here: a "can't cast spells
     this turn") is put on the bottom of the library, never into a hand."""
-    from engine.stack import StackItem, StackItemType
+    from engine.stack import StackItemType
     game = _game(active=0, phase=Phase.MAIN1)
     me = game.players[0]
     for _ in range(3):
@@ -135,9 +135,9 @@ def test_a_cascade_hit_that_cannot_be_cast_goes_to_the_bottom_with_the_rest(card
     me.library.remove(hit)
     me.library.insert(0, hit)                 # the top card
     elf = _put(game, card_db, "Bloodbraid Elf", 0, "hand")
-    me.hand.remove(elf)
+    assert game.cast_spell(0, elf, free_cast=True)
+    assert game.stack.top.item_type is StackItemType.TRIGGERED_ABILITY
     me.silenced_this_turn = True
-    game._handle_cascade(StackItem(item_type=StackItemType.SPELL, source=elf,
-                                   controller=0))
+    game.resolve_stack()                      # the cascade trigger
     assert hit not in me.hand
     assert hit in me.library and hit.zone == "library"

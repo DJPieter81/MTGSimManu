@@ -239,14 +239,14 @@ def subtlety_etb(game, card, controller, targets=None, item=None):
     if not game.stack.is_empty:
         # Check stack for creature or planeswalker spells from opponent
         from engine.cards import CardType
-        for i in range(len(game.stack.items) - 1, -1, -1):
-            item_on_stack = game.stack.items[i]
+        for item_on_stack in reversed(game.stack.spell_items()):
             if item_on_stack.controller != opponent:
                 continue
             t = item_on_stack.source.template
             if CardType.CREATURE in t.card_types or CardType.PLANESWALKER in t.card_types:
                 # Remove from stack, put on top of library
-                removed = game.stack.items.pop(i)
+                removed = item_on_stack
+                game.stack.remove(removed)
                 removed.source.zone = "library"
                 game.players[opponent].library.insert(0, removed.source)
                 game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -1896,10 +1896,10 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
     # Simplified: exile top spell from stack if CMC <= 4
     # Only works when there's actually a spell on the stack (not from blink ETB)
     if not game.stack.is_empty:
-        top = game.stack.top
+        top = game.stack.top_spell
         if top and top.source and (top.source.template.cmc or 0) <= 4:
             spell_card = top.source
-            game.stack.pop()
+            game.stack.remove(top)
             spell_card.zone = "exile"
             game.players[spell_card.owner].exile.append(spell_card)
             game.log.append(f"T{game.display_turn} P{controller+1}: "

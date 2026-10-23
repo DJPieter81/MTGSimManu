@@ -451,25 +451,17 @@ class ResolutionManager:
                 # Storm: copy the spell for each prior spell this turn
                 if Keyword.STORM in template.keywords:
                     game._handle_storm(item)
-                # Cascade: exile from top until lower CMC, cast free
-                if Keyword.CASCADE in template.keywords:
-                    game._handle_cascade(item)
+                # Cascade is a cast trigger: it went on the stack above this
+                # spell as it was cast and has resolved already (CR 702.85a;
+                # CastManager.put_cast_triggers).
                 ResolutionManager._move_resolved_spell_off_stack(
                     game, card, resolved=True)
             else:
                 # Permanent enters battlefield
                 card.controller = item.controller
-                # Cascade is a cast trigger (CR 702.85a): the trigger and
-                # the free spell it casts resolve while the cascade SOURCE
-                # is still on the stack — so a cascaded mass-effect (board
-                # wipe, mass reanimation, mass bounce) must not see or
-                # affect the source. Resolve cascade BEFORE the source
-                # physically enters; the source enters last. Invisible for
-                # instant/sorcery sources (they hit the graveyard), so only
-                # a permanent source — entered first, then swept by its own
-                # cascaded spell — exposed the bug.
-                if Keyword.CASCADE in template.keywords:
-                    game._handle_cascade(item)
+                # Cascade is a cast trigger (CR 702.85a): it and the spell it
+                # cast went on the stack above this one and resolved first,
+                # so a cascaded mass effect never saw this permanent.
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
                 # Place counters for X-cost permanents. "Enters with X
@@ -1143,28 +1135,26 @@ class ResolutionManager:
                 # structured `counter_target_kind` field, for the same
                 # substring-collision reason as above.
                 target_kind = getattr(card.template, 'counter_target_kind', '')
-                target_template = None
-                target_stack_index = None
+                # "Counter target spell": a spell item, never a triggered
+                # ability that shares its card (a cast trigger above it).
+                target_item = None
                 if item.targets:
                     for tid in item.targets:
-                        for i, si in enumerate(game.stack.items):
-                            if si.source.instance_id == tid:
-                                target_template = si.source.template
-                                target_stack_index = i
-                                break
-                        if target_template is not None:
+                        target_item = game.stack.spell_item(tid)
+                        if target_item is not None:
                             break
-                elif not game.stack.is_empty:
-                    target_template = game.stack.top.source.template
-                    target_stack_index = len(game.stack.items) - 1
+                else:
+                    target_item = game.stack.top_spell
+                target_template = (target_item.source.template
+                                   if target_item is not None else None)
 
                 # Noncreature-only counters can't hit creatures
                 if target_template and target_kind == 'noncreature_spell' and target_template.is_creature:
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (can't counter creature)")
                 elif target_template and target_kind == 'instant_or_sorcery_spell' and not (target_template.is_instant or target_template.is_sorcery):
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (wrong target type)")
-                elif target_stack_index is not None:
-                    stack_item = game.stack.items[target_stack_index]
+                elif target_item is not None:
+                    stack_item = target_item
                     countered_card = stack_item.source
                     # CR 601.2b: the tax is 0 (a HARD counter) when the
                     # counter's printed upgrade condition holds for its
@@ -1199,7 +1189,7 @@ class ResolutionManager:
                             f"controller pays {tax_amount} — not countered "
                             f"by {card.name}")
                     else:
-                        game.stack.items.pop(target_stack_index)
+                        game.stack.remove(stack_item)
                         ResolutionManager._move_countered_stack_item(
                             game, stack_item, countered_card)
                         game.log.append(

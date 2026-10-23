@@ -9,7 +9,7 @@ Owns spell-casting pre-checks and post-cast trigger fan-out:
   via MRV greedy, and Blink target gating.
 - _handle_storm: create storm copies equal to spells-cast-this-turn-1
   by re-executing the spell's effect for each copy.
-- _handle_cascade: exile top of library until a cheaper spell is
+- put_cast_triggers / resolve_cascade: cascade's cast trigger exiles until a cheaper spell is
   found, cast it for free (or resolve Living End mass-reanimate),
   bottom remaining in random order.
 
@@ -507,6 +507,51 @@ def _audit_spell_targets_mana_value(game: "GameState", card, targets) -> None:
               f"{card.name} cast at {item.source.name} (mana value {mv} on "
               f"the stack), which none of its mana-value bounds admits",
               game=game)
+
+
+def _audit_cascade_triggers_on_cast(game: "GameState", card) -> None:
+    """Rules audit (CR 702.85a, 603.3), restated from the stack's raw items
+    and the card's printed keywords: a spell with cascade, once cast, has
+    its cascade trigger -- a triggered ability whose source is the card --
+    on the stack, above the spell while the spell is still there.
+    Observes only."""
+    from .rules_audit import check
+    if Keyword.CASCADE not in card.template.keywords:
+        return
+    items = game.stack.items
+    trig = [k for k, i in enumerate(items)
+            if i.source is card and i.item_type == StackItemType.TRIGGERED_ABILITY]
+    spell = [k for k, i in enumerate(items)
+             if i.source is card and i.item_type == StackItemType.SPELL]
+    check("702.85a/cascade_triggers_on_cast",
+          bool(trig) and (not spell or max(trig) > max(spell)),
+          f"{card.name} was cast without its cascade trigger above it",
+          game=game)
+
+
+def _audit_cascade_hit_cast(game: "GameState", controller: int, exiled,
+                            rest, below, cast_before: int) -> None:
+    """Rules audit (CR 702.85a, 117.3b), restated from the zones, the
+    library order, the caster's cast count and the stack's raw items: when
+    a cascade trigger has resolved, no card it exiled is left in exile or
+    in a hand; the ones not cast are the bottom of the library; the cast
+    count rose by one exactly when the hit was cast; and every object that
+    was below the trigger is still on the stack -- nothing resolved inside
+    it, before a player held priority. Observes only."""
+    from .rules_audit import check
+    player = game.players[controller]
+    lib = player.library
+    bottom = lib[len(lib) - len(rest):] if rest else []
+    hit_cast = len(exiled) > len(rest)
+    ok = (all(c.zone not in ("exile", "hand") for c in exiled)
+          and all(any(c is b for b in bottom) for c in rest)
+          and player.spells_cast_this_turn - cast_before == int(hit_cast)
+          and all(any(i is j for j in game.stack.items) for i in below))
+    check("702.85a/cascade_hit_cast", ok,
+          f"cascade by P{controller + 1}: {len(exiled)} exiled, "
+          f"{len(rest)} to the bottom, casts {cast_before} -> "
+          f"{player.spells_cast_this_turn}, {len(below)} object(s) below",
+          game=game)
 
 
 def _audit_required_targets_chosen(game: "GameState", card, targets) -> None:
@@ -2009,78 +2054,68 @@ class CastManager:
                           f" for {item.targets}", game=game)
 
     @staticmethod
-    def _handle_cascade(game: "GameState", item: StackItem) -> None:
-        """Cascade: exile from top until CMC < cascade spell, cast free,
-        rest on bottom (random order)."""
-        controller = item.controller
-        cascade_cmc = item.source.template.cmc
+    def put_cast_triggers(game: "GameState", stack_item: StackItem) -> None:
+        """Put the triggered abilities a spell has as it is cast on the stack
+        above it (CR 603.3, 601.2i). Cascade (CR 702.85a) is one: its
+        trigger carries the spell's mana value as it was cast, so a spell
+        countered before the trigger resolves -- on cast by a lock, or later
+        -- still cascades at that value."""
+        import functools
+        card = stack_item.source
+        if Keyword.CASCADE not in card.template.keywords:
+            return
+        game.stack.push(StackItem(
+            item_type=StackItemType.TRIGGERED_ABILITY, source=card,
+            controller=stack_item.controller, ability=None,
+            description="cascade",
+            effect=functools.partial(CastManager.resolve_cascade,
+                                     mana_value=stack_item.mana_value)))
+
+    @staticmethod
+    def resolve_cascade(game: "GameState", source, controller: int,
+                        targets=None, *, mana_value: int) -> None:
+        """A cascade trigger resolves (CR 702.85a): its controller exiles
+        cards from the top of their library until a nonland card of mana
+        value less than `mana_value` is exiled, may cast that card without
+        paying its mana cost -- onto the stack above the cascade spell, so
+        players may respond to it before it resolves (CR 117.3b) -- and
+        puts the other exiled cards on the bottom in a random order."""
         player = game.players[controller]
-        exiled = []
-        found_card = None
-
-        game.log.append(f"T{game.display_turn}: Cascade (CMC < {cascade_cmc})")
-
+        below = list(game.stack.items)
+        cast_before = player.spells_cast_this_turn
+        exiled, hit = [], None
+        game.log.append(f"T{game.display_turn}: Cascade (CMC < {mana_value})")
         while player.library:
-            top = player.library.pop(0)
-            top.zone = "exile"
-            player.exile.append(top)
+            top = player.library[0]
+            game.zone_mgr.move_card(game, top, "library", "exile",
+                                    cause=f"cascade ({source.name})")
             exiled.append(top)
-
-            if top.template.is_spell and top.template.cmc < cascade_cmc:
-                found_card = top
+            if top.template.is_spell and (top.template.cmc or 0) < mana_value:
+                hit = top
                 break
-
-        if found_card and not (
-                CastManager.free_cast_allowed(game, controller,
-                                              found_card.template)
-                and CastManager.additional_cost_ready(game, controller,
-                                                      found_card)):
-            # A hit its caster may not cast now is not cast; it goes to the
-            # bottom with the rest (CR 702.85a).
-            game.log.append(
-                f"T{game.display_turn}: Cascade hits {found_card.name}, "
-                f"which cannot be cast now")
-            found_card = None
-        if found_card:
-            game.log.append(
-                f"T{game.display_turn}: Cascade hits {found_card.name}")
-
-            # Detect "exile all creatures + return from GY" effects
-            # (Living End and similar). Oracle pattern: 'all creature
-            # cards' AND 'graveyard' AND a return-to-battlefield effect.
-            found_oracle = (found_card.template.oracle_text or '').lower()
-            is_mass_reanimate = (
-                'all creature cards' in found_oracle
-                and 'graveyard' in found_oracle
-                and 'battlefield' in found_oracle
-            )
-            if is_mass_reanimate:
-                game._resolve_living_end(controller)
-                game.zone_mgr.move_card(game, found_card, "exile",
-                                        "graveyard")
+        cast = False
+        if hit is not None:
+            if not (CastManager.free_cast_allowed(game, controller,
+                                                  hit.template)
+                    and CastManager.additional_cost_ready(game, controller,
+                                                          hit)):
+                # A hit its caster may not cast now is not cast; it goes
+                # to the bottom with the rest.
+                game.log.append(
+                    f"T{game.display_turn}: Cascade hits {hit.name}, "
+                    f"which cannot be cast now")
             else:
-                # Cast the found card for free
-                if found_card in player.exile:
-                    player.exile.remove(found_card)
-                found_card.zone = "hand"
-                player.hand.append(found_card)
-                found_card._free_cast_opportunity = True
-                game.cast_spell(controller, found_card, free_cast=True)
-                # Resolve immediately
-                while not game.stack.is_empty:
-                    game.resolve_stack()
-                    game.check_state_based_actions()
-                    if game.game_over:
-                        return
-
-        # Put remaining exiled cards on bottom in random order
-        remaining = [c for c in exiled if c != found_card]
-        game.rng.shuffle(remaining)
-        for c in remaining:
-            if c in player.exile:
-                player.exile.remove(c)
-            c.zone = "library"
-            player.library.append(c)
+                game.log.append(f"T{game.display_turn}: Cascade hits {hit.name}")
+                cast = (game.callbacks.decide_offered_cast(game, controller,
+                                                           hit)
+                        and game.cast_spell(controller, hit, free_cast=True))
+        rest = [c for c in exiled if not (cast and c is hit)]
+        game.rng.shuffle(rest)
+        for c in rest:
+            game.zone_mgr.move_card(game, c, "exile", "library",
+                                    cause=f"cascade ({source.name})")
+        _audit_cascade_hit_cast(game, controller, exiled, rest, below,
+                                cast_before)
 
     @staticmethod
     def cast_is_prohibited(player, template) -> bool:
@@ -2916,6 +2951,10 @@ class CastManager:
             game.log.append(
                 f"T{game.display_turn} P{opp_idx+1}: "
                 f"{lock.name} (X={charge}) counters {card.name}")
+            # CR 603.3: a spell countered as it is cast has still been cast;
+            # its cast triggers go on the stack.
+            CastManager.put_cast_triggers(game, stack_item)
+            _audit_cascade_triggers_on_cast(game, card)
             return True
 
         dash_label = " (Dash)" if dashed else ""
@@ -3002,6 +3041,10 @@ class CastManager:
         from .oracle_resolver import resolve_self_cast_trigger
         resolve_self_cast_trigger(game, player_idx, card)
 
+        # CR 603.3, 702.85a: the cast triggers that go on the stack above
+        # the spell (cascade).
+        CastManager.put_cast_triggers(game, stack_item)
+        _audit_cascade_triggers_on_cast(game, card)
         return True
 
 

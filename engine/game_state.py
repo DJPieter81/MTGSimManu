@@ -750,11 +750,6 @@ class GameState:
     def _handle_storm(self, item: StackItem):
         CastManager._handle_storm(self, item)
 
-    # ─── CASCADE ─────────────────────────────────────────────────
-
-    def _handle_cascade(self, item: StackItem):
-        CastManager._handle_cascade(self, item)
-
     def _resolve_living_end(self, controller: int):
         ResolutionManager._resolve_living_end(self, controller)
 

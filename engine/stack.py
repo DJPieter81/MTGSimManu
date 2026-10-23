@@ -152,3 +152,29 @@ class Stack:
         if self.items:
             return self.items.pop()
         return None
+
+    # A spell and the triggered abilities it put on the stack as it was
+    # cast (cascade, CR 702.85a) share one card as their source, so a
+    # reader that means "the spell" asks for the spell items.
+    def spell_items(self) -> List[StackItem]:
+        """The spells on the stack, bottom first (no abilities)."""
+        return [i for i in self.items if i.item_type == StackItemType.SPELL]
+
+    def spell_item(self, instance_id: int) -> Optional[StackItem]:
+        """The spell on the stack whose card has this instance id."""
+        return next((i for i in self.items
+                     if i.item_type == StackItemType.SPELL
+                     and i.source.instance_id == instance_id), None)
+
+    @property
+    def top_spell(self) -> Optional[StackItem]:
+        """The topmost spell on the stack, abilities above it skipped."""
+        return next((i for i in reversed(self.items)
+                     if i.item_type == StackItemType.SPELL), None)
+
+    def remove(self, item: StackItem) -> None:
+        """Take this item off the stack, by identity."""
+        for k, i in enumerate(self.items):
+            if i is item:
+                del self.items[k]
+                return
