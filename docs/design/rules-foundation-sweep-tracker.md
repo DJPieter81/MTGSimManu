@@ -10901,7 +10901,9 @@ The engine knows a mode's targets only from its typed requirements. Each counted
 - **Per-match CPU, Boros Energy vs Eldrazi Tron (n = 4):** 1.56 → 1.55 s.
 - **Chunks at `21ddb2f`:** 5325 + 2766 passed, nothing failed.
 
-**Measured:** by the `ms2-post` arm (pre = `ug-post`).
+**Measured:** by the `ms2-post` arm (pre = `ug-post`, same seeds, n=20 Bo3, all 25 shards, 0 aborted cells).
+- **No cell changes,** and every deck is +0.0. The illegal Malfunction casts and the no-op modes never decided a match at this depth.
+- **Audit:** findings 486 → 448. Untimely Malfunction's 23 `unhandled/mode` rows are gone, and no `unhandled/mode` row is left. Violations stay at 0, `700.2a/modes_chosen` included. Band misses stay at 0.
 
 **Leads, not built:**
 - **The Wish delivery does not ask castability.** `choose_tutor_delivery` ranks a sideboard card by its delivery value, so a Wish may still fetch a Malfunction it cannot cast this turn. A card brought from outside the game is played this turn or never (CR 400.11a).
