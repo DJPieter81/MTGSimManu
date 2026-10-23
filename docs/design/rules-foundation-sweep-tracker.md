@@ -10384,7 +10384,11 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 - **Harness:** unchanged (1844 new-path pairs: 373 proven, 1471 intended). Spec equivalence, the effect census and the parser ratchet are unchanged.
 - **Chunks at `bf5460f`:** 5191 + 2766 passed, nothing failed.
 
-**Measured:** by the `cap-post` arm (pre = `xv-post`).
+**Measured** (`cap-post` arm against `xv-post`, 600 cells each):
+- **Every deck is within ±0.6. No deck moved more than 5 pp, so no replay is due.**
+- **26 cells changed,** nearly all of them Boros Ponza's (High Noon main deck): Ponza 32.9 → 33.3, the largest a game or three each way.
+- **Audit violations 0 → 0.**
+- **Band miss** is 41.6 → 42.1 pp: Hollow One 28.9 → 28.2, and Dimir Midrange back in its band at 45.2.
 
 **Leads, not built:**
 - **Cascade's mass-reanimate shortcut:** a Living End hit is resolved without being cast. It gets no stack, no cast record and no storm count, and cast caps can't see it. Every other hit resolves inline with no priority, so a cascaded spell can never be countered. This is unit CS (next).
