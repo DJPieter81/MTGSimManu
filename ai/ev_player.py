@@ -566,15 +566,17 @@ class EVPlayer:
         # Filter legends we already control
         spells = self._filter_legend_rule(me, spells)
 
-        # A cast that a lock permanent on the opponent's battlefield
-        # counters on cast (`CastManager.lock_that_counters`, the engine's
-        # own predicate) is fixed by rule to be a no-op minus the card. It
-        # is never a candidate: the play gate is a fixed floor, so pricing
-        # it below passing is not enough on its own (Preordain into a
-        # Chalice on 1 as the last play of a turn, 2026-09-09).
-        from engine.cast_manager import CastManager as _CM
+        # A cast that a permanent's cast-triggered counter counters on cast
+        # (`ai.effective_cmc.counter_on_cast`: the engine's own predicate,
+        # under what the cast's route spends) is fixed by rule to be a
+        # no-op minus the card. It is never a candidate: the play gate is a
+        # fixed floor, so pricing it below passing is not enough on its own
+        # (Preordain into a Chalice on 1 as the last play of a turn,
+        # 2026-09-09).
+        from ai.effective_cmc import counter_on_cast
         spells = [c for c in spells
-                  if _CM.lock_that_counters(game, self.player_idx, c.template) is None]
+                  if counter_on_cast(c, snap, game=game,
+                                     player_idx=self.player_idx) is None]
 
         candidates: List[Play] = []
 
@@ -3866,9 +3868,8 @@ class EVPlayer:
         loses the card for nothing and is held.
         """
         from ai.clock import position_value
-        from ai.effective_cmc import effective_cmc as _ecmc
+        from ai.effective_cmc import counter_on_cast, effective_cmc as _ecmc
         from ai.ev_evaluator import snapshot_from_game
-        from engine.cast_manager import CastManager as _CM
         me = game.players[self.player_idx]
         assignments = [a for a in getattr(combat, 'assignments', [])
                        if a.attacker.zone == 'battlefield'
@@ -3885,7 +3886,10 @@ class EVPlayer:
                 continue
             if not game.can_cast(self.player_idx, c):
                 continue
-            if _CM.lock_that_counters(game, 1 - self.player_idx, t) is not None:
+            # The trick's caster is this player: a counter that names "an
+            # opponent" reads its controller's opponent.
+            if counter_on_cast(c, game=game,
+                               player_idx=self.player_idx) is not None:
                 continue
             tricks.append(c)
         if not tricks:

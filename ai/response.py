@@ -105,11 +105,14 @@ class ResponseDecider:
                 seen_ids.add(src.instance_id)
                 continue
             if game.can_cast(self.player_idx, src):
-                # A response the opponent's battlefield lock would counter
-                # on cast is not a response to anything (engine predicate;
-                # burn cast in response into a resolved Chalice, 2026-09-09).
-                from engine.cast_manager import CastManager as _CM
-                if _CM.lock_that_counters(game, self.player_idx, src.template) is not None:
+                # A response a cast-triggered counter would counter on cast
+                # is not a response to anything (the engine's predicate,
+                # under what the response's route spends: a pitched Force
+                # spends no mana; burn cast in response into a resolved
+                # Chalice, 2026-09-09).
+                from ai.effective_cmc import counter_on_cast
+                if counter_on_cast(src, game=game,
+                                   player_idx=self.player_idx) is not None:
                     continue
                 candidate_sources.append(src)
                 seen_ids.add(src.instance_id)

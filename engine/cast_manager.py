@@ -1567,38 +1567,44 @@ class CastManager:
         )
 
     @staticmethod
-    def lock_that_counters(game: "GameState", player_idx: int,
-                           template) -> "Optional[CardInstance]":
-        """The opposing lock permanent whose parsed rule counters a cast of
-        `template`, or None.
+    def lock_that_counters(game: "GameState", player_idx: int, template,
+                           mana_spent: "Optional[int]" = None,
+                           colors_spent=None,
+                           pays_x: bool = True) -> "Optional[CardInstance]":
+        """The permanent whose cast-triggered counter counters a cast of
+        `template` by `player_idx` now, or None: `cast_counters`, the
+        predicate `cast_spell` counters by, read before the cast.
 
-        Rules primitive, typed-field driven (`CardTemplate.stax_class`,
-        parsed once at DB load — no oracle scan): the Chalice-of-the-Void
-        family counters a spell whose mana value equals the permanent's
-        charge counters.  `cast_spell` applies it; the AI's single
-        interaction-probability call site (`ai/ev_evaluator.compute_play_ev`)
-        reads it as P(countered) = 1 — a lock on the battlefield is a
-        certainty, not a hidden-hand belief.  Before that read existed the
-        AI fed card after card into a visible Chalice (2026-09-08).
+        `mana_spent` and `colors_spent` are what the cast's route spends on
+        its cost apart from X (CR 601.2f-h), and `pays_x` whether that route
+        pays the mana cost, whose X it then chooses (a cast without paying
+        it has X = 0, CR 107.3b). The route is its caster's choice, so the
+        AI supplies them (`ai.effective_cmc.counter_on_cast`). Left as they
+        default, the cast is an ordinary one, spending its mana value,
+        coloured mana exactly when it has a coloured pip. A counter on the
+        battlefield is a certainty, not a hidden-hand belief: before the AI
+        read it, it fed card after card into a visible Chalice (2026-09-08).
         """
-        # A cast the caster pays for in the ordinary way spends its mana
-        # value in mana, coloured mana exactly when it has a coloured pip.
         # An X spell's mana value on the stack is chosen with its X as it
         # is cast (CR 202.3e, 601.2b): read here at the largest X its caster
-        # can pay now.
+        # can pay once the rest of the cost is paid.
         cost = template.mana_cost
-        coloured = {"W", "U", "B", "R", "G"} if cost is not None and (
-            cost.white or cost.blue or cost.black or cost.red or cost.green
-            or cost.hybrid) else set()
+        if colors_spent is None:
+            colors_spent = {"W", "U", "B", "R", "G"} if cost is not None and (
+                cost.white or cost.blue or cost.black or cost.red
+                or cost.green or cost.hybrid) else set()
         x_pips = getattr(cost, "x_count", 0) if cost is not None else 0
         mana_value = template.cmc or 0
-        if x_pips:
+        fixed = mana_value if mana_spent is None else mana_spent
+        x_mana = 0
+        if x_pips and pays_x:
             player = game.players[player_idx]
             available = (player.untapped_mana_capacity()
                          + player.mana_pool.total())
-            mana_value += x_pips * max(0, (available - mana_value) // x_pips)
+            x_mana = x_pips * max(0, (available - fixed) // x_pips)
         locks = CastManager.cast_counters(
-            game, player_idx, template, mana_value, mana_value, coloured)
+            game, player_idx, template, mana_value + x_mana, fixed + x_mana,
+            colors_spent)
         return locks[0] if locks else None
 
     @staticmethod

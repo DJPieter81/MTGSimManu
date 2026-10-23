@@ -2820,9 +2820,17 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             expected_my_count = 0.0
             expected_opp_power = 0.0
             expected_opp_count = 0.0
+            from ai.effective_cmc import CAST_MODE_FREE, counter_on_cast
             for name, copies in name_groups.items():
                 p = len(copies) / n_cascadable
                 sample = copies[0]
+                # The hit is cast without paying its mana cost (CR
+                # 702.85a): a cast-triggered counter that names that cast
+                # counters it, and it adds nothing.
+                if counter_on_cast(sample, snap, game=game,
+                                   player_idx=player_idx,
+                                   cast_mode=CAST_MODE_FREE) is not None:
+                    continue
                 hit_proj = _project_spell(
                     sample, snap, dk=dk, game=game, player_idx=player_idx)
                 expected_my_power += p * (hit_proj.my_power - snap.my_power)
@@ -3414,17 +3422,19 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     else:
         p_interaction = 0.0
 
-    # A lock permanent on the opponent's BATTLEFIELD is not a belief: the
-    # engine's own predicate (`CastManager.lock_that_counters`, typed
-    # `stax_class`) says whether this cast is countered on cast.  When it
-    # is, P(countered) is 1 regardless of the hidden hand, the worthiness
-    # scaling below does not apply (the lock does not choose), and the
-    # cast loses its card for nothing.  Without this read the AI fed
-    # five and nine cards into a visible Chalice in two games (2026-09-08).
+    # A cast-triggered counter on the BATTLEFIELD is not a belief: the
+    # engine's own predicate, read under what the cast's route spends
+    # (`ai.effective_cmc.counter_on_cast`), says whether this cast is
+    # countered on cast.  When it is, P(countered) is 1 regardless of the
+    # hidden hand, the worthiness scaling below does not apply (the lock
+    # does not choose), and the cast loses its card for nothing.  Without
+    # this read the AI fed five and nine cards into a visible Chalice in
+    # two games (2026-09-08).
     _known_lock = None
     if game is not None and _can_counter:
-        from engine.cast_manager import CastManager
-        _known_lock = CastManager.lock_that_counters(game, player_idx, card.template)
+        from ai.effective_cmc import counter_on_cast
+        _known_lock = counter_on_cast(card, snap, game=game,
+                                      player_idx=player_idx)
     if _known_lock is not None:
         p_interaction = 1.0
 

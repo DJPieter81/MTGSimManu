@@ -273,12 +273,21 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     if card is None:
         return 0.0
 
+    # A cast-triggered counter that names this evoke (CR 603.2, 701.6):
+    # the evoke spends its evoke cost's mana -- none for one that exiles a
+    # card -- so "if no mana was spent" counters it, and the evoke loses
+    # the creature and its exiled card for nothing.
+    from ai.effective_cmc import CAST_MODE_EVOKE, counter_on_cast
+    if counter_on_cast(card, game=game, player_idx=player_idx,
+                       cast_mode=CAST_MODE_EVOKE) is not None:
+        return -BOARD_EVAL_HARD_VETO
+
     cmc = card.template.cmc or 0
     tags = getattr(card.template, 'tags', set())
 
     opp_idx = 1 - player_idx
     opp = game.players[opp_idx]
-    
+
     # Stack-targeting ETBs (e.g. "target creature spell or planeswalker
     # spell" on Subtlety): the word "spell" after the target type means
     # the ETB targets the STACK, not the battlefield.  When the stack

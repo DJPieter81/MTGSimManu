@@ -1527,13 +1527,16 @@ class GameRunner:
         instant_removal = []
         flash_creatures = []
         evoke_creatures = []
-        from .cast_manager import CastManager as _CM
+        from ai.effective_cmc import counter_on_cast
         for card in list(opponent.hand):
             if not game.can_cast(opponent_idx, card):
                 continue
-            # A spell the active player's lock permanent counters on cast
-            # (the engine's own predicate) is not worth casting here either.
-            if _CM.lock_that_counters(game, opponent_idx, card.template) is not None:
+            # A spell a cast-triggered counter counters on cast (the
+            # engine's own predicate, under what the cast's route spends:
+            # an evoke that exiles a card spends no mana) is not worth
+            # casting here either.
+            if counter_on_cast(card, game=game,
+                               player_idx=opponent_idx) is not None:
                 continue
             if card.template.is_instant or card.template.has_flash:
                 if "removal" in card.template.tags:

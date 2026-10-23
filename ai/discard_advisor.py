@@ -376,9 +376,14 @@ def exile_instead_of_paying(game: "GameState", player_idx: int,
     118.9) rather than its mana cost? Only when the mana cost cannot be
     paid: a card in hand outlasts the turn, while mana spent on the
     opponent's turn -- where the Forces' "if it's not your turn" cost
-    lives -- untaps on the next. Which card goes, when one must, is
+    lives -- untaps on the next. Never into a cast-triggered counter that
+    names a cast spending no mana (CR 603.2): the pitch would lose both
+    cards for nothing. Which card goes, when one must, is
     `choose_card_to_exile_from_hand`'s."""
-    return not can_pay_mana
+    from ai.effective_cmc import CAST_MODE_PITCH, counter_on_cast
+    return not can_pay_mana and counter_on_cast(
+        card, game=game, player_idx=player_idx,
+        cast_mode=CAST_MODE_PITCH) is None
 
 
 # Role buckets whose last reachable copy strands the declared plan.

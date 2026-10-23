@@ -87,9 +87,17 @@ CAST_MODE_FREE: str = "free"
 mana paid.  Always returns 0 regardless of the card's mechanics."""
 
 CAST_MODE_FLASHBACK: str = "flashback"
-"""Cast from graveyard for the flashback cost.  Not yet parsed at
-runtime (template.flashback_cost is a Wave-2 addition); falls back
-to printed CMC for now.  Documented here for forward compatibility."""
+"""Cast from the graveyard for the cost its graveyard route names
+(`engine.cast_manager.CastManager.graveyard_route_cost`): a printed
+flashback cost's mana -- none for "Flashback—Sacrifice a Mountain" (CR
+702.33a) -- or a harmonize cost after its tapped creature's reduction.
+The reductions in play apply to it as to a mana cost."""
+
+CAST_MODE_PITCH: str = "pitch"
+"""Pay an alternative cost that exiles a card from hand rather than the
+mana cost (CR 118.9): no mana paid. The route of a cast from hand whose
+mana cost cannot be paid while the cost can take a card
+(`ai.discard_advisor.exile_instead_of_paying`)."""
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────
@@ -257,9 +265,10 @@ def effective_cmc(
 
     Composition order (each step subtracts from `paid`):
 
-    1. **Cast mode short-circuit** — `'free'` → 0, `'evoke'` →
-       `template.evoke_cost.cmc` (or 0 if non-mana evoke).
-    2. **Base** — `template.cmc`.
+    1. **Cast mode short-circuit** — `'free'` and `'pitch'` → 0,
+       `'evoke'` → `template.evoke_cost.cmc` (or 0 if non-mana evoke).
+    2. **Base** — `template.cmc`, or for `'flashback'` the graveyard
+       route's cost.
     3. **On-board cost reducers** — `count_cost_reducers` parses
        each permanent's oracle for "cost {N} less" patterns.
        Respects color/type restrictions.
@@ -297,8 +306,8 @@ def effective_cmc(
         Controller of the spell.  Indexes `game.players`.
     cast_mode : str
         One of `CAST_MODE_NORMAL`, `CAST_MODE_EVOKE`,
-        `CAST_MODE_FREE`, `CAST_MODE_FLASHBACK`.  Unknown values
-        are treated as normal (defensive).
+        `CAST_MODE_FREE`, `CAST_MODE_PITCH`, `CAST_MODE_FLASHBACK`.
+        Unknown values are treated as normal (defensive).
 
     Returns
     -------
@@ -309,8 +318,9 @@ def effective_cmc(
     template = card.template
 
     # ── Step 1: cast-mode short-circuits ────────────────────────────
-    if cast_mode == CAST_MODE_FREE:
-        # Cascade / suspend / wish — no mana paid by definition.
+    if cast_mode in (CAST_MODE_FREE, CAST_MODE_PITCH):
+        # Cascade / suspend / wish, or an alternative cost that exiles a
+        # card from hand (CR 118.9) — no mana paid by definition.
         return 0
 
     if cast_mode == CAST_MODE_EVOKE:
@@ -322,8 +332,19 @@ def effective_cmc(
         # Wave-2 follow-up can warn-log here once every relevant
         # evoke card has a parsed cost.
 
+    # A graveyard cast pays its route's cost instead of the mana cost
+    # (`CastManager.graveyard_route_cost`, the engine's own); the
+    # reductions below reach it as they reach a mana cost (CR 601.2f).
+    cost = template.mana_cost
+    if cast_mode == CAST_MODE_FLASHBACK and game is not None:
+        from engine.cast_manager import CastManager
+        route = CastManager.graveyard_route_cost(game, player_idx, card)
+        if route is not None:
+            cost = route
+
     # ── Step 2: base printed CMC ────────────────────────────────────
-    paid = int(template.cmc or 0)
+    paid = int(template.cmc or 0) if cost is template.mana_cost \
+        else int(cost.cmc)
 
     # Generic portion — used as the cap for delve / affinity /
     # improvise discounts (all three discount generic only).
@@ -349,17 +370,14 @@ def effective_cmc(
     # hybrid pip -- the floor the engine charges (`CastManager.can_cast`
     # floors its quantity at `ManaCost.non_generic_pips`). Without it a
     # {1}{R} ritual read as free under two reducers.
-    if template.mana_cost is not None:
-        paid = max(paid, template.mana_cost.non_generic_pips)
+    if cost is not None:
+        paid = max(paid, cost.non_generic_pips)
 
     # Recompute the generic-portion-remaining after reducers ate
     # into it.  Delve/affinity/improvise can't drive paid below
     # the colored cost.
-    colored_cost = (paid > 0) and (template.mana_cost.white
-                                   + template.mana_cost.blue
-                                   + template.mana_cost.black
-                                   + template.mana_cost.red
-                                   + template.mana_cost.green)
+    colored_cost = (paid > 0) and (cost.white + cost.blue + cost.black
+                                   + cost.red + cost.green)
     # Maximum that generic-only mechanics can still subtract.
     remaining_generic = max(0, paid - (colored_cost or 0))
 
@@ -469,22 +487,111 @@ def with_reducers(paid: int, card: "CardInstance", reducers) -> int:
 
 def cast_mode_of(card: "CardInstance", snap=None, *,
                  game: "GameState" = None, player_idx: int = 0) -> str:
-    """How a cast of `card` now is paid: `CAST_MODE_EVOKE` when its
-    printed evoke cost can be paid (`engine.cast_manager.CastManager.
-    evoke_payable`, the engine's own check) and its mana cost cannot
-    (`snap.my_mana` short of its normal effective cost) -- a cast now is
-    then an evoke (CR 702.74a), whose creature is sacrificed as it
-    enters. `CAST_MODE_NORMAL` otherwise: with both payable the AI
-    hard-casts (`ai.board_eval._eval_evoke` refuses that evoke)."""
-    if card.template.evoke_cost is None or game is None or snap is None:
+    """How a cast of `card` now is paid -- the route its caster takes,
+    read from the engine's own payability checks:
+
+    - `CAST_MODE_FLASHBACK`: a cast from the graveyard that pays its
+      route's cost (`CastManager.graveyard_route_cost`).
+    - `CAST_MODE_EVOKE`: the printed evoke cost can be paid
+      (`CastManager.evoke_payable`) and the mana cost cannot (`snap.my_mana`
+      short of its normal effective cost). The evoke's creature is
+      sacrificed as it enters (CR 702.74a).
+    - `CAST_MODE_PITCH`: a cast from hand whose mana cost cannot be paid
+      (`CastManager.mana_payable`) while its alternative cost that exiles
+      a card from hand can take one (CR 118.9). That is the choice
+      `ai.discard_advisor.exile_instead_of_paying` makes.
+    - `CAST_MODE_NORMAL` otherwise. With both payable the AI hard-casts
+      (`ai.board_eval._eval_evoke` refuses that evoke)."""
+    if game is None:
         return CAST_MODE_NORMAL
     from engine.cast_manager import CastManager
-    if not CastManager.evoke_payable(game, player_idx, card):
-        return CAST_MODE_NORMAL
-    if snap.my_mana >= effective_cmc(card, snap, game=game,
-                                     player_idx=player_idx):
-        return CAST_MODE_NORMAL
-    return CAST_MODE_EVOKE
+    template = card.template
+    if card.zone == "graveyard" and CastManager.graveyard_route_cost(
+            game, player_idx, card) is not None:
+        return CAST_MODE_FLASHBACK
+    if (template.evoke_cost is not None and snap is not None
+            and CastManager.evoke_payable(game, player_idx, card)
+            and snap.my_mana < effective_cmc(card, snap, game=game,
+                                             player_idx=player_idx)):
+        return CAST_MODE_EVOKE
+    if (card.zone == "hand" and template.mana_cost is not None
+            and CastManager.alternative_exile_candidates(game, player_idx,
+                                                         card)
+            and not CastManager.mana_payable(game, player_idx,
+                                             template.mana_cost)):
+        return CAST_MODE_PITCH
+    return CAST_MODE_NORMAL
+
+
+_COLOUR_PIPS = (("W", "white"), ("U", "blue"), ("B", "black"),
+                ("R", "red"), ("G", "green"))
+
+
+def _cost_colours(cost) -> frozenset:
+    """The colours of mana a payment of `cost` may spend: its coloured
+    pips, and the colour options of its hybrid pips (CR 107.4e)."""
+    if cost is None:
+        return frozenset()
+    out = {sym for sym, attr in _COLOUR_PIPS if getattr(cost, attr)}
+    for pip in cost.hybrid:
+        out.update(o for o in pip if not o.isdigit())
+    return frozenset(out)
+
+
+def cast_spend(card: "CardInstance", snap=None, *, game: "GameState",
+               player_idx: int = 0, cast_mode: Optional[str] = None):
+    """What a cast of `card` now spends on its cost apart from X (CR
+    601.2f-h), by the route its caster pays it by (`cast_mode_of`, unless
+    `cast_mode` names it): `(mana, colours)`.
+
+    `mana` is the AI's cost estimate for that route (`effective_cmc`), and
+    `colours` are the colours of mana among it: the coloured pips of the
+    cost the route pays, none when it pays no mana."""
+    mode = (cast_mode if cast_mode is not None else
+            cast_mode_of(card, snap, game=game, player_idx=player_idx))
+    mana = effective_cmc(card, snap, game=game, player_idx=player_idx,
+                         cast_mode=mode)
+    if mana <= 0:
+        return 0, frozenset()
+    template = card.template
+    cost = template.mana_cost
+    if mode == CAST_MODE_EVOKE and template.evoke_cost is not None:
+        cost = template.evoke_cost
+    elif mode == CAST_MODE_FLASHBACK:
+        from engine.cast_manager import CastManager
+        cost = CastManager.graveyard_route_cost(game, player_idx, card) or cost
+    return mana, _cost_colours(cost)
+
+
+def counter_on_cast(card: "CardInstance", snap=None, *, game: "GameState",
+                    player_idx: int = 0, cast_mode: Optional[str] = None):
+    """The permanent whose cast-triggered counter counters a cast of `card`
+    by `player_idx` now (CR 603.2, 701.6), or None.
+
+    This is the engine's one predicate (`CastManager.lock_that_counters`,
+    which `cast_spell` counters by), read under what the cast's route
+    spends (`cast_spend`): "if no mana was spent to cast it" reads the
+    route's mana. An evoke that exiles a card, an alternative cost that
+    exiles one, a flashback that sacrifices a land and a spell its
+    reductions bring to {0} spend none. A cast without paying its mana cost
+    has X = 0 (CR 107.3b). A cast this names loses its card for nothing,
+    so it is never a candidate, and a route choice declines it."""
+    if game is None or not any(
+            getattr(p.template, "cast_counter", None) is not None
+            for pl in game.players for p in pl.battlefield):
+        return None
+    if (snap is None and cast_mode is None
+            and card.template.evoke_cost is not None):
+        from ai.ev_evaluator import snapshot_from_game
+        snap = snapshot_from_game(game, player_idx)   # the evoke route reads it
+    mode = (cast_mode if cast_mode is not None else
+            cast_mode_of(card, snap, game=game, player_idx=player_idx))
+    mana, colours = cast_spend(card, snap, game=game, player_idx=player_idx,
+                               cast_mode=mode)
+    from engine.cast_manager import CastManager
+    return CastManager.lock_that_counters(
+        game, player_idx, card.template, mana_spent=mana,
+        colors_spent=colours, pays_x=mode == CAST_MODE_NORMAL)
 
 
 __all__ = [
@@ -494,6 +601,9 @@ __all__ = [
     "generic_reduction",
     "reducer_reduction",
     "cast_mode_of",
+    "cast_spend",
+    "counter_on_cast",
+    "CAST_MODE_PITCH",
     "CAST_MODE_NORMAL",
     "CAST_MODE_EVOKE",
     "CAST_MODE_FREE",
