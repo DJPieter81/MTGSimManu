@@ -10983,7 +10983,13 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
   - The first run (`83230e7`) failed one test, the closure test's pin on the registered-deck handlers on the new path. It now names the step carrier.
   - That file re-ran green from the re-pinned worktree (99 passed).
 
-**Measured:** by the `bt-post` arm (pre = `ms2-post`).
+**Measured:** by the `bt-post` arm (pre = `ms2-post`, same seeds, n=20 Bo3, all 25 shards, 0 aborted cells).
+- **Grixis Reanimator +2.2 (44.7 → 46.9),** the deck that carries Emperor of Bones.
+- **The graveyard decks it exiles from dip:** Instant Reanimator −0.9, Living End −0.7, Goryo's Vengeance −0.6.
+- **Azorius Blink (Haliya) −0.4.** Every other deck is within 0.4, and no deck moves more than 5 pp.
+- **44 cells change.** The largest are Grixis Reanimator against Goryo's Vengeance and against Instant Reanimator, each 40 → 60.
+- **Replayed cell-exact** from the pinned worktrees: Grixis vs Goryo's reproduces (8/20 → 12/20). In the first flipped seed (s50500), the first divergence is Emperor's beginning-of-combat trigger exiling the opposing graveyard's only card (Thoughtseize) on T2. Before, Grixis spent Cling to Dust on it on T3.
+- **Audit:** findings 448 → 533, the new census rows of the refused step hosts: Ocelot Pride 35, Abhorrent Oculus 26, Static Prison 25. Violations stay at 0, the two new invariants included. Band misses stay at 0.
 
 **Leads, not built:**
 - **Ocelot Pride's rider needs two units:**
