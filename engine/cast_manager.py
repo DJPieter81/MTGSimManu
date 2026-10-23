@@ -731,6 +731,30 @@ class CastManager:
         return _parse_targets(template.oracle_text or "")
 
     @staticmethod
+    def targets_allow_cast(game: "GameState", player_idx: int,
+                           card: "CardInstance",
+                           x_ceiling: "int | None" = None) -> "list | None":
+        """CR 601.2c, 700.2a: the target requirements an instant or sorcery
+        is cast under (`spell_requirements`, a modal spell's held to the
+        modes chosen, `modal_spell.required_targets`), when its targets let
+        it be cast now. Each target it requires has a legal choice, and a
+        modal spell has as many modes its controller may choose as its
+        header asks for (`modal_spell.castable`). None when they do not."""
+        from .target_solver import has_legal_target_for_spell
+        from . import modal_spell
+        template = card.template
+        requirements = modal_spell.required_targets(
+            template, CastManager.spell_requirements(card))
+        if not has_legal_target_for_spell(game, player_idx, requirements,
+                                          exclude=card, x_ceiling=x_ceiling,
+                                          source=card):
+            return None
+        if modal_spell.in_scope(template) and not modal_spell.castable(
+                game, card, player_idx, x_ceiling):
+            return None
+        return requirements
+
+    @staticmethod
     def x_reach(game: "GameState", player_idx: int,
                 card: "CardInstance") -> "int | None":
         """The X a spell's targets are chosen within (CR 601.2b: X is chosen
@@ -749,7 +773,14 @@ class CastManager:
         """CR 601.2c: is every target the instant or sorcery requires among
         the chosen ones (`target_solver.required_targets_chosen`)? A spell
         the legality owner types no requirement for, and a permanent spell,
-        require none at cast."""
+        require none at cast. A modal spell's chosen targets also open as
+        many modes as its header asks for (CR 601.2b, 700.2a;
+        `modal_spell.modes_choosable`)."""
+        from . import modal_spell
+        if modal_spell.in_scope(card.template) and \
+                not modal_spell.modes_choosable(game, card, player_idx,
+                                                targets or []):
+            return False
         requirements = CastManager.spell_requirements(card)
         if not requirements:
             return True
@@ -891,17 +922,10 @@ class CastManager:
         if card.zone == "exile" and getattr(card, '_madness_pending', False):
             if template.madness_cost is None:
                 return False
-            if template.is_instant or template.is_sorcery:
-                from .target_solver import (has_legal_target_for_spell,
-                                            parse as _parse_targets)
-                requirements = _parse_targets(template.oracle_text or "")
-                from . import modal_spell
-                requirements = modal_spell.required_targets(template,
-                                                            requirements)
-                if not has_legal_target_for_spell(
-                        game, player_idx, requirements, exclude=card,
-                        source=card):
-                    return False
+            if (template.is_instant or template.is_sorcery) and \
+                    CastManager.targets_allow_cast(game, player_idx,
+                                                   card) is None:
+                return False
             total_mana = (player.untapped_mana_capacity()
                           + player.mana_pool.total()
                           + player._tron_mana_bonus())
@@ -1027,15 +1051,10 @@ class CastManager:
         # The requirements a target-conditional discount reads (CR 601.2c).
         discount_requirements = None
         if template.is_instant or template.is_sorcery:
-            from .target_solver import (has_legal_target_for_spell,
-                                        parse as _parse_targets)
-            requirements = _parse_targets(template.oracle_text or "")
-            from . import modal_spell
-            requirements = modal_spell.required_targets(template, requirements)
-            if not has_legal_target_for_spell(
-                    game, player_idx, requirements, exclude=card,
-                    x_ceiling=CastManager.affordable_x(game, player_idx, template),
-                    source=card):
+            requirements = CastManager.targets_allow_cast(
+                game, player_idx, card,
+                CastManager.affordable_x(game, player_idx, template))
+            if requirements is None:
                 return False
             discount_requirements = requirements
 

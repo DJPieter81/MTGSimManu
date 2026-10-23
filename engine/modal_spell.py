@@ -119,12 +119,50 @@ def _needs_an_object(req) -> bool:
             and not (req.types & _PLAYER_TARGET_TYPES))
 
 
+def untyped_target_modes(template: "CardTemplate", effects=None) -> frozenset:
+    """The modes that print a target their typed instructions do not
+    carry. Each counted target word a clause prints is one requirement (the
+    effect grammar's F11, `target_words`), so a mode with more such words
+    than typed requirements has a target the engine cannot check (CR
+    601.2c). Such a mode is never chosen: it is refused, as a mode whose
+    cost the engine does not pay is. Read once per parse: memoised on the
+    template against its typed spell host."""
+    host = _host(template, effects)
+    if host is None:
+        return frozenset()
+    hit = getattr(template, "_effects_untyped_modes", None)
+    if hit is not None and hit[0] is host:
+        return hit[1]
+    from .effect_grammar.sub.target import target_words
+    out = frozenset(i for i, m in enumerate(_typed_modes(template, effects))
+                    if len(target_words(m.text)) > len(m.targets))
+    try:
+        # A memo of the parse, in the template's `_effects*` memo family:
+        # it derives from the typed host alone and never changes a field.
+        template._effects_untyped_modes = (host, out)
+    except AttributeError:       # a stand-in that takes no attribute
+        pass
+    return out
+
+
+def _open(template: "CardTemplate", index: int, mode, admits) -> bool:
+    """May mode `index` be chosen, where `admits(req)` says whether a
+    requirement has its target (CR 700.2a)? It has no cost the engine does
+    not pay, prints no target its typed instructions do not carry
+    (`untyped_target_modes`), and each object it targets is admitted."""
+    return (mode.mode_cost in _FREE_MODE_COSTS
+            and index not in untyped_target_modes(template)
+            and all(not _needs_an_object(r) or admits(r)
+                    for r in mode.targets))
+
+
 def has_untargeted_mode(template: "CardTemplate") -> bool:
     """Some mode needs no object target and no unpaid cost: chosen alone,
-    the spell requires no target (CR 601.2c)."""
-    return any(m.mode_cost in _FREE_MODE_COSTS
-               and not any(_needs_an_object(r) for r in m.targets)
-               for m in _typed_modes(template))
+    the spell requires no target (CR 601.2c). A mode whose printed target
+    the typed host does not carry needs a target the engine cannot check,
+    so it is not one."""
+    return any(_open(template, i, m, lambda r: False)
+               for i, m in enumerate(_typed_modes(template)))
 
 
 def required_targets(template: "CardTemplate", requirements: list) -> list:
@@ -166,13 +204,36 @@ def _chosen_for(game: "GameState", controller: int, req, targets: Sequence,
 def legal_modes(game: "GameState", card: "CardInstance", controller: int,
                 targets: Sequence) -> List[int]:
     """The modes that may be chosen with these targets (CR 700.2a): each
-    object a mode targets is among the chosen targets, and the mode has no
-    unpaid cost of its own."""
+    object a mode targets is among the chosen targets, the mode prints no
+    target its typed instructions do not carry, and it has no unpaid cost
+    of its own (`_open`)."""
     return [i for i, m in enumerate(_typed_modes(card.template))
-            if m.mode_cost in _FREE_MODE_COSTS
-            and all(not _needs_an_object(r)
-                    or _chosen_for(game, controller, r, targets, card)
-                    for r in m.targets)]
+            if _open(card.template, i, m, lambda r: _chosen_for(
+                game, controller, r, targets, card))]
+
+
+def modes_choosable(game: "GameState", card: "CardInstance", controller: int,
+                    targets: Sequence) -> bool:
+    """Do these targets open as many modes as the spell's header asks for
+    (CR 601.2b-c, 700.2)? A cast whose targets open fewer is not an
+    announcement the spell can be cast with."""
+    return len(legal_modes(game, card, controller, targets)) >= \
+        choose_range(card.template)[0]
+
+
+def castable(game: "GameState", card: "CardInstance", controller: int,
+             x_ceiling: Optional[int] = None) -> bool:
+    """Can the spell be cast now with as many modes as its header asks for
+    (CR 601.2b-c, 700.2a)? A mode counts when it may be chosen with some
+    legal target for each object it targets (`_open`, the target solver's
+    `has_legal_target`)."""
+    from .target_solver import has_legal_target
+    template = card.template
+    n = sum(1 for i, m in enumerate(_typed_modes(template))
+            if _open(template, i, m, lambda r: has_legal_target(
+                game, controller, r, exclude=card, x_ceiling=x_ceiling,
+                source=card)))
+    return n >= choose_range(template)[0]
 
 
 def choose_modes(game: "GameState", card: "CardInstance", controller: int,
@@ -400,8 +461,9 @@ def audit_chosen(game: "GameState", card: "CardInstance",
     fields (not from `legal_modes` or `choose_mode_players`): a resolving
     modal spell performs a number of modes its header allows, every mode
     it performs that targets an object had a chosen target in that
-    object's zone, and every mode it performs that targets a player had a
-    player chosen for it. Observation only."""
+    object's zone, every mode it performs that targets a player had a
+    player chosen for it, and no mode it performs prints more counted
+    target words than it has typed requirements. Observation only."""
     _audit_mode_players(game, card, chosen, mode_players)
     from . import rules_audit
     if not rules_audit.enabled():
@@ -409,6 +471,7 @@ def audit_chosen(game: "GameState", card: "CardInstance",
     host = _host(card.template)
     if host is None:
         return
+    from .effect_grammar.sub.target import target_words
     lo, hi = host.choose
     problems = []
     if not lo <= len(chosen) <= hi:
@@ -427,5 +490,8 @@ def audit_chosen(game: "GameState", card: "CardInstance",
                     and not r.types & {"player", "any"}
                     and r.zone not in zones):
                 problems.append(f"mode {i} performed with no {r.zone} target")
+        if len(target_words(host.modes[i].text)) > len(host.modes[i].targets):
+            problems.append(f"mode {i} prints a target its typed "
+                            f"instructions do not carry")
     rules_audit.check("700.2a/modes_chosen", not problems,
                       f"{card.name}: {'; '.join(problems)}", game=game)
