@@ -10793,9 +10793,58 @@ Registered: Supreme Verdict ×9, Dovin's Veto ×6, Chandra, Awakened Inferno ×1
   - The first run failed one test: the harness's template snapshot caught the memo, then stored as `_counter_text`.
   - The memo now sits in the template's `_effects*` parse-memo family, which the snapshot excludes; that file re-ran green.
 
-**Measured:** by the `uc-post` arm (pre = `lr-post`).
+**Measured:** by the `uc-post` arm (pre = `lr-post`, same seeds, n=20 Bo3, all 25 shards, 0 aborted cells). Every deck is within 0.8 pp:
+- Azorius Control (WST v2) +0.8 and Azorius Control (WST) −0.5, the decks that carry Dovin's Veto and Supreme Verdict.
+- No deck moves more than 5 pp. 13 cells change, all of them involving those decks.
+- Audit findings 516 → 511, and violations stay at 0, `101.2/uncounterable` included. Band misses stay at 0.
 
 **Leads, not built:**
 - **A grant tied to the mana that paid for a spell** (Cavern of Souls, Boseiju, Delighted Halfling ×4 in Creatures Toolbox) needs the payment to record each source's rider.
 - **The turn-scoped grants** (Veil of Summer, Autumn's Veil): a resolved PROHIBIT `be_countered` is read once the dispatcher stores it, but Veil's host is unmodelled.
 - **An ability that can't be countered:** nothing in the vocabulary reads one, so every ability can be countered.
+
+## Unit UG: a permanent's cast trigger that exiles a target permanent exiles the target it chose (CR 603.2, 603.3d, 701.13a, 608.2b; 2026-10-23)
+
+**Source:** the lr-post audit ranking. Ugin, Eye of the Storms holds 35 of the 188 `603.2/cast_trigger_unresolved` findings per arm, and a probe confirmed the gap: with Ugin on the battlefield, casting Thought-Knot Seer exiled nothing.
+
+**Rule:** "Whenever you cast a colorless spell, exile up to one target permanent that's one or more colors" triggers on the cast. Its target is chosen as it is put on the stack, among the permanents its requirement admits (CR 603.3d, 115.1): a coloured permanent the source may target. On resolution it exiles that target if it is still legal (CR 608.2b, 701.13a).
+
+**Defect:**
+- **The grammar left "that's one or more colors" as residue,** although the requirement carries it as unit CQ's colour bound. So the trigger's host was refused.
+- **The cast carrier had no exile of a target permanent.**
+- **The slot legality owner (`target_solver.slot_admits_permanent`) never read the colour bound.** Trigger slots and the resolution re-check admitted a colourless permanent.
+
+**Class:** 10 pool cards print a cast trigger that exiles a target permanent, 18 with destroy. The "whenever you cast" ones ride the cast carrier.
+- **Registered:** Ugin, Eye of the Storms ×6 (Eldrazi Tron ×4, Eldrazi Ramp ×2).
+- **Also unblocked by the residue fix:** Ugin, the Ineffable's minus line ("destroy target permanent that's one or more colors") is now performed by the loyalty carrier. Loyalty-dispatch baseline 381 → 380.
+
+**Steps:**
+- **Grammar:** a tail colour qualifier that the requirement's colour bound carries ("that's one or more colors", multicolored, monocolored) is no longer residue.
+- **Executor:** "exile [up to N] target <permanent>" (`exile_target_supported`): each chosen permanent still a legal target moves from the battlefield to exile through the zone funnel. It is allowed in the cast-trigger family only.
+- **Strict shape:** the cast family's strict shape takes the exile of a target permanent.
+- **Slot legality:** `slot_admits_permanent` reads the colour bound, as a spell's own targets already did (unit CQ).
+- **AI:** a trigger that exiles or destroys a target permanent aims at the opposing permanent whose removal swings its controller's position most (`ai.permanent_threat`). "Up to" takes none rather than one of the caster's own permanents.
+- **Auditor** `701.13a/target_exiled`, restated from the zones.
+- **Harness:** the CAST case now casts a colourless artifact for a "colorless spell" head. It used to take the first artifact, coloured or not, so the pair never dispatched.
+
+**Tests:** 8, in `tests/test_a_cast_trigger_exiles_the_target_permanent_it_chose.py`; 4 were red first. These pass either way, as pins: a spell of another kind, "up to one" with only the caster's own permanents, and the audit's silent case.
+
+**Pins:** (`05d865c`)
+- **Harness:** 1847 pairs, 3 of them new: Ugin's trigger (two printings) and Ugin, the Ineffable's line. All are intended, with reasons; nothing is undispatched.
+- **Spec equivalence:** Reach of Shadows' targeted-removal row moves AGREE → DERIVED_COVERAGE_GROWTH. The derived reading finds the removal the legacy field refuses. Baseline and closure report updated.
+- **Census:** `target.colored` residue 7 → 0.
+- **Digest:** re-recorded after replay. One game changes: Jeskai Blink vs Eldrazi Tron s59500 g3, 27 → 30 turns, winner unchanged. Ugin's colorless-cast exiles now fire (five in that match).
+- **Anchor:** Eldrazi Tron vs Amulet Titan s50500, turn-only drift 11 → 13, refreshed.
+- **Grammar pins:** the target leaf's polarity row, the pool witness and both witness fixtures recorded "that's one or more colors" as `target.colored` residue. They now read it as the colour bound, with no residue. The harness's no-op list loses two hosts that now dispatch: Ugin's trigger, and Glaring Fleshraker's colourless-cast trigger, which the colourless spell now reaches.
+- **Chunks at `05d865c`:** 5314 + 2766 passed.
+  - The first run failed six tests: the four grammar and harness pins above, plus `test_extraction_performance`.
+  - That perf test passes alone on a quiet machine (19 s), and CI deselects it.
+
+**Measured:** by the `ug-post` arm (pre = `uc-post`).
+
+**Leads, not built:**
+- **UG.2, the spell's own "when you cast ~" exile** (Devourer of Destiny ×10, Ugin's own, Ulamog's "exile two target permanents"). It stays on the legacy self-cast resolver, which picks its own target and ignores hexproof.
+  - A self-cast carrier was built and taken out of this unit. The equivalence closure, and so the harness, knows no self-cast carrier, so its hosts could not be proven.
+  - Under that carrier the AI's pick (`permanent_threat`) chose Ulamog's targets differently: two lands over two Leyline Bindings.
+- **`permanent_threat` values a permanent that holds an exiled card "until it leaves" at its own contribution only,** not the card its removal returns (Leyline Binding, O-Ring class).
+- **"Whenever you cast a <kind> spell" triggers resolve inline as the spell is cast,** not on the stack above it.
