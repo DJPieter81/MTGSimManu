@@ -10431,7 +10431,13 @@ Refused and recorded: Phoenix Fleet Airship (a condition counting permanents nam
 - **CPU:** Dimir vs Azorius Control, 4 matches, 3.80 → 3.94 s per match.
 - **Chunks at `814dd12`:** 5200 + 2766 passed, nothing failed.
 
-**Measured:** by the `pb-post` arm (pre = `cap-post`).
+**Measured** (`pb-post` arm against `cap-post`, 600 cells each):
+- **Every deck is within ±0.9. No deck moved more than 5 pp, so no replay is due.** 92 cells changed, each by a game or two.
+- **Band miss** is 42.1 → 43.8 pp: Azorius Control 27.3 → 26.4, Hollow One 28.2 → 27.7.
+- **Audit violations 0 → 4104, all `117.4/priority_before_resolution`:** the residual this unit's auditor was built to count.
+  - Reproduced locally (Azorius Control vs Grixis Reanimator), nearly all are Isochron Scepter's copies of Silence and Orim's Chant, cast and resolved inside the imprint-copy route with no window.
+  - That is about 2016 in Azorius Control's own shard and about 84 in each other shard's games against it.
+  - The rest are cascade's inline hit (unit CS removes it) and the suspend route.
 
 **Leads, not built:**
 - **Engine drains outside the runner,** which are the auditor's residual:
