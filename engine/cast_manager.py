@@ -533,17 +533,19 @@ def _audit_cascade_hit_cast(game: "GameState", controller: int, exiled,
                             rest, below, cast_before: int) -> None:
     """Rules audit (CR 702.85a, 117.3b), restated from the zones, the
     library order, the caster's cast count and the stack's raw items: when
-    a cascade trigger has resolved, no card it exiled is left in exile or
-    in a hand; the ones not cast are the bottom of the library; the cast
-    count rose by one exactly when the hit was cast; and every object that
-    was below the trigger is still on the stack -- nothing resolved inside
-    it, before a player held priority. Observes only."""
+    a cascade trigger has resolved, no card it exiled is in a hand; the
+    ones not cast are the bottom of the library; the cast count rose by one
+    exactly when the hit was cast; and every object that was below the
+    trigger is still on the stack -- nothing resolved inside it, before a
+    player held priority. A hit that was cast is wherever the stack put it:
+    a lock counters it as it is cast, and a graveyard replacement may exile
+    it again (CR 614.6). Observes only."""
     from .rules_audit import check
     player = game.players[controller]
     lib = player.library
     bottom = lib[len(lib) - len(rest):] if rest else []
     hit_cast = len(exiled) > len(rest)
-    ok = (all(c.zone not in ("exile", "hand") for c in exiled)
+    ok = (all(c.zone != "hand" for c in exiled)
           and all(any(c is b for b in bottom) for c in rest)
           and player.spells_cast_this_turn - cast_before == int(hit_cast)
           and all(any(i is j for j in game.stack.items) for i in below))

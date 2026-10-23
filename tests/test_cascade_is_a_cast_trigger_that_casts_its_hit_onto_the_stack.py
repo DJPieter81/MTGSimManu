@@ -391,6 +391,23 @@ def test_the_audit_records_a_hit_resolved_inside_its_trigger(
     assert "702.85a/cascade_hit_cast" in _rules(audit)
 
 
+def test_the_audit_admits_a_cast_hit_a_lock_counters_and_a_replacement_exiles(
+        card_db, audit):
+    """A hit that was cast is wherever the stack put it: a lock's counter
+    sends it toward the graveyard, and a graveyard replacement exiles it
+    instead (CR 614.6). It is not a card cascade left in exile."""
+    game = _game()
+    _library(game, card_db, ["Living End"])
+    chalice = _put(game, card_db, "Chalice of the Void", "battlefield", 1)
+    chalice.other_counters["charge"] = 0
+    _put(game, card_db, "Rest in Peace", "battlefield", 1)
+    _cast(game, card_db, "Shardless Agent")
+    _drain(game)
+    hit = next(c for c in game.players[0].exile if c.name == "Living End")
+    assert hit.zone == "exile"                       # countered, then exiled
+    assert "702.85a/cascade_hit_cast" not in _rules(audit)
+
+
 def test_the_audits_are_silent_on_the_cascade_path(card_db, audit):
     game = _game()
     _library(game, card_db, ["Mountain", "Memnite", "Island"])
