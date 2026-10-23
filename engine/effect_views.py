@@ -3155,6 +3155,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     # statics, replacements and AI classifications
     "power_scales_with": "characteristic-defining ability (CR 604.3)",
     "stax_class": _STATIC, "stax_forced_basic": _STATIC,
+    "cast_counter": ("a permanent's cast-triggered counter (CR 603.2, 701.6), performed by the cast owner's one predicate (`CastManager.cast_counters`) as the spell is cast; the cast carrier does not take a COUNTER instruction"),
     "has_stax_ability": _STATIC, "has_pithing_needle_lock": _STATIC,
     "has_spell_chain_hate": _STATIC,
     "draw_limit": _STATIC, "prevents_graveyard_etb": _REPLACEMENT,

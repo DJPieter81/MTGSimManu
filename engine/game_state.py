@@ -112,6 +112,10 @@ class GameState:
         self._triggers_queue: List[Tuple[Ability, CardInstance, int]] = []
         # Global storm count (all spells cast this turn by both players)
         self._global_storm_count: int = 0
+        # Every unit of mana a payment has taken from a pool, monotonic: a
+        # cast's mana spent is the difference across its payment (CR 601.2h;
+        # `StackItem.mana_spent`).
+        self.mana_paid_total: int = 0
         # Delayed one-shot triggers: "exile it at the beginning of the
         # next end step" (temporary-reanimation / put-onto-battlefield
         # riders). Entries are (card, controller, battlefield_entry_seq):

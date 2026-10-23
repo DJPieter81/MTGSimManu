@@ -4529,6 +4529,50 @@ def parse_stax_class(oracle: str) -> Optional[str]:
     return None
 
 
+# A permanent's cast-triggered counter (CR 603.2, 701.6): "Whenever <a player
+# | an opponent> casts <a spell | a noncreature spell | an artifact, instant,
+# or sorcery spell | a spell with mana value equal to the number of charge
+# counters on this <permanent>>, [if no [colored] mana was spent to cast
+# it,] counter that spell." -- optionally "This ability triggers only once
+# each turn." A counter "unless" its caster pays, and one with a further
+# rider, are refused: the shape is the counter alone.
+_CAST_COUNTER_RE = re.compile(
+    r"whenever (?P<who>a player|an opponent) casts "
+    r"(?P<spell>a spell with mana value equal to the number of charge "
+    r"counters on (?:this \w+|~)|a noncreature spell"
+    r"|an artifact, instant, or sorcery spell|a spell), "
+    r"(?:if (?P<cond>no (?:colored )?mana was spent to cast it), )?"
+    r"counter (?:that spell|it)\.(?P<rest>[^\n]*)")
+_CAST_COUNTER_SPELL = {
+    "a noncreature spell": "noncreature",
+    "an artifact, instant, or sorcery spell": "artifact_instant_sorcery",
+    "a spell": "spell",
+}
+
+
+def parse_cast_counter(oracle: str) -> Optional[Tuple[str, str,
+                                                      Optional[str], bool]]:
+    """(who, spell, condition, once_each_turn) of a permanent's cast-
+    triggered counter, or None (see `CardTemplate.cast_counter`)."""
+    if not oracle:
+        return None
+    m = _CAST_COUNTER_RE.search(oracle.lower())
+    if m is None:
+        return None
+    rest = m.group("rest").strip()
+    once = rest == "this ability triggers only once each turn."
+    if rest and not once:
+        return None                        # a rider: refused
+    spell = m.group("spell")
+    kind = ("mana_value_equals_charge" if spell.startswith("a spell with")
+            else _CAST_COUNTER_SPELL[spell])
+    cond = m.group("cond")
+    condition = None if cond is None else (
+        "no_colored_mana_spent" if "colored" in cond else "no_mana_spent")
+    who = "any" if m.group("who") == "a player" else "opponent"
+    return (who, kind, condition, once)
+
+
 def parse_stax_forced_basic(oracle: str) -> Optional[str]:
     """Return the basic land type forced by Blood-Moon-type effects, or None.
 

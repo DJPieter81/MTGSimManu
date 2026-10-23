@@ -1964,7 +1964,7 @@ class CardDatabase:
             parse_has_symmetric_reanimation,
             parse_has_token_effect, parse_has_graveyard_recursion,
             parse_has_graveyard_hate, parse_has_spell_chain_hate,
-            parse_stax_class, parse_stax_forced_basic,
+            parse_stax_class, parse_stax_forced_basic, parse_cast_counter,
             parse_has_cast_trigger, parse_has_recurring_trigger,
             parse_has_scaling_effect, parse_has_self_trigger,
             parse_has_recurring_draw_trigger, parse_has_each_opponent_effect,
@@ -2158,6 +2158,7 @@ class CardDatabase:
         template.has_graveyard_hate = parse_has_graveyard_hate(oracle)
         template.has_spell_chain_hate = parse_has_spell_chain_hate(oracle)
         template.stax_class = parse_stax_class(oracle)
+        template.cast_counter = parse_cast_counter(oracle)
         template.stax_forced_basic = parse_stax_forced_basic(oracle)
         template.has_cast_trigger = parse_has_cast_trigger(oracle)
         template.has_recurring_trigger = parse_has_recurring_trigger(oracle)

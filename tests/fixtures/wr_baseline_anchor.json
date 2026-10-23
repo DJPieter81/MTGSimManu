@@ -54,8 +54,8 @@
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "Azorius Control (WST)",
-      "turns": 17
+      "winner": "draw",
+      "turns": 30
     },
     {
       "deck1": "Azorius Control (WST v2)",

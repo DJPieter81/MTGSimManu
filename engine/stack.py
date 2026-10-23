@@ -58,6 +58,10 @@ class StackItem:
     # by cast_spell() from lands_to_tap + drained mana-pool colors.
     # Empty set for free casts or when payment tracking isn't available.
     colors_spent: Set[str] = field(default_factory=set)
+    # How much mana was spent to cast this spell (CR 601.2h): what the
+    # payment owner took for it (`GameState.mana_paid_total`), 0 for a free
+    # cast or a cost of 0. Read by "if no mana was spent to cast it".
+    mana_spent: int = 0
     # CR 608.2b support: zone each card-target occupied when it was
     # chosen at cast time (instance_id → zone name). Populated by
     # CastManager.cast_spell; consumed by ResolutionManager's

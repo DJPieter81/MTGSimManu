@@ -529,6 +529,49 @@ def _audit_cascade_triggers_on_cast(game: "GameState", card) -> None:
           game=game)
 
 
+def _audit_cast_counter(game: "GameState", card, stack_item) -> None:
+    """Rules audit (CR 603.2, 701.6, 202.3e), restated from the raw fields
+    -- each battlefield permanent's printed cast counter, its controller and
+    charge counters, the spell's printed types, its mana value on the stack
+    from the printed cost and the X chosen, and the cast's recorded mana
+    spent -- not from `cast_counters`: a spell cast while a permanent's
+    counter names it is not left on the stack. A "once each turn" counter
+    is not restated. Observes only."""
+    from .rules_audit import check, enabled
+    if not enabled():
+        return
+    from .cards import CardType
+    t = card.template
+    x_pips = getattr(t.mana_cost, "x_count", 0) if t.mana_cost else 0
+    mv = (t.cmc or 0) + x_pips * max(0, stack_item.x_value or 0)
+    types = set(t.card_types)
+    coloured = bool(set(stack_item.colors_spent or ()) & set("WUBRG"))
+    covering = []
+    for p in game.players:
+        for perm in p.battlefield:
+            cc = getattr(perm.template, "cast_counter", None)
+            if cc is None or cc[3]:
+                continue
+            who, kind, condition, _once = cc
+            if who == "opponent" and perm.controller == stack_item.controller:
+                continue
+            if (kind == "noncreature" and CardType.CREATURE in types) or (
+                    kind == "artifact_instant_sorcery" and not types & {
+                        CardType.ARTIFACT, CardType.INSTANT,
+                        CardType.SORCERY}) or (
+                    kind == "mana_value_equals_charge"
+                    and perm.other_counters.get("charge", 0) != mv):
+                continue
+            if (condition == "no_mana_spent" and stack_item.mana_spent) or (
+                    condition == "no_colored_mana_spent" and coloured):
+                continue
+            covering.append(perm.name)
+    if covering:
+        check("603.2/cast_counter",
+              not any(i is stack_item for i in game.stack.items),
+              f"{card.name} left on the stack under {covering}", game=game)
+
+
 def _audit_targets_color(game: "GameState", card, targets) -> None:
     """Rules audit (CR 115.1, 601.2c, 105.2), restated from the raw fields
     -- the requirement's printed colour qualifier and each chosen target's
@@ -1538,14 +1581,77 @@ class CastManager:
         certainty, not a hidden-hand belief.  Before that read existed the
         AI fed card after card into a visible Chalice (2026-09-08).
         """
-        opp = game.players[1 - player_idx]
-        cmc = template.cmc or 0
-        for perm in opp.battlefield:
-            if getattr(perm.template, 'stax_class', None) != 'chalice':
-                continue
-            if perm.other_counters.get("charge", 0) == cmc:
-                return perm
-        return None
+        # A cast the caster pays for in the ordinary way spends its mana
+        # value in mana, coloured mana exactly when it has a coloured pip.
+        # An X spell's mana value on the stack is chosen with its X as it
+        # is cast (CR 202.3e, 601.2b): read here at the largest X its caster
+        # can pay now.
+        cost = template.mana_cost
+        coloured = {"W", "U", "B", "R", "G"} if cost is not None and (
+            cost.white or cost.blue or cost.black or cost.red or cost.green
+            or cost.hybrid) else set()
+        x_pips = getattr(cost, "x_count", 0) if cost is not None else 0
+        mana_value = template.cmc or 0
+        if x_pips:
+            player = game.players[player_idx]
+            available = (player.untapped_mana_capacity()
+                         + player.mana_pool.total())
+            mana_value += x_pips * max(0, (available - mana_value) // x_pips)
+        locks = CastManager.cast_counters(
+            game, player_idx, template, mana_value, mana_value, coloured)
+        return locks[0] if locks else None
+
+    @staticmethod
+    def cast_counters(game: "GameState", caster_idx: int, template,
+                      mana_value: int, mana_spent: int,
+                      colors_spent) -> "List[CardInstance]":
+        """Every battlefield permanent whose cast-triggered counter names
+        this cast (CR 603.2, 701.6), from its typed `cast_counter`: cast by
+        a player it covers ("a player" -- its controller included -- or "an
+        opponent"), a spell of the kind it names at the spell's mana value
+        on the stack (CR 202.3e), under its condition (no mana / no coloured
+        mana spent), and -- for "triggers only once each turn" -- not yet
+        triggered this turn. The one predicate the cast and the AI read."""
+        from .cards import CardType
+        out = []
+        spent_colour = bool(set(colors_spent or ()) & {"W", "U", "B", "R", "G"})
+        fired = getattr(game, "_cast_counters_fired", set())
+        types = set(template.card_types)
+        for p in game.players:
+            for perm in p.battlefield:
+                cc = getattr(perm.template, "cast_counter", None)
+                if cc is None:
+                    continue
+                who, kind, condition, once = cc
+                if who == "opponent" and perm.controller == caster_idx:
+                    continue
+                if kind == "noncreature" and CardType.CREATURE in types:
+                    continue
+                if kind == "artifact_instant_sorcery" and not types & {
+                        CardType.ARTIFACT, CardType.INSTANT, CardType.SORCERY}:
+                    continue
+                if kind == "mana_value_equals_charge" and \
+                        perm.other_counters.get("charge", 0) != mana_value:
+                    continue
+                if condition == "no_mana_spent" and mana_spent > 0:
+                    continue
+                if condition == "no_colored_mana_spent" and spent_colour:
+                    continue
+                if once and (perm.instance_id, game.turn_number) in fired:
+                    continue
+                out.append(perm)
+        return out
+
+    @staticmethod
+    def _spend_once_each_turn(game: "GameState", locks) -> None:
+        """A "triggers only once each turn" counter that triggered on this
+        cast has triggered for the turn, whichever counter countered."""
+        for perm in locks:
+            if perm.template.cast_counter[3]:
+                if not hasattr(game, "_cast_counters_fired"):
+                    game._cast_counters_fired = set()
+                game._cast_counters_fired.add((perm.instance_id,
+                                               game.turn_number))
 
     @staticmethod
     def evoke_exile_candidates(player, card) -> list:
@@ -2188,6 +2294,9 @@ class CastManager:
         """Cast a spell: pay costs and put on stack. free_cast skips mana payment."""
         player = game.players[player_idx]
         template = card.template
+        # The mana spent on this cast is what the payment owner takes from
+        # here on (CR 601.2h; `StackItem.mana_spent`).
+        paid_before = getattr(game, "mana_paid_total", 0)
 
         # CR 111.2 — tokens are never castable, free_cast included.
         if getattr(card, 'is_token', False):
@@ -2852,6 +2961,9 @@ class CastManager:
                     deal_damage(land, player, land.template.tap_damage)
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
+            # The mana the X took, from the pool and the lands (CR 601.2h).
+            from .mana_payment import ManaPayment as _MPay
+            _MPay._record_paid(game, actual_cost - max(0, remaining))
 
         # CR 608.2b / 400.7 support: snapshot what each card target is
         # at cast time -- its zone (battlefield for removal, stack for
@@ -2987,13 +3099,20 @@ class CastManager:
         player.spells_cast_this_turn_kinds.append(spell_kind(template))
         game._global_storm_count += 1
 
-        # ── Lock permanents that counter on cast (Chalice family) ──
-        # One predicate, `lock_that_counters`, decides it here AND answers
-        # the AI's resolution-probability query, so the engine's ruling
-        # and the caster's valuation cannot disagree.
-        opp_idx = 1 - player_idx
-        lock = CastManager.lock_that_counters(game, player_idx, template)
+        # ── A permanent's cast-triggered counter (CR 603.2, 701.6) ──
+        # One predicate, `cast_counters`, decides it here AND answers the
+        # AI's resolution-probability query (`lock_that_counters`), so the
+        # engine's ruling and the caster's valuation cannot disagree. Every
+        # permanent whose counter names this cast triggers; the first to
+        # resolve counters it.
+        stack_item.mana_spent = getattr(game, "mana_paid_total", 0) - paid_before
+        locks = CastManager.cast_counters(
+            game, player_idx, template, stack_item.mana_value,
+            stack_item.mana_spent, stack_item.colors_spent)
+        CastManager._spend_once_each_turn(game, locks)
+        lock = locks[0] if locks else None
         if lock is not None:
+            opp_idx = lock.controller
             charge = lock.other_counters.get("charge", 0)
             item = game.stack.pop()
             # A countered spell "would be put into a graveyard from the
@@ -3004,13 +3123,16 @@ class CastManager:
             # (2026-09-08).
             from .spell_resolution import ResolutionManager
             ResolutionManager._move_countered_stack_item(game, item, card)
+            label = (f" (X={charge})" if lock.template.cast_counter[1]
+                     == "mana_value_equals_charge" else "")
             game.log.append(
                 f"T{game.display_turn} P{opp_idx+1}: "
-                f"{lock.name} (X={charge}) counters {card.name}")
+                f"{lock.name}{label} counters {card.name}")
             # CR 603.3: a spell countered as it is cast has still been cast;
             # its cast triggers go on the stack.
             CastManager.put_cast_triggers(game, stack_item)
             _audit_cascade_triggers_on_cast(game, card)
+            _audit_cast_counter(game, card, stack_item)
             return True
 
         dash_label = " (Dash)" if dashed else ""
@@ -3101,6 +3223,7 @@ class CastManager:
         # the spell (cascade).
         CastManager.put_cast_triggers(game, stack_item)
         _audit_cascade_triggers_on_cast(game, card)
+        _audit_cast_counter(game, card, stack_item)
         return True
 
 

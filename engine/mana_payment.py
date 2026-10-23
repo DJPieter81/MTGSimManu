@@ -257,6 +257,13 @@ class ManaPayment:
         )
 
     @staticmethod
+    def _record_paid(game: "GameState", units: int) -> None:
+        """Count the mana a payment took from a pool (CR 601.2h): the
+        monotonic total a cast's mana spent is read from."""
+        if units > 0:
+            game.mana_paid_total = getattr(game, "mana_paid_total", 0) + units
+
+    @staticmethod
     def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
                                   cost: ManaCost,
                                   card_name: str = None,
@@ -500,7 +507,9 @@ class ManaPayment:
 
         # Check if mana pool already has enough (from rituals)
         if player.mana_pool.can_pay(cost):
+            _before = player.mana_pool.total()
             _paid = player.mana_pool.pay(cost)
+            ManaPayment._record_paid(game, _before - player.mana_pool.total())
             _commit_sacrifices() if _paid else _refund_sacrifices()
             return _paid
 
@@ -715,7 +724,9 @@ class ManaPayment:
                 from .damage import deal_damage
                 deal_damage(land, player, land.template.tap_damage)
 
+        _before = player.mana_pool.total()
         ok = player.mana_pool.pay(cost)
+        ManaPayment._record_paid(game, _before - player.mana_pool.total())
 
         # Verbose: log which lands were tapped, and what is left AFTER
         # this cost is paid. Emitted post-payment on purpose: measured

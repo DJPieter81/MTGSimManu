@@ -893,6 +893,13 @@ class CardTemplate:
     # 'chalice', 'blood_moon', 'canonist', 'torpor_orb', or None.
     # Populated by oracle_parser.parse_stax_class.
     stax_class: Optional[str] = None
+    # A cast-triggered counter (CR 603.2, 701.6): (who, spell, condition,
+    # once_each_turn) -- who "any" / "opponent"; spell "spell" /
+    # "noncreature" / "artifact_instant_sorcery" / "mana_value_equals_charge"
+    # (the spell's mana value on the stack equals this permanent's charge
+    # counters); condition None / "no_mana_spent" / "no_colored_mana_spent".
+    # Populated by oracle_parser.parse_cast_counter.
+    cast_counter: Optional[Tuple[str, str, Optional[str], bool]] = None
     # Blood Moon forced basic land type ('mountain', 'island', etc.), or None.
     # Populated by oracle_parser.parse_stax_forced_basic.
     stax_forced_basic: Optional[str] = None
