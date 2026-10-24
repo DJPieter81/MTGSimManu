@@ -1,5 +1,5 @@
 {
-  "combined": "7508b87c31b8c46b9fb3371c1d785dfc3d58ca16041aa59e235e561822bf5509",
+  "combined": "090f05bf1759fd1c27b7315b20cd521e340177fa1ed414a9764566f6da064bda",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -39,8 +39,8 @@
       "winner": "Affinity"
     },
     "bo1|Creatures Toolbox|Grixis Reanimator|56000": {
-      "lines": 618,
-      "sha256": "107290057db99efb94e3cb093388ff89eccda7914ccaf21fe006c8b210bced59",
+      "lines": 617,
+      "sha256": "a03ac87b35e7df1afb0270a6a7ed8170f99f2f5803e60baa4b0e8c6ba45a8b85",
       "turns": 8,
       "winner": "Grixis Reanimator"
     },

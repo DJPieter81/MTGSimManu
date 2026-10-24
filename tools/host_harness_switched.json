@@ -3204,6 +3204,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Archon of Cruelty",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ED-T: the legacy attack pass for this host is retired (its oracle drain branch served only this card, choosing the opponent's sacrifice and discard for them); the attack carrier performs every instruction: the target opponent sacrifices a creature or planeswalker and discards a card, each of their choice, and loses 3 life; its controller draws a card and gains 3 life (CR 701.21a, 701.9b)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Ashnod's Harvester",
     "TRIGGERED:0:0"
    ],
@@ -8892,10 +8900,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Abyssal Gorestalker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Abzan Ascendancy",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Accursed Marauder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
   },
   {
    "pair": [
@@ -9732,6 +9756,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Demon's Disciple",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Detective's Satchel",
     "TRIGGERED:0:0"
    ],
@@ -10172,6 +10204,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Fleshbag Marauder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Flight of Fancy",
     "TRIGGERED:0:1"
    ],
@@ -10408,6 +10448,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Goremand",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
   },
   {
    "pair": [
@@ -11196,6 +11244,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Merciless Executioner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Merrow Skyswimmer",
     "TRIGGERED:0:2"
    ],
@@ -11476,6 +11532,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Oath of Liliana",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Okoye, Dora Milaje Leader",
     "TRIGGERED:0:0"
    ],
@@ -11712,6 +11776,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Portal to Phyrexia",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
   },
   {
    "pair": [
@@ -12276,6 +12348,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sheoldred // The True Scriptures",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Shielding Plax",
     "TRIGGERED:0:1"
    ],
@@ -12384,6 +12464,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Slum Reaper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
   },
   {
    "pair": [
@@ -12572,6 +12660,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Susurian Dirgecraft",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sweettooth Witch",
     "TRIGGERED:0:0"
    ],
@@ -12720,6 +12816,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Tithing Blade // Consuming Sepulcher",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
   },
   {
    "pair": [
@@ -12952,6 +13056,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Vile Mutilator",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
   },
   {
    "pair": [

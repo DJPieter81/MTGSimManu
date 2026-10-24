@@ -564,6 +564,13 @@
  "attack:dispatch": {
   "deck_hosts": [
    {
+    "card": "Archon of Cruelty",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Oliphaunt",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -578,21 +585,21 @@
     "strict": true
    }
   ],
-  "executable": 115,
+  "executable": 116,
   "family": "attack_trigger",
   "hosts": {
-   "mainboard": 2,
+   "mainboard": 3,
    "pool": 113,
    "sideboard": 0
   },
   "steps": {
    "E1": 19,
    "E2": 5,
-   "E3": 33,
+   "E3": 34,
    "E4": 25,
    "E5": 33
   },
-  "strict": 115,
+  "strict": 116,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 31,
@@ -1549,21 +1556,21 @@
     "strict": true
    }
   ],
-  "executable": 541,
+  "executable": 554,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 519,
+   "pool": 532,
    "sideboard": 0
   },
   "steps": {
-   "E2": 47,
+   "E2": 60,
    "E3": 197,
    "E4": 282,
    "E5": 10,
    "E6": 5
   },
-  "strict": 541,
+  "strict": 554,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
@@ -1571,10 +1578,10 @@
    "CREATE_TOKEN": 268,
    "DRAW": 109,
    "EXILE": 10,
-   "EXILE,GAIN_LIFE": 3,
    "MILL": 37,
    "MOVE": 34,
    "PUT_COUNTERS": 13,
+   "SACRIFICE": 13,
    "SURVEIL": 47
   }
  },

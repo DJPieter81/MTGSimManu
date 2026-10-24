@@ -761,7 +761,7 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
 _TRIGGER_BODY_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
-    Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE})
+    Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE})
 _ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER,
                                   RefKind.DEFENDING_PLAYER})
 _CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,

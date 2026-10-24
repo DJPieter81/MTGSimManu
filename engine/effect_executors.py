@@ -107,7 +107,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.PUT_COUNTERS, Verb.MILL,
                                             Verb.SURVEIL,
                                             Verb.KEYWORD_ACTION,
-                                            Verb.CONTINUOUS, Verb.EXILE}),
+                                            Verb.CONTINUOUS, Verb.EXILE,
+                                            Verb.SACRIFICE}),
             FAMILY_STEP_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.GAIN_LIFE, Verb.DRAW,
                                             Verb.CREATE_TOKEN,
@@ -120,7 +121,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                               Verb.PUT_COUNTERS, Verb.MILL,
                                               Verb.SURVEIL,
                                               Verb.KEYWORD_ACTION,
-                                              Verb.CONTINUOUS, Verb.EXILE})}
+                                              Verb.CONTINUOUS, Verb.EXILE,
+                                              Verb.SACRIFICE})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -1286,13 +1288,14 @@ execute_draw.supports = _draw_supported
 # ── DISCARD (family cast_trigger, unit CT) ────────────────────────────
 
 def discard_supported(s: EffectSpec) -> bool:
-    """"[You may] discard <N> card(s)" by the controller, of their choice
-    (CR 701.9a): each card through the one discard funnel
-    (`GameState.discard_card`, where madness and the discard count live),
-    chosen by the controller's discard choice (`callbacks.choose_discard`).
-    "You may" is the dispatcher's question (A35), asked before this runs.
-    Any other discarder, a random or filtered discard, or any other shape is
-    refused."""
+    """"[You may] discard <N> card(s)" by the controller, or "<target
+    player | each opponent> discards <N> card(s)" by the players named,
+    each of their own choice (CR 701.9a-b): each card through the one
+    discard funnel (`GameState.discard_card`, where madness and the discard
+    count live), chosen by the discarder's discard choice
+    (`callbacks.choose_discard`). "You may" is the dispatcher's question
+    (A35), asked before this runs. A random or filtered discard, a discard
+    another player chooses, or any other shape is refused."""
     if s.verb is not Verb.DISCARD or s.flags or s.alternatives:
         return False
     f = s.filter
@@ -1302,34 +1305,49 @@ def discard_supported(s: EffectSpec) -> bool:
     a = s.amount
     if not (a is None or (a.kind is AmountKind.LITERAL and a.n >= 1)):
         return False
-    return (s.target is None and s.target_slot is None and s.ref is None
-            and s.subject is None and s.other is None and s.dest is None
-            and s.payload is None and s.duration is None and s.group is None
-            and s.chooser is Chooser.CONTROLLER
-            and _acts_as_controller(s.actor))
+    shaped = (s.target is None and s.target_slot is None and s.ref is None
+              and s.subject is None and s.other is None and s.dest is None
+              and s.payload is None and s.duration is None
+              and s.group is None)
+    if s.chooser is Chooser.CONTROLLER:
+        return shaped and _acts_as_controller(s.actor)
+    return (shaped and s.chooser is Chooser.PARTICIPANT
+            and _discarders_named(s.actor))
+
+
+def _discarders_named(actor: Any) -> bool:
+    """A player set relative to the controller, or a chosen player: each
+    discards cards of their own choice (CR 701.9b)."""
+    return ((isinstance(actor, Selector) and actor.kind in _EDICT_ACTORS
+             and actor.filter is None)
+            or (isinstance(actor, Ref) and actor.kind is RefKind.TARGET))
 
 
 def execute_discard(ctx: Resolution, s: EffectSpec,
                     actors: Tuple[int, ...]) -> Outcome:
-    """The controller discards N cards of their choice, one at a time,
-    through the discard funnel."""
-    game, player = ctx.game, ctx.controller
+    """Each discarder -- the controller, or the players the instruction
+    names, in APNAP order -- discards N cards of their choice, one at a
+    time, through the discard funnel."""
+    game = ctx.game
     n = s.amount.n if s.amount is not None else 1
     source = _source_object(ctx)
     cause = getattr(source, "name", "") or "discard"
-    discarded = []
-    for _ in range(n):
-        hand = list(game.players[player].hand)
-        if not hand:
-            break
-        card = game.callbacks.choose_discard(game, player, hand,
-                                             self_discard=True)
-        if card is None or all(card is not c for c in hand):
-            card = hand[0]
-        game.discard_card(player, card, cause=cause)
-        _audit_discarded(game, player, card)
-        discarded.append(handle_of(card))
-    return Outcome(bool(discarded), {player: tuple(discarded)})
+    per_player = []
+    for player in actors:
+        discarded = []
+        for _ in range(n):
+            hand = list(game.players[player].hand)
+            if not hand:
+                break
+            card = game.callbacks.choose_discard(
+                game, player, hand, self_discard=player == ctx.controller)
+            if card is None or all(card is not c for c in hand):
+                card = hand[0]
+            game.discard_card(player, card, cause=cause)
+            _audit_discarded(game, player, card)
+            discarded.append(handle_of(card))
+        per_player.append((player, tuple(discarded)))
+    return Outcome(any(d for _p, d in per_player), dict(per_player))
 
 
 def _audit_discarded(game: Any, player: int, card: Any) -> None:
@@ -1928,7 +1946,10 @@ def _audit_edict(ctx: Resolution, s: EffectSpec, actors: Tuple[int, ...],
 execute_sacrifice.supports = _sacrifice_supported
 # An edict runs only in its own family (unit ED): the removal family's
 # other sacrifices (costs, "sacrifice ~") stay with their carriers.
-execute_sacrifice.allowed_families = lambda s: frozenset({FAMILY_EDICT})
+# Run where the edict family and the trigger bodies of the cast and attack
+# carriers run it (units ED, ED-T).
+execute_sacrifice.allowed_families = lambda s: frozenset({
+    FAMILY_EDICT, FAMILY_CAST_TRIGGER, FAMILY_ATTACK_TRIGGER})
 
 
 # ── Conditions ────────────────────────────────────────────────────────
