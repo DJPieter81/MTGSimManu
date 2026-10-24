@@ -934,18 +934,28 @@ def performed_cast_triggers(game: Any, caster: int, spell: Any) -> list:
             if cast_matches(h.trigger.cast, src.controller, caster, spell)]
 
 
+def _counter_owner_performs(src: Any, host: Any) -> bool:
+    """Is `host` the cast-triggered counter its own owner performs from the
+    template's typed `cast_counter` (unit LK, CR 701.6)?"""
+    from .effect_spec import Verb, iter_specs
+    return (getattr(src.template, "cast_counter", None) is not None
+            and any(s.verb is Verb.COUNTER for s in iter_specs(host.specs)))
+
+
 def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],
                                    caster: int, spell: Any) -> None:
     """Rules audit, a census once per card: a typed cast-triggered head of
-    `src` names this cast, but the carrier does not take the card (its
-    legacy cast branches may still resolve it, CR 603.2)."""
+    `src` names this cast, but neither the carrier nor the cast-triggered
+    counter's owner performs it (its legacy cast branches may still resolve
+    it, CR 603.2)."""
     from . import rules_audit
     if not rules_audit.enabled():
         return
     from .effect_spec import EventHint, HostKind
     for h in hosts:
         if h.kind is not HostKind.TRIGGERED or h.trigger is None \
-                or EventHint.SPELL_CAST not in h.trigger.event_hints:
+                or EventHint.SPELL_CAST not in h.trigger.event_hints \
+                or _counter_owner_performs(src, h):
             continue
         c = h.trigger.cast
         if c is not None and cast_matches(c, src.controller, caster, spell):
