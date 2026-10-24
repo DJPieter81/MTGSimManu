@@ -234,6 +234,33 @@ def bound_values(game: Any, controller: int, f: CardFilter,
     return tuple(out)
 
 
+# A counter of any kind ("a creature with a counter on it", "as long as ~
+# has two or more counters on it"; CR 122.1): the grammar's kind wildcard.
+_ANY_COUNTER = "*"
+
+
+def counters_on(perm: Any, kind: str) -> int:
+    """How many counters of `kind` are on `perm` -- of every kind for the
+    wildcard (`_ANY_COUNTER`, CR 122.1)."""
+    if kind == _ANY_COUNTER:
+        return sum(n for _, n in perm.last_known().counters)
+    return perm.counter_count(kind)
+
+
+def _audit_any_counter(perm: Any, counted: int) -> None:
+    """CR 122.1, restated from the permanent's raw counter fields: a
+    counter of any kind is one of its +1/+1, -1/-1 or loyalty counters or
+    of any other kind. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    raw = (perm.plus_counters + perm.minus_counters + perm.loyalty_counters
+           + sum(perm.other_counters.values()))
+    rules_audit.check("122.1/any_counter_counted", counted == raw,
+                      f"{perm.name}: {counted} counter(s) counted, {raw} on "
+                      f"it", game=getattr(perm, "_game_state", None))
+
+
 def _in_state(perm: Any, state: str) -> bool:
     if state == "tapped":
         return bool(perm.tapped)
@@ -296,8 +323,13 @@ def permanent_described(perm: Any, f: CardFilter, source: Any = None,
         return False
     if f.state and not any(_in_state(perm, s) for s in f.state):
         return False
-    return all((perm.counter_count(kind) > 0) == has
-               for kind, has in f.counters)
+    for kind, has in f.counters:
+        n = counters_on(perm, kind)
+        if kind == _ANY_COUNTER:
+            _audit_any_counter(perm, n)
+        if (n > 0) != has:
+            return False
+    return True
 
 
 def state_condition_supported(cond: Condition) -> bool:
@@ -405,10 +437,6 @@ def history_condition_holds(game: Any, controller: int,
                for i in players)
 
 
-# The counters an OBJECT condition on its own permanent counts: one kind,
-# or "*" for counters of any kind ("as long as ~ has two or more counters
-# on it").
-_ANY_COUNTER = "*"
 _COMBINATOR_KINDS = frozenset({ConditionKind.ALL_OF, ConditionKind.ANY_OF,
                                ConditionKind.NOT})
 
@@ -458,11 +486,7 @@ def self_static_condition_holds(game: Any, controller: int,
         return rule_condition_holds(game, controller, cond)
     if cond.kind is ConditionKind.STATE:
         return state_condition_holds(game, controller, cond, source)
-    kind = cond.filter.counters[0][0]
-    if kind == _ANY_COUNTER:
-        count = sum(n for _, n in source.last_known().counters)
-    else:
-        count = source.counter_count(kind)
+    count = counters_on(source, cond.filter.counters[0][0])
     return _OPS[cond.op](count, _literal(cond.n))
 
 
