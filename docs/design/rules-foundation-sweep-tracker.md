@@ -11223,3 +11223,39 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 **The defect:** the invariant restated "the permanents an edict matches" from each permanent's printed `template.card_types`, which are the front face's. A transformed permanent has only its back face's characteristics (CR 712.8), so a transformed Ajani, Nacatl Avenger (a planeswalker) counted as a creature the edict missed. The engine (`edict_victims`, the effective types) was right.
 
 **Fix (`469879b`):** the restatement reads the printed types of the face that is up: a transformed permanent's `back_face_types`, still raw template fields, never `effective_card_types`. Test: `test_the_audit_reads_the_types_of_the_face_that_is_up` (a transformed creature-front planeswalker beside the creature a Cruel Edict takes), red at `efe128e`; the invariant's two existing tests still fire and stay silent as before. Observation only.
+
+## Unit CT.2: a permanent's cast trigger performs every instruction the other trigger carriers run (CR 601.2i, 603.2, 603.3b, 603.3d; 2026-10-24)
+
+**Source:** the `iv-post` and `ak-post` census rows `603.2/cast_trigger_unresolved` for Dragon's Rage Channeler (Izzet Prowess x4) and Glaring Fleshraker (Broodscale Bloodchief).
+
+**Rule:** "Whenever <player> casts a <kind> spell, <effect>" triggers when that player casts a spell of that kind (CR 601.2i, 603.2), and its instructions are performed as printed (CR 608.2c): surveil, tokens, life, damage, counters, keyword actions, a characteristic change on a target. "That player" is the caster. Every ability a cast triggers is put on the stack before any of them resolves, its targets chosen then (CR 603.3b, 603.3d), and state-based actions are checked before the next one resolves (CR 704.3).
+
+**The defect:** the cast family's strict shape held three closed shapes (a plain draw, a rummage, the exile of a target permanent), so every other typed cast trigger stayed on the legacy cast branches. Those read a handful of oracle patterns, or nothing:
+- surveil N on a noncreature spell;
+- a token from a parsed list of spell types, named for its last subtype ("Spawn", "Warrior");
+- an opponent's cast's damage, written straight to the caster's life total.
+
+Drains, life, counters, amass, investigate and aimed damage did nothing. Trail of Evidence drew a card, read from the Clue's reminder text.
+
+**Class:** the pool has 972 cast heads; the closed table types 393. The carrier took 18 cards and now takes 78 (+60). Across the taken hosts: CREATE_TOKEN 28, DRAW 15, DAMAGE 9, GAIN_LIFE 8, LOSE_LIFE 6, SURVEIL 4, PUT_COUNTERS 3, CONTINUOUS 3, DISCARD 2, KEYWORD_ACTION 2, EXILE 2. Registered: Dragon's Rage Channeler (surveil 1) and Glaring Fleshraker (its Eldrazi Spawn).
+
+**Steps:**
+- **One trigger body** (`effect_views._strict_trigger_body`): the verbs, exile shapes and continuous shapes the attack carrier performs, read by both the attack and the cast shapes. Each carrier names the event refs it leaves unbound: the cast carrier binds the caster ("that player"), not the spell. The cast shape still refuses an intervening "if" (its carrier checks none). The body refuses a head that limits how often it triggers ("this ability triggers only once each turn", `TriggerHead.once_each_turn`): no carrier counts a trigger's turn yet. The attack shape reads the same body unchanged.
+- **The family:** `FAMILIES["cast_trigger"]` gains the body's verbs; the graveyard-target exile and the characteristic change are allowed in it.
+- **The carrier:** every matching trigger is collected, its targets chosen, before any resolves; the non-active player's resolve first; state-based actions are checked between resolutions, as the attack and step carriers do.
+- **AI:** `combo_calc._cast_triggers_draw` counts a cast trigger's draw as the caster's dig only on the caster's own permanent (the DRAW executor draws for its controller). An opponent's "whenever an opponent casts a spell, draw a card" counted as the caster's dig before.
+- **Auditor `603.2/cast_trigger_once`**, restated from the spell's raw fields (its printed card types; its colours, an effect's over the printed ones) and the caster: a cast head triggers for a spell exactly when its caster and kind name that spell. Tested both ways (`cast_matches` patched to accept every spell).
+
+**Tests:** 10, in `tests/test_a_cast_trigger_performs_every_instruction_a_trigger_family_runs.py`; 4 fail at `737b3e0`, and the 6 that pass there are pins (the surveil legacy already made, a refused intervening if, the closed shapes, a creature spell, the silent audit, the once-each-turn refusal, the last of which fails with the widened body and no refusal). Plus 1 in the ritual-gate file (`test_a_cast_trigger_digs_only_for_the_player_who_draws`), red at `737b3e0`.
+
+**Pins:**
+- **Digest:** byte-identical (27 games). **Anchor:** 29 passed.
+- **Harness:** 51 new pairs, 18 proven (Dragon's Rage Channeler's surveil among them, and Young Pyromancer's and Monastery Mentor's tokens) and 33 intended, each with its reason. 25 are hosts the legacy branches performed nothing for; 5 are tokens now named for their subtypes (CR 111.4); 2 are legacy mistakes (The Mechanist's Clue was a generic 1/1; Trail of Evidence drew instead of investigating); 1 is Cindervines, the same damage through the damage owner. 2107 pairs, 415 proven, 1692 intended.
+- **Other pins:** gate parity 5183/2056/3127 → 5234/2107/3127 (legacy fallback unchanged); spec equivalence unchanged (UNEXPLAINED 18060), with the closure report's cast-trigger block locked in (18 → 69 executable hosts); the census and the no-op fixture unchanged; every ratchet passes.
+- **Chunks:** 5424 + 2795 passed at `180e847`, from a pinned worktree.
+
+**Leads, not built:**
+- **SG:** an ability that changes its own source's characteristics until end of turn (418 pool cards print one in a triggered ability; cast heads 52, attack heads 88). Registered: Slickshot Show-Off, whose +2/+0 is applied today by the cast manager's oracle scan.
+- **FQ:** "this ability triggers only once each turn" (97 trigger hosts): a per-turn count for the carriers.
+- **The spell itself in a cast body** ("that spell", its mana value, a copy of it) and **an intervening "if"** on a cast head.
+- **Pinnacle Emissary's** token with a granted static ability.
