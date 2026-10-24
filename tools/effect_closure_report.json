@@ -740,7 +740,7 @@
     "strict": false
    }
   ],
-  "executable": 102,
+  "executable": 103,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
@@ -863,24 +863,24 @@
     "strict": true
    }
   ],
-  "executable": 31,
+  "executable": 32,
   "family": "combat_damage_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 29,
+   "pool": 30,
    "sideboard": 0
   },
   "steps": {
    "E3": 20,
-   "E4": 7,
+   "E4": 8,
    "E5": 4
   },
-  "strict": 31,
+  "strict": 32,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN,EXILE": 1,
    "CONTINUOUS,EXILE": 3,
-   "CREATE_TOKEN": 7,
+   "CREATE_TOKEN": 8,
    "DRAW": 16,
    "DRAW,GAIN_LIFE": 1,
    "DRAW,LOSE_LIFE": 3
@@ -960,7 +960,7 @@
     "strict": false
    }
   ],
-  "executable": 178,
+  "executable": 179,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -973,7 +973,7 @@
    "E6": 9,
    "none": 89
   },
-  "strict": 201,
+  "strict": 202,
   "sub_kinds": {
    "DELAYED": 12,
    "REFLEXIVE": 2
@@ -983,7 +983,7 @@
    "CONTINUOUS,CREATE_TOKEN,DAMAGE": 5,
    "CONTINUOUS,UNMODELLED": 7,
    "COUNTER,CREATE_TOKEN": 5,
-   "CREATE_TOKEN": 177,
+   "CREATE_TOKEN": 178,
    "CREATE_TOKEN,DESTROY": 10,
    "CREATE_TOKEN,MOVE": 10,
    "CREATE_TOKEN,PUT_COUNTERS": 9,
@@ -1212,26 +1212,26 @@
     "strict": true
    }
   ],
-  "executable": 492,
+  "executable": 498,
   "family": "damage",
   "hosts": {
    "mainboard": 21,
-   "pool": 468,
+   "pool": 474,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
    "E2": 81,
    "E3": 111,
-   "E4": 125,
-   "E5": 21
+   "E4": 126,
+   "E5": 26
   },
-  "strict": 492,
+  "strict": 498,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS,CREATE_TOKEN": 8,
+   "CONTINUOUS,CREATE_TOKEN": 13,
    "CONTINUOUS,EXILE": 7,
-   "CREATE_TOKEN": 114,
+   "CREATE_TOKEN": 115,
    "DAMAGE": 154,
    "DRAW": 68,
    "DRAW,MOVE": 7,
@@ -1465,26 +1465,26 @@
     "strict": true
    }
   ],
-  "executable": 521,
+  "executable": 535,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 499,
+   "pool": 513,
    "sideboard": 0
   },
   "steps": {
    "E2": 46,
    "E3": 197,
-   "E4": 263,
+   "E4": 277,
    "E5": 10,
    "E6": 5
   },
-  "strict": 521,
+  "strict": 535,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
-   "CREATE_TOKEN": 249,
+   "CREATE_TOKEN": 263,
    "DRAW": 109,
    "EXILE": 10,
    "EXILE,GAIN_LIFE": 3,
@@ -2277,23 +2277,23 @@
     "strict": true
    }
   ],
-  "executable": 89,
+  "executable": 90,
   "family": "step_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 87,
+   "pool": 88,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
    "E2": 3,
    "E3": 26,
-   "E4": 36
+   "E4": 37
   },
-  "strict": 89,
+  "strict": 90,
   "sub_kinds": {},
   "verb_sets": {
-   "CREATE_TOKEN": 28,
+   "CREATE_TOKEN": 29,
    "CREATE_TOKEN,LOSE_LIFE": 3,
    "DRAW": 10,
    "DRAW,LOSE_LIFE": 3,
@@ -2340,12 +2340,12 @@
   "family": "pump_restrict",
   "hosts": {
    "mainboard": 4,
-   "pool": 394,
+   "pool": 390,
    "sideboard": 0
   },
   "steps": {
    "E4": 3,
-   "E5": 311,
+   "E5": 307,
    "none": 84
   },
   "strict": 179,
@@ -2356,7 +2356,7 @@
    "CONTINUOUS,DRAW": 22,
    "CONTINUOUS,FIGHT": 10,
    "CONTINUOUS,GAIN_LIFE": 6,
-   "CONTINUOUS,KEYWORD_ACTION": 6,
+   "CONTINUOUS,MOVE": 6,
    "CONTINUOUS,PUT_COUNTERS": 11,
    "CONTINUOUS,SCRY": 15,
    "CONTINUOUS,UNMODELLED": 59,
@@ -2415,7 +2415,7 @@
     "strict": true
    }
   ],
-  "executable": 151,
+  "executable": 152,
   "family": "removal",
   "hosts": {
    "mainboard": 3,
@@ -2432,8 +2432,8 @@
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,DESTROY": 1,
+   "CREATE_TOKEN,DESTROY": 1,
    "DESTROY": 170,
-   "DESTROY,KEYWORD_ACTION": 1,
    "DESTROY,SURVEIL": 2,
    "EXILE": 53,
    "EXILE,MOVE": 2

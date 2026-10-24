@@ -765,7 +765,7 @@ The participant is the scope; `filter` plus `amount` is the selection within it,
 | put N counter(s) on / remove / move / double | PUT_ / REMOVE_ / MOVE_ / DOUBLE_COUNTERS | object + CounterSpec | `CardInstance.add_plus_counters` / `adjust_counters` |
 | get(s) {E} / poison / experience | PLAYER_COUNTERS | player + CounterSpec | `Player.add_energy` etc. |
 | pay any amount of {E} / pay <cost> | PAY | CostSnapshot or Amount (ANY_NUMBER via `choose_amount`) | energy owner (E4), `mana_payment` (E6) |
-| investigate, proliferate, amass, … | KEYWORD_ACTION | KeywordAction with expansion | the expansion's owners |
+| investigate, proliferate, amass, … | KEYWORD_ACTION | KeywordAction with expansion | the expansion's owners; an action in `keywords.EXPANDED_ACTIONS` (investigate, CR 701.16a) is frozen at L5 as the one instruction its expansion types -- CREATE_TOKEN of a Clue -- by the same player, as many times as its count says (`link._expanded_action`) |
 | gets ±N/±N | CONTINUOUS MODIFY_PT | target / subject / ref / MEMBER-conditional | `continuous_effects.register_effect`, `create_pump_spell_effect` |
 | gain(s)/has/have <kw>; gains your choice of <kw> or <kw> | CONTINUOUS ADD_KEYWORDS (+ `alternatives`) | | same |
 | gain(s)/has ⟨Q⟩ | CONTINUOUS GRANT_ABILITY | | refused until E5 |

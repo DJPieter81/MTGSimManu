@@ -214,6 +214,27 @@ def _audit_predefined_tokens(game, kind: str, creator: int,
                       "; ".join(problems), game=game)
 
 
+_INVESTIGATES = re.compile(r"\binvestigates?\b")
+
+
+def audit_token_instruction(game, raw: str, made: dict,
+                            source_name: str) -> None:
+    """Rules audit of the tokens one instruction made (`made`: creating
+    player -> tokens), restated from the instruction's printed text `raw`
+    -- never from its typed spec. CR 701.16a: an instruction printed as
+    investigating creates only Clues. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    if _INVESTIGATES.search(raw or ""):
+        kinds = {tuple(t.template.subtypes)
+                 for tokens in made.values() for t in tokens}
+        rules_audit.check("701.16a/investigate_creates_a_clue",
+                          kinds <= {("Clue",)},
+                          f"{source_name} investigated and made "
+                          f"{sorted(kinds)}", game=game)
+
+
 def observer_matches(spec: dict, creature: CardInstance) -> bool:
     """Does a typed dies observer's filter admit the dying creature? Only
     the subtype filter of "one or more other <subtype>s you control die"

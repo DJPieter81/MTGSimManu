@@ -265,9 +265,11 @@ LEAF_EDGES = {
     # phrase of its own: a producing participle's lemma is the lexicon's
     # (one inflection table), a pending reference's noun and the pronoun
     # pre-gate are the participant leaf's, and the card-type nouns a
-    # reference may name are the filter leaf's.
+    # reference may name are the filter leaf's. A CR 701 action it freezes
+    # as its expansion, and that expansion's text, are the keywords leaf's
+    # (one table).
     "link": frozenset({"normalize", "patterns", "structure", "lexicon",
-                       "participant", "filter"}),
+                       "participant", "filter", "keywords"}),
 }
 
 

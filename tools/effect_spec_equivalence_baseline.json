@@ -176,8 +176,8 @@
    "UNMODELLED_CLAUSE": 467
   },
   "cast_trigger_token": {
-   "AGREE": 22675,
-   "DERIVED_COVERAGE_GROWTH": 44,
+   "AGREE": 22671,
+   "DERIVED_COVERAGE_GROWTH": 48,
    "UNEXPLAINED": 14,
    "UNMODELLED_CLAUSE": 5
   },
@@ -453,8 +453,8 @@
    "AGREE": 22738
   },
   "has_lifegain_token_trigger": {
-   "AGREE": 22628,
-   "DERIVED_COVERAGE_GROWTH": 103,
+   "AGREE": 22624,
+   "DERIVED_COVERAGE_GROWTH": 107,
    "UNEXPLAINED": 5,
    "UNMODELLED_CLAUSE": 2
   },
@@ -518,8 +518,8 @@
    "UNMODELLED_CLAUSE": 15
   },
   "has_scaling_token_finisher": {
-   "AGREE": 22627,
-   "DERIVED_COVERAGE_GROWTH": 79,
+   "AGREE": 22625,
+   "DERIVED_COVERAGE_GROWTH": 81,
    "UNEXPLAINED": 8,
    "UNMODELLED_CLAUSE": 24
   },
@@ -547,11 +547,11 @@
    "UNMODELLED_CLAUSE": 12
   },
   "has_token_effect": {
-   "AGREE": 21991,
-   "DERIVED_COVERAGE_GROWTH": 50,
+   "AGREE": 22046,
+   "DERIVED_COVERAGE_GROWTH": 55,
    "REMINDER_TEXT": 3,
-   "UNEXPLAINED": 301,
-   "UNMODELLED_CLAUSE": 393
+   "UNEXPLAINED": 248,
+   "UNMODELLED_CLAUSE": 386
   },
   "has_x_counter_scaling": {
    "AGREE": 22633,
@@ -760,14 +760,14 @@
   }
  },
  "gate_parity": {
-  "legacy_fallback": 3132,
-  "new_path": 1942,
-  "pairs": 5074
+  "legacy_fallback": 3127,
+  "new_path": 1965,
+  "pairs": 5092
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813913,
-  "DERIVED_COVERAGE_GROWTH": 7842,
+  "AGREE": 2813958,
+  "DERIVED_COVERAGE_GROWTH": 7857,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 6,
@@ -781,7 +781,7 @@
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 69,
   "SEMANTIC_FIX": 38,
-  "UNEXPLAINED": 18113,
-  "UNMODELLED_CLAUSE": 9335
+  "UNEXPLAINED": 18060,
+  "UNMODELLED_CLAUSE": 9328
  }
 }

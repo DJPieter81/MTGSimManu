@@ -50,7 +50,8 @@ from engine.effect_spec import KeywordSpec, Stage, freeze_cost
 from engine.oracle_parser import parse_activation_cost
 
 __all__ = ["LEAF", "DETAIL_CODES", "KEYWORD_ABILITIES", "Expansion",
-           "EXPANSIONS", "SPELL_EXPANSIONS", "canonical_keyword", "keywords702",
+           "EXPANSIONS", "EXPANDED_ACTIONS", "SPELL_EXPANSIONS",
+           "canonical_keyword", "keywords702",
            "PRINTED_KEYWORD", "LANDWALK_TYPES", "typed_keyword", "keyword_value", "keyword_key",
            "parse_keyword_line", "parse_cost_rule", "expansion_text",
            "clear_caches"]
@@ -712,6 +713,13 @@ EXPANSIONS: Mapping[str, Expansion] = {
                   "{1}, {t}, sacrifice ~: put a +1/+1 counter on target "
                   "creature. activate only as a sorcery."),
 }
+
+
+# CR 701 keyword actions whose meaning is one instruction the grammar types
+# and the engine performs: L5 freezes such an action as that instruction
+# (`link._expanded_action`). Investigate means "create a Clue token" (CR
+# 701.16a).
+EXPANDED_ACTIONS: FrozenSet[str] = frozenset({"investigate"})
 
 
 # Keyword actions whose rules English differs when an instant or sorcery

@@ -3531,6 +3531,14 @@
   },
   {
    "pair": [
+    "combat_damage:dispatch",
+    "Undercover Crocodelf",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
     "create_token",
     "Advent of the Wurm",
     "SPELL:0:0"
@@ -3816,6 +3824,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Hard Evidence",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -4504,6 +4520,14 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Auspicious Arrival",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -5460,6 +5484,14 @@
   {
    "pair": [
     "dispatched",
+    "Hard Evidence",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Heartfire",
     "SPELL:0:1"
    ],
@@ -5584,6 +5616,14 @@
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Jace's Scrutiny",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -6964,6 +7004,14 @@
   {
    "pair": [
     "dispatched",
+    "Survive the Night",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Suspicious Detonation",
     "SPELL:0:2"
    ],
@@ -7016,6 +7064,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit DW: the legacy draw clause dropped 'target player mills N'; the mill is performed with the draw (CR 701.17a, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "The Chase Is On",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -7104,6 +7160,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Toxin Analysis",
+    "SPELL:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -7548,6 +7612,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Alquist Proft, Master Sleuth",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Ambassador Oak",
     "TRIGGERED:0:0"
    ],
@@ -7876,6 +7948,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Briarbridge Tracker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Brigid, Clachan's Heart // Brigid, Doun's Mind",
     "TRIGGERED:0:0"
    ],
@@ -8016,6 +8096,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Case of the Filched Falcon",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -8284,6 +8372,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Detective's Satchel",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Devoted Grafkeeper // Departed Soulkeeper",
     "TRIGGERED:0:0"
    ],
@@ -8384,6 +8480,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Drownyard Explorers",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -8620,6 +8724,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ezrim, Agency Chief",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Faerie Dreamthief",
     "TRIGGERED:0:1"
    ],
@@ -8680,6 +8792,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Fleeting Memories",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -8864,6 +8984,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gleaming Geardrake",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -9556,6 +9684,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Loxodon Eavesdropper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Ludevic, Necrogenius // Olag, Ludevic's Hubris",
     "TRIGGERED:0:0"
    ],
@@ -9916,6 +10052,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Novice Inspector",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Nurturing Bristleback",
     "TRIGGERED:0:0"
    ],
@@ -10096,6 +10240,14 @@
     "TRIGGERED:0:2"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Persuasive Interrogators",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -11140,6 +11292,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Thraben Inspector",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thundering Falls",
     "TRIGGERED:0:1"
    ],
@@ -11484,6 +11644,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Wavesifter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Weapons Vendor",
     "TRIGGERED:0:0"
    ],
@@ -11512,6 +11680,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Weirding Wood",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [
@@ -12312,6 +12488,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Tamiyo's Journal",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
   },
   {
    "pair": [

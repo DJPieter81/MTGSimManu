@@ -64,7 +64,7 @@ from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
                           Condition, ConditionKind, Destination, EffectSpec,
                           KeywordAction, Ref, RefKind, RefPart, TokenSpec,
                           Verb)
-from .permanent_effects import PREDEFINED_TOKEN_KINDS
+from .permanent_effects import PREDEFINED_TOKEN_KINDS, audit_token_instruction
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
@@ -1421,6 +1421,10 @@ def _audit_tokens(ctx: Resolution, s: EffectSpec, made: dict) -> None:
     rules_audit.check("111.3/token_characteristics", not problems,
                       f"{getattr(source, 'name', '?')}: {'; '.join(problems)}",
                       game=ctx.game)
+    # The restatements from the instruction's printed text belong to the
+    # token owner (an executor reads no text, `audit_token_instruction`).
+    audit_token_instruction(ctx.game, s.raw, made,
+                            getattr(source, 'name', '?'))
 
 
 execute_create_token.supports = _create_token_supported

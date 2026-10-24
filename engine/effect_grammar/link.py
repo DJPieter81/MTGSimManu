@@ -80,19 +80,21 @@ import re
 from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
+from engine.effect_grammar import keywords as _keywords
 from engine.effect_grammar import lexicon as _lexicon
 from engine.effect_grammar import normalize as _normalize
 from engine.effect_grammar import patterns as _patterns
 from engine.effect_grammar import structure as _structure
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_grammar.sub import participant as _participant
-from engine.effect_grammar.sub import unmodelled
+from engine.effect_grammar.sub import CACHE_SIZE, unmodelled
 from engine.effect_model import Modification, ModKind, Selector, SelectorKind
 from engine.effect_spec import replace as _copy_with
 from engine.effect_spec import (AbilityEffects, Amount, AmountKind,
                                 CardFilter, Condition, ConditionKind,
                                 EffectSpec, EventHint, Granted, HostKind,
-                                Quantity, QuantityKind, Ref, RefKind,
+                                KeywordAction, Quantity, QuantityKind, Ref,
+                                RefKind,
                                 RefPart, Stage, SubAbility, SubAbilityKind,
                                 TokenSpec, TriggerHead, Unmodelled, Verb,
                                 enforce_invariants, iter_specs,
@@ -1400,10 +1402,65 @@ def _freeze_node(ctx: _Ctx, node: _Node, frozen_hosts: dict,
     tgt = None
     if node.slot is not None:
         tgt = frozen_hosts["_targets"][id(node.host)][node.slot]
-    return _copy_with(spec, seq=node.seq, then=then,
-                      otherwise=otherwise, target=tgt,
-                      target_slot=node.slot if tgt is not None else None,
-                      **f)
+    return _expanded_action(_copy_with(
+        spec, seq=node.seq, then=then, otherwise=otherwise, target=tgt,
+        target_slot=node.slot if tgt is not None else None, **f))
+
+
+def _expanded_action(spec: EffectSpec) -> EffectSpec:
+    """A keyword action whose CR 701 meaning is one instruction the grammar
+    types (`keywords.EXPANDED_ACTIONS`: "investigate" means "create a Clue
+    token", CR 701.16a) is frozen as that instruction: the same player
+    performs it, under the same condition, as many times as the action's
+    count says. Its frame -- seq, span, printed text, actor, condition,
+    optional flag, branches -- stays the action's own. An action whose
+    count is not a printed number keeps its keyword-action form (refused
+    downstream, never half-performed)."""
+    p = spec.payload
+    if spec.verb is not Verb.KEYWORD_ACTION \
+            or not isinstance(p, KeywordAction) \
+            or p.name not in _keywords.EXPANDED_ACTIONS:
+        return spec
+    inner = _action_instruction(p.name)
+    if inner is None:
+        return spec
+    amount = _action_times(spec.amount, p.amount, inner.amount)
+    if amount is None:
+        return spec
+    return _copy_with(spec, verb=inner.verb, payload=inner.payload,
+                      amount=amount)
+
+
+@lru_cache(maxsize=CACHE_SIZE)
+def _action_instruction(name: str) -> Optional[EffectSpec]:
+    """The one instruction keyword action `name`'s expansion types to, or
+    None when it does not type as one."""
+    text = _keywords.expansion_text(name)
+    if not text:
+        return None
+    spec = _patterns.match_clause(text.strip().rstrip(".")).spec
+    return None if spec.verb is Verb.UNMODELLED else spec
+
+
+def _action_times(outer: Optional[Amount], count: Optional[Amount],
+                  inner: Optional[Amount]) -> Optional[Amount]:
+    """How many times an expanded action's instruction is performed: the
+    instruction's own count times the action's ("investigate twice"), per
+    each of an outer count ("investigate for each opponent who lost life
+    this turn"). None for any count that is not a printed number."""
+    n = 1
+    for a in (count, inner):
+        if a is None:
+            continue
+        if a.kind is not AmountKind.LITERAL or a.quantity is not None \
+                or a.ref is not None or a.inner is not None:
+            return None
+        n *= a.n
+    if outer is None:
+        return Amount(AmountKind.LITERAL, n=n)
+    if outer.kind is AmountKind.FOR_EACH:
+        return _copy_with(outer, n=outer.n * n)
+    return None
 
 
 def _freeze_host(ctx: _Ctx, h: _Host, frozen_hosts: dict, lowered: dict,
@@ -1541,3 +1598,4 @@ def parse_face_hosts(text: str, facts: _normalize.Facts = _normalize.Facts(),
 
 def clear_caches() -> None:
     parse_face_hosts.cache_clear()
+    _action_instruction.cache_clear()
