@@ -278,7 +278,7 @@ class PlayerState:
                 result[id(land)] = cm.get("bonus", 0)
         return result
 
-    def untapped_mana_capacity(self) -> int:
+    def untapped_mana_capacity(self, sacrifice: bool = True) -> int:
         """Units of mana the player's untapped lands can produce (E1).
 
         Replaces `len(untapped_lands)` in total-mana estimates: a
@@ -287,6 +287,12 @@ class PlayerState:
         still counts 0.  The Tron-style conditional bonus stays a
         separate additive term (`_conditional_mana_bonus`) at the
         call sites that already carry it.
+
+        With `sacrifice`, the units of every source the payment path may
+        sacrifice for mana right now count too (a Treasure, an Eldrazi
+        Spawn: `ManaPayment.sacrifice_mana_sources`, CR 605.3a), so an
+        estimate and the payment agree; the payment path's own
+        repeatable-sources-first shortfalls pass False.
         """
         # Route through `ManaPayment.land_mana_units` — the single per-source
         # unit resolver the PAYMENT path uses — rather than reading
@@ -311,6 +317,9 @@ class PlayerState:
             # path will actually execute, so estimate and payment agree.
             total += LOOP_SHORTCUT_MANA * len(
                 ActivationManager.unbounded_mana_engines(game, idx))
+            if sacrifice:
+                total += sum(len(units) for _perm, units in
+                             ManaPayment.sacrifice_mana_sources(game, idx))
             return total
         return sum(src.template.mana_count for src in sources)
 

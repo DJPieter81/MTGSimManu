@@ -1432,6 +1432,11 @@ class CastManager:
         for color in ["W", "U", "B", "R", "G", "C"]:
             for _ in range(player.mana_pool.get(color)):
                 sources.append({color})
+        # A source the payment path may sacrifice for mana (CR 605.3a): its
+        # units pay a coloured pip as any unit does.
+        for _perm, units in _MP.sacrifice_mana_sources(game, player_idx):
+            for options in units:
+                sources.append(set(options))
         # CR 726.4 loop shortcut: an unbounded mana engine (free
         # self-untapping mana source — `ActivationManager.
         # unbounded_mana_engines`) yields its printed units once per
@@ -1752,6 +1757,19 @@ class CastManager:
             return []
         return [c for c in game.players[player_idx].hand
                 if c is not card and color in c.colors]
+
+    @staticmethod
+    def _audit_x_paid(game: "GameState", card, x_value: int,
+                      unpaid: int) -> None:
+        """CR 601.2f-h, restated from the X payment's own tally: the X a
+        spell is cast with is paid in full -- no part of it is paid by no
+        mana. Observation only."""
+        from . import rules_audit
+        if rules_audit.enabled():
+            rules_audit.check(
+                "601.2h/x_cost_paid", unpaid <= 0,
+                f"{card.name} cast with X={x_value}, {unpaid} of it unpaid",
+                game=game)
 
     @staticmethod
     def _can_pay_colored_pips(game: "GameState", player_idx: int,
@@ -2940,18 +2958,15 @@ class CastManager:
                     if to_remove <= 0:
                         break
                 remaining -= from_pool
-            # Pay rest from lands. For Converge-style spells (oracle references
-            # "colors of mana spent"), greedily pick lands that contribute a
-            # NEW color first, maximising distinct colors paid → maximising X.
-            # For non-Converge X-spells this reduces to arbitrary selection
-            # (same as the old behavior because set-difference is 0-or-more).
-            xpay_colors = set(getattr(game, '_last_colors_spent', set()))
             # A spell that counts the colours spent on it -- converge,
-            # sunburst (CR 702.44a) -- is paid with new colours first.
+            # sunburst (CR 702.44a) -- is paid from lands that contribute a
+            # NEW colour first, maximising distinct colours paid. Any other
+            # X is paid by the payment owner below.
+            xpay_colors = set(getattr(game, '_last_colors_spent', set()))
             is_converge = (getattr(template, 'has_converge', False)
                            or Keyword.SUNBURST in template.keywords)
             lands_pool = list(player.untapped_lands)
-            while remaining > 0 and lands_pool:
+            while is_converge and remaining > 0 and lands_pool:
                 if is_converge:
                     # MRV-style: prefer lands that produce a color we haven't
                     # spent yet.  Routes through `_effective_produces_mana` so
@@ -2989,11 +3004,25 @@ class CastManager:
                 if coloured and land.template.tap_damage > 0:
                     from .damage import deal_damage
                     deal_damage(land, player, land.template.tap_damage)
+            # The rest -- all of it for a spell that does not count colours --
+            # is paid by the payment owner from every source it spends: lands
+            # with their conditional bonuses (Tron), mana rocks, dorks, a
+            # source sacrificed for mana (CR 601.2h, 605.3a). X was chosen
+            # from that same capacity, so no part of it is paid for free.
+            from .mana import ManaCost as _MC
+            from .mana_payment import ManaPayment as _MPay
+            owed = max(0, remaining)
+            if owed and _MPay.tap_lands_for_mana(game, player_idx,
+                                                 _MC(generic=owed),
+                                                 card_name=card.name):
+                xpay_colors |= set(getattr(game, '_last_colors_spent', set()))
+                remaining = 0
+            CastManager._audit_x_paid(game, card, x_value, remaining)
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
-            # The mana the X took, from the pool and the lands (CR 601.2h).
-            from .mana_payment import ManaPayment as _MPay
-            _MPay._record_paid(game, actual_cost - max(0, remaining))
+            # The mana the X took from the pool and the lands (CR 601.2h);
+            # the payment owner counts what it paid itself.
+            _MPay._record_paid(game, actual_cost - owed)
 
         # CR 608.2b / 400.7 support: snapshot what each card target is
         # at cast time -- its zone (battlefield for removal, stack for

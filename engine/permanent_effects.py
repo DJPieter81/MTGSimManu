@@ -107,6 +107,8 @@ def printed_token(spec) -> "dict | None":
     if units is None:
         return None
     subtypes = [w.title() for w in spec.subtypes]
+    # The token's text is its granted abilities (CR 111.3).
+    text = " ".join(h.text.replace("~", "this token") for h in spec.granted)
     return {
         "name": " ".join(subtypes or [t.title() for t in spec.types]) + " Token",
         "card_types": [_TOKEN_CARD_TYPES[t] for t in spec.types],
@@ -117,9 +119,8 @@ def printed_token(spec) -> "dict | None":
         "toughness": toughness,
         "keywords": keywords,
         "sacrifice_mana_units": units,
-        # The token's text is its granted abilities (CR 111.3).
-        "oracle_text": " ".join(h.text.replace("~", "this token")
-                                for h in spec.granted),
+        "activated_abilities": _token_abilities(text),
+        "oracle_text": text,
     }
 
 
@@ -133,17 +134,24 @@ PREDEFINED_TOKEN_KINDS = frozenset({"treasure", "food", "clue"})
 
 
 @lru_cache(maxsize=None)
+def _token_abilities(text: str) -> tuple:
+    """The activated abilities a token's text gives it (its predefined
+    rule's, or the ones its creator grants it), typed once per text through
+    the parse-once owner every card's text goes through."""
+    from .oracle_parser import parse_activated_abilities
+    return tuple(parse_activated_abilities(text) or ())
+
+
+@lru_cache(maxsize=None)
 def _predefined_parts(kind: str):
     """The text CR 111.10 gives a token of `kind` -- the token names itself
     "this token" -- and its abilities, typed once per kind through the
     parse-once owners every card's text goes through."""
     from .effect_grammar.keywords import expansion_text
-    from .oracle_parser import (parse_activated_abilities,
-                                parse_sacrifice_mana_units)
+    from .oracle_parser import parse_sacrifice_mana_units
     text = expansion_text(kind).replace("~", "this token")
     units = parse_sacrifice_mana_units(text) or []
-    return (text, tuple(parse_activated_abilities(text) or ()),
-            tuple(tuple(u) for u in units))
+    return (text, _token_abilities(text), tuple(tuple(u) for u in units))
 
 
 def predefined_token(kind: str) -> "dict | None":
@@ -659,6 +667,8 @@ class PermanentEffects:
                 parse_sacrifice_mana_units as _parse_sac_mana)
             template.sacrifice_mana_units = (
                 _parse_sac_mana(token_oracle) or [])
+            template.activated_abilities = list(
+                _token_abilities(token_oracle))
             instance = CardInstance(
                 template=template,
                 owner=controller,
