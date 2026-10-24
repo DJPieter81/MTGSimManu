@@ -169,11 +169,11 @@
    "DERIVED_COVERAGE_GROWTH": 4
   },
   "cast_targets": {
-   "AGREE": 4404,
+   "AGREE": 4406,
    "LEGACY_TARGET_ZONE": 10,
    "SEMANTIC_FIX": 38,
    "UNEXPLAINED": 317,
-   "UNMODELLED_CLAUSE": 467
+   "UNMODELLED_CLAUSE": 465
   },
   "cast_trigger_token": {
    "AGREE": 22671,
@@ -385,11 +385,11 @@
    "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
-   "AGREE": 20824,
+   "AGREE": 20832,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
    "UNEXPLAINED": 924,
-   "UNMODELLED_CLAUSE": 953
+   "UNMODELLED_CLAUSE": 945
   },
   "has_discard_effect": {
    "AGREE": 22255,
@@ -472,9 +472,10 @@
   "has_may_play_or_cast": {
    "AGREE": 21364,
    "DERIVED_COVERAGE_GROWTH": 3,
+   "LEGACY_MAY_CAST_SCOPE": 1,
    "REMINDER_TEXT": 5,
    "UNEXPLAINED": 651,
-   "UNMODELLED_CLAUSE": 715
+   "UNMODELLED_CLAUSE": 714
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -498,13 +499,15 @@
   "has_recurring_draw_trigger": {
    "AGREE": 21783,
    "DERIVED_COVERAGE_GROWTH": 81,
+   "LEGACY_RECURRING_TRIGGER_SCOPE": 1,
    "UNEXPLAINED": 738,
-   "UNMODELLED_CLAUSE": 136
+   "UNMODELLED_CLAUSE": 135
   },
   "has_recurring_trigger": {
    "AGREE": 17533,
+   "LEGACY_RECURRING_TRIGGER_SCOPE": 5,
    "UNEXPLAINED": 4173,
-   "UNMODELLED_CLAUSE": 1032
+   "UNMODELLED_CLAUSE": 1027
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -576,8 +579,9 @@
   "is_tutor": {
    "AGREE": 22441,
    "DERIVED_COVERAGE_GROWTH": 56,
+   "REMINDER_TEXT": 1,
    "UNEXPLAINED": 97,
-   "UNMODELLED_CLAUSE": 144
+   "UNMODELLED_CLAUSE": 143
   },
   "kicked_clause": {
    "AGREE": 22725,
@@ -642,10 +646,8 @@
    "UNMODELLED_CLAUSE": 4
   },
   "ordinal_cast_trigger": {
-   "AGREE": 22732,
-   "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 2,
-   "UNMODELLED_CLAUSE": 2
+   "AGREE": 22737,
+   "UNEXPLAINED": 1
   },
   "pump_spell_keyword": {
    "AGREE": 22608,
@@ -761,27 +763,29 @@
  },
  "gate_parity": {
   "legacy_fallback": 3125,
-  "new_path": 2185,
-  "pairs": 5310
+  "new_path": 2198,
+  "pairs": 5323
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813948,
-  "DERIVED_COVERAGE_GROWTH": 7870,
+  "AGREE": 2813963,
+  "DERIVED_COVERAGE_GROWTH": 7868,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 7,
   "LEGACY_HASH_ORDER": 13,
+  "LEGACY_MAY_CAST_SCOPE": 1,
   "LEGACY_PUMP_GRANT_SCOPE": 11,
+  "LEGACY_RECURRING_TRIGGER_SCOPE": 6,
   "LEGACY_RITUAL_MANA": 1,
   "LEGACY_TARGETED_DAMAGE_SCOPE": 8,
   "LEGACY_TARGET_ZONE": 14,
   "LEGACY_TEAM_GRANT_SCOPE": 1,
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 69,
-  "REMINDER_TEXT": 70,
+  "REMINDER_TEXT": 71,
   "SEMANTIC_FIX": 38,
-  "UNEXPLAINED": 18060,
-  "UNMODELLED_CLAUSE": 9320
+  "UNEXPLAINED": 18059,
+  "UNMODELLED_CLAUSE": 9300
  }
 }

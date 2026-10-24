@@ -155,6 +155,30 @@
    "source": "design doc section 10, rows unmasked by typing library positions (2026-10-10)"
   },
   {
+   "id": "recurring_trigger_reads_any_whenever_head",
+   "class": "LEGACY_RECURRING_TRIGGER_SCOPE",
+   "fields": ["has_recurring_trigger", "has_recurring_draw_trigger"],
+   "cards": ["Mind's Dilation", "Nightveil Specter", "Sire of Stagnation", "Ulamog, the Ceaseless Hunger", "Ulamog, the Ceaseless Hunger // Ulamog, the Ceaseless Hunger"],
+   "reason": "parse_has_recurring_trigger reads any 'whenever ' head as a recurring trigger, and parse_has_recurring_draw_trigger any 'whenever' beside a 'draw'; the views read a beginning-of-step head (with a DRAW, for the draw flag), so a cast, landfall, attack or combat-damage head is none. Masked until 2026-10-24 by the refused 'exiles the top N cards of their library' in the same trigger (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); unit DP types 'their library' as the library of the player the instruction names, which unmasks the pairs.",
+   "source": "design doc section 10, rows unmasked by typing 'their library' (2026-10-24)"
+  },
+  {
+   "id": "may_play_or_cast_reads_resolution_free_cast",
+   "class": "LEGACY_MAY_CAST_SCOPE",
+   "fields": ["has_may_play_or_cast"],
+   "cards": ["Mind's Dilation"],
+   "reason": "parse_has_may_play_or_cast reads 'you may cast it without paying its mana cost', a cast the trigger's controller performs while the trigger resolves (a CAST_FREE spec), as a permission to play; the view reads PERMIT specs only, a permission that outlasts the resolution. Masked until 2026-10-24 by the refused 'exiles the top card of their library' in the same trigger (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); unit DP types 'their library' as the library of the player the instruction names, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'their library' (2026-10-24)"
+  },
+  {
+   "id": "tutor_reads_landcycling_reminder",
+   "class": "REMINDER_TEXT",
+   "fields": ["is_tutor"],
+   "cards": ["Malboro"],
+   "reason": "parse_is_tutor reads 'search your library' inside swampcycling's reminder text; landcycling is a KEYWORD host the grammar does not expand into specs, so the view sees no SEARCH. Masked until 2026-10-24 by the refused 'exiles the top three cards of their library' in the card's enter trigger (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); unit DP types 'their library' as the library of the player the instruction names, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'their library' (2026-10-24)"
+  },
+  {
    "id": "target_color_qualifier_read_by_the_solver",
    "class": "SEMANTIC_FIX",
    "fields": ["cast_targets"],

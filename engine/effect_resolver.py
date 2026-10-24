@@ -80,14 +80,22 @@ def handle_of(card: Any) -> Handle:
 class TriggerEvent:
     """What the event that triggered an ability names, as its carrier
     passes it (CR 603.2): the player -- the drawer of a draw -- that
-    `Ref(EVENT_PLAYER)` ("that player", "they") binds."""
+    `Ref(EVENT_PLAYER)` ("that player", "they") binds, and the defending
+    player an attack is made against, whom `Ref(DEFENDING_PLAYER)` binds
+    (CR 506.2, 508.5): there is one only once attackers are declared, so
+    only the attack carrier names one."""
     player: Optional[int] = None
+    defending_player: Optional[int] = None
 
 
-def event_player(ctx: "Resolution") -> Optional[int]:
-    """The player the resolution's trigger event names, if it names one
-    in the game; None otherwise (nothing is bound to a guessed player)."""
-    p = getattr(ctx.event, "player", None)
+def event_player(ctx: "Resolution", ref: Any = None) -> Optional[int]:
+    """The player the resolution's trigger event names for `ref` -- its
+    defending player for "defending player", else its player ("that
+    player") -- if it names one in the game; None otherwise (nothing is
+    bound to a guessed player)."""
+    named = ("defending_player" if isinstance(ref, Ref)
+             and ref.kind is RefKind.DEFENDING_PLAYER else "player")
+    p = getattr(ctx.event, named, None)
     if isinstance(p, int) and not isinstance(p, bool) \
             and 0 <= p < len(ctx.game.players):
         return p
@@ -407,8 +415,11 @@ def _member_condition(cond: Condition) -> bool:
 
 
 def is_event_player(ref: Any) -> bool:
-    """Is `ref` the plain player its trigger event names ("that player")?"""
-    return (isinstance(ref, Ref) and ref.kind is RefKind.EVENT_PLAYER
+    """Is `ref` a plain player its trigger event names: "that player", or
+    an attack's defending player (CR 506.2, 508.5), whom only the attack
+    carrier's event names (`event_player`)?"""
+    return (isinstance(ref, Ref)
+            and ref.kind in (RefKind.EVENT_PLAYER, RefKind.DEFENDING_PLAYER)
             and ref.index is None and ref.of is None and ref.n is None)
 
 
@@ -601,7 +612,7 @@ def _actors_apnap(ctx: Resolution, s: EffectSpec) -> Tuple[int, ...]:
         bound = dataclasses.replace(actor, player=ctx.controller)
         return tuple(p for p in order if bound.covers_player(p))
     if is_event_player(actor):                  # CR 603.2: "that player"
-        p = event_player(ctx)
+        p = event_player(ctx, actor)
         return (p,) if p is not None else ()
     if names_target_player(actor):              # "its controller / owner"
         return tuple(p for p in order if p in target_players(ctx, actor))

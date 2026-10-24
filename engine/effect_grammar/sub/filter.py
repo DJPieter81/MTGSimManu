@@ -580,10 +580,11 @@ def _first_word(t: str, pos: int) -> str:
 # and keep the participant leaf's library_position refusal.
 _TOP_OF_A_LIBRARY_RE = re.compile(
     r"the top (?:(?P<n>[a-z0-9]+) )?(?P<noun>cards?) of "
-    r"(?P<poss>your|that player's|defending player's) library")
+    r"(?P<poss>your|that player's|defending player's|their) library")
 _LIBRARY_POSSESSORS = {"your": ("you", ()),
                        "defending player's": (Ref(RefKind.DEFENDING_PLAYER), ()),
-                       "that player's": ("any", (("owner", "that player's"),))}
+                       "that player's": ("any", (("owner", "that player's"),)),
+                       "their": ("any", (("owner", "their"),))}
 
 
 def _library_top(t: str) -> Optional[_Rel]:

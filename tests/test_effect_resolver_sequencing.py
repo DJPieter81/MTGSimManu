@@ -203,7 +203,8 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     no other verb is executable, and no family has tolerated residue yet.
     Two filters are widened: the card-flow EXILE evaluates "the top N cards
     of your library" -- or of the trigger event's player's library, "that
-    player's" (R2) -- itself, by taking the top N (unit I), and "all cards
+    player's" (R2), or the defending player's (unit DP) -- itself, by
+    taking the top N (unit I), and "all cards
     from your hand" by taking the whole hand (unit HX); the edict's
     SACRIFICE evaluates its card types and token-or-nontoken itself (unit
     ED); the land-destruction rider's SEARCH evaluates "a basic land card"
@@ -252,7 +253,8 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
         + [("controller", Ref(RefKind.TARGET, i)) for i in (0, 1)])
     assert keys == {Verb.EXILE: frozenset(CardFilter(
         zone="library", owner="you", position="top").as_tuple()) | {
-            ("owner", Ref(RefKind.EVENT_PLAYER)), ("zone", "hand")}}
+            ("owner", Ref(RefKind.EVENT_PLAYER)),
+            ("owner", Ref(RefKind.DEFENDING_PLAYER)), ("zone", "hand")}}
     assert er.LEGACY_RESIDUE_TOLERATED == {}
 
 
@@ -561,9 +563,27 @@ def test_a_targeted_player_acts_through_its_chosen_slot(er, run):
 
 
 def test_an_actor_the_dispatcher_cannot_bind_is_not_executable(er, run):
+    # "that creature's controller": the dispatcher binds no event object
     run.register(Verb.DRAW, _Recorder())
-    s = _spec(Verb.DRAW, 0, actor=Ref(RefKind.DEFENDING_PLAYER))
+    s = _spec(Verb.DRAW, 0, actor=Ref(RefKind.CONTROLLER_OF,
+                                      of=Ref(RefKind.EVENT_OBJECT)))
     assert er.can_execute(_host(s)) is False
+
+
+def test_the_defending_player_acts_only_when_the_trigger_event_names_one(
+        er, run):
+    """CR 506.2, 508.5: "defending player" is the player an attack is made
+    against, whom only the attack carrier's event names
+    (`TriggerEvent.defending_player`); an event naming only "that player"
+    names no defending player, and no one acts."""
+    rec = run.register(Verb.DRAW, _Recorder())
+    host = _host(_spec(Verb.DRAW, 0, actor=Ref(RefKind.DEFENDING_PLAYER)))
+    assert er.can_execute(host)
+    er.resolve_ability(_game(), _src(), 0, host, (),
+                       event=er.TriggerEvent(defending_player=1))
+    er.resolve_ability(_game(), _src(), 0, host, (),
+                       event=er.TriggerEvent(player=1))
+    assert rec.calls == [(0, (1,)), (0, ())]
 
 
 def test_the_event_player_acts_only_when_the_trigger_event_names_one(er, run):

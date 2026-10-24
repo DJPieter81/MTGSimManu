@@ -411,9 +411,11 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     picked by its own executors (`_slots_picked_by_executors`); None when
     the face has no such host or any one of them does not qualify (a card
     is taken whole or not at all, so no trigger of it resolves twice or not
-    at all). One owner, read by the carrier and the closure."""
+    at all). An enter event names no defending player (CR 506.2), so a host
+    naming one is not taken. One owner, read by the carrier and the
+    closure."""
     from .effect_spec import EventHint, HostKind
-    from .effect_views import STRICT
+    from .effect_views import STRICT, names_defending_player
     hosts = [h for h in face_hosts
              if h.kind is HostKind.TRIGGERED and h.trigger is not None
              and EventHint.SELF_ENTERS in h.trigger.event_hints]
@@ -421,9 +423,10 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
         return None
     plan = []
     for h in hosts:
-        family = next((f for f in ETB_FAMILIES
-                       if STRICT[f](h) and er.can_execute(h, f)
-                       and _slots_picked_by_executors(h)), None)
+        family = None if names_defending_player(h) else next(
+            (f for f in ETB_FAMILIES
+             if STRICT[f](h) and er.can_execute(h, f)
+             and _slots_picked_by_executors(h)), None)
         if family is None:
             return None
         plan.append((h, family))
@@ -1402,6 +1405,32 @@ def attack_taken(attackers: Sequence[Any]) -> frozenset:
                      if _shown_attack_face(a)[0] is not None)
 
 
+def defending_player(game: Any, active: int) -> Optional[int]:
+    """The player `active`'s attack is made against (CR 506.2): in a
+    two-player game the one opponent, as the combat manager records it;
+    None with any other number of players (nothing is bound to a guessed
+    player)."""
+    others = [p for p in range(len(game.players)) if p != active]
+    return others[0] if len(others) == 1 else None
+
+
+def _audit_defending_player(game: Any, player: Optional[int],
+                            attackers: Sequence[Any]) -> None:
+    """CR 506.2, 508.5, restated from the attackers: the defending player
+    an attack trigger names is a player in the game who controls none of
+    the attacking creatures (the attack is made against them). Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled() or player is None:
+        return
+    attacking = {a.controller for a in attackers}
+    rules_audit.check("508.5/defending_player",
+                      0 <= player < len(game.players)
+                      and player not in attacking,
+                      f"P{player + 1} named defending player of an attack "
+                      f"by P{sorted(p + 1 for p in attacking)}", game=game)
+
+
 def dispatch_attack_triggers(game: Any, attackers: Sequence[Any],
                              active: int) -> set:
     """The attack carrier (CR 508.1m, 508.2, 603.2, 603.3b, 603.4): once
@@ -1421,7 +1450,9 @@ def dispatch_attack_triggers(game: Any, attackers: Sequence[Any],
     if not er.dispatch_enabled() or not attackers:
         return taken
     _audit_attack_once(game)
-    event = er.TriggerEvent()
+    # CR 506.2, 508.5: the attack event names its defending player.
+    event = er.TriggerEvent(defending_player=defending_player(game, active))
+    _audit_defending_player(game, event.defending_player, attackers)
     triggered = []
     order = [active] + [p for p in range(len(game.players)) if p != active]
     for idx in order:

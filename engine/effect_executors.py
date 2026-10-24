@@ -258,7 +258,7 @@ def execute_damage(ctx: Resolution, s: EffectSpec,
     if amount <= 0:                 # CR 120.8: no damage is dealt
         return Outcome(False, {})
     if is_event_player(s.ref):      # "to that player" (CR 603.2)
-        player = event_player(ctx)
+        player = event_player(ctx, s.ref)
         if player is None:
             return Outcome(False, {})
         deal_damage_to(ctx.game, source, ctx.controller, amount, player)
@@ -778,7 +778,8 @@ execute_move.picks_unbound_slots = True
 # top N of that library.
 _LIBRARY_TOP = CardFilter(zone="library", owner="you", position="top")
 _EVENT_PLAYER = Ref(RefKind.EVENT_PLAYER)
-_LIBRARY_OWNERS = ("you", _EVENT_PLAYER)
+_DEFENDING_PLAYER = Ref(RefKind.DEFENDING_PLAYER)
+_LIBRARY_OWNERS = ("you", _EVENT_PLAYER, _DEFENDING_PLAYER)
 
 
 def _is_library_top(f: Any) -> bool:
@@ -788,33 +789,39 @@ def _is_library_top(f: Any) -> bool:
 
 def _library_owner(ctx: Resolution, f: CardFilter):
     """Whose library the position reads: the controller's ("your"), or
-    the player the trigger event names ("that player's"; None with no
-    event player, and nothing is exiled)."""
+    the player the trigger event names ("that player's", or an attack's
+    defending player; None with no event player, and nothing is
+    exiled)."""
     if f.owner == "you":
         return ctx.controller
-    return event_player(ctx)
+    return event_player(ctx, f.owner)
 
 
-def _plain_exile(s: EffectSpec) -> bool:
+def _plain_exile(s: EffectSpec, mover: Any = None) -> bool:
     """An exile with nothing the executor does not perform: no choice, no
-    branch, no destination or payload, the controller moves the cards."""
+    branch, no destination or payload, the controller -- or `mover`, the
+    one player the instruction names as the mover -- moves the cards."""
     return not (s.flags or s.optional or s.alternatives
                 or s.group is not None or s.dest is not None
                 or s.payload is not None or s.duration is not None
                 or s.chooser is not Chooser.CONTROLLER
                 or s.ref is not None or s.other is not None
                 or s.target is not None or s.target_slot is not None
-                or not _acts_as_controller(s.actor))
+                or not (_acts_as_controller(s.actor)
+                        or (mover is not None and s.actor == mover)))
 
 
-def _exile_top_supported(s: EffectSpec) -> bool:
+def exile_top_supported(s: EffectSpec) -> bool:
     """"Exile the top <N> cards of your library" (or "of that player's
-    library"): that library's top N cards move to exile through the zone
-    funnel, face up (CR 406), into their owner's exile (CR 400.3); no draw
-    (CR 121.1c)."""
+    library"), or "<that player | defending player> exiles the top <N>
+    cards of their library": that library's top N cards move to exile
+    through the zone funnel, face up (CR 406), into their owner's exile
+    (CR 400.3); no draw (CR 121.1c)."""
     if s.verb is not Verb.EXILE or not _is_library_top(s.filter):
         return False
-    if not _plain_exile(s) or s.subject is not None:
+    owner = s.filter.owner
+    if not _plain_exile(s, mover=owner if isinstance(owner, Ref) else None) \
+            or s.subject is not None:
         return False
     return conditions.amount_supported(s.amount)
 
@@ -1018,7 +1025,7 @@ def _exile_supported(s: EffectSpec) -> bool:
     own permanent ("exile ~"), the cards an earlier instruction found
     ("exile them"), the cards chosen in a graveyard, or the permanents
     chosen on the battlefield. Any other exile is refused."""
-    return (_exile_top_supported(s) or _exile_hand_supported(s)
+    return (exile_top_supported(s) or _exile_hand_supported(s)
             or self_exile(s) or exile_found(s) or graveyard_target_exile(s)
             or exile_target_supported(s))
 
@@ -1384,12 +1391,15 @@ _PLAYER_SETS = frozenset({SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS,
 
 
 def _named_players_supported(actor: Any) -> bool:
-    """The controller, a printed player set, or the player chosen for a
-    target slot ("target player creates ...", "target player mills ...")."""
+    """The controller, a printed player set, the player chosen for a
+    target slot ("target player creates ...", "target player mills ..."),
+    or the player the trigger event names ("defending player mills ten
+    cards", CR 506.2)."""
     return (_acts_as_controller(actor)
             or (isinstance(actor, Selector) and actor.kind in _PLAYER_SETS
                 and actor.filter is None)
-            or (isinstance(actor, Ref) and actor.kind is RefKind.TARGET))
+            or (isinstance(actor, Ref) and actor.kind is RefKind.TARGET)
+            or is_event_player(actor))
 
 
 def _create_token_supported(s: EffectSpec) -> bool:
@@ -2547,7 +2557,8 @@ EXECUTOR_DESCRIPTIONS[Verb.PUT_COUNTERS] = conditions.description_supported
 EXECUTOR_DESCRIPTIONS[Verb.DESTROY] = (
     lambda f: conditions.description_supported(f, bounds=True))
 EXECUTOR_FILTER_KEYS[Verb.EXILE] = frozenset(_LIBRARY_TOP.as_tuple()) | {
-    ("owner", _EVENT_PLAYER)} | frozenset(_YOUR_HAND_ENTRIES)
+    ("owner", _EVENT_PLAYER), ("owner", _DEFENDING_PLAYER)} \
+    | frozenset(_YOUR_HAND_ENTRIES)
 # A card its player owns outside the game (unit OG): the reveal and the
 # permission read the description of the sideboard cards themselves
 # (`outside_description`, CR 400.11a).

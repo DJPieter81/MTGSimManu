@@ -3188,6 +3188,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Agate-Blade Assassin",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "All-Seeing Arbiter",
     "TRIGGERED:0:1"
    ],
@@ -3316,6 +3324,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Brutal Hordechief",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Burning-Tree Vandal",
     "TRIGGERED:0:1"
    ],
@@ -3328,6 +3344,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Campaign of Vengeance",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
   },
   {
    "pair": [
@@ -3424,6 +3448,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Falkenrath Perforator",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
   },
   {
    "pair": [
@@ -3668,6 +3700,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Nemesis of Reason",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Nightveil Sprite",
     "TRIGGERED:0:1"
    ],
@@ -3740,6 +3780,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Ragged Recluse // Odious Witch",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Raging Regisaur",
     "TRIGGERED:0:0"
    ],
@@ -3768,6 +3816,14 @@
     "TRIGGERED:0:3"
    ],
    "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Restless Fortress",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
   },
   {
    "pair": [
@@ -3840,6 +3896,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Silent Skimmer",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
   },
   {
    "pair": [
@@ -3952,6 +4016,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Ulamog, the Ceaseless Hunger",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Ulamog, the Ceaseless Hunger // Ulamog, the Ceaseless Hunger",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit DP: the attack carrier binds the defending player (CR 506.2, 508.5), so it performs every instruction naming them -- the life they lose, the cards they mill or exile from the top of their library, the damage dealt to them -- where the legacy attack pass performed part of the host or none of it"
   },
   {
    "pair": [
@@ -4312,6 +4392,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: the caster loses 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Memory Erosion",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit DP: a mill by the player the trigger event names (\"that player mills two cards\", the caster) is the mill owner's, so the cast carrier performs it; the legacy cast pass performed nothing (CR 701.17a)"
   },
   {
    "pair": [
@@ -4720,6 +4808,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "A combat-damage trigger that creates a token resolves through the combat-damage carrier (unit R2) now that the token family's executor builds a printed token (unit TK): the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2). The carrier did not take the card before, so the trigger did nothing (CR 510.2, 603.2)."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Nightveil Specter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit DP: \"that player exiles the top card of their library\" is typed (their reads back to the clause's player) and the exile executor runs it for the player the event names; the legacy pass exiled nothing (CR 406)"
   },
   {
    "pair": [
@@ -16200,6 +16296,11 @@
    "step:dispatch",
    "Inventors' Fair",
    "TRIGGERED:0:0"
+  ],
+  [
+   "step:dispatch",
+   "Manic Scribe",
+   "TRIGGERED:0:1"
   ],
   [
    "step:dispatch",

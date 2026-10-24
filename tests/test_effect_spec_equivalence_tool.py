@@ -417,6 +417,36 @@ def test_an_activated_fixed_damage_ability_is_typed_with_its_amount():
                    key=7) is None
 
 
+@pytest.mark.parametrize("word, n, head, scope", [
+    ("first", 1, "an opponent casts their", "opponent"),
+    ("second", 2, "you cast your", "you"),
+    ("fifth", 5, "a player casts their", "any"),
+])
+def test_an_ordinal_cast_trigger_view_reads_every_ordinal_the_grammar_reads(
+        word, n, head, scope):
+    # CR 603.2: "your first spell each turn" is as much an ordinal
+    # condition as "your second"; the view reads the grammar's one table.
+    t = _template("Probe Sentinel", ["enchantment"],
+                  f"Whenever {head} {word} spell each turn, "
+                  "you gain 1 life.")
+    assert _derive("ordinal_cast_trigger", t) == {
+        "ordinal": n, "caster_scope": scope, "reset": "turn"}
+
+
+@pytest.mark.parametrize("head", [
+    "you cast your first noncreature spell each turn",
+    "you cast a spell other than your first spell each turn",
+])
+def test_a_cast_trigger_counting_another_set_of_spells_has_no_ordinal_view(
+        head):
+    # "your first noncreature spell" counts noncreature spells only and
+    # "a spell other than your first" every spell but one; the view's
+    # {ordinal, caster_scope, reset} can say neither.
+    t = _template("Probe Warden", ["enchantment"],
+                  f"Whenever {head}, you gain 1 life.")
+    assert _derive("ordinal_cast_trigger", t) is None
+
+
 # ── E2: removal ────────────────────────────────────────────────────────
 
 def test_targeted_removal_view_gives_action_types_and_mana_value_ceiling():
@@ -1420,6 +1450,10 @@ UNMASKED_ROWS = {
     "untargeted_damage_unmasked_by_library_position",
     "draw_effect_reads_impulse",
     "graveyard_recursion_reads_exile_linked_return",
+    # unmasked by typing "their library" (unit DP, 2026-10-24)
+    "recurring_trigger_reads_any_whenever_head",
+    "may_play_or_cast_reads_resolution_free_cast",
+    "tutor_reads_landcycling_reminder",
 }
 
 # Legacy-side semantic fixes: a rules unit made the legacy reading correct

@@ -539,6 +539,11 @@ def _host_antecedent(ctx: _Ctx, node: _Node, w: _Want) -> Optional[Ref]:
     return None
 
 
+# The acting players one Ref names: a player anaphor in the same clause's
+# object ("their library") reads back to that actor.
+_ONE_PLAYER_ACTORS = frozenset({RefKind.DEFENDING_PLAYER, RefKind.EVENT_PLAYER})
+
+
 def _bind(ctx: _Ctx, node: _Node, w: _Want, *, last_known=False) -> Ref:
     """The reference `w` names from `node` (rules 1-3); raises _Unbound.
     `last_known`: the reference reads the object's controller or a
@@ -706,8 +711,14 @@ def _fill_holes(ctx: _Ctx, node: _Node) -> None:
                 return _copy_with(v, ref=result_ref(True))
             if isinstance(v, _participant.Anaphor) and v.player is True:
                 # A player anaphor a leaf left in a field ("the top card of
-                # that player's library"): bound like the participant
-                # "that player".
+                # that player's library"): the clause's own one acting
+                # player ("defending player exiles the top twenty cards of
+                # their library"), else bound like the participant "that
+                # player".
+                actor = node.get("actor")
+                if isinstance(actor, Ref) and actor.kind in _ONE_PLAYER_ACTORS \
+                        and actor.of is None and actor.n is None:
+                    return actor
                 return _bind(ctx, node, _Want(player=True))
             return None
         return fn

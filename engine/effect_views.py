@@ -644,15 +644,25 @@ _TRIGGER_TARGET_ZONES = frozenset({"any", "battlefield"})
 _SELF_FLIP_VERBS = frozenset({Verb.EXILE, Verb.MOVE})
 
 
+def names_defending_player(h: AbilityEffects) -> bool:
+    """Does a spec of `h` name the defending player? There is one only once
+    attackers are declared (CR 506.2, 508.5): the attack carrier alone
+    binds it (unit DP), and every other trigger carrier, whose event names
+    none, takes no host that names it."""
+    return any(_names_unbound_event(s, frozenset({RefKind.DEFENDING_PLAYER}))
+               for s in iter_specs(h.specs))
+
+
 def strict_draw_trigger(h: AbilityEffects) -> bool:
     """A draw-triggered host the draw carrier takes (A38): the trigger
     family's strict shape with a typed draw head (`TriggerHead.draw`),
     every spec one of `_DRAW_TRIGGER_VERBS` -- or the self exile-and-
-    return-transformed pair -- with no residue or sub-ability, and every
+    return-transformed pair -- with no residue or sub-ability, every
     target slot one the carrier picks as the trigger is put on the stack
-    (any target, or a battlefield object)."""
+    (any target, or a battlefield object), and no defending player."""
     from .effect_executors import self_exile, self_return_transformed
     return (strict_trigger(h) and h.trigger.draw is not None
+            and not names_defending_player(h)
             and all(r.zone in _TRIGGER_TARGET_ZONES for r in h.targets)
             and _strict_host(h, _DRAW_TRIGGER_VERBS | _SELF_FLIP_VERBS,
                              conditions=True)
@@ -688,12 +698,13 @@ def strict_combat_damage_trigger(h: AbilityEffects) -> bool:
     head whose dealer the carrier reads, every spec one of
     `_COMBAT_DAMAGE_TRIGGER_VERBS` with no residue or sub-ability, an
     exile only of the top of a library and a continuous effect only a
-    permission over what it exiled (the one spec with a duration), and
-    every target slot one the carrier picks as the trigger is put on the
-    stack."""
+    permission over what it exiled (the one spec with a duration), every
+    target slot one the carrier picks as the trigger is put on the stack,
+    and no defending player (`names_defending_player`)."""
     cd = getattr(getattr(h, "trigger", None), "combat_damage", None)
     if not (strict_trigger(h) and cd is not None
             and cd.dealer in _COMBAT_DAMAGE_DEALERS
+            and not names_defending_player(h)
             and all(r.zone in _TRIGGER_TARGET_ZONES for r in h.targets)
             and _strict_host(h, _COMBAT_DAMAGE_TRIGGER_VERBS,
                              durations=True, conditions=True)):
@@ -737,11 +748,13 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
     spec one of `_STEP_TRIGGER_VERBS` with no residue or sub-ability -- its
     intervening "if" aside, which the dispatcher checks as the ability
     triggers and again as it resolves (CR 603.4) -- an exile only of a
-    target card in a graveyard, and every target slot one the carrier
-    picks as the trigger is put on the stack."""
+    target card in a graveyard, every target slot one the carrier picks as
+    the trigger is put on the stack, and no defending player
+    (`names_defending_player`)."""
     if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
             or h.trigger.step_event is None \
-            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets) \
+            or names_defending_player(h):
         return False
     bare = h
     if h.trigger.intervening_if is not None:
@@ -755,15 +768,14 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
 # The body a typed trigger's carrier performs (units AK, CT.2): the verbs
 # it resolves -- each an executor another family already runs -- and, per
 # carrier, the refs of its event it leaves unbound. The attack carrier
-# binds neither the attacker ("that creature") nor the defending player;
-# the cast carrier binds the caster ("that player", CR 603.2) but not the
-# spell.
+# binds the defending player (unit DP, CR 506.2) but not the attacker
+# ("that creature"); the cast carrier binds the caster ("that player", CR
+# 603.2) but not the spell.
 _TRIGGER_BODY_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
     Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE})
-_ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER,
-                                  RefKind.DEFENDING_PLAYER})
+_ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER})
 _CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
                                 RefKind.DEFENDING_PLAYER})
 
@@ -784,7 +796,9 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
     ability triggers and the dispatcher again as it resolves (CR 603.4) --
     and no spec naming a ref of the event the carrier leaves unbound. An
     exile is of a target card in a graveyard, of the top of its
-    controller's library or, `battlefield_exile`, of a target permanent; a
+    controller's library or the library of the player the event names (by
+    that player: "defending player exiles the top twenty cards of their
+    library") or, `battlefield_exile`, of a target permanent; a
     continuous effect is a permission over what that exile moved or a
     characteristic change until end of turn on a target (the one spec with
     a duration). A head that limits how often it triggers ("this ability
@@ -800,7 +814,8 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
                         conditions=True):
         return False
     from .effect_executors import (characteristic_supported,
-                                   exile_target_supported)
+                                   exile_target_supported,
+                                   exile_top_supported)
     specs = list(iter_specs(h.specs))
     exiled = {s.seq for s in specs if _library_top_exile(s)}
     for s in specs:
@@ -808,6 +823,7 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
             return False
         if s.verb is Verb.EXILE and s.seq not in exiled \
                 and not _graveyard_target_exile(s) \
+                and not exile_top_supported(s) \
                 and not (battlefield_exile and exile_target_supported(s)):
             return False
         if s.verb is Verb.CONTINUOUS and not (
@@ -823,8 +839,8 @@ def strict_attack_trigger(h: AbilityEffects) -> bool:
     host whose head the grammar typed (`TriggerHead.attack`), every target
     slot one the carrier picks as the trigger is put on the stack, and the
     trigger body (`_strict_trigger_body`) -- its intervening "if" aside,
-    which the carrier checks -- with no spec naming the attacker or the
-    defending player."""
+    which the carrier checks -- with no spec naming the attacker; the
+    defending player is the one its event names (unit DP)."""
     if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
             or h.trigger.attack is None \
             or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
@@ -2643,11 +2659,17 @@ def _any_head(*hints: EventHint, verbs: Tuple[Verb, ...] = (),
 
 
 def _ordinal_head(h) -> Optional[int]:
+    # "your first spell each turn" is as much an ordinal condition (CR
+    # 603.2) as "your second", read from the grammar's one ordinal table,
+    # when the ordinal spell is what the head's caster casts. A filtered
+    # head ("your first noncreature spell") counts another set of spells,
+    # and "a spell other than your first" every spell but one; neither is
+    # an {ordinal, caster_scope, reset}: none.
+    from .effect_grammar.sub.condition import ORDINALS
     raw = h.trigger.raw if h.trigger is not None else ""
-    for word, n in (("second", 2), ("third", 3), ("fourth", 4)):
-        if f" {word} " in f" {raw} ":
-            return n
-    return None
+    m = re.search(r"\bcasts? (?:your|their) (%s) spell each turn\b"
+                  % "|".join(ORDINALS), raw)
+    return ORDINALS[m.group(1)] if m else None
 
 
 def _ordinal_cast_trigger(effects, key=None, template=None):
