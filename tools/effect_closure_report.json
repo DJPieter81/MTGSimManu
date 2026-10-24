@@ -571,11 +571,11 @@
     "strict": true
    }
   ],
-  "executable": 91,
+  "executable": 106,
   "family": "attack_trigger",
   "hosts": {
    "mainboard": 1,
-   "pool": 90,
+   "pool": 105,
    "sideboard": 0
   },
   "steps": {
@@ -583,12 +583,12 @@
    "E2": 5,
    "E3": 33,
    "E4": 25,
-   "E5": 9
+   "E5": 24
   },
-  "strict": 91,
+  "strict": 106,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 7,
+   "CONTINUOUS": 22,
    "CREATE_TOKEN": 18,
    "DAMAGE": 6,
    "DISCARD,DRAW": 15,
@@ -837,6 +837,13 @@
     "strict": true
    },
    {
+    "card": "Slickshot Show-Off",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
     "card": "Ugin, Eye of the Storms",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -844,11 +851,11 @@
     "strict": true
    }
   ],
-  "executable": 69,
+  "executable": 92,
   "family": "cast_trigger",
   "hosts": {
-   "mainboard": 4,
-   "pool": 65,
+   "mainboard": 5,
+   "pool": 87,
    "sideboard": 0
   },
   "steps": {
@@ -856,12 +863,12 @@
    "E2": 2,
    "E3": 20,
    "E4": 29,
-   "E5": 2
+   "E5": 25
   },
-  "strict": 69,
+  "strict": 92,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 2,
+   "CONTINUOUS": 25,
    "CREATE_TOKEN": 26,
    "DAMAGE": 5,
    "DISCARD,DRAW": 2,

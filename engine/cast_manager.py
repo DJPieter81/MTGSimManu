@@ -3217,6 +3217,10 @@ class CastManager:
 
         # ── Prowess and prowess-like triggers (generic from oracle) ──
         if not template.is_creature:
+            # A creature whose cast triggers the cast carrier takes has its
+            # printed pump performed there (unit SG), not by the scan below.
+            from .effect_carrier import cast_taken
+            taken = cast_taken(player.creatures)
             for creature in player.creatures:
                 # Standard prowess keyword
                 if Keyword.PROWESS in creature.keywords:
@@ -3253,13 +3257,15 @@ class CastManager:
                 )
                 if trigger_clause is None:
                     continue
-                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', trigger_clause)
-                if pump:
-                    creature.temp_power_mod += int(pump.group(1))
-                    creature.temp_toughness_mod += int(pump.group(2))
-                elif re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause):
-                    m = re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause)
-                    creature.temp_power_mod += int(m.group(1))
+                if creature.instance_id not in taken:
+                    pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)',
+                                     trigger_clause)
+                    if pump:
+                        creature.temp_power_mod += int(pump.group(1))
+                        creature.temp_toughness_mod += int(pump.group(2))
+                    elif re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause):
+                        m = re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause)
+                        creature.temp_power_mod += int(m.group(1))
                 # Delirium — check actual GY card types via _has_delirium()
                 # _dynamic_base_power() already scales to 3 with delirium; we also
                 # need to grant FLYING as a keyword so combat logic sees it.

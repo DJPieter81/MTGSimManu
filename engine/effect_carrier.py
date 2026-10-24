@@ -911,6 +911,16 @@ def _cast_trigger_plans(game: Any):
             yield src, hosts, cast_plan(hosts)
 
 
+def cast_taken(permanents: Iterable[Any]) -> frozenset:
+    """The instance ids of `permanents` whose cast triggers the cast carrier
+    takes (their face's `cast_plan`): no legacy cast pass performs their
+    printed cast text. Empty while dispatch is off."""
+    if not er.dispatch_enabled():
+        return frozenset()
+    return frozenset(p.instance_id for p in permanents
+                     if cast_plan(_face_hosts(p)) is not None)
+
+
 def performed_cast_triggers(game: Any, caster: int, spell: Any) -> list:
     """The (permanent, host) cast-triggered abilities the cast carrier
     performs when `caster` casts `spell` (`dispatch_cast_triggers`), read

@@ -1053,14 +1053,25 @@ def _audit_found_exiled(ctx: Resolution, found) -> None:
                       f"found but not exiled: {left}", game=ctx.game)
 
 
-def _exile_self(ctx: Resolution) -> Outcome:
-    """"Exile ~" (CR 400.7): the source, still on the battlefield as the
-    object the ability came from -- not one that has since left and come
-    back -- moves to exile through the zone funnel."""
+def _source_on_battlefield(ctx: Resolution) -> Any:
+    """The ability's source, still on the battlefield as the object the
+    ability came from -- not one that has since left and come back (CR
+    400.7); None otherwise. What "~" names in an instruction that acts on
+    the source permanent."""
     card, src = _source_object(ctx), ctx.source
     if card is None or card.zone != "battlefield" or src is None \
             or src.zone != "battlefield" \
             or card.battlefield_entry_seq != src.entry_seq:
+        return None
+    return card
+
+
+def _exile_self(ctx: Resolution) -> Outcome:
+    """"Exile ~" (CR 400.7): the source, still on the battlefield as the
+    object the ability came from -- not one that has since left and come
+    back -- moves to exile through the zone funnel."""
+    card = _source_on_battlefield(ctx)
+    if card is None:
         return Outcome(False, {})
     if not ctx.game.zone_mgr.move_card(ctx.game, card, "battlefield",
                                        "exile", cause=card.name):
@@ -1659,10 +1670,22 @@ def _characteristic_data(m: Modification) -> bool:
             and bool(d))
 
 
+def changes_own_source(s: EffectSpec) -> bool:
+    """Does the instruction name its own source ("~ gets +2/+0", "this
+    creature gains flying") and no target (unit SG)?"""
+    r = s.ref
+    return (s.target_slot is None and s.target is None and r is not None
+            and r.kind is RefKind.SELF and r.part is RefPart.ALL
+            and r.index is None and r.of is None and not r.lki
+            and not r.per_actor)
+
+
 def characteristic_supported(s: EffectSpec) -> bool:
-    """A type, keyword or P/T change on the object one target slot names,
-    until end of turn (CR 611.2a/c, 613.1d/f, 613.4c): the chosen object
-    only, through the layer system's one-shot effects."""
+    """A type, keyword or P/T change until end of turn (CR 611.2a/c,
+    613.1d/f, 613.4c) on the object one target slot names, or on the
+    ability's own source while it is the object the ability came from (CR
+    400.7, unit SG): that object only, through the layer system's one-shot
+    effects."""
     m = s.payload
     if s.verb is not Verb.CONTINUOUS or not isinstance(m, Modification) \
             or m.kind not in _CHARACTERISTIC_KINDS \
@@ -1671,12 +1694,14 @@ def characteristic_supported(s: EffectSpec) -> bool:
     if s.duration is None or s.duration.kind is not DurationKind.THIS_TURN:
         return False
     req = s.target
-    if s.target_slot is None or req is None or req.zone != "battlefield" \
-            or req.count_max != 1 or req.mode_group is not None:
+    on_target = (s.target_slot is not None and req is not None
+                 and req.zone == "battlefield" and req.count_max == 1
+                 and req.mode_group is None and s.ref is None)
+    if not (on_target or changes_own_source(s)):
         return False
     return (not s.optional and not s.alternatives and s.filter is None
             and s.group is None and s.dest is None and s.amount is None
-            and s.subject is None and s.other is None and s.ref is None
+            and s.subject is None and s.other is None
             and not s.flags and s.chooser is Chooser.CONTROLLER
             and _acts_as_controller(s.actor))
 
@@ -1706,20 +1731,56 @@ def _characteristic_effects(ctx: Resolution, m: Modification, source: Any,
         controller=ctx.controller, target_seq=seq)
 
 
-def _characteristic(ctx: Resolution, s: EffectSpec) -> Outcome:
-    source = _source_object(ctx)
+def _characteristic_recipients(ctx: Resolution, s: EffectSpec,
+                               source: Any) -> list:
+    """The objects a characteristic change changes: its source while it is
+    the object the ability came from (CR 400.7), or each chosen target
+    still legal (CR 608.2b)."""
+    if changes_own_source(s):
+        card = _source_on_battlefield(ctx)
+        return [card] if card is not None else []
     slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
-    changed = []
+    out = []
     for value in slot:
         card = _bind_recipient(ctx, s.target, source, value)
-        if card is None or isinstance(card, int):
-            continue                       # CR 608.2b: not affected
+        if card is not None and not isinstance(card, int):
+            out.append(card)
+    return out
+
+
+def _characteristic(ctx: Resolution, s: EffectSpec) -> Outcome:
+    source = _source_object(ctx)
+    changed = []
+    for card in _characteristic_recipients(ctx, s, source):
         for effect in _characteristic_effects(ctx, s.payload, source, card):
             ctx.game.continuous_effects.register(effect)
         changed.append(handle_of(card))
     if changed:
         ctx.game.continuous_effects.recalculate(ctx.game)
+    if changes_own_source(s):
+        _audit_own_source_change(ctx, changed)
     return Outcome(bool(changed), {ctx.controller: tuple(changed)})
+
+
+def _audit_own_source_change(ctx: Resolution, changed) -> None:
+    """CR 400.7, 611.2c, restated from the source card's raw zone and
+    battlefield entry against the Handle the ability resolved for: "~"
+    names the source exactly while it is on the battlefield as the object
+    the ability came from, so the change is made then and only then.
+    Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    src = ctx.source
+    card = ctx.game.get_card_by_id(src.instance_id) if src is not None \
+        else None
+    due = (card is not None and card.zone == "battlefield"
+           and src.zone == "battlefield"
+           and card.battlefield_entry_seq == src.entry_seq)
+    rules_audit.check("611.2c/own_source_change", bool(changed) == due,
+                      f"{getattr(card, 'name', '?')}: changed "
+                      f"{bool(changed)}, the same object {due}",
+                      game=ctx.game)
 
 
 def execute_continuous(ctx: Resolution, s: EffectSpec,
@@ -1731,16 +1792,21 @@ def execute_continuous(ctx: Resolution, s: EffectSpec,
 
 execute_continuous.supports = (lambda s: _permit_supported(s)
                                or characteristic_supported(s))
-# A characteristic change runs in the type-change family (unit AT), as a
-# rider of a token or counter instruction in the tokens/counters family
-# (unit PO: "Target creature gains your choice of ..."), and in an attack
-# or cast trigger (units AK, CT.2, whose targets the carrier picks as the
-# trigger is put on the stack): the pump family's keyword and P/T hosts
-# stay on their legacy appliers until that family's switch is proven host
-# by host.
+# A characteristic change on a target runs in the type-change family (unit
+# AT), as a rider of a token or counter instruction in the tokens/counters
+# family (unit PO: "Target creature gains your choice of ..."), and in an
+# attack or cast trigger (units AK, CT.2, whose targets the carrier picks as
+# the trigger is put on the stack); a change of its own source, in an attack
+# or cast trigger (unit SG). The pump family's keyword and P/T hosts stay on
+# their legacy appliers until that family's switch is proven host by host.
+_TARGET_CHANGE_FAMILIES = frozenset({"type_change", FAMILY_TOKENS_COUNTERS,
+                                     FAMILY_ATTACK_TRIGGER,
+                                     FAMILY_CAST_TRIGGER})
+_OWN_SOURCE_CHANGE_FAMILIES = frozenset({FAMILY_ATTACK_TRIGGER,
+                                         FAMILY_CAST_TRIGGER})
 execute_continuous.allowed_families = (
-    lambda s: frozenset({"type_change", FAMILY_TOKENS_COUNTERS,
-                         FAMILY_ATTACK_TRIGGER, FAMILY_CAST_TRIGGER})
+    lambda s: (_OWN_SOURCE_CHANGE_FAMILIES if changes_own_source(s)
+               else _TARGET_CHANGE_FAMILIES)
     if characteristic_supported(s) else None)
 
 

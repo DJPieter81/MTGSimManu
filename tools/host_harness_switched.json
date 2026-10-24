@@ -3220,6 +3220,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Benalish Veteran",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Binding Geist // Spectral Binding",
     "TRIGGERED:0:0"
    ],
@@ -3236,10 +3244,34 @@
   {
    "pair": [
     "attack:dispatch",
+    "Borderland Marauder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Boulderborn Dragon",
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Bramble Creeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Brazen Wolves",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
   },
   {
    "pair": [
@@ -3280,6 +3312,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Charging Griffin",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
   },
   {
    "pair": [
@@ -3364,6 +3404,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Fortress Cyclops",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Furtive Courier",
     "TRIGGERED:0:1"
    ],
@@ -3372,10 +3420,34 @@
   {
    "pair": [
     "attack:dispatch",
+    "Graceful Cat",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Grave Titan",
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Hollow Dogs",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Hungry Spriggan",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
   },
   {
    "pair": [
@@ -3408,6 +3480,14 @@
     "TRIGGERED:1:0"
    ],
    "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Kiln Walker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
   },
   {
    "pair": [
@@ -3496,6 +3576,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier performs the ability of the Equipment as the creature it is attached to attacks (CR 301.5, 508.1m, 603.2); no legacy attack pass read a permanent other than the attacker"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Mortis Dogs",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
   },
   {
    "pair": [
@@ -3600,6 +3688,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Renegade Freighter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change and keyword grant, CR 611.2c)"
   },
   {
    "pair": [
@@ -3712,6 +3808,14 @@
     "TRIGGERED:0:2"
    ],
    "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Steadfast Cathar",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy attack pass performed nothing for this host; the attack carrier changes the attacking source itself until end of turn (P/T change, CR 611.2c)"
   },
   {
    "pair": [
@@ -3836,10 +3940,26 @@
   {
    "pair": [
     "cast:dispatch",
+    "Aven Wind Mage",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Beast Whisperer",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Blind Creeper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system; neither the legacy cast branches nor the cast manager's oracle scan (which reads only noncreature and instant-or-sorcery heads) made it"
   },
   {
    "pair": [
@@ -3868,6 +3988,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Cathar's Companion",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the legacy cast branches and the cast manager's oracle scan performed nothing for this keyword grant; the cast carrier grants it to the source until end of turn"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Celestial Ancient",
     "TRIGGERED:0:1"
    ],
@@ -3884,10 +4012,34 @@
   {
    "pair": [
     "cast:dispatch",
+    "Charmbreaker Devils",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Cindervines",
     "TRIGGERED:0:0"
    ],
    "reason": "unit CT.2: the same 1 damage to the caster, dealt through the damage owner and logged (the legacy branch wrote the caster's life total directly)"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Crackling Cyclops",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Cunning Breezedancer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
   },
   {
    "pair": [
@@ -3916,6 +4068,22 @@
   {
    "pair": [
     "cast:dispatch",
+    "Festival Crasher",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Fire Urchin",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Forensic Gadgeteer",
     "TRIGGERED:0:0"
    ],
@@ -3932,6 +4100,22 @@
   {
    "pair": [
     "cast:dispatch",
+    "Frenzied Devils",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Frolicking Familiar // Blow Off Steam",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "General Ferrous Rokiric",
     "TRIGGERED:0:1"
    ],
@@ -3940,10 +4124,26 @@
   {
    "pair": [
     "cast:dispatch",
+    "Ghitu Amplifier",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Glaring Fleshraker",
     "TRIGGERED:0:0"
    ],
    "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Eldrazi Spawn in place of the legacy branch's Spawn"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Gloryscale Viashino",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system; neither the legacy cast branches nor the cast manager's oracle scan (which reads only noncreature and instant-or-sorcery heads) made it"
   },
   {
    "pair": [
@@ -3988,10 +4188,34 @@
   {
    "pair": [
     "cast:dispatch",
+    "Kiln Fiend",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Kozilek's Sentinel",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system; neither the legacy cast branches nor the cast manager's oracle scan (which reads only noncreature and instant-or-sorcery heads) made it"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Mai, Scornful Striker",
     "TRIGGERED:0:1"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: the caster loses 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Mercurial Geists",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
   },
   {
    "pair": [
@@ -4008,6 +4232,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit CT: the cast carrier performs the typed draw trigger (CR 601.2i, 603.2); the legacy has_cast_spell_draw branch drew the same card silently, so only the logged draw differs. That branch drew on every spell cast; the carrier draws only on a spell of the kind the head names."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Mogg Sentry",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system; neither the legacy cast branches nor the cast manager's oracle scan (which reads only noncreature and instant-or-sorcery heads) made it"
   },
   {
    "pair": [
@@ -4092,10 +4324,42 @@
   {
    "pair": [
     "cast:dispatch",
+    "Seeker of the Way",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the legacy cast branches and the cast manager's oracle scan performed nothing for this keyword grant; the cast carrier grants it to the source until end of turn"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Silk, Web Weaver",
     "TRIGGERED:0:1"
    ],
    "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Human Citizen in place of the legacy branch's Citizen"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Sky Scourer",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system; neither the legacy cast branches nor the cast manager's oracle scan (which reads only noncreature and instant-or-sorcery heads) made it"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Sky Theater Strix",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Slickshot Show-Off",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
   },
   {
    "pair": [
@@ -4112,6 +4376,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Spellrune Painter // Spellrune Howler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Storm Skreelix",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
   },
   {
    "pair": [
@@ -4200,6 +4480,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: 1 damage to target creature an opponent controls"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Wee Dragonauts",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit SG: the source's own P/T change until end of turn, performed by the cast carrier through the layer system. The legacy cast branches made none; in a game the cast manager's oracle scan applied the P/T as a temporary modifier (outside this case), and it now skips a creature the carrier takes"
   },
   {
    "pair": [
@@ -14634,6 +14922,11 @@
   ],
   [
    "attack:dispatch",
+   "Sanctuary Raptor",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
    "Shopkeeper's Bane",
    "TRIGGERED:0:1"
   ],
@@ -14651,6 +14944,11 @@
    "attack:dispatch",
    "Teacher's Pest",
    "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Tilonalli's Knight",
+   "TRIGGERED:0:0"
   ],
   [
    "cast:dispatch",
