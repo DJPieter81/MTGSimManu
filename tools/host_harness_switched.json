@@ -4471,7 +4471,7 @@
     "Army of the Damned",
     "SPELL:0:0"
    ],
-   "reason": "A spell whose whole host creates tokens resolves through the dispatcher (unit TK, the token family): the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2). No legacy handler created the token, so the spell did nothing."
+   "reason": "A spell whose whole host creates tokens resolves through the dispatcher (unit TK, the token family): the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2). No legacy handler created the token, so the spell did nothing. Unit AK.0: a token its creator puts onto the battlefield tapped enters tapped (CR 110.5b)."
   },
   {
    "pair": [
@@ -6647,7 +6647,7 @@
     "Shadow Summoning",
     "SPELL:0:0"
    ],
-   "reason": "A spell whose whole host creates tokens resolves through the dispatcher (unit TK, the token family): the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2). No legacy handler created the token, so the spell did nothing."
+   "reason": "A spell whose whole host creates tokens resolves through the dispatcher (unit TK, the token family): the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2). No legacy handler created the token, so the spell did nothing. Unit AK.0: a token its creator puts onto the battlefield tapped enters tapped (CR 110.5b)."
   },
   {
    "pair": [
@@ -9663,7 +9663,7 @@
     "Long-Bodied Grey Dog",
     "TRIGGERED:0:2"
    ],
-   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+   "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none. Unit AK.0: a token its creator puts onto the battlefield tapped enters tapped (CR 110.5b)."
   },
   {
    "pair": [

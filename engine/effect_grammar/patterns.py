@@ -579,6 +579,12 @@ def _row_payload(m: _M, a: int, b: int) -> None:
         r = m.leaf(r)
         m.fields["payload"] = _payload_x_bound(m, r.value)
         m.take("payload", r.span)
+        # The status a token enters with (CR 110.5b) is the TokenSpec's.
+        entry = next((v for k, v in r.pending if k == "entry"), None)
+        if entry is not None and isinstance(m.fields["payload"], TokenSpec):
+            m.fields["payload"] = _copy_with(
+                m.fields["payload"], tapped=True,
+                attacking=entry == "tapped and attacking")
     m.pending.extend(kv for kv in r.pending if kv[0] in ("granted", "copy_of"))
     amt = _bound_x(m, r.amount) if r.amount is not None else m.entry_amount
     if r.rest_spans:

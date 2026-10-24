@@ -525,6 +525,10 @@ class TokenSpec:
     granted: Tuple["AbilityEffects", ...] = ()
     copy_of: Optional[Participant] = None
     copy_except: Tuple["EffectSpec", ...] = ()
+    # The status the token enters with, as its creator states it (CR
+    # 110.5b): tapped; tapped and attacking (CR 508.4).
+    tapped: bool = False
+    attacking: bool = False
 
 
 @dataclass(**_FROZEN)

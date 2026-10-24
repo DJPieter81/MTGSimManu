@@ -1353,9 +1353,13 @@ def _create_token_supported(s: EffectSpec) -> bool:
     p = s.payload
     if s.verb is not Verb.CREATE_TOKEN or not isinstance(p, TokenSpec):
         return False
+    # A token put onto the battlefield attacking was never declared as an
+    # attacker (CR 508.4): not modelled, so refused.
+    if p.attacking:
+        return False
     if p.predefined is not None:
-        if p.predefined not in _PREDEFINED_TOKENS \
-                or p != TokenSpec(predefined=p.predefined):
+        if p.predefined not in _PREDEFINED_TOKENS or dataclasses.replace(
+                p, tapped=False) != TokenSpec(predefined=p.predefined):
             return False
     elif printed_token(p) is None:
         return False
@@ -1379,7 +1383,8 @@ def execute_create_token(ctx: Resolution, s: EffectSpec,
     created = []
     for player in actors:
         if p.predefined is not None:
-            tokens = ctx.game.create_token(player, p.predefined, count=n)
+            tokens = ctx.game.create_token(player, p.predefined, count=n,
+                                           tapped=p.tapped)
         else:
             tokens = ctx.game.create_token(player, "", count=n, token_spec=p)
         created.append((player, tuple(tokens)))

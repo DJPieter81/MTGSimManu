@@ -215,17 +215,32 @@ def _audit_predefined_tokens(game, kind: str, creator: int,
 
 
 _INVESTIGATES = re.compile(r"\binvestigates?\b")
+# The printed forms of a token created tapped (CR 110.5b): "creates two
+# tapped ... tokens", "a token ... that's tapped (and attacking)", "a token
+# that's a copy of ~ that's tapped". "for each tapped creature" is a count.
+_ENTERS_TAPPED = re.compile(
+    r"\bcreates?\b[^.;]*?\btapped\b[^.;]*?\btokens?\b"
+    r"|\btokens?\b(?:[^.;]*? that(?:'s| are))? tapped\b"
+    r"|\bcop(?:y|ies) of\b[^.;]*? (?:that(?:'s| are) )?tapped\b", re.I)
 
 
 def audit_token_instruction(game, raw: str, made: dict,
                             source_name: str) -> None:
     """Rules audit of the tokens one instruction made (`made`: creating
     player -> tokens), restated from the instruction's printed text `raw`
-    -- never from its typed spec. CR 701.16a: an instruction printed as
+    -- never from its typed spec. CR 110.5b: a token its creator puts onto
+    the battlefield tapped enters tapped (one it does not may still enter
+    tapped by another effect). CR 701.16a: an instruction printed as
     investigating creates only Clues. Observation only."""
     from . import rules_audit
     if not rules_audit.enabled():
         return
+    if _ENTERS_TAPPED.search(raw or ""):
+        rules_audit.check(
+            "110.5b/token_entry_status",
+            all(t.tapped for tokens in made.values() for t in tokens),
+            f"{source_name}: a token stated tapped entered untapped",
+            game=game)
     if _INVESTIGATES.search(raw or ""):
         kinds = {tuple(t.template.subtypes)
                  for tokens in made.values() for t in tokens}
@@ -553,8 +568,12 @@ class PermanentEffects:
                      source_oracle: str = None,
                      subtypes: List[str] = None,
                      colors: Set[Color] = None,
-                     token_spec=None) -> List[CardInstance]:
+                     token_spec=None,
+                     tapped: bool = False) -> List[CardInstance]:
         """Create token creatures on the battlefield.
+
+        A token its creator puts onto the battlefield tapped (`tapped`, or
+        the typed spec's) enters tapped (CR 110.5b).
 
         With `token_spec`, a typed `TokenSpec` its creator prints, the
         token has exactly the characteristics `printed_token` builds from it
@@ -583,13 +602,15 @@ class PermanentEffects:
             built = printed_token(token_spec)
             if built is None:
                 raise ValueError(f"the token owner builds no {token_spec!r}")
-            return PermanentEffects._put_tokens(game, controller, count, built)
+            return PermanentEffects._put_tokens(
+                game, controller, count, built,
+                tapped=tapped or token_spec.tapped)
         # A predefined token is the object its CR 111.10 rule defines; the
         # other arguments describe nothing it has.
         built = predefined_token(token_type)
         if built is not None:
             tokens = PermanentEffects._put_tokens(game, controller, count,
-                                                  built)
+                                                  built, tapped=tapped)
             _audit_predefined_tokens(game, token_type, controller, tokens)
             return tokens
         tokens = []
@@ -719,11 +740,12 @@ class PermanentEffects:
 
     @staticmethod
     def _put_tokens(game: "GameState", controller: int, count: int,
-                    built: dict) -> List[CardInstance]:
+                    built: dict, tapped: bool = False) -> List[CardInstance]:
         """Put `count` tokens with the characteristics `built`
         (`printed_token`, `predefined_token`) onto the battlefield under
-        `controller`'s control (CR 111.2). Each enters like any permanent:
-        its own and every watcher's enter triggers fire (CR 603.6a)."""
+        `controller`'s control (CR 111.2), tapped when their creator says
+        so (CR 110.5b). Each enters like any permanent: its own and every
+        watcher's enter triggers fire (CR 603.6a)."""
         tokens = []
         creature = CardType.CREATURE in built["card_types"]
         for _ in range(count):
@@ -751,6 +773,8 @@ class PermanentEffects:
             instance.is_token = True
             instance._game_state = game
             instance.enter_battlefield()
+            if tapped:
+                instance.tapped = True
             game.players[controller].battlefield.append(instance)
             game._handle_permanent_etb(instance, controller)
             tokens.append(instance)

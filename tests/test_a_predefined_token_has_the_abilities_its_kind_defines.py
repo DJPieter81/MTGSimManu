@@ -207,8 +207,8 @@ def test_the_token_audit_records_a_predefined_token_under_the_wrong_player(
     from engine import permanent_effects
     real = permanent_effects.PermanentEffects._put_tokens
 
-    def handed_over(game, controller, count, built):         # the defect
-        tokens = real(game, controller, count, built)
+    def handed_over(game, controller, count, built, **kw):   # the defect
+        tokens = real(game, controller, count, built, **kw)
         for t in tokens:
             t.controller = 1 - controller
         return tokens
