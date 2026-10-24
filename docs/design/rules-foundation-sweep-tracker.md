@@ -11007,3 +11007,120 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
   - delayed upkeep and end-step triggers run before printed ones, whatever APNAP says;
   - the late `Clock.END_STEP` emission inside `end_of_turn_cleanup` runs after the end-step instant window;
   - step triggers resolve inline, with no stack window for responses, as every carrier's do.
+
+## Unit IV.1: a predefined token is the artifact its CR 111.10 rule defines, with the ability that rule prints (CR 111.10, 111.2; 2026-10-24)
+
+**Source:** the AK design pass, checked against the token owner.
+- A Treasure, Food or Clue came out of `PermanentEffects.create_token` as a bare `TOKEN_DEFS` row: an artifact with no subtype, no text and no ability, tagged as a creature.
+- So every Treasure Ragavan made when it connected (Boros Energy, Jeskai Blink, Domain Zoo, x4 each) did nothing, and a Clue drew no card.
+
+**Rule:** a predefined token is a colorless artifact token with its kind as its subtype and the ability its CR 111.10 rule prints (111.10a Treasure "{T}, Sacrifice this token: Add one mana of any color"; 111.10b Food; 111.10f Clue "{2}, Sacrifice this token: Draw a card"), owned and controlled by the player who created it (CR 111.2).
+
+**Class:** 207 pool cards create a Treasure, 98 a Food and 90 a Clue (the Clue count includes investigate's reminder text). Registered: Ragavan, Fable of the Mirror-Breaker (Jeskai Blink x4), Beza (Azorius Control SB) and Generous Ent's Food (Living End x4).
+
+**Steps:**
+- `permanent_effects.predefined_token(kind)` builds the characteristics from the kind's row in `keywords.EXPANSIONS` ("~" read as "this token"). The abilities are typed once per kind through the parse-once owners (`parse_activated_abilities`, `parse_sacrifice_mana_units`).
+- `create_token` puts a predefined kind through `_put_tokens`, which now carries the typed activated abilities. The three `TOKEN_DEFS` rows are deleted; `effect_executors._PREDEFINED_TOKENS` reads `PREDEFINED_TOKEN_KINDS`.
+- A Clue is DRAW_N 1 for {2} and sacrificing itself, through the activation owner. A Treasure is a mana ability the payment path spends. A Food is typed and refused by `can_activate` (no executor gains life on activation).
+- **Auditor `111.10/predefined_token`,** in the token owner, restated from each token's raw template and the rule's own row: types, subtype, colour, text, an ability exactly when the row prints one, sacrifice mana in the field payment spends, and the creator as owner and controller. The executor's `111.3/token_characteristics` now checks CR 111.2 for predefined tokens too.
+
+**Tests:** 13, in `tests/test_a_predefined_token_has_the_abilities_its_kind_defines.py`; 9 fail at `178bce2`, the 4 that pass there are pins.
+
+**Pins (`15d6db8`):** digest byte-identical (27 games); anchor 29 passed; spec equivalence, harness and every ratchet unchanged. No seeded game moved: castability never counted a sacrifice-for-mana source (unit SM). Chunks: 5368 + 2766 passed.
+
+**Measured:** with RM, SM and IV.2 by the `iv-post` arm (pre = `bt-post`).
+
+**Leads, not built:** Food's GAIN_LIFE activation; the other CR 111.10 kinds (Blood 26, Powerstone 28, Lander 18, Mutagen 12, Map 8, Gold 3, Shard 2 cards); the AI values Clue and Treasure at 0 in projections (`ai/ev_evaluator.py`).
+
+## Unit RM: reminder text is never typed as a ritual; a spell is a ritual only when its rules text adds mana (CR 207.2; 2026-10-24)
+
+**Source:** IV.1's real-path test. Strike It Rich resolved as "adds 1 any mana" and made no Treasure.
+
+**Rule:** reminder text has no effect of its own (CR 207.2). A Treasure maker's "(It's an artifact with "{T}, Sacrifice this token: Add one mana of any color.")" quotes the token's ability, not the spell's.
+
+**The defect:** `parse_ritual_mana` read reminder text. Every spell that creates a Treasure was typed as a ritual, and the ritual branch, which resolves first and returns, added {R}{R} and did nothing else: Deadly Dispute and Big Score drew no cards, Elemental Masterpiece made no Elementals.
+
+**Class:** 139 pool cards were typed with ritual mana from reminder text alone, 34 of them instants and sorceries (every one a Treasure maker). No registered card.
+
+**Steps:**
+- `parse_ritual_mana` strips reminder text first (the stripper `parse_activated_abilities` uses).
+- **Auditor `207.2/ritual_from_rules_text`** at the ritual branch, restated from the spell's typed instructions (the grammar types rules text only): a spell resolved as a ritual has an instruction that adds mana, typed or left untyped with its own text adding it. Silent over every ritual spell in the pool.
+
+**Tests:** 6, in `tests/test_reminder_text_is_never_typed_as_a_ritual.py`; 4 fail at `15d6db8`.
+
+**Pins (`02c043d`):**
+- Spec equivalence `ritual_mana` AGREE 22513 → 22645 (REMINDER_TEXT 190 → 57), locked in.
+- Gate parity 5074/1936/3138 → 5074/1942/3132: six spell hosts no longer preempted by the ritual branch reach the dispatcher, each a recorded intended change (the legacy apply builds no Treasure). The effect-parser ratchet (f) lowered 3138 → 3132 in the same commit, by hand; (a)-(e) unchanged.
+- An auditor first read the oracle text at resolution and raised the effect-parser ratchet (b) 96 → 97; it now reads the typed effects and (b) stays 96.
+- Digest byte-identical (27 games); anchor 29 passed. Chunks: 5368 + 2772 passed.
+
+**Measured:** with IV.1, SM and IV.2 by the `iv-post` arm.
+
+**Leads, not built:** the ritual branch's "any" colour adds {R}{R} whatever the amount and returns before the spell's other instructions (Desolation of Smaug, Traitorous Greed, Open the Omenpaths, 4 pool spells); a spell host that both draws and creates tokens is in no one landed family (Big Score's Treasures); the wider CR 207.2 audit of load-time interpreters (the card database's fourth interpreter reads reminder text for draw abilities).
+
+## Unit SM: the mana a sacrifice-for-mana ability makes is mana its controller can pay with; an X is paid in full from every source (CR 605.1a, 605.3a, 601.2f-h; 2026-10-24)
+
+**Source:** IV.1's pins. The digest did not move, because nothing ever spent the Treasures.
+
+**Rule:**
+- A mana ability that sacrifices its source may be activated while its controller pays a cost (CR 605.3a), if its own cost can be paid: a {T} needs the source untapped (CR 107.5) and, on a creature, under its controller's control since their turn began (CR 302.6). A cost with mana in it is a conversion, not a source.
+- A spell's X is part of its total cost (CR 601.2f) and is paid like the rest of it (CR 601.2h).
+
+**The defects:**
+- Castability, the colour check and the AI's mana estimate counted lands, rocks and dorks only, so a Treasure or an Eldrazi Spawn never made a spell castable.
+- The payment path spent them only as a generic shortfall, adding a unit's first colour, so a Treasure never paid a coloured pip. It ignored the {T} in a Treasure's cost and the {1} in a conversion's (Chromatic Star).
+- An X was chosen from capacity but paid by its own loop over untapped lands at one unit per land, so a dork's, a rock's, a Spawn's and the Urza lands' bonus mana counted toward X and paid none of it. The new `601.2h/x_cost_paid` audit found Kozilek's Command at X=8 with three of it unpaid; Green Sun's Zenith's second X came from Birds of Paradise's mana, never paid.
+
+**Class:** every source with a sacrifice-for-mana ability (207 Treasure makers; Eldrazi Spawn and Scion makers; Lotus-style artifacts) and every X spell paid with anything but lands. Registered: Ragavan, Fable, Beza (Treasure); Kozilek's Command (Eldrazi Tron, Eldrazi Ramp: Spawn and X); Chalice of the Void, Wrath of the Skies, March of Otherworldly Light, Green Sun's Zenith (X).
+
+**Steps:**
+- **One owner of the set:** `ManaPayment.sacrifice_mana_sources`, a typed sacrifice-for-mana ability whose cost can be paid now (`_sacrifice_cost_payable`).
+- **Payment:** their units join the solver's unit pool, coloured pips included, assigned after every repeatable source. The source is sacrificed (tapped first when its cost says {T}) only once the whole cost is paid; a failed payment refunds the mana and the tap. The old quantity-only block is deleted. Improvise's shortfall reads capacity without them, so an artifact taps before a Treasure dies.
+- **Estimates:** `PlayerState.untapped_mana_capacity` counts them, so every estimate and the payment agree; `CastManager._mana_source_units` gives the colour check their units.
+- **X:** an X that does not count colours is paid by the payment owner after the pool (lands with their conditional bonuses, rocks, dorks, sacrifice sources). A converge or sunburst X keeps its new-colours-first land walk and the owner pays the rest.
+- **Tokens:** a token's granted abilities are typed on both build paths, memoised per text, so a Spawn's cost is readable.
+- The verbose payment line no longer counts a source about to be sacrificed as mana remaining.
+- **Auditors:** `605.3a/sacrifice_mana_cost_paid` at the commit, restated from each sacrificed source's raw ability cost and its tapped state before the payment; `601.2h/x_cost_paid` from the X payment's unpaid tally. Both tested both ways; silent over the digest roster and the moved anchor games.
+
+**Tests:** 14, in `tests/test_sacrifice_for_mana_counts_toward_what_its_controller_can_pay.py`; 12 fail at `02c043d`.
+
+**Pins (`5515f6c`):**
+- **Digest:** 16 of 27 games move, each replayed to its first behavioural divergence and accepted:
+  - a Treasure or Spawn pays a cost castability had refused (Static Prison, Psychic Frog, Leyline Binding, Dismember, Mind Stone, Springleaf Drum, Wistfulness; Emrakul and Ugin on one turn);
+  - an X is paid in full (Kozilek's Command, Green Sun's Zenith);
+  - an X payment now taps through the payment owner (Chalice of the Void, Wrath of the Skies, March of Otherworldly Light).
+  The rest follow from those or differ only in the corrected remaining-mana line. Re-recorded.
+- **Anchor:** Eldrazi Tron vs Amulet Titan s50500 flips to Eldrazi Tron (T6: Emrakul from lands, Ugin from six Spawn); Broodscale Bloodchief vs Creatures Toolbox s52500 T8 → T7 (a Spawn pays for Springleaf Drum). Refreshed; no other entry moved.
+- **Per-match CPU (n=4):** Boros Energy vs Domain Zoo 1.27 → 1.33 s; Eldrazi Tron vs Jeskai Blink 3.11 → 2.07 s (shorter games).
+- Harness unchanged; spec equivalence unchanged; every ratchet passes. Chunks: 5368 + 2786 passed.
+
+**Measured:** with IV.1, RM and IV.2 by the `iv-post` arm.
+
+**Leads, not built:** the AI never chooses to hold a Treasure (the payment owner's order is its only policy); a conversion ({1}, sacrifice: add any colour) is neither a source nor a colour fixer here; Nest Invader's "create a token. It has '…'" grant is typed as a separate CONTINUOUS and refused, so it makes no Spawn.
+
+## Unit IV.2: investigate is the Clue its player creates (CR 701.16a; 2026-10-24)
+
+**Source:** the AK design pass. No engine path investigated; the legacy interpreter read the Clue's reminder text ("{2}, Sacrifice this token: Draw a card") as the card's own draw. Jace's Scrutiny drew a card and made no Clue; Thraben Inspector's enter trigger made nothing.
+
+**Rule:** "Investigate" means "Create a Clue token" (CR 701.16a): the investigating player creates it (CR 111.2), once for each time the instruction says.
+
+**Class:** 79 pool cards print "investigate"; the grammar types it on 72 hosts of 71 cards. 23 hosts now go to the new path whole: 14 enter triggers, 7 spells, a combat-damage trigger, a step trigger. Registered: Tamiyo, Inquisitive Student (Dimir Midrange x3; an attack host, waiting for unit AK) and Tireless Tracker (Amulet Titan SB; landfall has no carrier).
+
+**Steps:**
+- `keywords.EXPANDED_ACTIONS`: the closed table of CR 701 actions whose meaning is one typed instruction (investigate).
+- `link._expanded_action`, where L5 freezes each spec: such an action is the spec its expansion types, with the action's own frame (seq, span, printed text, actor, condition, optional flag, branches). Its count is folded in (`_action_times`: a printed number, per each of an outer "for each"); any other count keeps the keyword-action form, refused downstream. L2 still types the keyword action. The linker's declared leaf edges gain keywords.
+- **Auditor `701.16a/investigate_creates_a_clue`** in the token owner (`permanent_effects.audit_token_instruction`, which the token executor calls with the spec's printed text: an executor parses no text), restated from that text: an instruction printed as investigating creates only Clues. Tested both ways.
+- The design doc's verb-table row for KEYWORD_ACTION records the freeze.
+
+**Tests:** 9, in `tests/test_investigate_creates_a_clue_for_the_investigating_player.py`; 8 fail at `5515f6c`.
+
+**Pins (`a87620a`):**
+- Gate parity 5074/1942/3132 → 5092/1965/3127; the effect-parser ratchet (f) lowered 3132 → 3127 by hand.
+- Spec equivalence locked in: `has_token_effect` UNEXPLAINED 301 → 248, AGREE 21991 → 22046. `cast_trigger_token`, `has_lifegain_token_trigger` and `has_scaling_token_finisher` AGREE fall by 4, 4 and 2; every one of those pairs moved to DERIVED_COVERAGE_GROWTH (the typed view sees the Clue a legacy field never read), none to UNEXPLAINED. Totals: UNEXPLAINED 18113 → 18060.
+- Harness: the 23 new pairs are intended (the legacy apply made no Clue). Spot-checked on the new path: each makes its Clue and performs the rest of its host (a pump, a Crab token). 1965 pairs, 390 proven, 1575 intended.
+- Digest byte-identical (27 games); anchor 29 passed; every ratchet passes.
+- Chunks: 5368 + 2795 passed. The first run's one failure, the executor purity contract (an executor may not import `re`), is fixed in the commit by moving the auditor into the token owner, and re-run green.
+
+**Measured:** with IV.1, RM and SM by the `iv-post` arm.
+
+**Leads, not built:** the AI tags investigate cards `cantrip` from their reminder text; "its controller investigates" (Fateful Absence) and other non-player-set actors stay refused; the other CR 701 actions with one-instruction expansions (to be sized).
