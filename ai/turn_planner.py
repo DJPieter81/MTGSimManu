@@ -1236,13 +1236,20 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
         value = (_permanent_value(card, controller, game, controller_idx)
                  + noncombat_opportunity_cost(card, controller,
                                               _snap_for(controller_idx)))
+        # The planner plays the planning player's creatures as attackers and
+        # the opponent's as blockers: each is unavailable exactly when the
+        # engine says it cannot take that role now. Summoning sickness stops
+        # an attack until its controller's turn begins (haste lifts it),
+        # never a block (CR 302.6, 509.1a).
+        unavailable = (not card.can_attack if controller_idx == player_idx
+                       else not card.can_block)
         return VirtualCreature(
             instance_id=card.instance_id,
             name=card.name,
             power=card.power or 0,
             toughness=card.toughness or 0,
             keywords=kw_set,
-            is_tapped=card.tapped or card.summoning_sick,
+            is_tapped=unavailable,
             controller=controller_idx,
             value=value,
             cmc=card.template.cmc or 0,

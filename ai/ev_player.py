@@ -3533,14 +3533,15 @@ class EVPlayer:
             return False
 
     def _two_turn_lethal(self, game, me, opp, attackers) -> bool:
-        # incoming this turn + opp's uninvolved creatures that can swing next turn
+        # incoming this turn + opp's uninvolved creatures that can swing next
+        # turn: a creature that entered this turn attacks then, its summoning
+        # sickness ended by its controller's turn beginning (CR 302.6).
         from ai.clock import unblocked_reach
         incoming = unblocked_reach(attackers)
         attacking_ids = {a.instance_id for a in attackers}
         opp_next = unblocked_reach(
             c for c in opp.creatures
-            if c.instance_id not in attacking_ids
-            and not getattr(c, 'summoning_sick', False))
+            if c.instance_id not in attacking_ids)
         return incoming + opp_next >= me.life
 
     def _attacker_equipment_bonus(self, game, opp, attacker) -> int:
