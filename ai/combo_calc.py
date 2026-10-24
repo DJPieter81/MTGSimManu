@@ -974,13 +974,16 @@ def _digs_toward_closer(card, me) -> bool:
 
 def _cast_triggers_draw(card, game, player_idx) -> bool:
     """Does casting `card` trigger a cast trigger the cast carrier performs
-    whose instructions draw (`effect_carrier.performed_cast_triggers`: a
-    plain draw, or a rummage's "if you do, draw", unit CT)? Read from the
-    typed hosts the engine would run, never from text."""
+    whose instructions draw for the caster (`effect_carrier.
+    performed_cast_triggers`: a plain draw, or a rummage's "if you do,
+    draw", units CT, CT.2)? A trigger's draw is its controller's (CR 121.1,
+    the DRAW executor's one shape), so only the caster's own permanents
+    dig. Read from the typed hosts the engine would run, never from text."""
     from engine.effect_carrier import performed_cast_triggers
     from engine.effect_spec import Verb, iter_specs
     return any(s.verb is Verb.DRAW
-               for _src, h in performed_cast_triggers(game, player_idx, card)
+               for src, h in performed_cast_triggers(game, player_idx, card)
+               if src.controller == player_idx
                for s in iter_specs(h.specs))
 
 

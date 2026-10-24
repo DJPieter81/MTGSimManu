@@ -3812,6 +3812,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Arasta of the Endless Web",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: a 1/2 Spider with reach on an opponent's instant or sorcery"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Archmage of Runes",
     "TRIGGERED:0:1"
    ],
@@ -3836,10 +3844,34 @@
   {
    "pair": [
     "cast:dispatch",
+    "Bontu's Monument",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: each opponent loses 1 life and its controller gains 1"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Bothersome Noisemaker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: amass Goblins 1"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Case of the Ransacked Lab",
     "TRIGGERED:0:2"
    ],
    "reason": "Unit CT: the cast carrier performs the typed draw trigger (CR 601.2i, 603.2); the legacy has_cast_spell_draw branch drew the same card silently, so only the logged draw differs. That branch drew on every spell cast; the carrier draws only on a spell of the kind the head names."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Celestial Ancient",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: a +1/+1 counter on each creature its controller controls"
   },
   {
    "pair": [
@@ -3852,10 +3884,74 @@
   {
    "pair": [
     "cast:dispatch",
+    "Cindervines",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the same 1 damage to the caster, dealt through the damage owner and logged (the legacy branch wrote the caster's life total directly)"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Dawnhart Geist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Ebon Drake",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller loses 1 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Enchantress's Presence",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Forensic Gadgeteer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: investigate"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Forsaken Monument",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "General Ferrous Rokiric",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: a 4/4 Golem artifact creature token"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Glaring Fleshraker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Eldrazi Spawn in place of the legacy branch's Spawn"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "God-Eternal Oketra",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Zombie Warrior in place of the legacy branch's Warrior"
   },
   {
    "pair": [
@@ -3868,10 +3964,66 @@
   {
    "pair": [
     "cast:dispatch",
+    "Herald of the Pantheon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 1 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Hero of Precinct One",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: a 1/1 Human token"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Kambal, Consul of Allocation",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: the caster loses 2 life and its controller gains 2"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Mai, Scornful Striker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: the caster loses 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Mistfire Adept",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: target creature gains flying until end of turn"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Moderation",
     "TRIGGERED:0:1"
    ],
    "reason": "Unit CT: the cast carrier performs the typed draw trigger (CR 601.2i, 603.2); the legacy has_cast_spell_draw branch drew the same card silently, so only the logged draw differs. That branch drew on every spell cast; the carrier draws only on a spell of the kind the head names."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Molten Nursery",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: 1 damage to any target"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Murmuring Mystic",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Bird Illusion in place of the legacy branch's Illusion"
   },
   {
    "pair": [
@@ -3892,10 +4044,66 @@
   {
    "pair": [
     "cast:dispatch",
+    "Pyroconvergence",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: 2 damage to any target"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Rhonas's Monument",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: target creature its controller controls gets +2/+2 and gains trample until end of turn"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Rona, Sheoldred's Faithful",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: each opponent loses 1 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Ruric Thar, the Unbowed",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: 6 damage to the caster, its controller included"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Satyr Enchanter",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Sauron, the Dark Lord",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: amass Orcs 1"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Silk, Web Weaver",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Human Citizen in place of the legacy branch's Citizen"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Soldier of the Pantheon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 1 life"
   },
   {
    "pair": [
@@ -3908,10 +4116,50 @@
   {
    "pair": [
     "cast:dispatch",
+    "Student of Ojutai",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Sythis, Harvest's Hand",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 1 life and draws a card"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "The Mechanist, Aerial Artisan",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: a Clue (CR 111.10f) in place of the legacy branch's generic 1/1 creature token"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Tome of the Guildpact",
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Trail of Evidence",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit CT.2: investigate (CR 701.16a); the legacy branch drew a card, read from the Clue's reminder text"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Treacherous Blessing",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller loses 1 life"
   },
   {
    "pair": [
@@ -3936,6 +4184,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Vraska, Soul of Stone",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the same token, named for its subtypes (CR 111.4): Sculpture Treasure in place of the legacy branch's Treasure"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Weaver of Lightning",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: 1 damage to target creature an opponent controls"
   },
   {
    "pair": [
@@ -14387,6 +14651,96 @@
    "attack:dispatch",
    "Teacher's Pest",
    "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Cruel Witness",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Dragon's Rage Channeler",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Efficient Construction",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Garland, Knight of Cornelia // Chaos, the Endless",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Kykar, Wind's Fury",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Monastery Mentor",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Oketra's Monument",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Ravenous Robots",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Rite of the Dragoncaller",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Saheeli, Jewel of Avishkar",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Saheeli, Sublime Artificer",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Sai, Master Thopterist",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Sigil of the Empty Throne",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Sokka, Tenacious Tactician",
+   "TRIGGERED:0:2"
+  ],
+  [
+   "cast:dispatch",
+   "Talrand, Sky Summoner",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Third Path Iconoclast",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
+   "Tura Kenner\u00fcd, Skyknight",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Young Pyromancer",
+   "TRIGGERED:0:0"
   ],
   [
    "direct_damage",

@@ -100,8 +100,14 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE}),
-            FAMILY_CAST_TRIGGER: frozenset({Verb.DISCARD, Verb.DRAW,
-                                            Verb.EXILE}),
+            FAMILY_CAST_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
+                                            Verb.GAIN_LIFE, Verb.DRAW,
+                                            Verb.DISCARD,
+                                            Verb.CREATE_TOKEN,
+                                            Verb.PUT_COUNTERS, Verb.MILL,
+                                            Verb.SURVEIL,
+                                            Verb.KEYWORD_ACTION,
+                                            Verb.CONTINUOUS, Verb.EXILE}),
             FAMILY_STEP_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.GAIN_LIFE, Verb.DRAW,
                                             Verb.CREATE_TOKEN,
@@ -1114,12 +1120,14 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
 
 execute_exile.supports = _exile_supported
 # A graveyard target's exile runs in the card-flow family, and beside a
-# token or counter instruction in that family (unit GX), and in a step or
-# attack trigger (units BT, AK); a battlefield target's, in a cast trigger
-# (unit UG); every other exile shape is unrestricted, as before.
+# token or counter instruction in that family (unit GX), and in a step,
+# attack or cast trigger (units BT, AK, CT.2); a battlefield target's, in a
+# cast trigger (unit UG); every other exile shape is unrestricted, as
+# before.
 execute_exile.allowed_families = (
     lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS,
-                         FAMILY_STEP_TRIGGER, FAMILY_ATTACK_TRIGGER})
+                         FAMILY_STEP_TRIGGER, FAMILY_ATTACK_TRIGGER,
+                         FAMILY_CAST_TRIGGER})
     if graveyard_target_exile(s)
     else frozenset({FAMILY_CAST_TRIGGER}) if exile_target_supported(s)
     else None)
@@ -1726,12 +1734,13 @@ execute_continuous.supports = (lambda s: _permit_supported(s)
 # A characteristic change runs in the type-change family (unit AT), as a
 # rider of a token or counter instruction in the tokens/counters family
 # (unit PO: "Target creature gains your choice of ..."), and in an attack
-# trigger (unit AK, whose targets the carrier picks as the trigger is put
-# on the stack): the pump family's keyword and P/T hosts stay on their
-# legacy appliers until that family's switch is proven host by host.
+# or cast trigger (units AK, CT.2, whose targets the carrier picks as the
+# trigger is put on the stack): the pump family's keyword and P/T hosts
+# stay on their legacy appliers until that family's switch is proven host
+# by host.
 execute_continuous.allowed_families = (
     lambda s: frozenset({"type_change", FAMILY_TOKENS_COUNTERS,
-                         FAMILY_ATTACK_TRIGGER})
+                         FAMILY_ATTACK_TRIGGER, FAMILY_CAST_TRIGGER})
     if characteristic_supported(s) else None)
 
 

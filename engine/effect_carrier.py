@@ -848,19 +848,22 @@ def cast_plan(face_hosts: Iterable[Any]) -> Optional[list]:
 
 
 def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
-    """The cast carrier (CR 601.2i, 603.2): each permanent's cast-triggered
-    abilities whose typed head names this cast (`cast_matches`), resolved
-    through the dispatcher with the caster as the trigger event's player,
-    targets picked as they are put on the stack (`trigger_targets`). In
-    stack order: the non-active player's triggers resolve first (CR
-    603.3b). Returns the instance ids of the permanents whose cast triggers
-    the carrier took, performed or not, so the legacy cast resolver skips
-    them; the rules audit records a matching head no carrier takes
-    (`603.2/cast_trigger_unresolved`)."""
+    """The cast carrier (CR 601.2i, 603.2, 603.3b): each permanent's
+    cast-triggered abilities whose typed head names this cast
+    (`cast_matches`), with the caster as the trigger event's player ("that
+    player"). All of them trigger before any resolves, each taking its
+    targets as it is put on the stack (`trigger_targets`, CR 603.3d); they
+    resolve through the dispatcher in stack order -- the non-active
+    player's first (CR 603.3b) -- with state-based actions checked before
+    the next one resolves. Returns the instance ids of the permanents whose
+    cast triggers the carrier took, performed or not, so the legacy cast
+    resolver skips them; the rules audit records a matching head no carrier
+    takes (`603.2/cast_trigger_unresolved`)."""
     taken: set = set()
     if not er.dispatch_enabled():
         return taken
     event = er.TriggerEvent(player=caster)
+    triggered = []
     for src, hosts, plan in _cast_trigger_plans(game):
         if plan is None:
             _audit_unresolved_cast_trigger(game, src, hosts, caster, spell)
@@ -868,16 +871,26 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
         taken.add(src.instance_id)
         controller = src.controller
         for h, family in plan:
-            if not cast_matches(h.trigger.cast, controller, caster, spell):
+            fires = cast_matches(h.trigger.cast, controller, caster, spell)
+            _audit_cast_trigger_fires(game, src, controller, h, fires,
+                                      caster, spell)
+            if not fires:
                 continue
             chosen = trigger_targets(game, src, controller, h)
             if chosen is None:
                 continue
-            er.resolve_ability(game, er.handle_of(src), controller, h,
-                               chosen, family=family, event=event,
-                               source_object=src)
-            if game.game_over:
-                return taken
+            triggered.append((src, er.handle_of(src), controller, h, family,
+                              chosen))
+    for src, handle, controller, h, family, chosen in triggered:
+        er.resolve_ability(game, handle, controller, h, chosen, family=family,
+                           event=event, source_object=src)
+        if game.game_over:
+            break
+        # CR 117.3b, 704.3: state-based actions are checked before the next
+        # one resolves.
+        game.check_state_based_actions()
+        if game.game_over:
+            break
     return taken
 
 
@@ -929,6 +942,44 @@ def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],
             rules_audit.census("603.2/cast_trigger_unresolved", src.name,
                                detail=h.trigger.raw, game=game)
             return
+
+
+def _audit_cast_trigger_fires(game: Any, src: Any, controller: int,
+                              host: Any, fires: bool, caster: int,
+                              spell: Any) -> None:
+    """CR 601.2i, 603.2, restated from the spell's raw fields: a cast head
+    triggers for a spell exactly when its caster and kind name it -- "you"
+    the ability's controller, "an opponent" another player; the kind read
+    from the spell's printed card types and its colours (an effect's colour
+    over the printed one) -- once for that spell, and never for another.
+    Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .cards import CardType
+    ev = host.trigger.cast
+    types = set(getattr(spell.template, "card_types", ()) or ())
+    colors = getattr(spell, "cem_colors_set", None)
+    if colors is None:
+        colors = getattr(spell.template, "colors", ()) or ()
+    who = {"you": caster == controller, "opponent": caster != controller,
+           "player": True}.get(ev.caster, False)
+    kind = {
+        "any": True,
+        "noncreature": CardType.CREATURE not in types,
+        "creature": CardType.CREATURE in types,
+        "instant_or_sorcery": bool(types & {CardType.INSTANT,
+                                            CardType.SORCERY}),
+        "artifact": CardType.ARTIFACT in types,
+        "enchantment": CardType.ENCHANTMENT in types,
+        "colorless": not colors,
+        "multicolored": len(colors) > 1,      # CR 105.4: two or more colours
+    }.get(ev.spell, False)
+    due = who and kind
+    rules_audit.check("603.2/cast_trigger_once", fires == due,
+                      f"{src.name}: {host.trigger.raw!r} "
+                      f"{'triggered' if fires else 'did not trigger'} for "
+                      f"{getattr(spell, 'name', '?')}", game=game)
 
 
 # ── The beginning-of-step carrier (unit BT, CR 603.2, 603.3b, 603.4) ──

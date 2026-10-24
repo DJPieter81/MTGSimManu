@@ -823,6 +823,20 @@
     "strict": true
    },
    {
+    "card": "Dragon's Rage Channeler",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Glaring Fleshraker",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Ugin, Eye of the Storms",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -830,23 +844,33 @@
     "strict": true
    }
   ],
-  "executable": 18,
+  "executable": 69,
   "family": "cast_trigger",
   "hosts": {
-   "mainboard": 2,
-   "pool": 16,
+   "mainboard": 4,
+   "pool": 65,
    "sideboard": 0
   },
   "steps": {
+   "E1": 16,
    "E2": 2,
-   "E3": 16
+   "E3": 20,
+   "E4": 29,
+   "E5": 2
   },
-  "strict": 18,
+  "strict": 69,
   "sub_kinds": {},
   "verb_sets": {
+   "CONTINUOUS": 2,
+   "CREATE_TOKEN": 26,
+   "DAMAGE": 5,
    "DISCARD,DRAW": 2,
    "DRAW": 14,
-   "EXILE": 2
+   "EXILE": 2,
+   "GAIN_LIFE": 5,
+   "GAIN_LIFE,LOSE_LIFE": 2,
+   "LOSE_LIFE": 4,
+   "SURVEIL": 3
   }
  },
  "cast_prohibition": {

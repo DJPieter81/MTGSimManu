@@ -133,6 +133,40 @@ def test_the_dig_is_what_the_cast_carrier_performs(card_db):
     assert _modifier(g, ritual) == STORM_HARD_HOLD
 
 
+def _watcher(game, oracle, controller):
+    """A synthetic enchantment printing `oracle`, under `controller`."""
+    from engine.cards import CardTemplate, CardType
+    from engine.mana import ManaCost
+    tmpl = CardTemplate(
+        name="Cast Probe", card_types=[CardType.ENCHANTMENT],
+        mana_cost=ManaCost(), supertypes=[], subtypes=[], power=None,
+        toughness=None, loyalty=None, keywords=set(), abilities=[],
+        color_identity=set(), produces_mana=[], enters_tapped=False,
+        oracle_text=oracle, tags=set())
+    card = CardInstance(template=tmpl, owner=controller,
+                        controller=controller,
+                        instance_id=game.next_instance_id(),
+                        zone="battlefield")
+    card._game_state = game
+    card.enter_battlefield()
+    game.players[controller].battlefield.append(card)
+    return card
+
+
+def test_a_cast_trigger_digs_only_for_the_player_who_draws(card_db):
+    """A cast trigger draws for its controller (CR 121.1): an opponent's
+    "whenever an opponent casts a spell, draw a card" is no dig for the
+    caster, and the same ability under the caster's control is."""
+    g, (ritual, _r2) = _main_phase(
+        card_db, hand=["Pyretic Ritual", "Pyretic Ritual"], storm=0, lands=2)
+    _watcher(g, "Whenever an opponent casts a spell, draw a card.", 1)
+    assert _modifier(g, ritual) == STORM_HARD_HOLD
+    g2, (ritual2, _r) = _main_phase(
+        card_db, hand=["Pyretic Ritual", "Pyretic Ritual"], storm=0, lands=2)
+    _watcher(g2, "Whenever you cast a spell, draw a card.", 0)
+    assert _modifier(g2, ritual2) == pytest.approx(_soft_penalty(0, 20))
+
+
 def test_the_living_end_turn_five_board_admits_its_rituals(card_db):
     """The replay's T5 (s50000 G1): five lands, Ruby Medallion and Artist's
     Talent in play, two rituals and Valakut Awakening in hand, no payoff."""

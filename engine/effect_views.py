@@ -719,34 +719,6 @@ def strict_trigger(h: AbilityEffects) -> bool:
                     for s in iter_specs(h.specs)))
 
 
-def strict_cast_trigger(h: AbilityEffects) -> bool:
-    """A cast-triggered host whose head the grammar typed (`TriggerHead.
-    cast`), with no intervening-if, that performs one of the closed shapes
-    the cast carrier runs: a plain draw; a rummage, an optional discard
-    whose "if you do" branch draws (CR 603.2, 608.2c); or the exile of a
-    target permanent (CR 701.13a)."""
-    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
-            or h.trigger.cast is None or h.trigger.intervening_if is not None:
-        return False
-    if len(h.specs) != 1:
-        return False
-    s = h.specs[0]
-    if s.condition is not None or s.otherwise or s.alternatives \
-            or s.replaces or s.duration is not None:
-        return False
-    if s.verb is Verb.DRAW:
-        return not s.then
-    if s.verb is Verb.DISCARD:
-        return (s.optional and len(s.then) == 1
-                and s.then[0].verb is Verb.DRAW
-                and "if_you_do" in s.then[0].flags
-                and not s.then[0].then and not s.then[0].otherwise)
-    if s.verb is Verb.EXILE:
-        return (not s.then and s.target is not None
-                and s.target.zone == "battlefield")
-    return False
-
-
 # The beginning-of-step carrier (unit BT, `effect_carrier.
 # dispatch_step_triggers`): the verbs it resolves -- each an executor
 # another family already runs -- and the slot zones it picks a trigger's
@@ -780,57 +752,63 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
                     for s in iter_specs(h.specs)))
 
 
-# The attack carrier (unit AK, `effect_carrier.dispatch_attack_triggers`):
-# the verbs it resolves -- each an executor another family already runs --
-# and the refs no attack event supplies: the carrier binds neither the
-# attacker ("that creature") nor the defending player.
-_ATTACK_TRIGGER_VERBS = frozenset({
+# The body a typed trigger's carrier performs (units AK, CT.2): the verbs
+# it resolves -- each an executor another family already runs -- and, per
+# carrier, the refs of its event it leaves unbound. The attack carrier
+# binds neither the attacker ("that creature") nor the defending player;
+# the cast carrier binds the caster ("that player", CR 603.2) but not the
+# spell.
+_TRIGGER_BODY_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
     Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE})
-_UNBOUND_EVENT_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER,
-                                 RefKind.DEFENDING_PLAYER})
+_ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER,
+                                  RefKind.DEFENDING_PLAYER})
+_CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
+                                RefKind.DEFENDING_PLAYER})
 
 
-def _names_unbound_event(s) -> bool:
-    """Does the spec name an object or player of the event the attack
-    carrier does not bind (`_UNBOUND_EVENT_REFS`)?"""
+def _names_unbound_event(s, unbound: frozenset) -> bool:
+    """Does the spec name an object or player of the event its carrier
+    does not bind (`unbound`)?"""
     from .effect_spec import _SPEC_OWN_FIELDS, _refs
-    return any(r.kind in _UNBOUND_EVENT_REFS for name in _SPEC_OWN_FIELDS
+    return any(r.kind in unbound for name in _SPEC_OWN_FIELDS
                for r in _refs(getattr(s, name)))
 
 
-def strict_attack_trigger(h: AbilityEffects) -> bool:
-    """An attack-triggered host the attack carrier takes (A38): a TRIGGERED
-    host whose head the grammar typed (`TriggerHead.attack`), every spec one
-    of `_ATTACK_TRIGGER_VERBS` with no residue or sub-ability -- its
-    intervening "if" aside, which the carrier checks as the ability
-    triggers and the dispatcher again as it resolves (CR 603.4) -- and
-    every target slot one the carrier picks as the trigger is put on the
-    stack. An exile is of a target card in a graveyard or of the top of
-    its controller's library; a continuous effect is a permission over
-    what that exile moved or a characteristic change until end of turn on
-    a target (the one spec with a duration); no spec names the attacker or
-    the defending player."""
-    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
-            or h.trigger.attack is None \
-            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
+                         battlefield_exile: bool = False) -> bool:
+    """The body a trigger carrier performs from a typed host (A38): every
+    spec one of `_TRIGGER_BODY_VERBS` with no residue or sub-ability -- an
+    intervening "if" aside, which the carrier that admits one checks as the
+    ability triggers and the dispatcher again as it resolves (CR 603.4) --
+    and no spec naming a ref of the event the carrier leaves unbound. An
+    exile is of a target card in a graveyard, of the top of its
+    controller's library or, `battlefield_exile`, of a target permanent; a
+    continuous effect is a permission over what that exile moved or a
+    characteristic change until end of turn on a target (the one spec with
+    a duration). A head that limits how often it triggers ("this ability
+    triggers only once each turn") is refused: no carrier counts its
+    triggers yet."""
+    if h.trigger.frequency_raw:
         return False
     bare = h
     if h.trigger.intervening_if is not None:
         bare = dataclasses.replace(h, trigger=dataclasses.replace(
             h.trigger, intervening_if=None))
-    if not _strict_host(bare, _ATTACK_TRIGGER_VERBS, durations=True,
+    if not _strict_host(bare, _TRIGGER_BODY_VERBS, durations=True,
                         conditions=True):
         return False
-    from .effect_executors import characteristic_supported
+    from .effect_executors import (characteristic_supported,
+                                   exile_target_supported)
     specs = list(iter_specs(h.specs))
     exiled = {s.seq for s in specs if _library_top_exile(s)}
     for s in specs:
-        if _names_unbound_event(s):
+        if _names_unbound_event(s, unbound):
             return False
         if s.verb is Verb.EXILE and s.seq not in exiled \
-                and not _graveyard_target_exile(s):
+                and not _graveyard_target_exile(s) \
+                and not (battlefield_exile and exile_target_supported(s)):
             return False
         if s.verb is Verb.CONTINUOUS and not (
                 _permission_over(s, exiled) or characteristic_supported(s)):
@@ -838,6 +816,36 @@ def strict_attack_trigger(h: AbilityEffects) -> bool:
         if s.duration is not None and s.verb is not Verb.CONTINUOUS:
             return False
     return True
+
+
+def strict_attack_trigger(h: AbilityEffects) -> bool:
+    """An attack-triggered host the attack carrier takes (A38): a TRIGGERED
+    host whose head the grammar typed (`TriggerHead.attack`), every target
+    slot one the carrier picks as the trigger is put on the stack, and the
+    trigger body (`_strict_trigger_body`) -- its intervening "if" aside,
+    which the carrier checks -- with no spec naming the attacker or the
+    defending player."""
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or h.trigger.attack is None \
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+        return False
+    return _strict_trigger_body(h, _ATTACK_UNBOUND_REFS)
+
+
+def strict_cast_trigger(h: AbilityEffects) -> bool:
+    """A cast-triggered host the cast carrier takes (A38): a TRIGGERED host
+    whose head the grammar typed (`TriggerHead.cast`), with no intervening
+    "if" (the carrier checks none), every target slot one the carrier picks
+    as the trigger is put on the stack, and the trigger body the other
+    carriers perform (`_strict_trigger_body`, CR 603.2, 608.2c), the exile
+    of a target permanent among it (unit UG, CR 701.13a). "That player" is
+    the caster, whom the carrier binds as the event's player; no spec names
+    the spell."""
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or h.trigger.cast is None or h.trigger.intervening_if is not None \
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+        return False
+    return _strict_trigger_body(h, _CAST_UNBOUND_REFS, battlefield_exile=True)
 
 
 def strict_edict(h: AbilityEffects) -> bool:
