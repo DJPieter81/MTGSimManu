@@ -5412,6 +5412,14 @@
   {
    "pair": [
     "create_token",
+    "Rat Out",
+    "SPELL:0:0"
+   ],
+   "reason": "unit BR: the token's creator grants it \"This token can't block\"; the token owner now builds it (it refused any granted ability but a sacrifice-for-mana one), so the dispatcher creates the token named for its subtype with that text, which restricts it (CR 111.3, 111.4, 509.1a), where the legacy pass created a token named in lower case, with no text"
+  },
+  {
+   "pair": [
+    "create_token",
     "Reach of Branches",
     "SPELL:0:0"
    ],
@@ -5464,6 +5472,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, keywords, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Satyr's Cunning",
+    "SPELL:0:0"
+   ],
+   "reason": "unit BR: the token's creator grants it \"This token can't block\"; the token owner now builds it (it refused any granted ability but a sacrifice-for-mana one), so the dispatcher creates the token named for its subtype with that text, which restricts it (CR 111.3, 111.4, 509.1a), where the legacy pass created a token named in lower case, with no text"
   },
   {
    "pair": [
@@ -7604,6 +7620,14 @@
   {
    "pair": [
     "dispatched",
+    "Rat Out",
+    "SPELL:0:0"
+   ],
+   "reason": "unit BR: the token's creator grants it \"This token can't block\"; the token owner now builds it (it refused any granted ability but a sacrifice-for-mana one), so the dispatcher creates the token named for its subtype with that text, which restricts it (CR 111.3, 111.4, 509.1a), where the legacy pass created a token named in lower case, with no text"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Reach of Branches",
     "SPELL:0:0"
    ],
@@ -7856,6 +7880,14 @@
     "SPELL:0:1"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Satyr's Cunning",
+    "SPELL:0:0"
+   ],
+   "reason": "unit BR: the token's creator grants it \"This token can't block\"; the token owner now builds it (it refused any granted ability but a sacrifice-for-mana one), so the dispatcher creates the token named for its subtype with that text, which restricts it (CR 111.3, 111.4, 509.1a), where the legacy pass created a token named in lower case, with no text"
   },
   {
    "pair": [
@@ -9852,6 +9884,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Edgewall Pack",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BR: the legacy enter pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the enter carrier creates it with that text (CR 111.3, 509.1a-b)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Eerie Gravestone",
     "TRIGGERED:0:0"
    ],
@@ -10560,6 +10600,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Heroes of the Revel",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BR: the legacy enter pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the enter carrier creates it with that text (CR 111.3, 509.1a-b)"
   },
   {
    "pair": [
@@ -11452,6 +11500,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ominous Roost",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BR: the legacy enter pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the enter carrier creates it with that text (CR 111.3, 509.1a-b)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Omnath, Locus of Creation",
     "TRIGGERED:0:0"
    ],
@@ -11832,6 +11888,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Redcap Gutter-Dweller",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BR: the legacy enter pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the enter carrier creates it with that text (CR 111.3, 509.1a-b)"
   },
   {
    "pair": [
@@ -12916,6 +12980,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Voracious Vermin",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit BR: the legacy enter pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the enter carrier creates it with that text (CR 111.3, 509.1a-b)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Wailing Ghoul",
     "TRIGGERED:0:0"
    ],
@@ -13600,6 +13672,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Lord Skitter, Sewer King",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit BR: the legacy step pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the step carrier creates it with that text (CR 111.3, 509.1a)"
   },
   {
    "pair": [
@@ -15093,6 +15173,11 @@
    "cast:dispatch",
    "Oketra's Monument",
    "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Pinnacle Emissary",
+   "TRIGGERED:0:0"
   ],
   [
    "cast:dispatch",

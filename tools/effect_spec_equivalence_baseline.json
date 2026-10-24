@@ -433,9 +433,9 @@
   "has_graveyard_recursion": {
    "AGREE": 21475,
    "DERIVED_COVERAGE_GROWTH": 29,
-   "LEGACY_GRAVEYARD_RECURSION": 4,
+   "LEGACY_GRAVEYARD_RECURSION": 5,
    "UNEXPLAINED": 715,
-   "UNMODELLED_CLAUSE": 515
+   "UNMODELLED_CLAUSE": 514
   },
   "has_graveyard_target": {
    "AGREE": 22121,
@@ -472,9 +472,9 @@
   "has_may_play_or_cast": {
    "AGREE": 21364,
    "DERIVED_COVERAGE_GROWTH": 3,
-   "REMINDER_TEXT": 4,
+   "REMINDER_TEXT": 5,
    "UNEXPLAINED": 651,
-   "UNMODELLED_CLAUSE": 716
+   "UNMODELLED_CLAUSE": 715
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -760,9 +760,9 @@
   }
  },
  "gate_parity": {
-  "legacy_fallback": 3127,
-  "new_path": 2160,
-  "pairs": 5287
+  "legacy_fallback": 3125,
+  "new_path": 2171,
+  "pairs": 5296
  },
  "templates": 22738,
  "totals": {
@@ -770,7 +770,7 @@
   "DERIVED_COVERAGE_GROWTH": 7870,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
-  "LEGACY_GRAVEYARD_RECURSION": 6,
+  "LEGACY_GRAVEYARD_RECURSION": 7,
   "LEGACY_HASH_ORDER": 13,
   "LEGACY_PUMP_GRANT_SCOPE": 11,
   "LEGACY_RITUAL_MANA": 1,
@@ -779,9 +779,9 @@
   "LEGACY_TEAM_GRANT_SCOPE": 1,
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 69,
-  "REMINDER_TEXT": 69,
+  "REMINDER_TEXT": 70,
   "SEMANTIC_FIX": 38,
   "UNEXPLAINED": 18060,
-  "UNMODELLED_CLAUSE": 9322
+  "UNMODELLED_CLAUSE": 9320
  }
 }

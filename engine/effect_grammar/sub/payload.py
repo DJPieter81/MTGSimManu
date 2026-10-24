@@ -798,6 +798,9 @@ _CANT_RE = re.compile(r"(?:can't|cannot) ")
 _CAN_ONLY_RE = re.compile(
     r"can cast spells only (?:(?P<sorcery>any time they could cast a sorcery)"
     r"|during their own turns?)\b")
+# "can block only creatures with <keyword list>" (CR 509.1b): blocking any
+# creature without one of the keywords is prohibited.
+_CAN_BLOCK_ONLY_RE = re.compile(r"can block only creatures with ")
 _SOURCE_TYPE = r"(?:artifacts|creatures|enchantments|planeswalkers|lands|battles)"
 # The permanent types whose abilities a prohibition names: "artifacts,
 # creatures, or enchantments".
@@ -952,6 +955,15 @@ def _modification_rel(t: str) -> _Rel:
                   else "cast_outside_own_turn")
         return (_mod(ModKind.PROHIBIT, action=action), None, m.end(), None,
                 (), ())
+    m = _CAN_BLOCK_ONLY_RE.match(t)
+    if m:
+        kws, quotes, end, _ = _keyword_list(t, m.end())
+        if not kws or quotes or any(p is not None for _k, p in kws) \
+                or _PROHIBIT_BOUNDARY_RE.match(t, end) is None:
+            return (None, _um("prohibit_qualifier"), 0, None, (), ())
+        return (_mod(ModKind.PROHIBIT, action="block",
+                     only_with=tuple(k for k, _p in kws)),
+                None, end, None, (), ())
     m = _CANT_RE.match(t)
     if m:
         code = "prohibit_action"

@@ -371,6 +371,10 @@ _ROWS: Tuple[_Row, ...] = (
     # "<players> can cast spells only <when>" (CR 101.2): a prohibition on
     # casting at any other time; the payload leaf reads the time.
     _r("can", _C, r"(?= cast spells only\b)", ModKind.PROHIBIT),
+    # "<creature> can block only creatures with <keyword>" (CR 509.1b): a
+    # prohibition on blocking any other creature; the payload leaf reads
+    # the keywords.
+    _r("can", _C, r"(?= block only creatures with\b)", ModKind.PROHIBIT),
     _r("doesn't", _C, r"(?= untap during\b)", ModKind.PROHIBIT),
     _r("attack", _C, r"(?= [^.;]*?\bif able\b)", ModKind.REQUIRE),
     _r("block", _C, r"(?= [^.;]*?\bif able\b)", ModKind.REQUIRE),

@@ -786,7 +786,7 @@
     "strict": false
    }
   ],
-  "executable": 103,
+  "executable": 104,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
@@ -844,6 +844,13 @@
     "strict": true
    },
    {
+    "card": "Pinnacle Emissary",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Slickshot Show-Off",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -858,10 +865,10 @@
     "strict": true
    }
   ],
-  "executable": 92,
+  "executable": 93,
   "family": "cast_trigger",
   "hosts": {
-   "mainboard": 5,
+   "mainboard": 6,
    "pool": 87,
    "sideboard": 0
   },
@@ -869,14 +876,14 @@
    "E1": 16,
    "E2": 2,
    "E3": 20,
-   "E4": 29,
+   "E4": 30,
    "E5": 25
   },
-  "strict": 92,
+  "strict": 93,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 25,
-   "CREATE_TOKEN": 26,
+   "CREATE_TOKEN": 27,
    "DAMAGE": 5,
    "DISCARD,DRAW": 2,
    "DRAW": 14,
@@ -1037,7 +1044,7 @@
     "strict": false
    }
   ],
-  "executable": 179,
+  "executable": 182,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1289,26 +1296,26 @@
     "strict": true
    }
   ],
-  "executable": 498,
+  "executable": 500,
   "family": "damage",
   "hosts": {
    "mainboard": 21,
-   "pool": 474,
+   "pool": 476,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
    "E2": 81,
    "E3": 111,
-   "E4": 126,
-   "E5": 26
+   "E4": 127,
+   "E5": 27
   },
-  "strict": 498,
+  "strict": 500,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS,CREATE_TOKEN": 13,
+   "CONTINUOUS,CREATE_TOKEN": 14,
    "CONTINUOUS,EXILE": 7,
-   "CREATE_TOKEN": 115,
+   "CREATE_TOKEN": 116,
    "DAMAGE": 154,
    "DRAW": 68,
    "DRAW,MOVE": 7,
@@ -1542,26 +1549,26 @@
     "strict": true
    }
   ],
-  "executable": 536,
+  "executable": 541,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 514,
+   "pool": 519,
    "sideboard": 0
   },
   "steps": {
    "E2": 47,
    "E3": 197,
-   "E4": 277,
+   "E4": 282,
    "E5": 10,
    "E6": 5
   },
-  "strict": 536,
+  "strict": 541,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
-   "CREATE_TOKEN": 263,
+   "CREATE_TOKEN": 268,
    "DRAW": 109,
    "EXILE": 10,
    "EXILE,GAIN_LIFE": 3,
@@ -2354,23 +2361,23 @@
     "strict": true
    }
   ],
-  "executable": 90,
+  "executable": 91,
   "family": "step_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 88,
+   "pool": 89,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
    "E2": 3,
    "E3": 26,
-   "E4": 37
+   "E4": 38
   },
-  "strict": 90,
+  "strict": 91,
   "sub_kinds": {},
   "verb_sets": {
-   "CREATE_TOKEN": 29,
+   "CREATE_TOKEN": 30,
    "CREATE_TOKEN,LOSE_LIFE": 3,
    "DRAW": 10,
    "DRAW,LOSE_LIFE": 3,

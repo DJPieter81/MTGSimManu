@@ -313,9 +313,11 @@ def combat_damage_prevented(game: "GameState") -> bool:
 
 def object_prohibited(game: "GameState", card, action: str) -> bool:
     """A PROHIBIT effect on this object (or on a class it is in) forbids `action` ('attack' /
-    'block') (CR 508.1c / 509.1b). Object-scoped prohibitions come only
-    from resolved effects, so only the stored ones are read (this gate runs
-    in every attack/block enumeration)."""
+    'block') (CR 508.1c / 509.1b): a resolved one stored in the rule
+    effects, or the object's own printed "can't" while it is on the
+    battlefield (CR 611.3a, `printed_object_restrictions`). Other printed
+    object prohibitions are not read here (this gate runs in every
+    attack/block enumeration)."""
     from engine.effect_model import ModKind, SelectorKind
     for e in game.continuous_effects._rule_effects:
         if (e.selector.kind in (SelectorKind.OBJECT, SelectorKind.FILTER)
@@ -323,7 +325,40 @@ def object_prohibited(game: "GameState", card, action: str) -> bool:
                 and e.modification.action == action
                 and e.selector.covers_object(card)):
             return True
-    return False
+    return any(act == action and not only
+               for act, only in _own_restrictions(card))
+
+
+def block_restricted(blocker, attacker) -> bool:
+    """The blocker's own printed restriction forbids it to block this
+    attacker (CR 509.1b): it "can block only creatures with" keywords the
+    attacker has none of."""
+    return not admits_blocked(block_only_with(blocker), attacker.keywords)
+
+
+def block_only_with(card) -> tuple:
+    """The keyword groups `card`'s own printed restrictions require of a
+    creature it blocks (CR 509.1b): one group per "can block only creatures
+    with <keywords>"."""
+    return tuple(only for act, only in _own_restrictions(card)
+                 if act == "block" and only)
+
+
+def admits_blocked(groups, attacker_keywords) -> bool:
+    """May a blocker whose own restrictions require `groups`
+    (`block_only_with`) block a creature with `attacker_keywords`? It needs
+    a keyword of every group (CR 509.1b). The one test of the rule, for the
+    engine's objects and the AI's models of them alike."""
+    return all(any(k in attacker_keywords for k in group) for group in groups)
+
+
+def _own_restrictions(card) -> tuple:
+    """`card`'s printed restrictions on itself while it is on the
+    battlefield (CR 611.3a); none in any other zone."""
+    if getattr(card, "zone", None) != "battlefield":
+        return ()
+    from engine.continuous_effects import printed_object_restrictions
+    return printed_object_restrictions(card)
 
 
 # ── Countering ───────────────────────────────────────────────────────

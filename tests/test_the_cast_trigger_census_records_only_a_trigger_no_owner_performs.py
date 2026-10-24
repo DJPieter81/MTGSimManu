@@ -71,11 +71,11 @@ def test_a_cast_triggered_counter_its_owner_performs_is_no_census_row(
 
 def test_a_cast_trigger_no_owner_performs_is_still_a_census_row(card_db,
                                                                 audit):
-    """Pinnacle Emissary's token carries a static ability no token
-    instruction makes yet: its cast trigger is untaken, and recorded."""
+    """A cast trigger that "triggers only once each turn" has no carrier
+    count yet: it is untaken, and recorded."""
     game = _game(card_db)
-    _add(game, card_db, "Pinnacle Emissary", 0)
+    _add(game, card_db, "Whispering Wizard", 0)
     spell = _add(game, card_db, "Welding Jar", 0, "hand")
     assert game.cast_spell(0, spell, [])
-    assert ("603.2/cast_trigger_unresolved", "Pinnacle Emissary") \
+    assert ("603.2/cast_trigger_unresolved", "Whispering Wizard") \
         in _census(audit)

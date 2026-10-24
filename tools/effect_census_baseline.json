@@ -92,7 +92,7 @@
    "UNPARSED": 295,
    "WIDENING": 584
   },
-  "typed_share": 0.7397,
+  "typed_share": 0.7402,
   "typed_share_by_host_kind": {
    "ACTIVATED": 0.7991,
    "ALTERNATIVE_COST": 0.0,
@@ -103,7 +103,7 @@
    "MODE": 0.7941,
    "REPLACEMENT": 0.0,
    "SPELL": 0.7472,
-   "STATIC": 0.6272,
+   "STATIC": 0.6313,
    "TRIGGERED": 0.7981,
    "UNKNOWN": 0.0
   },
@@ -115,7 +115,7 @@
    "DURATION": 53,
    "FILTER": 1528,
    "ITERATION": 110,
-   "NO_LEMMA": 1186,
+   "NO_LEMMA": 1164,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
    "REFERENCE": 1367,
@@ -174,9 +174,9 @@
     "typed": 7471
    },
    "STATIC": {
-    "share": 0.6272,
+    "share": 0.6313,
     "specs": 5378,
-    "typed": 3373
+    "typed": 3395
    },
    "TRIGGERED": {
     "share": 0.7981,
@@ -1230,8 +1230,8 @@
     2
    ]
   ],
-  "typed": 32829,
-  "unmodelled": 11552,
+  "typed": 32851,
+  "unmodelled": 11530,
   "unmodelled_row_count": 1949,
   "unmodelled_rows": [
    [
@@ -1244,7 +1244,7 @@
     "NO_LEMMA",
     "",
     "lexicon.no_lemma",
-    1186
+    1164
    ],
    [
     "REFERENCE",

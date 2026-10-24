@@ -3310,20 +3310,20 @@ class EVPlayer:
             )
             deals_damage = (c.power or 0) > 0 or has_combat_trigger
 
-            # True if any untapped blocker can kill this attacker (power >= toughness).
+            # The blockers that may block this attacker: the engine's
+            # per-blocker legality (CR 509.1b) -- flying and reach,
+            # protection, each blocker's own restrictions.
+            from engine.combat_manager import CombatManager
+            legal_blockers = [b for b in opp_blockers if not b.tapped
+                              and CombatManager._can_block(c, b)]
+            # True if any legal blocker can kill this attacker (power >= toughness).
             # No upper-bound filter: a 4/4 blocking a 1/2 is a real threat.
             can_die_to_block = any(
                 (b.power or 0) >= (c.toughness or 0)
-                for b in opp_blockers
-                if not b.tapped
+                for b in legal_blockers
             )
-            # Evasion: flying attacker with no flying/reach defenders.
-            # Reach check uses oracle text for generality (no keyword enum dependency).
-            is_evasive = (
-                Keyword.FLYING in c.keywords and not any(
-                    Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
-                    for b in opp_blockers if not b.tapped)
-            )
+            # Evasion: no creature the defender controls may block it.
+            is_evasive = not legal_blockers
             # Phase 3 veto retirement: evasion removes combat risk regardless
             # of power.  A creature that is genuinely unblockable (is_evasive)
             # will not die to any legal block — its "free" status comes from
@@ -4180,7 +4180,7 @@ class EVPlayer:
         must-block/trade-up/trade-even heuristic. This function is now
         a thin wrapper: it supplies the real cost/score/legality
         callables (``ai.clock.opportunity_cost``, ``_score_block_
-        lifespan_delta``, ``_flying_ok``, ``_is_protected_piece``) and
+        lifespan_delta``, ``_may_block``, ``_is_protected_piece``) and
         keeps everything that's genuinely specific to COMMITTING a
         real decision — the plating-futile skip (RC-2), the non-
         emergency double-block-if-needed extension, and logging.
@@ -4230,11 +4230,12 @@ class EVPlayer:
         id_to_blocker = {b.instance_id: b for b in valid_blockers}
         sorted_attackers = sorted(attackers, key=lambda a: a.power or 0, reverse=True)
 
-        def _flying_ok(attacker, blocker):
-            if Keyword.FLYING in attacker.keywords:
-                return (Keyword.FLYING in blocker.keywords
-                        or Keyword.REACH in blocker.keywords)
-            return True
+        from engine.combat_manager import CombatManager
+
+        def _may_block(attacker, blocker):
+            # The engine's per-blocker legality (CR 509.1b): evasion,
+            # protection and the blocker's own restrictions.
+            return CombatManager._can_block(attacker, blocker)
 
         def _min_blockers(attacker):
             # Menace (CR 702.111 / 509.1c): can't be blocked except by two
@@ -4312,7 +4313,7 @@ class EVPlayer:
             # ── PASS 1: coverage ────────────────────────────────────
             blocks, used = coverage_pass(
                 sorted_attackers, valid_blockers,
-                my_life=me.life, can_block_fn=_flying_ok, cost_fn=_cost_fn,
+                my_life=me.life, can_block_fn=_may_block, cost_fn=_cost_fn,
                 stabilize_margin=EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN,
                 skip_fn=_skip_fn, min_blockers_fn=_min_blockers,
                 overflow_fn=_trample_overflow,
@@ -4338,7 +4339,7 @@ class EVPlayer:
             # express.
             blocks, used = optimize_pass(
                 sorted_attackers, valid_blockers, blocks, used,
-                can_block_fn=_flying_ok, score_fn=_score_fn,
+                can_block_fn=_may_block, score_fn=_score_fn,
                 bounded_to_covered=True,
                 protected_fn=self._is_protected_piece,
             )
@@ -4365,7 +4366,7 @@ class EVPlayer:
                 adequate = [
                     b2 for b2 in valid_blockers
                     if b2.instance_id not in used_set
-                    and _flying_ok(attacker, b2)
+                    and _may_block(attacker, b2)
                     and b_power + (b2.power or 0) >= a_tough]
                 if adequate:
                     b2 = min(adequate, key=_cost_fn)
@@ -4374,7 +4375,7 @@ class EVPlayer:
 
         blocks, used = optimize_pass(
             sorted_attackers, valid_blockers, {}, set(),
-            can_block_fn=_flying_ok, score_fn=_score_fn,
+            can_block_fn=_may_block, score_fn=_score_fn,
             bounded_to_covered=False,
             protected_fn=self._is_protected_piece,
             on_assigned=_double_block_if_needed,

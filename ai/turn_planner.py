@@ -118,6 +118,10 @@ class VirtualCreature:
     # Power from attached Equipment — the share that survives the creature
     # (CR 301.5c). Populated from `CardInstance.equipment_power_bonus()`.
     equipment_power: int = 0
+    # The keyword groups its own restrictions require of a creature it
+    # blocks ("can block only creatures with flying", CR 509.1b), as keyword
+    # names. Populated from `rules_query.block_only_with`.
+    block_only_with: Tuple[Tuple[str, ...], ...] = ()
 
     @property
     def is_dead(self) -> bool:
@@ -138,6 +142,7 @@ class VirtualCreature:
             has_etb=self.has_etb,
             equipment_power=self.equipment_power,
             has_combat_damage_player_trigger=self.has_combat_damage_player_trigger,
+            block_only_with=self.block_only_with,
         )
 
 
@@ -436,11 +441,10 @@ class CombatPlanner:
     def _has_evasion(self, creature: VirtualCreature,
                       blockers: List[VirtualCreature]) -> bool:
         """Check if a creature has effective evasion against these blockers."""
-        if "flying" in creature.keywords:
-            flying_blockers = [b for b in blockers
-                              if "flying" in b.keywords or "reach" in b.keywords]
-            if not flying_blockers:
-                return True
+        # No blocker may block it (flying and reach, each blocker's own
+        # restrictions: `_can_block`).
+        if not any(self._can_block(b, creature) for b in blockers):
+            return True
         if "menace" in creature.keywords:
             if len(blockers) < 2:
                 return True
@@ -713,9 +717,13 @@ class CombatPlanner:
 
     def _can_block(self, blocker: VirtualCreature, attacker: VirtualCreature) -> bool:
         """Check if a blocker can legally block an attacker."""
+        from engine.rules_query import admits_blocked
         if "flying" in attacker.keywords:
             if "flying" not in blocker.keywords and "reach" not in blocker.keywords:
                 return False
+        # CR 509.1b: the blocker's own restrictions, by the engine's test.
+        if not admits_blocked(blocker.block_only_with, attacker.keywords):
+            return False
         if "menace" in attacker.keywords:
             return True  # menace needs 2 blockers, handled in double-block
         return True
@@ -1243,6 +1251,9 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
         # never a block (CR 302.6, 509.1a).
         unavailable = (not card.can_attack if controller_idx == player_idx
                        else not card.can_block)
+        from engine.rules_query import block_only_with
+        only_with = tuple(tuple(k.name.lower() for k in group)
+                          for group in block_only_with(card))
         return VirtualCreature(
             instance_id=card.instance_id,
             name=card.name,
@@ -1257,6 +1268,7 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
             has_combat_damage_player_trigger=getattr(
                 card.template, 'has_combat_damage_player_trigger', False),
             equipment_power=card.equipment_power_bonus(),
+            block_only_with=only_with,
         )
 
     def to_virtual_spell(card) -> VirtualSpell:

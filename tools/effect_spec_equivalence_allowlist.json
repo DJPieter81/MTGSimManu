@@ -78,16 +78,16 @@
    "id": "may_play_or_cast_reads_keyword_reminder",
    "class": "REMINDER_TEXT",
    "fields": ["has_may_play_or_cast"],
-   "cards": ["Bayek of Siwa", "Iroh, Grand Lotus", "Memorial Team Leader", "Six"],
-   "reason": "parse_has_may_play_or_cast reads 'you may cast' inside a keyword's reminder text (disguise, flashback, retrace, warp); the reminder is not the card's own permission, and the view reads PERMIT specs only. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "cards": ["Bayek of Siwa", "Devoted Grafkeeper // Departed Soulkeeper", "Iroh, Grand Lotus", "Memorial Team Leader", "Six"],
+   "reason": "parse_has_may_play_or_cast reads 'you may cast' inside a keyword's reminder text (disguise, disturb, flashback, retrace, warp); the reminder is not the card's own permission, and the view reads PERMIT specs only. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair. Devoted Grafkeeper's disturb reminder was masked until 2026-10-24 by its back face's untyped 'can block only creatures with flying', which unit BR types.",
    "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
   },
   {
    "id": "graveyard_recursion_reads_cast_permission",
    "class": "LEGACY_GRAVEYARD_RECURSION",
    "fields": ["has_graveyard_recursion"],
-   "cards": ["Iroh, Grand Lotus", "Leonin Surveyor", "Six"],
-   "reason": "The legacy flag reads a permission to cast cards from the graveyard (granted flashback, retrace) and a graveyard-activated cost ('Exile this card from your graveyard: Draw a card') as recursion; the view's recursion is a MOVE out of the graveyard to hand or battlefield. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "cards": ["Devoted Grafkeeper // Departed Soulkeeper", "Iroh, Grand Lotus", "Leonin Surveyor", "Six"],
+   "reason": "The legacy flag reads a permission to cast cards from the graveyard (granted flashback, retrace, a disturb reminder) and a graveyard-activated cost ('Exile this card from your graveyard: Draw a card') as recursion; the view's recursion is a MOVE out of the graveyard to hand or battlefield. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair. Devoted Grafkeeper's (its disturb reminder, and its 'whenever you cast a spell from your graveyard' head) was masked until 2026-10-24 by its back face's untyped 'can block only creatures with flying', which unit BR types.",
    "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
   },
   {

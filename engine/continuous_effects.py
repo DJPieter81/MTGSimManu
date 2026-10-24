@@ -948,6 +948,89 @@ def _face_counter_grants(hosts) -> tuple:
     return tuple(out)
 
 
+# The acts a permanent's own restriction may prohibit it (CR 508.1c, 509.1a).
+_OBJECT_ACTIONS = frozenset({"attack", "block"})
+# id(CardEffects) -> (that CardEffects, its per-face restriction records).
+_PRINTED_OBJECT_RESTRICTIONS: dict = {}
+
+
+def printed_object_restrictions(perm) -> tuple:
+    """The restrictions a permanent's own printed static abilities put on it
+    attacking and blocking (CR 508.1c, 509.1a-b, 611.3a), on the face it
+    shows: one ``(action, only_with)`` record per prohibited act, `action`
+    'attack' or 'block' and `only_with` the keywords one of which an
+    attacking creature must have for the permanent to block it ("can block
+    only creatures with flying"), () for "can't". The one reader of a
+    permanent's restrictions on itself (`rules_query`). Memoised per
+    parsed-effects object, which is taken without re-deriving its parse key
+    once parsed (a card's printed text is fixed during a game, and this is
+    read in every attack and block enumeration)."""
+    template = perm.template
+    effects = getattr(template, "_effects", None)
+    if effects is None:
+        effects = template.effects
+    hit = _PRINTED_OBJECT_RESTRICTIONS.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(face_object_restrictions(face)
+                              for face in effects.faces))
+        _PRINTED_OBJECT_RESTRICTIONS[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def face_object_restrictions(hosts) -> tuple:
+    """One face's restrictions on the permanent itself (see
+    `printed_object_restrictions`)."""
+    from .effect_spec import HostKind
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC or host.from_zone != "battlefield":
+            continue
+        for s in host.specs:
+            out.extend(_spec_object_restrictions(s) or ())
+    return tuple(out)
+
+
+def object_restriction_host(host) -> bool:
+    """Is `host` a static ability every instruction of which is a
+    restriction the reader runs on the permanent itself (a token's granted
+    "This token can block only creatures with flying", CR 111.3, 509.1b)?"""
+    from .effect_spec import HostKind
+    return (host.kind is HostKind.STATIC and host.from_zone == "battlefield"
+            and bool(host.specs)
+            and all(_spec_object_restrictions(s) for s in host.specs))
+
+
+def _spec_object_restrictions(s) -> "tuple | None":
+    """The ``(action, only_with)`` records of one static instruction that
+    restricts the permanent itself, or None when it is not one the reader
+    runs whole: a subject other than the permanent itself, a condition, a
+    duration other than its presence, residue, a qualifier other than the
+    attacker's keywords, or a keyword the engine does not type."""
+    from .effect_model import DurationKind, Modification, ModKind
+    from .effect_spec import RefKind, Verb
+    mod = s.payload
+    if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+            or mod.kind is not ModKind.PROHIBIT:
+        return None
+    actions = tuple(mod.get("actions") or (mod.action,))
+    only = tuple(mod.get("only_with") or ())
+    if s.residue or getattr(s.ref, "kind", None) is not RefKind.SELF \
+            or s.subject is not None or s.condition is not None \
+            or s.then or s.otherwise or s.alternatives \
+            or (s.duration is not None and s.duration.kind
+                is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD) \
+            or not set(actions) <= _OBJECT_ACTIONS \
+            or {k for k, _ in mod.data} - {"actions", "only_with"} \
+            or (only and actions != ("block",)) \
+            or any(k not in _KEYWORD_BY_NAME for k in only):
+        return None
+    kws = tuple(_KEYWORD_BY_NAME[k] for k in only)
+    return tuple((action, kws) for action in actions)
+
+
 # A cast cap's filters the read path knows (rules_query.cast_filter_admits).
 _CAP_FILTERS = frozenset({None, "noncreature", "nonartifact", "non_phyrexian"})
 

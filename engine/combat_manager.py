@@ -282,6 +282,36 @@ class CombatManager:
                    for e in game.continuous_effects._rule_effects)
 
     @staticmethod
+    def _own_restriction_forbids(attacker, blocker) -> bool:
+        """Audit restatement of the blocker's own printed restrictions (CR
+        509.1a-b, 611.3a), read from its template's typed specs directly --
+        not `printed_object_restrictions`, the code it audits: a "can't
+        block", or a "can block only creatures with <keyword>" naming no
+        keyword the attacker has, on the face that is up."""
+        from .effect_model import Modification, ModKind
+        from .effect_spec import HostKind, RefKind, Verb
+        faces = getattr(getattr(blocker.template, "effects", None),
+                        "faces", None) or ()
+        if not faces:
+            return False
+        face = faces[1 if getattr(blocker, "is_transformed", False)
+                     and len(faces) > 1 else 0]
+        has = {k.value for k in attacker.keywords}
+        for host in face:
+            if host.kind is not HostKind.STATIC:
+                continue
+            for s in host.specs:
+                mod = s.payload
+                if s.verb is Verb.CONTINUOUS and isinstance(mod, Modification) \
+                        and mod.kind is ModKind.PROHIBIT and not s.residue \
+                        and s.condition is None and s.subject is None \
+                        and getattr(s.ref, "kind", None) is RefKind.SELF \
+                        and "block" in (mod.get("actions") or (mod.action,)) \
+                        and not has & set(mod.get("only_with") or ()):
+                    return True
+        return False
+
+    @staticmethod
     def _blocker_illegal_recompute(attacker: "CardInstance",
                                    blocker: "CardInstance", game=None) -> bool:
         """Independent restatement of block legality (CR 509.1a/509.1b) for
@@ -292,6 +322,8 @@ class CombatManager:
             return True  # CR 509.1a
         if game is not None and CombatManager._restricted_in_registry(game, blocker, "block"):
             return True  # CR 509.1a: a resolved "can't block" on this object
+        if CombatManager._own_restriction_forbids(attacker, blocker):
+            return True  # CR 509.1a-b, 611.3a: the blocker's own printed text
         if getattr(attacker, 'cannot_be_blocked_this_turn', False):
             return True
         if (Keyword.FLYING in attacker.keywords
@@ -333,6 +365,11 @@ class CombatManager:
         protection = getattr(attacker.template, 'protection_from_colors',
                              frozenset())
         if protection and (blocker.colors & protection):
+            return False
+        # CR 509.1b — the blocker's own restriction: "can block only
+        # creatures with flying".
+        from . import rules_query
+        if rules_query.block_restricted(blocker, attacker):
             return False
         return True
 

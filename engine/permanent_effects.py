@@ -61,25 +61,33 @@ def _literal(amount):
 def _granted_mana_units(granted) -> "List[List[str]] | None":
     """The mana units of a token's granted abilities when every one is a
     "Sacrifice this <permanent>: Add <mana>" mana ability -- the derivation
-    that types a card's own (`mana_units.sacrifice_units`); [] for none;
+    that types a card's own (`mana_units.sacrifice_units`) -- or a
+    restriction on the token itself that the restriction reader runs ("This
+    token can block only creatures with flying", read from the token's
+    text like any permanent's, CR 111.3, 509.1b); [] for no mana ability;
     None for any other ability, which the token owner does not build."""
+    from .continuous_effects import object_restriction_host
     from .effect_spec import HostKind
     from .mana_units import sacrifice_units
-    if not granted:
-        return []
-    for h in granted:
+    mana = []
+    for h in granted or ():
         cost = dict(h.cost.items) if h.cost is not None else {}
-        if h.kind is not HostKind.MANA_ABILITY or not cost.get("sacrifice_self"):
+        if h.kind is HostKind.MANA_ABILITY and cost.get("sacrifice_self"):
+            mana.append(h)
+        elif not object_restriction_host(h):
             return None
-    return sacrifice_units(granted) or None
+    if not mana:
+        return []
+    return sacrifice_units(mana) or None
 
 
 def printed_token(spec) -> "dict | None":
     """The characteristics a token's creator defines (CR 111.3), as the
     token owner builds them from the typed `TokenSpec`: its card types,
-    supertypes, subtypes, colours, printed power and toughness, keywords
-    and granted "Sacrifice this token: Add <mana>" abilities (as
-    `sacrifice_mana_units`). An unnamed token is named for its subtypes
+    supertypes, subtypes, colours, printed power and toughness, keywords,
+    granted "Sacrifice this token: Add <mana>" abilities (as
+    `sacrifice_mana_units`) and granted restrictions on itself (in its
+    text, read as any permanent's are). An unnamed token is named for its subtypes
     plus "Token" (CR 111.4). None for a predefined token, a copy, a named
     token, a power or toughness that is not printed, a keyword with a
     parameter or one the engine does not type, or any other granted
