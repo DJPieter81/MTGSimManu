@@ -40,12 +40,12 @@ from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
     FETCH_LAND_LIFE_COST,
 )
-# PlayerState, TOKEN_DEFS, and _parse_planeswalker_abilities were extracted
-# to engine/player_state.py. Re-exported here so existing importers of
-# `engine.game_state.PlayerState` (14 call sites across ai/ and tests/) and
-# the late `from .game_state import _parse_planeswalker_abilities` in
-# game_runner.py continue to resolve without edits.
-from .player_state import PlayerState, TOKEN_DEFS, _parse_planeswalker_abilities
+# PlayerState and TOKEN_DEFS were extracted to engine/player_state.py.
+# Re-exported here so existing importers of `engine.game_state.PlayerState`
+# (14 call sites across ai/ and tests/) continue to resolve without edits.
+# (The uncalled second loyalty-slot parser was removed: the slot rule has
+# one owner, oracle_parser.loyalty_slot_for.)
+from .player_state import PlayerState, TOKEN_DEFS
 from .mana_payment import ManaPayment
 from .land_manager import LandManager
 from .cast_manager import CastManager
@@ -89,19 +89,33 @@ class GameState:
             PlayerState(player_idx=0),
             PlayerState(player_idx=1),
         ]
+        # Players read their effect views from this game's registry.
+        for _p in self.players:
+            _p._game = self
         self.callbacks: GameCallbacks = callbacks or DefaultCallbacks()
         self.stack = Stack()
+        # The players offered priority after this combat's blockers were
+        # declared (CR 509.4; `GameRunner._combat_pump_window`), read by
+        # the combat-damage audit. Emptied as blockers are declared.
+        self.after_blockers_offered: set = set()
         self.active_player: int = 0
         self.priority_player: int = 0
         self.current_phase: Phase = Phase.UNTAP
         self.turn_number: int = 1  # internal half-turn counter (increments each player turn)
         self.game_over: bool = False
+        # CR 723: an "end the turn" effect resolved this turn — the runner
+        # skips every remaining step except cleanup, then clears it.
+        self.end_turn_requested: bool = False
         self.winner: Optional[int] = None
         self.rng = rng or random.Random()
         self._next_instance_id: int = 1
         self._triggers_queue: List[Tuple[Ability, CardInstance, int]] = []
         # Global storm count (all spells cast this turn by both players)
         self._global_storm_count: int = 0
+        # Every unit of mana a payment has taken from a pool, monotonic: a
+        # cast's mana spent is the difference across its payment (CR 601.2h;
+        # `StackItem.mana_spent`).
+        self.mana_paid_total: int = 0
         # Delayed one-shot triggers: "exile it at the beginning of the
         # next end step" (temporary-reanimation / put-onto-battlefield
         # riders). Entries are (card, controller, battlefield_entry_seq):
@@ -178,8 +192,10 @@ class GameState:
     def get_card_by_id(self, instance_id: int) -> Optional[CardInstance]:
         """Find a card instance by its unique ID across all zones."""
         for player in self.players:
+            # The sideboard last: the cards its player owns outside the game
+            # (CR 400.11a), found when an effect named one there.
             for zone in [player.battlefield, player.hand, player.graveyard,
-                         player.exile, player.library]:
+                         player.exile, player.library, player.sideboard]:
                 for card in zone:
                     if card.instance_id == instance_id:
                         return card
@@ -236,38 +252,6 @@ class GameState:
                     return card
         return None
 
-    # ─── Sorcery-speed-lockout static-effect registry (R4) ──────────
-    # Per-game registry of player indices currently restricted to
-    # sorcery-speed casts by an opposing battlefield permanent. Rebuilt
-    # on demand from battlefield permanents whose classifier tag is
-    # ``Tag.SORCERY_SPEED_LOCKOUT`` (cached in
-    # ``decks/gameplans/_oracle_classifier.json``). Consulted by
-    # ``CastManager.can_cast`` — opponents in the set cannot cast
-    # outside sorcery-speed windows. Card-name branches, oracle-text
-    # parsing, and per-card flags are forbidden by the abstraction
-    # contract; the classifier tag IS the dispatch.
-    def _sorcery_speed_lockout_set(self) -> set[int]:
-        """Return player indices currently restricted to sorcery-speed
-        casts (R4).
-
-        For every battlefield permanent whose classifier tag includes
-        ``Tag.SORCERY_SPEED_LOCKOUT``, the permanent's *opponents* are
-        added to the set. No oracle-text parse, no card-name check.
-        """
-        # Late import: ai.oracle_classifier is in the ai/ layer; an
-        # engine module importing from ai/ is acceptable because the
-        # classifier is a pure-data loader (no scoring/strategy logic).
-        from ai.oracle_classifier import Tag, tags_for
-
-        restricted: set[int] = set()
-        for player in self.players:
-            for card in player.battlefield:
-                if Tag.SORCERY_SPEED_LOCKOUT in tags_for(card.template.name):
-                    for opp_idx in range(len(self.players)):
-                        if opp_idx != card.controller:
-                            restricted.add(opp_idx)
-        return restricted
-
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
         """Initialize the game with two decks.
@@ -278,15 +262,17 @@ class GameState:
         game N+1 (CR 103.2). None preserves legacy random-die behaviour
         for single-game runs.
         """
+        from .cast_manager import printed_flashback
         for template in deck1:
             card = CardInstance(
                 template=template, owner=0, controller=0,
                 instance_id=self.next_instance_id(), zone="library",
             )
             card._game_state = self
-            # Innate flashback (Lava Dart, Lingering Souls, etc.)
-            if 'flashback' in template.tags:
-                card.has_flashback = True
+            # A printed flashback (CR 702.33a), read from the card's typed
+            # cost by its one owner; a text that only names flashback (a
+            # grant, an emblem) prints none.
+            card.has_flashback = printed_flashback(template)
             self.players[0].library.append(card)
 
         for template in deck2:
@@ -295,8 +281,7 @@ class GameState:
                 instance_id=self.next_instance_id(), zone="library",
             )
             card._game_state = self
-            if 'flashback' in template.tags:
-                card.has_flashback = True
+            card.has_flashback = printed_flashback(template)
             self.players[1].library.append(card)
 
         self.rng.shuffle(self.players[0].library)
@@ -311,40 +296,154 @@ class GameState:
             self.active_player = self.rng.randint(0, 1)
         self.priority_player = self.active_player
 
+    def _lose_from_empty_library(self, player_idx: int) -> None:
+        """Flag the loss when a player must draw from an empty library
+        (CR 104.3c / 704.5c). Owns the mutation so the draw-audit invariant
+        can recompute the flag state independently."""
+        self.game_over = True
+        self.winner = 1 - player_idx
+        self.log.append(f"P{player_idx+1} loses: empty library")
+
+    def end_the_turn(self, controller: int) -> None:
+        """CR 723.1: end the turn. Every object on the stack is exiled
+        (723.1b) and the runner skips to the cleanup step (723.1d).
+        Creatures leave combat because the combat steps are skipped."""
+        while not self.stack.is_empty:
+            item = self.stack.pop()
+            src = getattr(item, 'source', None)
+            if src is not None and getattr(src, 'zone', None) == 'stack' \
+                    and item.item_type == StackItemType.SPELL:
+                self.zone_mgr.move_card_from_stack(
+                    self, src, 'exile', cause="CR 723.1b: end the turn")
+        self.end_turn_requested = True
+        self.log.append(f"T{self.display_turn} P{controller+1}: the turn ends (CR 723)")
+
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:
         """Draw cards from library to hand (CR 121.1).
 
         Per-card trigger fan-out is owned by
         `engine.zone_transfer._fire_on_draw_triggers` (registered for
-        `TransferKind.DRAW`). The fan-out reads classifier tags
-        (`ON_DRAW_DAMAGE`, `ON_OPP_DRAW_LIFE_LOSS`,
-        `ON_OWN_DRAW_LIFE_GAIN`) — no inline regex matching on
-        oracle text lives here. The legacy regex chain was the
-        R1+M1-engine bug surface from the 2026-05-16 audit.
+        `TransferKind.DRAW`): the draw carrier resolves each permanent's
+        draw-triggered abilities from their typed heads
+        (`effect_carrier.dispatch_draw_triggers`). No inline regex
+        matching on oracle text lives here. This owner counts the draw:
+        `cards_drawn_this_turn`, and `cards_drawn_in_draw_step` for a draw
+        in the drawer's own draw step.
+
+        It also applies the draw replacements covering the drawer (CR
+        614.1a, `rules_query.draw_replacements`): one replacing the whole
+        draw ("one or more cards ... that many plus one") adds its cards
+        once; one replacing "a card" turns each single draw (CR 121.2)
+        into its number of draws, its condition read as that draw is made.
+        Each applies once to an event (CR 614.5), all of them apply (CR
+        616.1), and the cards they draw are draws a draw limit counts.
         """
-        from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
         drawn: List[CardInstance] = []
+        from . import rules_query
+        draw_cap = rules_query.draw_limit(self, player_idx)
+        replacements = (rules_query.draw_replacements(self, player_idx)
+                        if count > 0 else [])
+        asked = count
+        hand_before = len(player.hand)
+        for rep in replacements:
+            if rep["per"] == "event" and self._draw_replacement_applies(
+                    player_idx, rep):
+                count += rep["plus"]
+        per_card = [r for r in replacements if r["per"] == "card"]
         for _ in range(count):
-            if not player.library:
-                self.game_over = True
-                self.winner = 1 - player_idx
-                self.log.append(f"P{player_idx+1} loses: empty library")
-                return drawn
-            card = player.library.pop(0)
-            player.cards_drawn_this_turn += 1
-            drawn.append(card)
-            # The pop above already detached the card from library;
-            # transfer's `_remove_from_zone` is tolerant of that. The
-            # call places the card in hand and runs the DRAW fan-out.
-            transfer(self, card, src_zone="library", dst_zone="hand",
-                     kind=TransferKind.DRAW, controller=player_idx)
-            if self.game_over:
-                # A per-draw trigger's damage/life loss ended the game
-                # (CR 704.5a, checked inside the DRAW fan-out). The
-                # remaining draws of this effect never happen.
-                break
+            draws = 1
+            for rep in per_card:
+                if self._draw_replacement_applies(player_idx, rep):
+                    draws *= rep["draw"]
+                    if rep["lose_life"]:
+                        from .damage import lose_life
+                        lose_life(self, player_idx, rep["lose_life"])
+            for _ in range(draws):
+                if not self._draw_one(player_idx, draw_cap, drawn):
+                    return drawn
+        self._audit_draw_replaced(player_idx, asked, hand_before,
+                                  draw_cap, drawn)
         return drawn
+
+    def _draw_replacement_applies(self, player_idx: int, rep: dict) -> bool:
+        """Does a draw replacement's printed condition hold for the draw
+        about to be made (CR 614.1a)?"""
+        player = self.players[player_idx]
+        cond = rep["condition"]
+        if cond is None:
+            return True
+        if cond == "empty_hand":
+            return not player.hand
+        if cond == "hand_at_most_one":
+            return len(player.hand) <= 1
+        if cond == "not_first_in_draw_step":
+            return not (self.current_phase == Phase.DRAW
+                        and player_idx == self.active_player
+                        and player.cards_drawn_in_draw_step == 0)
+        return False
+
+    def _draw_one(self, player_idx: int, draw_cap, drawn: list) -> bool:
+        """One draw (CR 121.2). False when no further draw happens: a draw
+        limit stops it (CR 101.2), the library is empty (CR 704.5b), or the
+        game ended in its triggers."""
+        from .zone_transfer import TransferKind, transfer
+        player = self.players[player_idx]
+        if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
+            # CR 101.2: a draw the player "can't" make does not happen
+            # (it is not a draw from an empty library).
+            return False
+        if not player.library:
+            self._lose_from_empty_library(player_idx)
+            # Audit (observation-only, CR 104.3c/704.5c): a draw from an
+            # empty library must flag the drawing player to lose. Recompute
+            # the flag state independently of the helper above.
+            from .rules_audit import check as _audit_check
+            _audit_check(
+                "104.3c/empty_library_loss",
+                self.game_over and self.winner == 1 - player_idx,
+                f"P{player_idx+1} drew from an empty library", game=self)
+            return False
+        card = player.library.pop(0)
+        player.cards_drawn_this_turn += 1
+        if self.current_phase == Phase.DRAW and \
+                player_idx == self.active_player:
+            player.cards_drawn_in_draw_step += 1    # CR 504.1: their draw step
+        drawn.append(card)
+        # The pop above already detached the card from library;
+        # transfer's `_remove_from_zone` is tolerant of that. The
+        # call places the card in hand and runs the DRAW fan-out.
+        transfer(self, card, src_zone="library", dst_zone="hand",
+                 kind=TransferKind.DRAW, controller=player_idx)
+        # A per-draw trigger's damage/life loss ended the game (CR
+        # 704.5a, checked inside the DRAW fan-out): the remaining draws
+        # of this effect never happen.
+        return not self.game_over
+
+    def _audit_draw_replaced(self, player_idx: int, asked: int,
+                             hand_before: int, draw_cap, drawn: list) -> None:
+        """CR 614.1a, restated from the printed fields of the drawer's own
+        permanents (not from `rules_query`): with no per-card replacement
+        and no draw limit in play, a draw of `asked` cards made with one or
+        fewer cards in hand draws `asked` plus each "that many plus N" its
+        permanents print. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled() or draw_cap is not None or asked < 1 \
+                or self.game_over:
+            return
+        specs = [getattr(p.template, "draw_replacement", None)
+                 for p in self.players[player_idx].battlefield]
+        specs = [s for s in specs if s]
+        if not specs or any(s["per"] == "card" for s in specs):
+            return
+        expected = asked + sum(s["plus"] for s in specs
+                               if s["condition"] != "hand_at_most_one"
+                               or hand_before <= 1)
+        rules_audit.check(
+            "614.1a/draw_replaced", len(drawn) == expected,
+            f"P{player_idx+1} asked to draw {asked} with {hand_before} in "
+            f"hand drew {len(drawn)}; the replacements give {expected}",
+            game=self)
 
     def surveil(self, player_idx: int, n: int) -> List[CardInstance]:
         """CR 701.42 — Surveil N.
@@ -389,6 +488,29 @@ class GameState:
                 f"surveil {n} → {names} to GY"
             )
         return binned
+
+    def shuffle_library(self, player_idx: int) -> None:
+        """A player shuffles their library (CR 701.20a): the shuffle owner
+        the dispatcher's executors and the land-destruction rider share."""
+        self.rng.shuffle(self.players[player_idx].library)
+
+    def mill(self, player_idx: int, n: int, cause: str = "") -> List[CardInstance]:
+        """CR 701.17a — Mill N: the player puts that many cards from the
+        top of their library into their graveyard; with fewer, all of them
+        (CR 701.17b). Through the zone funnel, so a replacement effect that
+        sends a graveyard-bound card elsewhere applies (CR 614.1a). The one
+        mill owner. Returns the cards milled, top first."""
+        player = self.players[player_idx]
+        milled = list(player.library[:max(0, n)])
+        for card in milled:
+            self.zone_mgr.move_card(self, card, "library", "graveyard",
+                                    cause=cause)
+        if milled:
+            names = ", ".join(c.name for c in milled)
+            self.log.append(
+                f"T{self.display_turn} P{player_idx+1}: "
+                f"mills {len(milled)} ({names})")
+        return milled
 
     def scry(self, player_idx: int, n: int) -> List[CardInstance]:
         """CR 701.18 — Scry N.
@@ -507,10 +629,12 @@ class GameState:
         """CR 702.170: cast a plotted card from exile for free on a later turn."""
         return CastManager.cast_plotted(self, player_idx, card, targets)
 
-    def tick_suspend_upkeep(self, player_idx: int) -> None:
+    def tick_suspend_upkeep(self, player_idx: int, after_cast=None) -> None:
         """LE-E2: upkeep hook — decrement one counter on each suspended
-        card the player controls; when the last is removed, cast for free."""
-        CastManager.tick_suspend_upkeep(self, player_idx)
+        card the player controls; when the last is removed, cast for free.
+        The cast spell is left on the stack for the players (CR 117.3c);
+        `after_cast` (the runner's drain) runs after each cast."""
+        CastManager.tick_suspend_upkeep(self, player_idx, after_cast)
 
     def play_land(self, player_idx: int, card: CardInstance):
         LandManager.play_land(self, player_idx, card)
@@ -632,11 +756,6 @@ class GameState:
     def _handle_storm(self, item: StackItem):
         CastManager._handle_storm(self, item)
 
-    # ─── CASCADE ─────────────────────────────────────────────────
-
-    def _handle_cascade(self, item: StackItem):
-        CastManager._handle_cascade(self, item)
-
     def _resolve_living_end(self, controller: int):
         ResolutionManager._resolve_living_end(self, controller)
 
@@ -648,6 +767,9 @@ class GameState:
 
     def create_token(self, *args, **kwargs):
         return PermanentEffects.create_token(self, *args, **kwargs)
+
+    def amass(self, *args, **kwargs):
+        return PermanentEffects.amass(self, *args, **kwargs)
 
     def activate_planeswalker(self, *args, **kwargs):
         return PlaneswalkerManager.activate_planeswalker(self, *args, **kwargs)
@@ -682,8 +804,8 @@ class GameState:
     def _blink_permanent(self, card: CardInstance, controller: int):
         ResolutionManager._blink_permanent(self, card, controller)
 
-    def _creature_dies(self, creature: CardInstance):
-        PermanentEffects._creature_dies(self, creature)
+    def _creature_dies(self, creature: CardInstance, cause: str = ""):
+        PermanentEffects._creature_dies(self, creature, cause=cause)
 
     def _permanent_destroyed(self, permanent: CardInstance):
         PermanentEffects._permanent_destroyed(self, permanent)
@@ -748,8 +870,9 @@ class GameState:
     def trigger_etb(self, card: CardInstance, controller: int):
         TriggerManager.trigger_etb(self, card, controller)
 
-    def trigger_attack(self, attacker: CardInstance, controller: int):
-        TriggerManager.trigger_attack(self, attacker, controller)
+    def trigger_attack(self, attacker: CardInstance, controller: int,
+                       taken: frozenset = frozenset()):
+        TriggerManager.trigger_attack(self, attacker, controller, taken)
 
     def process_triggers(self):
         TriggerManager.process_triggers(self)
@@ -941,8 +1064,10 @@ class GameState:
     def end_of_turn_cleanup(self):
         self.turn_mgr.end_of_turn_cleanup(self)
 
-    def cleanup_step(self):
-        self.turn_mgr.cleanup_step(self)
+    def cleanup_step(self) -> bool:
+        """False when the step's discard put anything on the stack
+        (CR 514.3a: priority, then another cleanup step)."""
+        return self.turn_mgr.cleanup_step(self)
 
     def switch_active_player(self):
         self.active_player = 1 - self.active_player
@@ -960,29 +1085,47 @@ class GameState:
 
     # ─── QUERIES ─────────────────────────────────────────────────
 
+    def land_play_available(self, player_idx: int) -> bool:
+        """The player may play a land now (CR 305.2, 505.6b): a land play
+        left this turn, in their own main phase, with an empty stack --
+        from hand or from wherever a permission lets them play one."""
+        player = self.players[player_idx]
+        return (player.lands_played_this_turn < (1 + player.extra_land_drops)
+                and self.current_phase in (Phase.MAIN1, Phase.MAIN2)
+                and self.active_player == player_idx
+                and self.stack.is_empty)
+
     def get_legal_plays(self, player_idx: int) -> List[CardInstance]:
         player = self.players[player_idx]
         legal = []
         for card in player.hand:
             if card.template.is_land:
-                if player.lands_played_this_turn < (1 + player.extra_land_drops) and \
-                   self.current_phase in (Phase.MAIN1, Phase.MAIN2) and \
-                   self.active_player == player_idx and \
-                   self.stack.is_empty:
+                if self.land_play_available(player_idx):
                     legal.append(card)
             elif self.can_cast(player_idx, card):
                 legal.append(card)
+            elif (card.template.playable_land_face is not None
+                  and self.land_play_available(player_idx)):
+                # A modal double-faced card's land face (CR 712, 305.1).
+                legal.append(card)
         # Include flashback and escape cards from graveyard
         for card in player.graveyard:
-            if (card.has_flashback or card.template.escape_cost is not None) and \
+            if (card.has_flashback or card.template.escape_cost is not None
+                    or card.template.harmonize_cost is not None) and \
                self.can_cast(player_idx, card):
                 legal.append(card)
-        # Include Warp-exiled cards: a creature cast via Warp is exiled at end
-        # of turn with card._warped=True and may be re-cast from exile on
-        # later turns (CR 702.Warp). can_cast handles the has-artifact + cost
-        # gate; this branch surfaces those cards to the legal-play set.
-        for card in player.exile:
-            if getattr(card, '_warped', False) and self.can_cast(player_idx, card):
+        # Include exiled cards a permission lets the player play ("you may
+        # play those cards", CR 305.1, 601.2a; a warped card on a later
+        # turn, CR 702.185a): a land as the land play, a spell when
+        # can_cast allows it (normal timing and cost).
+        from . import rules_query
+        for card in rules_query.permitted_cards(self, player_idx):
+            if card in legal:
+                continue
+            if card.template.is_land:
+                if self.land_play_available(player_idx):
+                    legal.append(card)
+            elif self.can_cast(player_idx, card):
                 legal.append(card)
         # Include cycling cards from hand (cycling is a special action, not casting)
         for card in player.hand:

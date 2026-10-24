@@ -1,0 +1,214 @@
+{
+ "layers": [
+  {
+   "key": "data",
+   "title": "Data layer",
+   "body": "MTGJSON card database reassembled from 8 parts. Every card has parsed mana costs, keywords, tags, oracle text, and special mechanics (evoke, dash, escape, delve, domain). 25 Modern decklists with mainboard + sideboard in modern_meta.py. Per-deck gameplans as JSON goal sequences. Strategy profiles with archetype-specific AI weights.",
+   "files": [
+    {
+     "name": "ModernAtomic_part[1-8].json",
+     "note": "Card database split into 8 parts for git — merged at runtime by merge_db.py"
+    },
+    {
+     "name": "modern_meta.py",
+     "note": "All 25 decklists + METAGAME_SHARES — single source of truth for decks"
+    },
+    {
+     "name": "gameplans/*.json",
+     "note": "Per-deck goal sequences: curve_out → push_damage → close_game with enablers/payoffs"
+    },
+    {
+     "name": "strategy_profile.py",
+     "note": "Archetype weights: burn_face_mult, attack_threshold, pass_threshold, holdback"
+    },
+    {
+     "name": "card_knowledge.json",
+     "note": "Static card annotations the oracle parser can't derive"
+    }
+   ]
+  },
+  {
+   "key": "engine",
+   "title": "Engine layer",
+   "body": "Full MTG rules: turn structure, mana system with greedy constraint solver, spell stack with priority passing, combat resolution, continuous effects with layer ordering, state-based actions, zone management, and 115 card-specific effect handlers.",
+   "files": [
+    {
+     "name": "game_state.py",
+     "note": "Core state machine: zones, turn phases, SBAs, triggers, continuous effects"
+    },
+    {
+     "name": "game_runner.py",
+     "note": "Runs a full game from shuffle to result — calls AI for decisions"
+    },
+    {
+     "name": "card_effects.py",
+     "note": "115 card-specific handlers: ETB, cast triggers, activated abilities, replacement effects"
+    },
+    {
+     "name": "card_database.py",
+     "note": "Loads ModernAtomic.json — 22,506 cards with parsed oracle text"
+    },
+    {
+     "name": "combat_manager.py",
+     "note": "Declare attackers/blockers, first strike, trample, damage assignment"
+    },
+    {
+     "name": "sideboard_manager.py",
+     "note": "Bool-flag based SB: opp_is_aggro, opp_is_combo, opp_is_gy → swap cards"
+    },
+    {
+     "name": "oracle_parser.py",
+     "note": "Extracts keywords, mana costs, P/T, abilities from raw oracle text"
+    },
+    {
+     "name": "stack.py",
+     "note": "Spell stack with priority passing — handles counters, responses, split second"
+    }
+   ]
+  },
+  {
+   "key": "ai",
+   "title": "AI layer",
+   "body": "EV-based decision engine. Clock evaluation (turns to kill). Bayesian hand inference tracks P(counter), P(removal). Full combat sim with blocker prediction and 5 turn orderings. Goal engine with JSON game phases. Combo assessment. Strategic logger produces reasoning traces.",
+   "files": [
+    {
+     "name": "ev_player.py (4163 ln)",
+     "note": "Main AI brain: enumerate plays → score by EV + clock Δ + combo mod → pick best"
+    },
+    {
+     "name": "gameplan.py (1120 ln)",
+     "note": "GoalEngine: reads gameplans/*.json, tracks current goal, transitions on board state"
+    },
+    {
+     "name": "turn_planner.py (1258 ln)",
+     "note": "Tries 5 orderings of the same plays, picks highest total EV sequence"
+    },
+    {
+     "name": "ev_evaluator.py (3587 ln)",
+     "note": "EVSnapshot: board eval, life totals, hand quality, threat assessment"
+    },
+    {
+     "name": "combo_calc.py (1368 ln)",
+     "note": "Storm count, graveyard state for escape/delve, mana zone for combo turns"
+    },
+    {
+     "name": "clock.py (898 ln)",
+     "note": "Turns-to-kill calculator — the fundamental unit of MTG tempo evaluation"
+    },
+    {
+     "name": "bhi.py (828 ln)",
+     "note": "Bayesian Hand Inference: tracks P(Force), P(Push) from opponent's visible actions"
+    },
+    {
+     "name": "strategic_logger.py",
+     "note": "Logs AI reasoning: \"Cast Phlage (+8.2 EV, clock 5→3)\" for replay viewer"
+    }
+   ]
+  },
+  {
+   "key": "runner",
+   "title": "Simulation runner",
+   "body": "All analysis through one file: full NxN round-robin matrix, head-to-head matchups, field sweeps, verbose game logs, AI reasoning traces, and Bo3 match generation. Reproducible seeds.",
+   "files": [
+    {
+     "name": "run_meta.py (38K)",
+     "note": "CLI entry point: --matrix, --matchup, --field, --bo3, --verbose, --deck"
+    },
+    {
+     "name": "merge_db.py",
+     "note": "Merges ModernAtomic_part[1-8].json into single ModernAtomic.json"
+    },
+    {
+     "name": "scan_results.py",
+     "note": "Post-sim analysis: identifies outliers, G1→match swings, sweep patterns"
+    },
+    {
+     "name": "update_modern_atomic.py",
+     "note": "Downloads fresh MTGJSON data when new sets release"
+    }
+   ]
+  },
+  {
+   "key": "output",
+   "title": "Output pipeline",
+   "body": "Simulation results flow into standalone HTML deliverables. Interactive heatmap dashboard. Bo3 replay viewers with life charts. Deck guides with Scryfall hovers, Stars of Sim, 6 pro-level strategic findings, and sideboard data.",
+   "files": [
+    {
+     "name": "build_dashboard.py",
+     "note": "Merges metagame_results.json into metagame_data.jsx, builds interactive HTML heatmap"
+    },
+    {
+     "name": "build_replay.py",
+     "note": "Parses Bo3 game logs → standalone HTML with collapsible turns, SVG life chart, keyboard nav"
+    },
+    {
+     "name": "build_guide.py",
+     "note": "Generates deck guides from JSX D object — Stars, G1→match swings, danger cards, matchup spread"
+    },
+    {
+     "name": "metagame_data.jsx",
+     "note": "Canonical data: D object with wins matrix, matchup_cards, deck_cards, meta_shares"
+    },
+    {
+     "name": "templates/",
+     "note": "reference_deck_guide.html (gold standard) + reference_showcase.html"
+    }
+   ]
+  },
+  {
+   "key": "skills",
+   "title": "Claude skills",
+   "body": "Reusable skill files for Claude Chat, Cowork, and Claude Code. Same skills work for Legacy and Modern. Triggered by keywords like \"build the matrix\", \"deck guide\", \"replay\", \"showcase\".",
+   "files": [
+    {
+     "name": "/mtg-meta-matrix",
+     "note": "Full sim-to-dashboard pipeline: run matrix → extract card data → merge JSX → build HTML"
+    },
+    {
+     "name": "/mtg-deck-guide",
+     "note": "7-step guide: JSX data → Stars → hands → findings → spread. Read template first"
+    },
+    {
+     "name": "/mtg-bo3-replayer-v2",
+     "note": "Bo3 log → HTML viewer. Light theme, game tabs, keyboard nav, board state tracking"
+    },
+    {
+     "name": "/mtg-project-showcase",
+     "note": "Marketing page generator: 10 interactive sections, Chart.js, cross-project comparison"
+    }
+   ]
+  }
+ ],
+ "pipeline": [
+  {
+   "title": "Board snapshot",
+   "body": "Capture the full board state into a lightweight EVSnapshot: life totals, creature power, mana available, storm count, energy, evasion/lifelink power. Fast to create, cheap to project.",
+   "formula": "EVSnapshot { my_life: 17, opp_life: 14, my_power: 6, my_clock: 3, opp_clock: 5 }"
+  },
+  {
+   "title": "Game plan phase",
+   "body": "GoalEngine reads JSON goal sequences for each deck. Tracks whether the AI is in setup, develop, execute, or closing phase. Cards are scored by relevance to the current goal.",
+   "formula": "GoalEngine.current_goal → \"deploy_threats\" (phase 2/4)"
+  },
+  {
+   "title": "Score all legal plays",
+   "body": "Enumerate every legal action (cast, land, cycle, equip). Score each with heuristic EV + clock delta. Clock = ceil(opp_life / effective_power). All values in life-point equivalents — one unit for everything.",
+   "formula": "clock_delta = combat_clock(new_power, opp_life) - combat_clock(old_power, opp_life)"
+  },
+  {
+   "title": "Bayesian hand inference",
+   "body": "BHI tracks P(counter), P(removal), P(burn) for the opponent's hand. Updates on priority passes (\"they didn't counter → lower P(counter)\"), spells cast, and mana availability. All from tags — no card names.",
+   "formula": "P(counter|pass) = P(pass|has_counter) · P(counter) / P(pass) → 0.35 → 0.18"
+  },
+  {
+   "title": "Combat simulation",
+   "body": "VirtualBoard with VirtualCreatures. Enumerates attack configurations. Predicts opponent blocks using a greedy algorithm. Evaluates 5 turn orderings: deploy→attack, remove→attack, attack→deploy, hold mana, lethal push. Two-phase first strike.",
+   "formula": "best_ordering = max(deploy_attack, remove_attack, attack_deploy, hold_mana, lethal_push)"
+  },
+  {
+   "title": "Execute and log",
+   "body": "Pick the highest-EV play. Execute it through the game engine. Log full reasoning (candidate plays, EV scores, chosen action, why) via strategic_logger.py for replay viewer and LLM judge audit.",
+   "formula": "PLAY: Cast Ragavan (EV: +8.2) — threat deployment, clock improves 5→3 turns"
+  }
+ ]
+}

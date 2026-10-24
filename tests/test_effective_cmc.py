@@ -269,11 +269,14 @@ def test_evoke_returns_evoke_cost_when_cast_mode_is_evoke(card_db, base_snap):
 
 def test_cost_reducer_on_board_reduces_cmc(card_db, base_snap, fresh_game):
     """A cost reducer matching the spell's color/type reduces its
-    effective CMC by the reducer's amount.
+    effective CMC by the reducer's amount, within its generic part.
 
     Ruby Medallion reads "Red spells you cast cost {1} less to
-    cast."  Casting a red instant (Lightning Bolt, CMC 1) with
-    Medallion on board yields effective CMC = max(0, 1 - 1) = 0.
+    cast."  Casting a red sorcery with a generic part (Reckless
+    Impulse, {1}{R}) with Medallion on board yields effective CMC
+    2 - 1 = 1. A generic reduction reaches the generic component only
+    (CR 601.2f): a {R} spell is not reduced at all
+    (tests/test_the_ai_cost_estimate_never_reduces_coloured_pips.py).
 
     Detection routes through `engine.oracle_resolver.
     count_cost_reducers`, which parses "cost {N} less" from oracle
@@ -282,14 +285,14 @@ def test_cost_reducer_on_board_reduces_cmc(card_db, base_snap, fresh_game):
     from ai.effective_cmc import effective_cmc
 
     _put_in_play(fresh_game, card_db, "Ruby Medallion", controller=0)
-    card = _make_card_in_hand(card_db, "Lightning Bolt")
+    card = _make_card_in_hand(card_db, "Reckless Impulse")
 
     paid = effective_cmc(card, base_snap, game=fresh_game, player_idx=0)
-    expected = max(0, card.template.cmc - 1)
+    expected = card.template.cmc - 1
     assert paid == expected, (
         f"A red-spell cost reducer on the battlefield must "
         f"discount a red spell by the reducer's amount.  "
-        f"Lightning Bolt under Ruby Medallion: paid={paid}, "
+        f"Reckless Impulse under Ruby Medallion: paid={paid}, "
         f"expected={expected}."
     )
 

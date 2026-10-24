@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # Import the dataclasses we're populating
 from ai.gameplan import (
@@ -26,7 +26,7 @@ from ai.gameplan import (
 _GAMEPLANS_DIR = Path(__file__).parent / "gameplans"
 
 # Cache loaded gameplans
-_cache: Dict[str, DeckGameplan] = {}
+_cache: Dict[Tuple[str, bool], DeckGameplan] = {}
 
 
 # Roles that count as "essential" for mulligan-key derivation. Excludes
@@ -360,14 +360,14 @@ def load_gameplan(
     can omit them — derivation falls back to empty (preserving
     JSON-only behaviour).
 
-    Cache key includes only `deck_name`; the cache is populated on
-    first load and re-used regardless of whether a later call
-    supplies decklist/db.  This is fine because explicit JSON
-    overrides never change between calls and decklist→derived data
-    is stable per deck.
+    The cache is keyed on the deck name AND on whether the plan was
+    derived with the decklist: a JSON-only plan (no decklist/db) and a
+    derived one can differ (`always_early` / `reactive_only`), so the
+    plan a caller gets must never depend on which caller loaded first.
     """
-    if deck_name in _cache:
-        return _cache[deck_name]
+    key = (deck_name, decklist is not None and db is not None)
+    if key in _cache:
+        return _cache[key]
 
     # Try to find a matching JSON file
     for json_file in _GAMEPLANS_DIR.glob("*.json"):
@@ -376,7 +376,7 @@ def load_gameplan(
                 data = json.load(f)
             if data.get("deck_name") == deck_name:
                 plan = _parse_gameplan(data, decklist=decklist, db=db)
-                _cache[deck_name] = plan
+                _cache[key] = plan
                 return plan
         except (json.JSONDecodeError, KeyError):
             continue
@@ -409,7 +409,8 @@ def load_all_gameplans(
                 )
         except (json.JSONDecodeError, KeyError):
             continue
-    _cache.update(plans)
+    for name, plan in plans.items():
+        _cache[(name, decklists.get(name) is not None and db is not None)] = plan
     return plans
 
 

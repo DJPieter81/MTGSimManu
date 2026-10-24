@@ -105,15 +105,28 @@ class ResponseDecider:
                 seen_ids.add(src.instance_id)
                 continue
             if game.can_cast(self.player_idx, src):
-                # A response the opponent's battlefield lock would counter
-                # on cast is not a response to anything (engine predicate;
-                # burn cast in response into a resolved Chalice, 2026-09-09).
-                from engine.cast_manager import CastManager as _CM
-                if _CM.lock_that_counters(game, self.player_idx, src.template) is not None:
+                # A response a cast-triggered counter would counter on cast
+                # is not a response to anything (the engine's predicate,
+                # under what the response's route spends: a pitched Force
+                # spends no mana; burn cast in response into a resolved
+                # Chalice, 2026-09-09).
+                from ai.effective_cmc import counter_on_cast
+                if counter_on_cast(src, game=game,
+                                   player_idx=self.player_idx) is not None:
                     continue
                 candidate_sources.append(src)
                 seen_ids.add(src.instance_id)
         return candidate_sources
+
+    def _responses_that_can_answer(self, game: "GameState",
+                                   stack_item: "StackItem", instants):
+        """The candidates that can answer `stack_item`: a counterspell
+        answers only a spell that can be countered (CR 101.2; the engine's
+        own rule, `rules_query.can_be_countered`)."""
+        from engine.rules_query import can_be_countered
+        if can_be_countered(game, stack_item):
+            return instants
+        return [c for c in instants if "counterspell" not in c.template.tags]
 
     def decide_response(self, game: "GameState", stack_item: "StackItem",
                         pick_removal_target_fn: Optional[Callable] = None) -> Optional[Tuple["CardInstance", List[int]]]:
@@ -142,10 +155,7 @@ class ResponseDecider:
 
         instants = self._enumerate_response_candidates(game, stack_item)
 
-        # "Can't be countered" — don't try counterspells against these
-        threat_oracle = (stack_item.source.template.oracle_text or '').lower()
-        if "can't be countered" in threat_oracle or "can\u2019t be countered" in threat_oracle:
-            instants = [c for c in instants if "counterspell" not in c.template.tags]
+        instants = self._responses_that_can_answer(game, stack_item, instants)
 
         if not instants:
             if self.strategic_logger:
@@ -359,6 +369,28 @@ class ResponseDecider:
         # CLOCK_IMPACT_LIFE_SCALING converts clock-impact units into
         # life-point units (sourced from ai/scoring_constants.py).
         held_counter_floor_ev = card_clock_impact(snap_self) * CLOCK_IMPACT_LIFE_SCALING
+
+        # A spell whose every target is a card in a graveyard does not
+        # resolve once those cards have left it (CR 608.2b): an instant
+        # whose own resolution removes them answers it like a counter, when
+        # the spell threatens more than holding the answer is worth.
+        answer = self._graveyard_target_answer(game, stack_item, instants)
+        if answer is not None and threat > held_counter_floor_ev:
+            inst, answer_targets = answer
+            reason = ("removes the graveyard card the spell targets: it "
+                      "does nothing (CR 608.2b)")
+            if self.strategic_logger:
+                self.strategic_logger.log_response(
+                    self.player_idx, inst.name, stack_item.source.name,
+                    game, reason)
+            self._record_decision(
+                game, stack_item,
+                chosen_inst=inst, chosen_targets=list(answer_targets),
+                chosen_reason=reason, alternatives=[], instants=instants,
+                threat=threat, held_counter_floor_ev=held_counter_floor_ev,
+                triage_skip=False,
+            )
+            return inst, list(answer_targets)
         # Near-lethal cutoff: ½ × LETHAL_THREAT (sentinel inside
         # `evaluate_stack_threat`).  Above this, the counter must fire
         # because no held-counter future EV can outweigh "we lose now".
@@ -397,13 +429,19 @@ class ResponseDecider:
 
             v_responses = []
             for inst in instants:
+                # A counter whose printed target restriction refuses this
+                # stack item is no response (the legacy path's own check).
+                if ("counterspell" in inst.template.tags
+                        and not self._counter_can_target(inst, stack_item)):
+                    continue
                 # Triage: drop redundant counters when a post-resolution
                 # creature-exile is available.
                 if (skip_counter_for_this_creature
                         and "counterspell" in inst.template.tags):
                     # Allow nearly-free pitch counters through (their
                     # opportunity cost is low — exiled card vs. UU).
-                    effective_cost = self._effective_counter_cost(game, inst)
+                    effective_cost = self._effective_counter_cost(
+                        game, inst, stack_item)
                     # Rules constant: a "free" pitch counter on opp's
                     # turn costs 1 (the exiled card).  Counters costing
                     # 2+ effective should be reserved.  Sourced from
@@ -415,7 +453,7 @@ class ResponseDecider:
                 # prefer the printed-cheaper counter (Counterspell at 2)
                 # over a free pitch counter (Force of Negation at printed 3).
                 effective_cmc = (
-                    self._effective_counter_cost(game, inst)
+                    self._effective_counter_cost(game, inst, stack_item)
                     if "counterspell" in inst.template.tags
                     else (inst.template.cmc or 0)
                 )
@@ -443,6 +481,14 @@ class ResponseDecider:
                     if inst.instance_id == v_spell.instance_id:
                         targets = self._choose_response_targets(
                             game, inst, stack_item, pick_removal_target_fn)
+                        # Aimed at nothing, a modal spell performs only its
+                        # modes that need no target (CR 700.2a): the
+                        # planner's pick stands only when those are worth
+                        # something; else the legacy paths decide.
+                        from ai.modal import worth_casting_without_targets
+                        if not targets and not worth_casting_without_targets(
+                                game, inst, self.player_idx):
+                            break
                         if self.strategic_logger:
                             self.strategic_logger.log_response(
                                 self.player_idx, inst.name,
@@ -484,35 +530,15 @@ class ResponseDecider:
         for instant in instants:
             if "counterspell" not in instant.template.tags:
                 continue
-            # CR 701.5: a counterspell counters a SPELL. `template.is_spell`
-            # describes the SOURCE CARD (it is merely `not is_land`), not the
-            # stack object, so it admitted triggered/activated abilities whose
-            # source happens to be a non-land permanent. The stack item's own
-            # type is the correct discriminator.
-            from engine.stack import StackItemType as _SIT
-            if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            if not self._counter_can_target(instant, stack_item):
                 continue
             # Triage: skip redundant counters when a post-resolution
             # creature-exile in hand can answer the same threat.  Free
             # pitch counters (effective cost ≤ 1) are still considered
             # — their opportunity cost is too low to reserve.
-            cost = self._effective_counter_cost(game, instant)
+            cost = self._effective_counter_cost(game, instant, stack_item)
             if (skip_counter_for_this_creature
                     and cost > PITCH_COUNTER_FREE_COST):
-                continue
-            # Targeting restrictions from typed field (counter_target_kind).
-            target_spell = stack_item.source.template
-            if (instant.template.counter_target_kind == 'noncreature_spell'
-                    and target_spell.is_creature):
-                continue
-            if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
-                    and not (target_spell.is_instant or target_spell.is_sorcery)):
-                continue
-            # "Counter target ... colorless spell" (Consign to Memory)
-            # can never counter a colored spell — CR 105 colour, not
-            # colour identity.
-            if (getattr(instant.template, 'counters_colorless_only', False)
-                    and (target_spell.colors or set())):
                 continue
             # Symmetric EV of the 1a counter-tax framework: a "counter
             # unless its controller pays {N}" candidate is DEAD when the
@@ -762,7 +788,7 @@ class ResponseDecider:
         for inst in alternatives[:_REPLAY_RESPONSE_TOP_N_ALTS]:
             try:
                 if "counterspell" in inst.template.tags:
-                    eff = self._effective_counter_cost(game, inst)
+                    eff = self._effective_counter_cost(game, inst, stack_item)
                 else:
                     eff = inst.template.cmc or 0
             except Exception:
@@ -788,6 +814,39 @@ class ResponseDecider:
             "candidates_n": len(instants),
             "triage_skip": bool(triage_skip),
         }
+
+    def _graveyard_target_answer(self, game: "GameState",
+                                 stack_item: "StackItem",
+                                 instants: List["CardInstance"]):
+        """``(instant, targets)`` whose resolution leaves the stack spell no
+        legal target, or None: every target of the spell is a card in a
+        graveyard, and the instant -- resolving as typed on the dispatcher
+        (`effect_carrier.spell_family`) -- removes one of them it may
+        target and, sharing its name (`ai.predicates.
+        graveyard_target_removal`), every other."""
+        from ai.predicates import graveyard_target_removal
+        from engine.cast_manager import CastManager
+        from engine.effect_carrier import spell_family
+        aimed = [game.get_card_by_id(t) if isinstance(t, int) and t >= 0
+                 else None for t in (stack_item.targets or ())]
+        if not aimed or any(c is None or c.zone != "graveyard"
+                            for c in aimed):
+            return None
+        for inst in instants:
+            shape = graveyard_target_removal(inst.template.effects.spell(0))
+            if shape is None or spell_family(inst.template) is None:
+                continue
+            _slot, by_name = shape
+            for t in aimed:
+                if not CastManager.targets_admitted(
+                        game, self.player_idx, inst, [t.instance_id]):
+                    continue
+                removed = {t.instance_id} | {
+                    c.instance_id for c in game.players[t.owner].graveyard
+                    if by_name and c.template.name == t.template.name}
+                if all(c.instance_id in removed for c in aimed):
+                    return inst, [t.instance_id]
+        return None
 
     def _choose_response_targets(self, game: "GameState", instant: "CardInstance", stack_item: "StackItem",
                                   pick_removal_target_fn: Optional[Callable] = None) -> List[int]:
@@ -904,8 +963,8 @@ class ResponseDecider:
                 0, effective - template.domain_reduction * domain)
 
         # Generic cost reducers (Medallions, Goblin Electromancer, etc.)
-        from engine.oracle_resolver import count_cost_reducers
-        generic_reduction = count_cost_reducers(game, controller, template)
+        from engine import rules_query
+        generic_reduction = rules_query.cost_delta(game, controller, template)
         if generic_reduction > 0:
             effective = max(0, effective - generic_reduction)
 
@@ -915,37 +974,102 @@ class ResponseDecider:
         """True iff this counter is castable via the mana-free PITCH
         alternative cost right now.
 
-        Mirrors the engine's `can_cast` alternative-cost path for "exile a
-        {color} card from your hand rather than pay this spell's mana cost"
-        (game_state.py:880-903): the pitch path is live only on the
-        opponent's turn.  Classification is by MECHANIC (oracle
-        alternative-cost clause), not by printed cost — a 1-CMC
-        hard-paid counter is NOT a pitch counter even though its mana
-        cost matches the pitch card-cost representation.
+        Reads the engine's own check for "exile a {color} card from your
+        hand rather than pay this spell's mana cost" (CR 118.9;
+        `CastManager.alternative_exile_candidates`): a card of the colour
+        in hand, under the cost's printed condition ("if it's not your
+        turn").  Classification is by MECHANIC (the typed alternative
+        cost), not by printed cost — a 1-CMC hard-paid counter is NOT a
+        pitch counter even though its mana cost matches the pitch
+        card-cost representation.
 
         Single classification site: `_effective_counter_cost` (cost
         ranking) and the chain-fuel hold exemption in
         `decide_response` (M2 Wave-2) both consult this predicate.
         """
-        return (
-            getattr(instant.template, 'has_alternate_exile_cost', False)
-            and getattr(game, 'active_player', None) != self.player_idx
-        )
+        from engine.cast_manager import CastManager
+        return bool(CastManager.alternative_exile_candidates(
+            game, self.player_idx, instant))
 
-    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
+    @staticmethod
+    def _counter_can_target(instant: "CardInstance", stack_item) -> bool:
+        """The counterspell's printed target admits this stack item (CR
+        115.1, 701.5) -- the one check both response paths read:
+
+        * a counterspell counters a SPELL: the stack item's own type, not
+          `template.is_spell` (which describes the source card, and so
+          admitted triggered and activated abilities of a nonland
+          permanent);
+        * the typed restriction (`counter_target_kind`): a noncreature
+          spell, an instant or sorcery spell;
+        * "counter target ... colorless spell" (`counters_colorless_only`)
+          never counters a colored spell -- CR 105 colour, not colour
+          identity;
+        * a modal spell counters only through a counter mode whose typed
+          target admits the spell (`modal_spell.counter_mode_targets`)."""
+        from engine.stack import StackItemType as _SIT
+        if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            return False
+        # A modal spell counters only through a counter mode whose typed
+        # target admits the spell; its other modes are no counter (CR
+        # 700.2a: a mode with no legal target can't be chosen).
+        from engine import modal_spell
+        from engine.target_solver import spell_matches
+        modal_counters = modal_spell.counter_mode_targets(instant.template)
+        if modal_counters is not None and not any(
+                spell_matches(r, stack_item.source) for r in modal_counters):
+            return False
+        target_spell = stack_item.source.template
+        kind = instant.template.counter_target_kind
+        if kind == 'noncreature_spell' and target_spell.is_creature:
+            return False
+        if kind == 'instant_or_sorcery_spell' and not (
+                target_spell.is_instant or target_spell.is_sorcery):
+            return False
+        if (getattr(instant.template, 'counters_colorless_only', False)
+                and (target_spell.colors or set())):
+            return False
+        # A printed mana-value or colour qualifier ("target spell with mana
+        # value 2", "target colorless spell") is read by the engine's
+        # requirement, at the spell's mana value on the stack and its
+        # colours (CR 115.1, 202.3e, 105.2).
+        from engine.target_solver import parse as _parse_targets
+        from engine.target_solver import spell_target_admits
+        bounded = [r for r in _parse_targets(instant.template.oracle_text or "")
+                   if r.zone == "stack" and (r.mana_value_bound is not None
+                                             or r.color_bound is not None)]
+        if bounded and not any(
+                spell_target_admits(getattr(stack_item.source, "_game_state",
+                                            None), r, stack_item)
+                for r in bounded):
+            return False
+        return True
+
+    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance",
+                                stack_item=None) -> int:
         """Cost paid to actually fire this counter, after alternative-cost paths.
 
         Routes through `_is_pitch_counter` (single classification
         site): on the opponent's turn a pitch counter is free in mana
         — its cost is a single exiled card, which we represent as 1
-        for ranking purposes. Otherwise the cost is the printed CMC.
+        for ranking purposes. Otherwise the cost is the printed CMC,
+        less a discount for countering this spell
+        (`oracle_resolver.target_cost_reduction`, CR 601.2c, 601.2f: "this
+        spell costs {2} less to cast if it targets a blue spell").
 
         Used to pick the cheapest castable counter when several are available;
         without this the legacy hand-order iteration would burn the wrong one.
         """
         if self._is_pitch_counter(game, instant):
             return 1  # one exiled card, no mana
-        return instant.template.cmc
+        cost = instant.template.cmc
+        source = getattr(stack_item, 'source', None)
+        if source is not None and instant.template.target_cost_reduction:
+            from engine.oracle_resolver import target_cost_reduction
+            cost -= target_cost_reduction(game, instant.controller,
+                                          instant.template,
+                                          [source.instance_id])
+        return cost
 
     def _has_post_resolution_creature_answer(
         self, game: "GameState", stack_item: "StackItem",
@@ -1090,7 +1214,10 @@ class ResponseDecider:
         snap = snapshot_from_game(game, opp_idx)
         archetype = getattr(self, 'opp_archetype', 'midrange')
         current = evaluate_board(snap, archetype)
-        projected = _project_spell(source, snap, None, game, opp_idx)
+        # A stack object has been cast: its cast triggers (cascade) are
+        # objects of their own, answered or not on their own.
+        projected = _project_spell(source, snap, None, game, opp_idx,
+                                   on_stack=True)
         after = evaluate_board(projected, archetype)
         threat = after - current  # positive = opponent's position improved
 
@@ -1133,21 +1260,14 @@ class ResponseDecider:
             from ai.ev_evaluator import creature_threat_value
             threat += sum(creature_threat_value(c, snap) for c in me.creatures)
 
-        # Cascade / reanimate: the actual threat is the creature or spell
-        # they cheat into play. Approximate as card_clock_impact × a few
-        # turns — both mechanics replace a card with a bigger one, so
-        # value ≈ mana we'd save × mana_clock_impact.
+        # Reanimate: the actual threat is the creature they cheat into
+        # play.
         from ai.clock import card_clock_impact, mana_clock_impact
         snap_for_clock = snap  # already built above at opp_idx
         oracle = (template.oracle_text or '').lower()
         subtypes = getattr(template, 'subtypes', [])
         opp_player = game.players[opp_idx]
 
-        if 'cascade' in getattr(template, 'tags', set()):
-            # Cascade ~= 1 free spell at cmc - 1 mana. Value = saved mana
-            # + expected threat value of what they cast.
-            saved_mana = max(1, (template.cmc or 2) - 1)
-            threat += saved_mana * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
         if 'reanimate' in getattr(template, 'tags', set()):
             # Reanimate value = threat value of the biggest creature in
             # opp graveyard (oracle-driven, not hardcoded).

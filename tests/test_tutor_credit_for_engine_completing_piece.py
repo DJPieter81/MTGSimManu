@@ -51,7 +51,11 @@ def test_activated_tutor_values_the_engine_piece_above_a_bigger_body(card_db):
         _bf(game, card_db, "Forest")
     _bf(game, card_db, "Devoted Druid")
     _bf(game, card_db, "Fiend Artisan")
-    _lib(game, card_db, ["Vizier of Remedies", "Eternal Witness"])
+    # Walking Ballista is a mana SINK reachable in the library — completing the
+    # loop is only credited LOOP_SHORTCUT_MANA when a sink exists to spend it
+    # on (ai.combo_calc.unbounded_mana_sink_reachable, ramp panel Finding 1).
+    _lib(game, card_db, ["Vizier of Remedies", "Eternal Witness",
+                         "Walking Ballista"])
     engine = _artisan_candidates(game)
     assert engine and "Vizier of Remedies" in engine[0][0], engine
 

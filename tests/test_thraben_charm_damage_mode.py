@@ -17,6 +17,11 @@ remove and the only winning play is to kill an equipped 1-toughness
 creature like Memnite (becomes 9/1 with Cranial Plating but the
 toughness stays at 1).
 
+The name-keyed handler is deleted: the spell is cast through the real
+path, its mode chosen as it is cast and performed by the owner of its
+shape (`engine/modal_spell.py`; the damage amount, twice a count, by
+`engine/effect_conditions.py`).
+
 Each test names the **rule** under test, not Thraben Charm specifically;
 the same modal-spell pattern (damage / destroy-permanent / hate)
 recurs across `Boros Charm`, `Izzet Charm`, etc.
@@ -53,14 +58,30 @@ def _attach_equipment(equipment, creature):
 
 
 def _resolve_thraben_charm(game, controller, target_id=None):
-    """Resolve Thraben Charm with the engine effect registry, mimicking
-    the cast flow that supplies a target id."""
-    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
-    targets = [target_id] if target_id is not None else None
-    ok = EFFECT_REGISTRY.execute(
-        "Thraben Charm", EffectTiming.SPELL_RESOLVE,
-        game, None, controller, targets=targets, item=None)
-    assert ok, "Thraben Charm effect not registered"
+    """Cast Thraben Charm at the target through the real cast path: its
+    controller chooses the mode the target allows as it is cast (CR
+    601.2b, 700.2a), and the spell resolves."""
+    from engine.game_state import Phase
+    game.current_phase = Phase.MAIN1
+    game.active_player = game.priority_player = controller
+    for _ in range(2):
+        _add_to_battlefield(game, _resolve_thraben_charm.db, "Plains",
+                            controller)
+    tmpl = _resolve_thraben_charm.db.get_card("Thraben Charm")
+    charm = CardInstance(template=tmpl, owner=controller,
+                         controller=controller,
+                         instance_id=game.next_instance_id(), zone="hand")
+    charm._game_state = game
+    game.players[controller].hand.append(charm)
+    targets = [target_id] if target_id is not None else []
+    assert game.cast_spell(controller, charm, targets=targets)
+    game.resolve_stack()
+    game.check_state_based_actions()
+
+
+@pytest.fixture(autouse=True)
+def _db(card_db):
+    _resolve_thraben_charm.db = card_db
 
 
 class TestThrabenCharmDamageMode:
@@ -120,32 +141,6 @@ class TestThrabenCharmDamageMode:
         assert archon in game.players[1].battlefield, (
             "4 damage must not kill 6-toughness Archon")
 
-    def test_damage_mode_picks_highest_threat_killable_target_when_no_target_supplied(
-            self, card_db):
-        """Rule: when caller does not supply a target, the engine picks
-        the most threatening *killable* creature.  Killable means
-        2N >= effective_toughness."""
-        game = GameState(rng=random.Random(42))
-
-        for _ in range(3):
-            _add_to_battlefield(game, card_db, "Ocelot Pride", 0)
-        # 6 damage available
-
-        # Two opp creatures: a low-threat 1/1 and a high-threat
-        # 1-toughness pumped attacker.  Damage mode kills both, but
-        # the pumped attacker has higher threat value → must be chosen.
-        memnite = _add_to_battlefield(game, card_db, "Memnite", 1)
-        plating = _add_to_battlefield(game, card_db, "Cranial Plating", 1)
-        _attach_equipment(plating, memnite)
-        ornithopter = _add_to_battlefield(game, card_db, "Ornithopter", 1)
-
-        _resolve_thraben_charm(game, controller=0, target_id=None)
-
-        # Higher-threat target (Memnite with Plating ≈ 9/1) goes; the
-        # low-threat 0/2 Ornithopter should not be the auto-pick.
-        assert memnite in game.players[1].graveyard, (
-            "auto-target picked the lower-threat creature when a "
-            "higher-threat killable creature was available")
 
 
 class TestThrabenCharmEnchantmentMode:

@@ -88,7 +88,9 @@ def assess_combo(game: "GameState", player_idx: int,
     if not assessor:
         return _null_assessment()
 
-    me = game.players[player_idx]
+    # The plan's cards: the hand and the exiled cards a permission names.
+    from ai.playable_cards import plan_view
+    me = plan_view(game, player_idx)
     opp = game.players[1 - player_idx]
     return assessor(game, player_idx, goal_engine, snap, zone, target, min_cmc,
                     me, opp, bhi)
@@ -219,13 +221,17 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
     """
     from ai.combo_chain import find_all_chains, what_is_missing
 
+    from ai.effective_cmc import chain_cost
     payoff_names = _collect_payoff_names(goal_engine)
-    medallions = sum(1 for c in me.battlefield
-                     if 'cost_reducer' in getattr(c.template, 'tags', set()))
+    reducer_deployed = any('cost_reducer' in getattr(c.template, 'tags', set())
+                           for c in me.battlefield)
     mana = snap.my_mana
     storm = me.spells_cast_this_turn
+    # Each spell costs the AI's cost estimate under the reductions in play
+    # (unit CC: `effective_cmc.chain_cost`, the one owner).
+    costing = dict(game=game, player_idx=player_idx)
 
-    chains = find_all_chains(me.hand, mana, medallions, payoff_names, storm)
+    chains = find_all_chains(me.hand, mana, payoff_names, storm, **costing)
     best = max(chains, key=lambda c: c.storm_damage, default=None)
     opp_life = max(1, snap.opp_life)
     best_damage = best.storm_damage if best else 0
@@ -238,24 +244,33 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
                        if 'cost_reducer' in getattr(c.template, 'tags', set())
                        and not c.template.is_instant and not c.template.is_sorcery]
     if reducer_in_hand:
-        cheapest_cmc = min(c.template.cmc or _CMC_UNREACHABLE for c in reducer_in_hand)
+        cheapest = min(reducer_in_hand,
+                       key=lambda c: chain_cost(c, game, player_idx))
+        cheapest_cmc = chain_cost(cheapest, game, player_idx)
         if mana >= cheapest_cmc:
-            # Remove the cheapest reducer from hand, subtract its cost, add 1 medallion
-            cheapest = min(reducer_in_hand, key=lambda c: c.template.cmc or _CMC_UNREACHABLE)
+            # Cast the cheapest reducer first: its cost is spent and its
+            # rule reduces what the chain casts after it.
             hand_after = [c for c in me.hand if c.instance_id != cheapest.instance_id]
             mana_after = mana - cheapest_cmc
-            chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
-                                          payoff_names, storm + 1)
+            chains_with = find_all_chains(hand_after, mana_after,
+                                          payoff_names, storm + 1,
+                                          reducers=[cheapest], **costing)
             best_with = max(chains_with, key=lambda c: c.storm_damage, default=None)
             if best_with and best_with.storm_damage > best_damage:
                 best = best_with
                 best_damage = best_with.storm_damage
 
-    missing = what_is_missing(me.hand, mana, medallions, payoff_names)
+    missing = what_is_missing(me.hand, mana, payoff_names,
+                              reducer_deployed=reducer_deployed, **costing)
 
     # ── R_res: chain-reaction residue ──
-    # Compute available resources vs costs for the entire hand
-    r_res = _compute_r_res(me.hand, mana, medallions)
+    # The mana the castable chain leaves: what the longest chain the hand
+    # can cast has left at its end -- the surplus drawn fuel is cast from.
+    # Alternatives that are never all cast (two tutors, two flashback
+    # granters) are not each charged (unit CC). No chain: the mana unspent.
+    longest = max(chains, key=lambda c: (c.storm_count, c.final_mana),
+                  default=None)
+    r_res = longest.final_mana if longest else mana
 
     # ── Projected damage including expected draws ──
     # If chain draws cards (cantrips), estimate additional storm from drawn fuel
@@ -305,37 +320,6 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
                f"r_res={r_res:.1f} opp_life={opp_life}",
         r_res=r_res,
     )
-
-
-def _compute_r_res(hand, mana, medallions):
-    """Chain-Reaction Residue: available mana minus costs after reduction.
-
-    R_res = (M_pool + Σ ritual_mana) - Σ (spell_cost - η)
-    Positive means mana surplus (chain can sustain).
-    """
-    available = mana
-    total_cost = 0
-    for c in hand:
-        if c.template.is_land:
-            continue
-        tags = getattr(c.template, 'tags', set())
-        cmc = c.template.cmc or 0
-
-        # Ritual mana production (from template, set by oracle parser)
-        ritual_data = getattr(c.template, 'ritual_mana', None)
-        if ritual_data:
-            available += ritual_data[1]  # (color, amount) → add amount
-
-        # Effective cost after reducer discount
-        from engine.cards import Color
-        reduction = 0
-        if (c.template.is_instant or c.template.is_sorcery):
-            if hasattr(c.template, 'color_identity') and Color.RED in c.template.color_identity:
-                reduction = medallions
-        effective_cost = max(0, cmc - reduction)
-        total_cost += effective_cost
-
-    return available - total_cost
 
 
 def _assess_graveyard_zone(game, player_idx, goal_engine, snap, zone, target,
@@ -743,19 +727,31 @@ def _has_storm_finisher(card, me) -> bool:
     )
     if has_direct:
         return True
-    has_tutor = any(
-        'tutor' in getattr(c.template, 'tags', set())
-        for c in me.hand if c.instance_id != card.instance_id
-    )
-    if not has_tutor:
+    tutors = [c for c in me.hand if c.instance_id != card.instance_id
+              and 'tutor' in getattr(c.template, 'tags', set())]
+    return any(_is_storm_payoff(c) for t in tutors for c in _tutor_pool(t, me))
+
+
+def _is_storm_payoff(c) -> bool:
+    """A STORM-keyword card or a token-spawning finisher."""
+    from engine.cards import Keyword as Kw
+    tmpl = getattr(c, 'template', None)
+    if tmpl is None:
         return False
-    sb = getattr(me, 'sideboard', None) or []
-    for c in list(sb) + list(me.library):
-        if Kw.STORM in getattr(c.template, 'keywords', set()):
-            return True
-        if getattr(c.template, 'has_scaling_token_finisher', False):
-            return True
-    return False
+    return (Kw.STORM in getattr(tmpl, 'keywords', set())
+            or getattr(tmpl, 'has_scaling_token_finisher', False))
+
+
+def _tutor_pool(tutor, me) -> list:
+    """The cards a tutor reaches. One that brings a card from outside the
+    game reaches its owner's sideboard and nothing else (CR 400.11a,
+    `effect_executors.brings_from_outside_the_game`); any other reaches the
+    library and, as before, the sideboard."""
+    from engine.effect_executors import brings_from_outside_the_game
+    sb = list(getattr(me, 'sideboard', None) or [])
+    if brings_from_outside_the_game(getattr(tutor, 'template', None)):
+        return sb
+    return sb + list(me.library)
 
 
 def _tutor_has_payoff_access(card, me) -> bool:
@@ -773,26 +769,47 @@ def _tutor_has_payoff_access(card, me) -> bool:
     STORM keyword OR `create … tokens` + `for each` (the printed
     Empty-the-Warrens template).
     """
-    from engine.cards import Keyword as Kw
     if 'tutor' not in getattr(card.template, 'tags', set()):
         return False
-    sb = getattr(me, 'sideboard', None) or []
-    for c in list(sb) + list(me.library):
-        # Defensive: in test scaffolds (and real scenarios such as a
-        # transformed face-down library), an entry may be missing its
-        # template — skip those rather than crash.
-        tmpl = getattr(c, 'template', None)
-        if tmpl is None:
-            continue
-        if Kw.STORM in getattr(tmpl, 'keywords', set()):
-            return True
-        if getattr(tmpl, 'has_scaling_token_finisher', False):
-            return True
+    # Defensive: in test scaffolds (and real scenarios such as a transformed
+    # face-down library), an entry may be missing its template -- skipped.
+    return any(_is_storm_payoff(c) for c in _tutor_pool(card, me))
+
+
+def unbounded_mana_sink_reachable(me) -> bool:
+    """True when the player can convert an unbounded / very large mana pool
+    into a win — a mana SINK is in hand, on the battlefield, or in the library
+    (reachable by a creature tutor at the engine's own mana).
+
+    A sink is a payoff whose output SCALES with the MANA spent — the one
+    definition `ai.assembly_state.is_mana_sink` owns: an X-cost damage
+    spell / permanent, a mass-pump overrun, or a mana-costed team-counter
+    activation. A token finisher whose scaling variable is storm or discard
+    (`has_scaling_token_finisher`) is owned by the Storm chain and is NOT a
+    mana sink. Fixed burn is not a sink either — completing an
+    infinite-mana engine converts to nothing through it. Typed fields
+    only; no card names.
+    """
+    from ai.assembly_state import is_mana_sink
+    for zone in (getattr(me, 'hand', None) or (),
+                 getattr(me, 'battlefield', None) or (),
+                 getattr(me, 'library', None) or ()):
+        for c in zone:
+            if is_mana_sink(getattr(c, 'template', None)) is not None:
+                return True
     return False
 
 
+def _chain_cost_now(card, game, player_idx):
+    """A spell's cost now, as the AI's cost estimate reads it (unit CC:
+    `effective_cmc.chain_cost`)."""
+    from ai.effective_cmc import chain_cost
+    return chain_cost(card, game, player_idx)
+
+
 def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
-                           after_cast_ritual_net=0) -> float:
+                           after_cast_ritual_net=0, *, game=None,
+                           player_idx=0) -> float:
     """Viability score (storm coverage) for a PiF-style flashback chain.
 
     Replaces the boolean `_has_viable_pif` (audit M14 / F6).  Past in
@@ -821,11 +838,16 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
     if not granters or not _has_storm_finisher(card, me):
         return 0.0
 
-    granter = min(granters,
-                  key=lambda c: c.template.cmc or _CMC_UNREACHABLE)
-    reducers = sum(1 for c in me.battlefield
-                   if 'cost_reducer' in getattr(c.template, 'tags', set()))
-    granter_cost = max(0, (granter.template.cmc or 0) - reducers)
+    # Each cost is the AI's cost estimate (unit CC): the reductions the
+    # game shows, or with no game the reducers in play by their rules.
+    from ai.effective_cmc import chain_cost
+    in_play = () if game is not None else tuple(me.battlefield)
+
+    def _cost(c):
+        return chain_cost(c, game, player_idx, in_play)
+
+    granter = min(granters, key=_cost)
+    granter_cost = _cost(granter)
 
     # `card` resolves first.  Spend its cmc, gain its ritual net.
     chain_mana = max(0, snap.my_mana - after_cast_card_cmc
@@ -848,7 +870,7 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
         0 if 'ritual' in getattr(c.template, 'tags', set()) else 1,
         c.template.cmc or 0))
     for c in pre_pif:
-        cost = max(0, (c.template.cmc or 0) - reducers)
+        cost = _cost(c)
         if cost > chain_mana:
             continue
         chain_mana -= cost
@@ -877,19 +899,121 @@ def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
     return float((post_pif_storm + 1) / max(1, snap.opp_life))
 
 
-def _has_draw_in_hand(card, me) -> bool:
-    """Any cantrip / card-advantage / draw spell in hand (excluding `card`).
+def _digs_paid(costs, mana) -> int:
+    """How many of the digs costing `costs` the mana pays for, cheapest
+    first."""
+    paid = 0
+    for cost in sorted(costs):
+        if cost > mana:
+            break
+        mana -= cost
+        paid += 1
+    return paid
 
-    Uses `predicates.is_draw_engine` for the tag check so the
-    "what counts as a draw engine" definition lives in one place.
-    """
-    from ai.predicates import is_draw_engine
-    return any(
-        is_draw_engine(c)
-        for c in me.hand
-        if c.instance_id != card.instance_id
-        and not c.template.is_land
-    )
+
+def _digs_the_ai_will_make(card, me, snap, game, player_idx,
+                           storm=0) -> list:
+    """The digs the AI will make this turn once the ritual `card`
+    resolves: `card` itself when it digs (a ritual that draws is its own
+    dig, and so is one whose cast triggers a cast trigger that draws,
+    `_cast_triggers_draw`), and each other dig among the plan's cards that
+    the main phase does not defer (`cast_is_deferred`) and whose effective
+    cost the mana left after `card` pays -- ritual mana empties at the end
+    of the phase (CR 500.4, 106.4), so a dig it cannot fund this turn is no
+    dig. A dig looks for the closer (`_digs_toward_closer`): it puts new
+    cards in hand or play from the typed draw / tutor fields, never a
+    classifier tag, and a tutor counts only when its pool holds a
+    finisher.
+
+    With no chain begun (`storm` 0) the ritual's only gift this turn is its
+    mana: the storm it adds closes nothing. So the other digs count only
+    when the ritual funds them, that is, when the mana after it pays for
+    more of them than the mana without it (`_digs_paid`). A dig the lands
+    already pay for is cast from the lands. Mid-chain the ritual's storm
+    feeds a chain in progress, and every dig its mana pays counts."""
+    from ai.effective_cmc import effective_cmc
+    from ai.ev_evaluator import cast_is_deferred
+    digs = [card] if (_digs_toward_closer(card, me)
+                      or _cast_triggers_draw(card, game, player_idx)) else []
+    others = [c for c in me.hand
+              if c.instance_id != card.instance_id
+              and not c.template.is_land
+              and _digs_toward_closer(c, me)
+              and not cast_is_deferred(c, snap, game, player_idx)]
+    if not others:
+        return digs
+    rdata = getattr(card.template, 'ritual_mana', None)
+    mana_after = (snap.my_mana
+                  - effective_cmc(card, snap, game=game, player_idx=player_idx)
+                  + (rdata[1] if rdata else 0))
+    costs = {c.instance_id: effective_cmc(c, snap, game=game,
+                                          player_idx=player_idx)
+             for c in others}
+    if not storm and _digs_paid(costs.values(), mana_after) \
+            <= _digs_paid(costs.values(), snap.my_mana):
+        return digs                  # the ritual funds no dig
+    digs += [c for c in others if costs[c.instance_id] <= mana_after]
+    return digs
+
+
+def _digs_toward_closer(card, me) -> bool:
+    """Can `card` find the chain's closer? A spell that draws or exposes
+    cards to play (`ev_evaluator._is_real_dig`'s typed draw fields) may
+    find it in the library. A tutor finds it only when the pool it searches
+    holds a finisher (`_tutor_has_payoff_access`): a Wish whose sideboard
+    holds only utility closes nothing."""
+    from ai.ev_evaluator import _is_real_dig
+    if not _is_real_dig(card):
+        return False
+    t = card.template
+    from ai.predicates import spell_draws
+    if getattr(t, 'has_draw_effect', False) or spell_draws(t):
+        return True
+    return _tutor_has_payoff_access(card, me)
+
+
+def _cast_triggers_draw(card, game, player_idx) -> bool:
+    """Does casting `card` trigger a cast trigger the cast carrier performs
+    whose instructions draw for the caster (`effect_carrier.
+    performed_cast_triggers`: a plain draw, or a rummage's "if you do,
+    draw", units CT, CT.2)? A trigger's draw is its controller's (CR 121.1,
+    the DRAW executor's one shape), so only the caster's own permanents
+    dig. Read from the typed hosts the engine would run, never from text."""
+    from engine.effect_carrier import performed_cast_triggers
+    from engine.effect_spec import Verb, iter_specs
+    return any(s.verb is Verb.DRAW
+               for src, h in performed_cast_triggers(game, player_idx, card)
+               if src.controller == player_idx
+               for s in iter_specs(h.specs))
+
+
+def _ritual_without_closer(card, me, snap, game, player_idx, storm,
+                           opp_life):
+    """A ritual cast with no finisher and no flashback line in reach: its
+    mana empties at the end of the phase (CR 500.4, 106.4), so it is held
+    (`STORM_HARD_HOLD`) unless that mana reaches a dig the AI will make
+    this turn (`_digs_the_ai_will_make`). With a dig it is admitted at the
+    soft penalty for a chain without its closer:
+    (A) storm-coverage escalation -- once storm/opp_life passes
+        COMBO_HALF_LETHAL_FRACTION most of the resources are invested and
+        missing the closer is increasingly catastrophic;
+    (B) draw-miss cascade risk -- at storm >= COMBO_MIN_CHAIN_DEPTH with
+        one dig left the chain is one bad top-deck from collapse.
+    One rule for the storm-0 gate and the mid-chain gate."""
+    digs = _digs_the_ai_will_make(card, me, snap, game, player_idx, storm)
+    if not digs:
+        return STORM_HARD_HOLD
+    storm_coverage = storm / opp_life
+    escalation = 1.0 + max(0.0, storm_coverage - COMBO_HALF_LETHAL_FRACTION)
+    penalty = ((storm + 2) / opp_life
+               * COMBO_RITUAL_MISSED_FINISHER_SCALE
+               * escalation)
+    if storm >= COMBO_MIN_CHAIN_DEPTH and len(digs) <= COMBO_CASCADE_DRAW_FLOOR:
+        lethal_gap = max(0, opp_life - storm)
+        library_size = max(1, len(me.library))
+        miss_risk = min(1.0, lethal_gap / library_size)
+        penalty += (miss_risk * (storm / opp_life) * COMBO_CASCADE_RISK_SCALE)
+    return -penalty
 
 
 def card_combo_modifier(card, assessment, snap, me, game, player_idx):
@@ -908,10 +1032,14 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     """
     from engine.cards import Keyword as Kw
     from ai.clock import scarce_payoff_commit_ev
+    from ai.ev_evaluator import cast_is_deferred
 
     a = assessment
     if not a or not a.resource_zone:
         return 0.0
+    # The plan's cards: the hand and the exiled cards a permission names.
+    from ai.playable_cards import plan_view
+    me = plan_view(game, player_idx)
 
     tags = getattr(card.template, 'tags', set())
     opp_life = max(1, snap.opp_life)
@@ -947,6 +1075,16 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                 return a.combo_value + (a.combo_value / opp_life)
             return a.combo_value
 
+        # The turn's finishers together (CR 702.40a; unit FS): every
+        # closer copies itself once per spell before it, so the casts the
+        # mana pays sum their damage. When that sum is lethal the sequence
+        # fires, its first cast first (`ai.finisher_reach`).
+        from ai import finisher_reach as _reach
+        reached, first = _reach.reach_now(game, player_idx, snap.my_mana)
+        if deals_damage and reached >= opp_life and first is card:
+            return a.combo_value + (a.combo_value / opp_life)
+        own_cost = _reach.finisher_cost(game, player_idx, card)
+
         # Count CHAIN-EXTENDING fuel.  Two categories qualify:
         #   1. Plain chain fuel (`is_chain_fuel`): cards tagged
         #      ritual / cantrip / draw / card_advantage.  Casting one
@@ -965,14 +1103,25 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # Cards without either qualification (creatures like Ral,
         # filler spells) add 1 to storm if cast but don't enable
         # more spells — holding the finisher for them strands the
-        # chain when mana runs out.
+        # chain when mana runs out.  A cast the main phase defers
+        # (`cast_is_deferred`: no same-turn signal) is never made, so
+        # it is no fuel either: the hold would wait for nothing and the
+        # turn would pass with the finisher in hand.
         from ai.predicates import is_chain_fuel
+        # A play is fuel only while it leaves what this finisher's cast
+        # still needs after it -- the mana (CR 106.4, 500.4) and the one
+        # play a permission allows them both (CR 400.11a; unit FS): one
+        # that spends either strands the finisher, so holding for it
+        # waits for nothing.
         total_fuel = sum(
             1 for c in me.hand
             if c.instance_id != card.instance_id
             and not c.template.is_land
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and (is_chain_fuel(c) or _tutor_has_payoff_access(c, me))
+            and not cast_is_deferred(c, snap, game, player_idx)
+            and _reach.keeps_finisher(game, player_idx, c, own_cost,
+                                      snap.my_mana, finisher=card)
         )
         if total_fuel > 0:
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
@@ -1048,6 +1197,14 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # exactly kill.  See test_storm_tutor_lethal_fires.py.
         if storm + 2 >= opp_life:
             return a.combo_value  # tutor reach is lethal — fire
+        # The turn's finishers together (CR 702.40a; unit FS): this tutor
+        # fires first when the sequence the mana pays is lethal and starts
+        # with it.
+        from ai import finisher_reach as _reach
+        reached, first = _reach.reach_now(game, player_idx, snap.my_mana)
+        if reached >= opp_life and first is card:
+            return a.combo_value
+        own_cost = _reach.finisher_cost(game, player_idx, card)
         # Only count CHAIN-EXTENDING fuel via `is_chain_fuel`: cards
         # tagged ritual / cantrip / draw / card_advantage.  Cards
         # without those tags (creatures like Ral, random filler)
@@ -1057,6 +1214,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # passes at 1 life with 2 Wishes uncast because 2 Ral
         # creatures counted as `non_tutor_fuel`.  Filtering by
         # chain-extending tags gives non_tutor_fuel=0 → tutor fires.
+        # A deferred cast is no fuel (see the storm branch above).
         from ai.predicates import is_chain_fuel
         non_tutor_fuel = sum(
             1 for c in me.hand
@@ -1065,6 +1223,9 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             and Kw.STORM not in getattr(c.template, 'keywords', set())
             and 'tutor' not in getattr(c.template, 'tags', set())
             and is_chain_fuel(c)
+            and not cast_is_deferred(c, snap, game, player_idx)
+            and _reach.keeps_finisher(game, player_idx, c, own_cost,
+                                      snap.my_mana, finisher=card)
         )
         if non_tutor_fuel > 0:
             return -non_tutor_fuel / opp_life * a.combo_value
@@ -1084,23 +1245,32 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         # progress" behaviour that test_wish_fires_when_fuel_depleted
         # pins at storm = 8 (there storm > 0 → develop unreachable →
         # fire).
+        #
+        # A tutor whose closer the mana cannot follow deals nothing this
+        # turn (CR 106.4, 500.4; unit FS) -- and a card played from
+        # outside the game is played this turn or never (CR 400.11a): it
+        # is not cashed but held for a turn whose mana pays both, the
+        # developed line being its own.
+        pays_whole = _reach.pays(own_cost, snap.my_mana)
+        # +2 spells: the tutor + the fetched payoff.
+        fire_now = storm + 2 if pays_whole else 0
         develop_possible = (
-            (storm + 2) < opp_life     # not already lethal now
-            and storm == 0             # nothing sunk into this turn's chain
+            fire_now < opp_life        # not already lethal now
+            # nothing sunk into this turn's chain, or nothing to cash
+            and (storm == 0 or not pays_whole)
             and not snap.am_dead_next  # we survive to develop
         )
         # Only scan the library when developing could still matter; a
         # larger line needs chain fuel left to draw.  Guard against any
         # None/blank library entry so the scan is robust.
-        line_can_grow = develop_possible and any(
+        line_can_grow = develop_possible and (not pays_whole or any(
             is_chain_fuel(c) for c in me.library
             if c is not None and c.template is not None
             and not c.template.is_land
-            and Kw.STORM not in getattr(c.template, 'keywords', set()))
+            and Kw.STORM not in getattr(c.template, 'keywords', set())))
         develop_reach = 1.0 if line_can_grow else 0.0
-        # +2 spells: the tutor + the fetched payoff.
         return scarce_payoff_commit_ev(
-            storm + 2, opp_life, a.combo_value, develop_reach)
+            fire_now, opp_life, a.combo_value, develop_reach)
 
     # ═══ NON-STORM PAYOFF: hold until resources ready ═══
     if role == 'payoff' and Kw.CASCADE not in getattr(card.template, 'keywords', set()):
@@ -1115,22 +1285,25 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         return 0.0
 
     # ═══ COST REDUCER: value from actual chain improvement ═══
-    # Run find_all_chains with medallions vs medallions+1 — the storm damage
-    # difference IS the reducer's value. No magic numbers.
+    # Run find_all_chains with and without this reducer in play — the
+    # storm damage difference IS the reducer's value. No magic numbers.
+    # Costs are the AI's cost estimate; the reducer adds what its own
+    # rule takes off the spells after it (unit CC).
     if role == 'engine' and a.resource_zone == "storm":
         from ai.combo_chain import find_all_chains
-        medallions = sum(1 for c in me.battlefield
-                         if 'cost_reducer' in getattr(c.template, 'tags', set()))
         hand_after = [c for c in me.hand if c.instance_id != card.instance_id]
-        mana_after = max(0, snap.my_mana - (card.template.cmc or 0))
+        mana_after = max(0, snap.my_mana - _chain_cost_now(card, game,
+                                                           player_idx))
+        costing = dict(game=game, player_idx=player_idx)
 
         # Chain WITH the extra reducer deployed
-        chains_with = find_all_chains(hand_after, mana_after, medallions + 1,
-                                      a.payoff_names, storm)
+        chains_with = find_all_chains(hand_after, mana_after,
+                                      a.payoff_names, storm,
+                                      reducers=[card], **costing)
         best_with = max(chains_with, key=lambda c: c.storm_damage, default=None)
         # Chain WITHOUT (current state, same hand minus the reducer card)
-        chains_without = find_all_chains(hand_after, mana_after, medallions,
-                                         a.payoff_names, storm)
+        chains_without = find_all_chains(hand_after, mana_after,
+                                         a.payoff_names, storm, **costing)
         best_without = max(chains_without, key=lambda c: c.storm_damage, default=None)
 
         dmg_with = best_with.storm_damage if best_with else 0
@@ -1160,19 +1333,23 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # speculative-chain mana-burn (CR 500.4).
     if role == 'fuel' and storm == 0 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
-        ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
+        own_cost = _chain_cost_now(card, game, player_idx)
+        ritual_net = max(0, (rdata[1] - own_cost)) if rdata else 0
         if not a.has_payoff:
             has_finisher = _has_storm_finisher(card, me)
             pif_viability = flashback_chain_viable(
                 card, me, snap,
-                after_cast_card_cmc=(card.template.cmc or 0),
+                after_cast_card_cmc=own_cost,
                 after_cast_ritual_net=ritual_net,
+                game=game, player_idx=player_idx,
             )
             if (not has_finisher and pif_viability == 0.0
                     and not snap.am_dead_next):
                 # No finisher path and not under lethal pressure — this
-                # ritual's mana empties at phase end (CR 500.4).  Hard hold.
-                return STORM_HARD_HOLD
+                # ritual's mana empties at phase end (CR 500.4): held
+                # unless it reaches a dig (`_ritual_without_closer`).
+                return _ritual_without_closer(card, me, snap, game,
+                                              player_idx, storm, opp_life)
 
         # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
         # If no reducer deployed yet but one exists in hand and is castable,
@@ -1242,56 +1419,30 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     # ═══ MID-CHAIN RITUAL GATE (storm >= 1) ═══
     # Phase 2c.3 port: when we're already mid-chain but no finisher
     # path is reachable, the rituals' mana empties at phase end.
-    # Hard-clamp when no draws remain (no way to dig); soft-penalize
-    # with storm-coverage escalation + draw-miss cascade risk when
-    # draws still exist.  Sentinel constants (HALF_LETHAL,
-    # MIN_CHAIN_DEPTH, CASCADE_DRAW_FLOOR) are derived from CR damage
-    # rules and STORM-profile fuel thresholds, not tuning weights.
+    # Hard-clamp when no dig the AI will make remains (no way to find
+    # the closer); soft-penalize with storm-coverage escalation +
+    # draw-miss cascade risk while one does.  The digs are those the AI
+    # will make (`_digs_the_ai_will_make`): a ritual that draws is its
+    # own dig, so the gate never admits rituals on a dig it then holds.
+    # Sentinel constants (HALF_LETHAL, MIN_CHAIN_DEPTH,
+    # CASCADE_DRAW_FLOOR) are derived from CR damage rules and
+    # STORM-profile fuel thresholds, not tuning weights.
     if role == 'fuel' and storm >= 1 and 'ritual' in tags:
         rdata = getattr(card.template, 'ritual_mana', None)
-        ritual_net = max(0, (rdata[1] - (card.template.cmc or 0))) if rdata else 0
+        own_cost = _chain_cost_now(card, game, player_idx)
+        ritual_net = max(0, (rdata[1] - own_cost)) if rdata else 0
         has_finisher = _has_storm_finisher(card, me)
         pif_viability = flashback_chain_viable(
             card, me, snap,
-            after_cast_card_cmc=(card.template.cmc or 0),
+            after_cast_card_cmc=own_cost,
             after_cast_ritual_net=ritual_net,
+            game=game, player_idx=player_idx,
         )
         if not has_finisher and pif_viability == 0.0:
             opp_clock = getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
             if not snap.am_dead_next and opp_clock > 2:
-                if not _has_draw_in_hand(card, me):
-                    # No finisher, no flashback, no draws → hard hold.
-                    return STORM_HARD_HOLD
-                # Draws remain — soft penalty with two refinements.
-                # (A) Storm-coverage escalation: when storm/opp_life
-                #     > COMBO_HALF_LETHAL_FRACTION we've already invested
-                #     most of the resources in this chain; missing the
-                #     closer is increasingly catastrophic.
-                storm_coverage = storm / opp_life
-                escalation = 1.0 + max(0.0,
-                                       storm_coverage - COMBO_HALF_LETHAL_FRACTION)
-                penalty = ((storm + 2) / opp_life
-                           * COMBO_RITUAL_MISSED_FINISHER_SCALE
-                           * escalation)
-                # (B) Draw-miss cascade risk: at storm >= COMBO_MIN_CHAIN_DEPTH
-                #     and only one draw left, the chain is one bad top-deck
-                #     from collapse.  Penalty scales with library
-                #     miss probability times coverage.
-                if storm >= COMBO_MIN_CHAIN_DEPTH:
-                    draw_count = sum(
-                        1 for c in me.hand
-                        if c.instance_id != card.instance_id
-                        and not c.template.is_land
-                        and any(dt in getattr(c.template, 'tags', set())
-                                for dt in ('cantrip', 'card_advantage', 'draw'))
-                    )
-                    if draw_count <= COMBO_CASCADE_DRAW_FLOOR:
-                        lethal_gap = max(0, opp_life - storm)
-                        library_size = max(1, len(me.library))
-                        miss_risk = min(1.0, lethal_gap / library_size)
-                        penalty += (miss_risk * (storm / opp_life)
-                                    * COMBO_CASCADE_RISK_SCALE)
-                return -penalty
+                return _ritual_without_closer(card, me, snap, game,
+                                              player_idx, storm, opp_life)
 
     # ═══ FLIP-TRANSFORM STACK BATCHING ═══
     # When a creature with a "flip a coin" on-cast trigger is on the
@@ -1371,11 +1522,10 @@ def _card_marginal_value(card, me, snap, assessment):
     a = assessment
     opp_life = max(1, snap.opp_life)
     hand_without = [c for c in me.hand if c.instance_id != card.instance_id]
-    medallions = sum(1 for c in me.battlefield
-                     if 'cost_reducer' in getattr(c.template, 'tags', set()))
-
-    chains_without = find_all_chains(hand_without, snap.my_mana, medallions,
-                                     a.payoff_names, me.spells_cast_this_turn)
+    # No game here: the reducers in play are counted by their rules.
+    chains_without = find_all_chains(hand_without, snap.my_mana,
+                                     a.payoff_names, me.spells_cast_this_turn,
+                                     reducers=tuple(me.battlefield))
     best_without = max(chains_without, key=lambda c: c.storm_damage, default=None)
 
     dmg_with = a.best_chain.storm_damage if a.best_chain else 0

@@ -31,9 +31,11 @@ test suite.
 """
 from __future__ import annotations
 
+import re
+from functools import lru_cache
 from typing import Annotated, Dict, List, Literal, Optional, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 
 # ─── Base class ──────────────────────────────────────────────────────
@@ -400,6 +402,56 @@ class OracleTagClassification(_LLMBase):
     )
 
 
+# ─── Decision-model shape of the oracle-tag task ─────────────────────
+#
+# A decision model (e.g. TypeSafe's Jev) answers typed questions —
+# booleans and closed choices — and refuses any output with a free-text
+# field, so `OracleTagClassification` (a list of strings) is not
+# askable.  For such a model the classify_oracle task asks one boolean
+# per closed-set tag instead; `decision_to_tags` maps the answers back
+# to the same tag list the committed cache stores.  The question wording
+# is the tag's row in the versioned prompt's tag table, so the tag
+# definitions keep one source.
+
+_TAG_TABLE_ROW = re.compile(r"^\|\s*`([A-Z0-9_]+)`\s*\|\s*(.+?)\s*\|\s*$")
+
+
+@lru_cache(maxsize=None)
+def oracle_tag_table() -> Dict[str, str]:
+    """Tag name -> its 'Mechanic' cell in the latest classify_oracle
+    prompt's closed tag table."""
+    from ai.llm_prompts import latest_version, load_prompt
+
+    prompt = load_prompt("classify_oracle", latest_version("classify_oracle"))
+    table: Dict[str, str] = {}
+    for line in prompt.splitlines():
+        m = _TAG_TABLE_ROW.match(line)
+        if m:
+            table[m.group(1)] = m.group(2)
+    return table
+
+
+@lru_cache(maxsize=None)
+def oracle_tag_decision_model() -> type:
+    """One boolean field per `Tag` (field name = lower-cased tag name),
+    each described by the tag's prompt-table row."""
+    from ai.oracle_classifier import Tag
+
+    table = oracle_tag_table()
+    fields = {
+        tag.name.lower(): (bool, Field(..., description=table[tag.name]))
+        for tag in Tag
+    }
+    return create_model("OracleTagDecision", __base__=_LLMBase, **fields)
+
+
+def decision_to_tags(answers: BaseModel) -> List[str]:
+    """Tag names answered true, in `Tag` declaration order."""
+    from ai.oracle_classifier import Tag
+
+    return [t.name for t in Tag if getattr(answers, t.name.lower())]
+
+
 class DecisionScoringWeights(_LLMBase):
     """One scaling-weight scoring decision from the `decision_scorer`
     agent.
@@ -575,6 +627,9 @@ __all__ = [
     "DecisionScoringWeights",
     "FailingTestSpec",
     "OracleTagClassification",
+    "oracle_tag_table",
+    "oracle_tag_decision_model",
+    "decision_to_tags",
     "to_json_dict",
     "from_json_dict",
     "to_prompt_section",
