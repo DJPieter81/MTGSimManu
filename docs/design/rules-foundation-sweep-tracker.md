@@ -11028,7 +11028,7 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 
 **Pins (`15d6db8`):** digest byte-identical (27 games); anchor 29 passed; spec equivalence, harness and every ratchet unchanged. No seeded game moved: castability never counted a sacrifice-for-mana source (unit SM). Chunks: 5368 + 2766 passed.
 
-**Measured:** with RM, SM and IV.2 by the `iv-post` arm (pre = `bt-post`).
+**Measured:** by the `iv-post` arm, recorded under unit IV.2.
 
 **Leads, not built:** Food's GAIN_LIFE activation; the other CR 111.10 kinds (Blood 26, Powerstone 28, Lander 18, Mutagen 12, Map 8, Gold 3, Shard 2 cards); the AI values Clue and Treasure at 0 in projections (`ai/ev_evaluator.py`).
 
@@ -11054,7 +11054,7 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 - An auditor first read the oracle text at resolution and raised the effect-parser ratchet (b) 96 → 97; it now reads the typed effects and (b) stays 96.
 - Digest byte-identical (27 games); anchor 29 passed. Chunks: 5368 + 2772 passed.
 
-**Measured:** with IV.1, SM and IV.2 by the `iv-post` arm.
+**Measured:** by the `iv-post` arm, recorded under unit IV.2.
 
 **Leads, not built:** the ritual branch's "any" colour adds {R}{R} whatever the amount and returns before the spell's other instructions (Desolation of Smaug, Traitorous Greed, Open the Omenpaths, 4 pool spells); a spell host that both draws and creates tokens is in no one landed family (Big Score's Treasures); the wider CR 207.2 audit of load-time interpreters (the card database's fourth interpreter reads reminder text for draw abilities).
 
@@ -11094,7 +11094,7 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 - **Per-match CPU (n=4):** Boros Energy vs Domain Zoo 1.27 → 1.33 s; Eldrazi Tron vs Jeskai Blink 3.11 → 2.07 s (shorter games).
 - Harness unchanged; spec equivalence unchanged; every ratchet passes. Chunks: 5368 + 2786 passed.
 
-**Measured:** with IV.1, RM and IV.2 by the `iv-post` arm.
+**Measured:** by the `iv-post` arm, recorded under unit IV.2.
 
 **Leads, not built:** the AI never chooses to hold a Treasure (the payment owner's order is its only policy); a conversion ({1}, sacrifice: add any colour) is neither a source nor a colour fixer here; Nest Invader's "create a token. It has '…'" grant is typed as a separate CONTINUOUS and refused, so it makes no Spawn.
 
@@ -11121,6 +11121,100 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 - Digest byte-identical (27 games); anchor 29 passed; every ratchet passes.
 - Chunks: 5368 + 2795 passed. The first run's one failure, the executor purity contract (an executor may not import `re`), is fixed in the commit by moving the auditor into the token owner, and re-run green.
 
-**Measured:** with IV.1, RM and SM by the `iv-post` arm.
+**Measured:** by the `iv-post` arm (pre = `bt-post`, same seeds, n=20 Bo3, all 25 shards), for IV.1, RM, SM and IV.2 together.
+- **Broodscale Bloodchief +5.4 (59.6 → 65.0),** the one deck over 5 pp. Then Jeskai Blink +3.3, Domain Zoo +3.0, Eldrazi Tron +1.8, Boros Energy +1.1 (Ragavan's and Fable's Treasures are mana now); Grixis Reanimator −2.1, 4/5c Control −2.0, Amulet Titan −1.9. Every other deck is within 1.8.
+- **280 cells change.** The largest: Eldrazi Tron vs Instant Reanimator 30 → 75, Boros Energy vs Broodscale Bloodchief 95 → 60, Ruby Storm vs Jeskai Blink 35 → 5.
+- **Replayed cell-exact** from pinned worktrees: Boros vs Broodscale reproduces (19/20 → 12/20; 8 seeds flip to Broodscale, 1 to Boros). In the first flipped seed (s51500), the first divergence is T7: a sacrificed Eldrazi Spawn pays the last of Emrakul, the Promised End's mana (unit SM), and Blade of the Bloodchief counts the Spawn's death. Before, castability ignored the Spawn and Broodscale cast Malevolent Rumble.
+- **Bands:** 7 decks out of band, 49.0 pp total miss (6 and 42.9 before). Domain Zoo (77.3) and Boros Energy (74.8) rise further above their bands; Affinity (49.4) is 0.6 under.
+- **Audit:** findings 533 → 550, the same census rows seen in more games (Ocelot Pride, Vexing Bauble, Pinnacle Emissary). One violation: `701.21a/edict` at Eldrazi Ramp vs Boros Energy s58000, turn 6. Reproduced at the arm's commit: the edict took Boros's one creature and left a transformed Ajani, Nacatl Avenger, a planeswalker; the auditor's restatement read Ajani's front-face types. The engine was right; the auditor is fixed in `469879b` (below).
 
 **Leads, not built:** the AI tags investigate cards `cantrip` from their reminder text; "its controller investigates" (Fateful Absence) and other non-player-set actors stay refused; the other CR 701 actions with one-instruction expansions (to be sized).
+
+## Unit AK.0: a token enters with the status its creator states; one put onto the battlefield attacking is refused (CR 110.5b, 508.4; 2026-10-24)
+
+**Source:** the AK design pass. The payload leaf read a token's entry status ("tapped", "tapped and attacking") and the clause grammar dropped it, keeping only the granted and copy-of entries.
+
+**Rule:** a permanent enters untapped unless an effect says otherwise (CR 110.5b): "create two tapped 2/2 Zombie tokens" puts them onto the battlefield tapped. A creature put onto the battlefield attacking was never declared as an attacker (CR 508.4); the engine does not model that, so such an instruction is refused rather than half-performed.
+
+**The defect:** every such token entered untapped. Army of the Damned's thirteen Zombies could block at once, and Long-Bodied Grey Dog's tapped Treasure was mana the turn it arrived.
+
+**Class:** 81 CREATE_TOKEN specs on 79 pool cards are typed tapped, and 23 on 23 cards tapped and attacking. Registered: Cityscape Leveler (its tapped Powerstone; not yet on the new path).
+
+**Steps:**
+- `TokenSpec` gains `tapped` and `attacking`; `_row_payload` places the entry status on them.
+- The token owner taps a token its creator states tapped, on the printed and the predefined paths: after it enters, before its enter triggers.
+- `_create_token_supported` refuses `attacking`; its predefined-token check reads the kind with the entry status aside.
+- **Auditor `110.5b/token_entry_status`** in the token owner, restated from the instruction's printed text: every token an instruction printed as creating it tapped entered tapped. "For each tapped creature" is a count, not a status; over the pool the restated forms match exactly the 104 typed specs. Tested both ways.
+
+**Tests:** 8, in `tests/test_a_token_enters_with_the_status_its_creator_states.py`; 6 fail at `a87620a`, the 2 that pass there are pins.
+
+**Pins (`adf71b4`):** digest byte-identical (27 games); anchor 29 passed; harness unchanged (1965 pairs, 390 proven, 1575 intended; the three affected intended reasons now name the tapped entry); gate parity 5092/1965/3127; spec equivalence, the census and the closure unchanged; every ratchet passes. Chunks: 5376 + 2795 passed.
+
+**Measured:** with units CK and AK by the `ak-post` arm.
+
+**Leads, not built:** tokens put onto the battlefield attacking (23 specs, plus mobilize, which the legacy attack pass makes as untyped 1/1s).
+
+## Unit CK: a description that names a counter without a kind admits a permanent with a counter of any kind (CR 122.1; 2026-10-24)
+
+**Source:** unit AK's intervening-if test. Delta Bloodflies' "if you control a creature with a counter on it" never held, whatever counters were on the battlefield.
+
+**Rule:** a counter is a marker placed on an object or player (CR 122.1). "A creature with a counter on it" is one with at least one counter of any kind on it; "creatures with no counters on them" have none.
+
+**The defect:** the grammar types the kindless counter as the wildcard kind, and the description owner (`effect_conditions.permanent_described`) asked the permanent how many counters of the kind "*" it had: none, ever. Only an object's own static condition ("as long as ~ has two or more counters on it") read the wildcard. So the condition never held, and "creatures with no counters on them" admitted every creature.
+
+**Class:** 19 pool cards print such a description (Delta Bloodflies, Formation Breaker, Hazardous Conditions, The Ozolith, Rishkar, Peema Renegade, ...). No registered card.
+
+**Steps:**
+- `effect_conditions.counters_on(perm, kind)`: the one count of a permanent's counters of a kind, of every kind for the wildcard. The description owner and the self-static condition both read it.
+- **Auditor `122.1/any_counter_counted`,** restated from the permanent's raw counter fields (+1/+1, -1/-1, loyalty and every other kind): a wildcard count is their sum. Tested both ways (the owner patched back to the kind lookup).
+
+**Tests:** 6, in `tests/test_a_description_naming_a_counter_admits_a_counter_of_any_kind.py`; 4 fail at `adf71b4`, the 2 that pass there are pins.
+
+**Pins (`8f4e067`):** digest byte-identical (27 games); anchor 29 passed; harness, spec equivalence (UNEXPLAINED 18060) and gate parity (5092/1965/3127) unchanged; every ratchet passes. Chunks: 5381 + 2795 passed; `test_extraction_performance` failed under load in chunk A and passed alone.
+
+**Measured:** with unit AK by the `ak-post` arm.
+
+## Unit AK: a permanent's attack ability is performed from its typed host once attackers are declared (CR 508.1m, 508.2, 603.2, 603.2c, 603.3b, 603.4; 2026-10-24)
+
+**Source:** the cn-post replay audit's leads, and the Dimir root cause (#86): Tamiyo, Inquisitive Student (Dimir Midrange x3) never investigated when she attacked.
+
+**Rule:** as attackers are declared, every ability whose trigger event is that declaration triggers (CR 508.1m, 603.2): "whenever ~ attacks" for its source, "whenever equipped / enchanted creature attacks" for the creature its source is attached to, "whenever a creature you control attacks" once for each such attacker, and "whenever you attack" once for the declaration (CR 603.2c). They are put on the stack once every attacker is declared, in APNAP order (CR 603.3b); an intervening "if" is checked as each triggers and again as it resolves (CR 603.4); targets are chosen as each is put on the stack (CR 603.3d).
+
+**The defect:** the grammar typed every attack head and nothing read it. The legacy pass (`TriggerManager.trigger_attack`, `oracle_resolver.resolve_attack_trigger`) read only the attacker's own oracle text with a handful of patterns, in the middle of the declaration. So an Equipment's or an Aura's head and every "whenever you attack" head did nothing, a token was a generic N/N or nothing, a drain only gained life, and burn picked its own aim whatever its requirement admitted.
+
+**Class:** the closed table types 876 of the pool's 1168 attack heads (self 765, "you attack" 60, equipped 31, per attacker 10, enchanted 10). 91 hosts on 90 pool cards are taken whole (self 83, per declaration 5, equipped 3). Registered: Tamiyo, Inquisitive Student. Archon of Cruelty, Primeval Titan, Guide of Souls, Phelia, Territorial Kavu, Oliphaunt, Ulamog and Cityscape Leveler stay on their legacy passes, each with a census row.
+
+**Steps:**
+- **The typed event:** `TriggerHead.attack` (`effect_spec.AttackEvent`: who attacks, per attacker or per declaration), read by `structure._attack_event` from a closed table of whole attack disjuncts. Riders ("attacks or blocks", "attacks alone", "while saddled", filtered subjects) stay untyped.
+- **The family:** `attack_trigger`, with its strict shape (`effect_views.strict_attack_trigger`): damage, life, draw, discard, tokens, counters, mill, surveil, keyword actions, a graveyard-target or library-top exile, and a characteristic change on a target or a permission over what was exiled. No spec may name the attacker or the defending player (the carrier binds neither). The exile, discard and characteristic-change executors are allowed in the family.
+- **The carrier:** `effect_carrier.attack_plan` / `dispatch_attack_triggers`. A face is taken whole or not at all, memoised per parse; every trigger is collected before any resolves; state-based actions are checked between resolutions. `attack_matches` reads the source, its attachment (`PermanentEffects.attached_host`, the one read of an Equipment's bearer tag and an Aura's `attached_to_id`) or its controller.
+- **The seam:** `CombatManager.declare_attackers` calls the carrier after battle cry. `attack_taken` tells `trigger_attack` which attackers' printed attack text the legacy passes skip; their keyword passes (annihilator, mobilize) stay, and so does the after-attackers priority window.
+- **AI:** a beneficial characteristic change a trigger aims goes on its controller's own creature, an attacking one first (`ai/pump_target.own_pump_target`). The cast-time pump rule moved into that owner, so both read one rule. A shrink keeps the engine's aim at an opponent's creature.
+- **Auditors:** the `603.2/attack_trigger_unresolved` census (a matching head, or an attacker's untyped head, that the carrier cannot take); `603.2/attack_trigger_once` (one dispatch per turn's declaration; each head triggered as often as its attackers, restated from the raw attachment fields and controllers). Both tested both ways.
+- **Tools:** the harness's ATTACK case (the source, or the creature it is attached to, declared by its controller; the turn and combat state restored after) and the closure's `attack:dispatch` pairs. The design doc's TriggerHead sketch lists the typed events.
+
+**Tests:** 30, in `tests/test_a_permanents_attack_trigger_is_performed_from_its_typed_host.py`; 25 fail at `8f4e067`, the 5 that pass there are pins.
+
+**Pins (`efe128e`):**
+- **Digest:** 3 of 27 games move, all Dimir Midrange, each replayed to its first divergence and accepted: Tamiyo attacks and investigates. Storm vs Dimir s50500 ends on turn 9, not 11 (Dimir cracks Clues for Psychic Frog and Fatal Push), winner unchanged; Living End vs Dimir s59000 g1 makes its Clue, and g2 follows from g1's RNG. Re-recorded.
+- **Anchor:** 29 passed, unchanged.
+- **Gate parity** 5092/1965/3127 → 5183/2056/3127 (legacy fallback unchanged).
+- **Harness:** the 91 new pairs are 7 proven (1 only as refused at trigger) and 84 intended, each with its reason (the legacy pass made nothing, a generic N/N token, only a drain's life gain, or aimed its own damage). 2056 pairs, 397 proven, 1659 intended.
+- **Other pins:** spec equivalence unchanged (UNEXPLAINED 18060), the closure report gains the `attack:dispatch` block; the census unchanged; the no-op fixture 265 → 274 hosts (73 no-op); every ratchet passes.
+- **Per-match CPU** (n=4, user): Dimir vs Boros 22.21 → 22.17 s; Boros vs Zoo 24.22 → 24.11 s.
+- **Chunks:** 5413 + 2795 passed at `469879b` (with the audit fix below). The first run, at `4c9999a`, failed one test, `test_check_magic_numbers.py::test_baseline_seeded_to_current`: the new module `ai/pump_target.py` needs its seeded 0 entry in the magic-number baseline. That is fixed in the commit (`efe128e`), and both chunks re-ran from the re-pinned worktree.
+
+**Measured:** with units AK.0 and CK by the `ak-post` arm (pre = `iv-post`).
+
+**Leads, not built:**
+- **Attack shapes:** tokens put onto the battlefield attacking (23 specs, plus mobilize); bodies that name the attacker ("it gets +1/+0", 17) or the defending player (19); a counter on ~ (23); tap and untap (34); a block carrier for "attacks or blocks" (42).
+- **"Another target"** (257 hosts; it unlocks Oliphaunt's attack trigger).
+- **AI valuation:** `has_attack_trigger`, `_ability_bonus` and `_project_token_bonus` read flags and text, not `attack_plan`.
+
+## Audit fix: the edict auditor reads the types of the face that is up (CR 712.8; 2026-10-24)
+
+**Source:** the `iv-post` arm's one violation (`701.21a/edict`, Eldrazi Ramp vs Boros Energy s58000, turn 6).
+
+**The defect:** the invariant restated "the permanents an edict matches" from each permanent's printed `template.card_types`, which are the front face's. A transformed permanent has only its back face's characteristics (CR 712.8), so a transformed Ajani, Nacatl Avenger (a planeswalker) counted as a creature the edict missed. The engine (`edict_victims`, the effective types) was right.
+
+**Fix (`469879b`):** the restatement reads the printed types of the face that is up: a transformed permanent's `back_face_types`, still raw template fields, never `effective_card_types`. Test: `test_the_audit_reads_the_types_of_the_face_that_is_up` (a transformed creature-front planeswalker beside the creature a Cruel Edict takes), red at `efe128e`; the invariant's two existing tests still fire and stay silent as before. Observation only.
