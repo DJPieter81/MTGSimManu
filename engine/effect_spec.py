@@ -635,6 +635,19 @@ class StepEvent:
 
 
 @dataclass(**_FROZEN)
+class AttackEvent:
+    """The attack an attack-triggered head names (CR 508.1m, 603.2): who
+    attacks -- 'self' ("~"), 'equipped' or 'enchanted' (the creature this
+    permanent is attached to) or 'yours' (a creature the ability's
+    controller controls) -- and whether the ability triggers once for each
+    such attacker or, `per_combat`, once as they are declared ("whenever
+    you attack", "whenever one or more creatures you control attack", CR
+    603.2c). The body names no attacker the carrier binds."""
+    attacker: str
+    per_combat: bool = False
+
+
+@dataclass(**_FROZEN)
 class TriggerHead:
     event_hints: Tuple[EventHint, ...] = ()      # disjunctive heads keep every hint (A11)
     raw: str = ""
@@ -665,6 +678,10 @@ class TriggerHead:
     # phrases (`structure._step_event`); None for a phrase the table does
     # not read ("enchanted player's upkeep", "your second main phase").
     step_event: Optional[StepEvent] = None
+    # The attack an attack head names, from a closed table of attack
+    # phrases (`structure._attack_event`); None for a rider the table does
+    # not read ("attacks or blocks", "attacks alone", "while saddled").
+    attack: Optional[AttackEvent] = None
 
 
 @dataclass(**_FROZEN)

@@ -514,6 +514,14 @@ class TriggerHead:
     frequency_raw: str = ""
     names_player: bool = False                   # the head's event names a player (participant leaf, at L1)
     names_object: bool = False                   # ... an object besides the source; L5's host antecedent reads these
+    # The typed events, each read from a closed table of whole printed
+    # phrases (`structure._draw_event`, ...); None for a rider the table does
+    # not read, which no carrier resolves as the plain event.
+    draw: Optional[DrawEvent] = None             # who draws, the Nth card (unit D)
+    combat_damage: Optional[CombatDamageEvent] = None  # dealer, recipient (R2)
+    cast: Optional[CastEvent] = None             # caster, spell kind (unit CT)
+    step_event: Optional[StepEvent] = None       # step, whose turn (unit BT)
+    attack: Optional[AttackEvent] = None         # who attacks; per attacker or per declaration (unit AK)
 
 class AbilityEffects:
     kind: HostKind

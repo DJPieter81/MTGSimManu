@@ -362,7 +362,8 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
                         h.trigger.combat_damage is not None
                         and h.trigger.combat_damage.dealer == "self") or (
                         h.trigger.cast is not None)))
-                or h.trigger.step_event is not None):
+                or h.trigger.step_event is not None
+                or h.trigger.attack is not None):
             # an enter trigger: its legacy apply is the enter resolver; a
             # typed draw trigger: a draw (a head naming both -- "When ~
             # enters and whenever an opponent draws" -- has both cases); a
@@ -385,6 +386,11 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
                 # a typed beginning-of-step trigger (unit BT), on either
                 # face: the step it names beginning on the turn it names
                 ok.append(HostCase(template.name, label, "STEP",
+                                   (h.face, h.index)))
+            if h.trigger.attack is not None:
+                # a typed attack trigger (unit AK), on either face: an
+                # attacker it names declared by its controller
+                ok.append(HostCase(template.name, label, "ATTACK",
                                    (h.face, h.index)))
         else:
             skipped.append(HostCase(template.name, label, h.kind.name))
@@ -410,6 +416,44 @@ def _step_head(template, case: HostCase):
                 if h.kind is HostKind.TRIGGERED and h.index == index)
 
 
+def _attack_head(template, case: HostCase):
+    """The typed attack event of an ATTACK case's host, on its face."""
+    from engine.effect_spec import HostKind
+    face, index = case.key
+    return next(h.trigger.attack for h in template.effects.faces[face]
+                if h.kind is HostKind.TRIGGERED and h.index == index)
+
+
+def _own_creature(game, exclude):
+    """The controller's first creature on the battlefield other than
+    `exclude`, one of the pool's put there when it has none."""
+    from engine.cards import CardType
+    c = next((c for c in game.players[CONTROLLER].battlefield
+              if c is not exclude
+              and CardType.CREATURE in c.template.card_types), None)
+    if c is None and _POOL_FOR_CAST and _POOL_FOR_CAST[0].creatures:
+        c = _add(game, _POOL_FOR_CAST[0].creatures[0], CONTROLLER,
+                 "battlefield")
+    return c
+
+
+def _attack_case_attacker(game, template, case: HostCase, card):
+    """The attacker an ATTACK case declares: the source for "~"; the
+    creature the source is attached to for "equipped" / "enchanted
+    creature"; for "a creature you control" / "you attack" the source when
+    it is a creature, else the controller's own creature."""
+    from engine.cards import CardType
+    from engine.permanent_effects import PermanentEffects
+    ev = _attack_head(template, case)
+    if ev.attacker == "self":
+        return card
+    if ev.attacker in ("equipped", "enchanted"):
+        return PermanentEffects.attached_host(game, card)
+    if CardType.CREATURE in template.card_types:
+        return card
+    return _own_creature(game, card)
+
+
 def _draw_head(template, case: HostCase):
     """The trigger head of a DRAW case's host."""
     from engine.effect_spec import HostKind
@@ -433,8 +477,21 @@ def legacy_place(game, template, case: HostCase):
         if case.key[0] == 1:
             card.is_transformed = True
         card.loyalty_counters = template.loyalty or 0
-    if case.kind == "STEP" and case.key[0] == 1:
-        card.is_transformed = True        # a back face's step trigger
+    if case.kind in ("STEP", "ATTACK") and case.key[0] == 1:
+        card.is_transformed = True        # a back face's trigger
+    if case.kind == "ATTACK":
+        from engine.cards import CardType
+        who = _attack_head(template, case).attacker
+        if who in ("equipped", "enchanted"):
+            # an Equipment or Aura attached to a creature of its controller's
+            bearer = _own_creature(game, card)
+            if bearer is not None:
+                if "Equipment" in (template.subtypes or ()):
+                    bearer.instance_tags.add(f"equipped_{card.instance_id}")
+                else:
+                    card.attached_to_id = bearer.instance_id
+        elif who == "yours" and CardType.CREATURE not in template.card_types:
+            _own_creature(game, card)     # the creature that attacks
     return card
 
 
@@ -563,6 +620,30 @@ def legacy_apply(game, template, case: HostCase) -> Any:
         finally:
             game.active_player, game.priority_player, \
                 game.current_phase = turn
+    if case.kind == "ATTACK":
+        # the attacker the head names is declared by the source's controller
+        # in their declare-attackers step: the combat manager runs every
+        # attack pass. Whose turn and step it is, and the attacker's
+        # combat state, are the case's setting, not its effect: restored
+        # once the triggers have resolved
+        from engine.combat_manager import CombatManager
+        from engine.game_state import Phase
+        attacker = _attack_case_attacker(game, template, case, card)
+        if attacker is None:
+            return None
+        turn = (game.active_player, game.priority_player, game.current_phase)
+        combat = (attacker.tapped, attacker.attacking,
+                  attacker.attacked_planeswalker)
+        game.active_player = game.priority_player = CONTROLLER
+        game.current_phase = Phase.DECLARE_ATTACKERS
+        try:
+            return CombatManager().declare_attackers(game, [attacker],
+                                                     CONTROLLER)
+        finally:
+            game.active_player, game.priority_player, \
+                game.current_phase = turn
+            attacker.tapped, attacker.attacking, \
+                attacker.attacked_planeswalker = combat
     from engine.planeswalker_manager import PlaneswalkerManager
     face, slot = case.key
     attr = "loyalty_abilities" if face == 0 else \
@@ -689,7 +770,8 @@ SWITCHED_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
 # (a head naming both an enter and a draw event).
 _HANDLER_CASE_KIND = {"etb:dispatch": "ETB", "draw:dispatch": "DRAW",
                       "combat_damage:dispatch": "COMBAT_DAMAGE",
-                      "cast:dispatch": "CAST", "step:dispatch": "STEP"}
+                      "cast:dispatch": "CAST", "step:dispatch": "STEP",
+                      "attack:dispatch": "ATTACK"}
 
 
 def legacy_only_apply(game, template, case: HostCase) -> Any:

@@ -870,8 +870,9 @@ class GameState:
     def trigger_etb(self, card: CardInstance, controller: int):
         TriggerManager.trigger_etb(self, card, controller)
 
-    def trigger_attack(self, attacker: CardInstance, controller: int):
-        TriggerManager.trigger_attack(self, attacker, controller)
+    def trigger_attack(self, attacker: CardInstance, controller: int,
+                       taken: frozenset = frozenset()):
+        TriggerManager.trigger_attack(self, attacker, controller, taken)
 
     def process_triggers(self):
         TriggerManager.process_triggers(self)

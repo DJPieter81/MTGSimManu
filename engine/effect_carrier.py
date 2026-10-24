@@ -1193,6 +1193,257 @@ def _audit_step_named_turn(game: Any, src: Any, controller: int, host: Any,
                       f"{step} of player {active + 1}'s turn", game=game)
 
 
+# ── The attack carrier (CR 508.1m, 508.2, 603.2, 603.3b, 603.3d, 603.4) ─
+
+# The strict shape the attack carrier takes (`effect_views.
+# strict_attack_trigger`) and the family label its resolutions carry.
+ATTACK_FAMILY = "attack_trigger"
+
+
+def _attack_hinted(h: Any) -> bool:
+    from .effect_spec import EventHint, HostKind
+    return (h.kind is HostKind.TRIGGERED and h.trigger is not None
+            and (EventHint.SELF_ATTACKS in h.trigger.event_hints
+                 or EventHint.ATTACKS_OTHER in h.trigger.event_hints))
+
+
+def attack_matches(game: Any, event: Any, src: Any, controller: int,
+                   attacker: Any) -> bool:
+    """Is `attacker`, as it is declared, an attacker the head typed `event`
+    (`effect_spec.AttackEvent`) on permanent `src` names, `src` controlled
+    by `controller`? "~" is `src` itself; "equipped" / "enchanted creature"
+    the creature `src` is attached to (`PermanentEffects.attached_host`);
+    "a creature you control" / "you attack" a creature its controller
+    attacks with (CR 508.1m, 603.2)."""
+    if event.attacker == "self":
+        return attacker is src
+    if event.attacker in ("equipped", "enchanted"):
+        from .permanent_effects import PermanentEffects
+        return PermanentEffects.attached_host(game, src) is attacker
+    return event.attacker == "yours" and attacker.controller == controller
+
+
+def attack_count(game: Any, event: Any, src: Any, controller: int,
+                 attackers: Sequence[Any]) -> int:
+    """How many times one declaration of `attackers` triggers a head typed
+    `event` on `src`: once for each attacker it names, or -- a head of the
+    declaration ("whenever you attack", "one or more ... attack") -- once
+    when it names any (CR 603.2c)."""
+    n = sum(1 for a in attackers
+            if attack_matches(game, event, src, controller, a))
+    return min(n, 1) if event.per_combat else n
+
+
+def _attack_family(h: Any) -> Optional[str]:
+    """`ATTACK_FAMILY` when the attack-triggered host `h` is in its strict
+    shape and executable; None otherwise."""
+    from .effect_views import STRICT
+    if h.trigger is None or not STRICT[ATTACK_FAMILY](h) \
+            or not er.can_execute(h, ATTACK_FAMILY):
+        return None
+    return ATTACK_FAMILY
+
+
+def attack_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The attack carrier's plan for one face: ``[(host, family)]`` for
+    every host whose head is an attack event, typed or not, when each is
+    takeable (`_attack_family`); None when the face has no such host or any
+    one is not (a card is taken whole or not at all, so no attack trigger of
+    it resolves twice or not at all). One owner, read by the carrier, the
+    closure and the harness."""
+    hosts = [h for h in face_hosts if _attack_hinted(h)]
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = _attack_family(h)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def _attack_faces(template: Any) -> tuple:
+    """Per face of `template`: ``(plan, hosts)`` -- the attack carrier's
+    plan (`attack_plan`) and the face's attack-event hosts. Read once per
+    parse: memoised on the template against its parsed-effects object, in
+    the template's `_effects*` memo family, since the carrier asks it of
+    every permanent at every declaration."""
+    effects = getattr(template, "_effects", None)
+    if effects is None:
+        effects = getattr(template, "effects", None)
+    hit = getattr(template, "_effects_attack_faces", None)
+    if hit is not None and hit[0] is effects:
+        return hit[1]
+    faces = []
+    for face in getattr(effects, "faces", None) or ():
+        hosts = tuple(h for h in face if _attack_hinted(h))
+        faces.append((attack_plan(face) if hosts else None, hosts))
+    out = tuple(faces)
+    try:
+        template._effects_attack_faces = (effects, out)
+    except AttributeError:       # a stand-in that takes no attribute
+        pass
+    return out
+
+
+def _shown_attack_face(card: Any) -> tuple:
+    """``(plan, hosts)`` of the face `card` shows (`_attack_faces`); empty
+    hosts for a card with none."""
+    template = getattr(card, "template", None)
+    if template is None or getattr(template, "is_loyalty_clause", False):
+        return None, ()
+    faces = _attack_faces(template)
+    if not faces:
+        return None, ()
+    face = 1 if getattr(card, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face]
+
+
+def attack_taken(attackers: Sequence[Any]) -> frozenset:
+    """The instance ids of the `attackers` whose attack abilities the attack
+    carrier takes (the face each shows has a plan): the legacy attack
+    resolver performs none of their printed attack text. Empty while
+    dispatch is off."""
+    if not er.dispatch_enabled():
+        return frozenset()
+    return frozenset(a.instance_id for a in attackers
+                     if _shown_attack_face(a)[0] is not None)
+
+
+def dispatch_attack_triggers(game: Any, attackers: Sequence[Any],
+                             active: int) -> set:
+    """The attack carrier (CR 508.1m, 508.2, 603.2, 603.3b, 603.4): once
+    `active` has declared `attackers`, each permanent's attack abilities
+    whose typed head names the declaration trigger -- once for each
+    attacker the head names (`attack_matches`), or once for the declaration
+    (`AttackEvent.per_combat`, CR 603.2c). An intervening "if" is checked as
+    the ability triggers and again as it resolves; targets are chosen as it
+    is put on the stack (`trigger_targets`). All of them trigger before any
+    resolves, and they resolve in stack order: the active player's are put
+    on the stack first, so the non-active player's resolve first (CR
+    603.3b). A card whose attack triggers the carrier cannot take resolves
+    none of them here; the rules audit records it (`603.2/
+    attack_trigger_unresolved`). Returns the instance ids of the permanents
+    whose attack triggers the carrier took."""
+    taken: set = set()
+    if not er.dispatch_enabled() or not attackers:
+        return taken
+    _audit_attack_once(game)
+    event = er.TriggerEvent()
+    triggered = []
+    order = [active] + [p for p in range(len(game.players)) if p != active]
+    for idx in order:
+        for src in list(game.players[idx].battlefield):
+            plan, hosts = _shown_attack_face(src)
+            if not hosts:
+                continue
+            controller = src.controller
+            if plan is None:
+                _audit_unresolved_attack_trigger(game, src, hosts, attackers)
+                continue
+            taken.add(src.instance_id)
+            for h, family in plan:
+                n = attack_count(game, h.trigger.attack, src, controller,
+                                 attackers)
+                _audit_attack_count(game, src, controller, h, n, attackers)
+                for _ in range(n):
+                    if not intervening_if_holds_now(game, src, controller, h,
+                                                    event=event):
+                        continue
+                    chosen = trigger_targets(game, src, controller, h)
+                    if chosen is None:
+                        continue
+                    triggered.append((src, er.handle_of(src), controller, h,
+                                      family, chosen))
+    # CR 603.3b: the active player's triggers are put on the stack first,
+    # so the non-active player's resolve first.
+    triggered.sort(key=lambda t: t[2] == active)
+    for src, handle, controller, h, family, chosen in triggered:
+        er.resolve_ability(game, handle, controller, h, chosen, family=family,
+                           event=event, source_object=src)
+        if game.game_over:
+            break
+        # CR 117.3b, 704.3: state-based actions are checked before the next
+        # one resolves.
+        game.check_state_based_actions()
+        if game.game_over:
+            break
+    return taken
+
+
+def _audit_unresolved_attack_trigger(game: Any, src: Any,
+                                     hosts: Iterable[Any],
+                                     attackers: Sequence[Any]) -> None:
+    """Rules audit, a census once per card: an attack head of `src` names
+    this declaration -- a typed head it matches, or an untyped head of an
+    attacker itself ("attacks or blocks", "attacks alone") -- but no carrier
+    resolves the card's attack triggers: the trigger silently does nothing
+    (CR 603.2)."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    attacking = any(a is src for a in attackers)
+    for h in hosts:
+        ev = h.trigger.attack
+        if (ev is None and attacking) or (ev is not None and attack_count(
+                game, ev, src, src.controller, attackers)):
+            rules_audit.census("603.2/attack_trigger_unresolved", src.name,
+                               detail=h.trigger.raw, game=game)
+            return
+
+
+# The turns whose declaration the attack carrier was asked about, per game,
+# while the rules audit is on (observation only: never read by the engine).
+_ATTACKS_DISPATCHED: "weakref.WeakKeyDictionary" = weakref.WeakKeyDictionary()
+
+
+def _audit_attack_once(game: Any) -> None:
+    """CR 508.1m: attackers are declared once in a combat (the engine runs
+    one combat a turn), so their attack triggers trigger once. Restated
+    from the game's turn number."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    seen = _ATTACKS_DISPATCHED.setdefault(game, set())
+    rules_audit.check("603.2/attack_trigger_once",
+                      game.turn_number not in seen,
+                      f"attackers of turn {game.turn_number} dispatched twice",
+                      game=game)
+    seen.add(game.turn_number)
+
+
+def _audit_attack_count(game: Any, src: Any, controller: int, host: Any,
+                        n: int, attackers: Sequence[Any]) -> None:
+    """CR 603.2, 603.2c, restated from the raw combat fields: an attack head
+    triggers once for each attacker it names -- the source itself, the
+    creature carrying its Equipment tag or its Aura's `attached_to_id`, a
+    creature its controller controls -- and a head of the declaration at
+    most once. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    ev = host.trigger.attack
+    tag = f"equipped_{src.instance_id}"
+
+    def bearer(a):
+        return (tag in getattr(a, "instance_tags", ())
+                or a.instance_id == getattr(src, "attached_to_id", None))
+    named = {
+        "self": lambda a: a.instance_id == src.instance_id,
+        "equipped": bearer,
+        "enchanted": bearer,
+        "yours": lambda a: a.controller == controller,
+    }.get(ev.attacker)
+    due = sum(1 for a in attackers if named is not None and named(a))
+    if ev.per_combat:
+        due = min(due, 1)
+    rules_audit.check("603.2/attack_trigger_once", n == due,
+                      f"{src.name}: {host.trigger.raw!r} triggered {n} "
+                      f"time(s), {due} due", game=game)
+
+
 def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
     """Can a carrier place its legacy target list on `host`'s slots
     without reading text? Yes for a host with no slot (its list is empty)

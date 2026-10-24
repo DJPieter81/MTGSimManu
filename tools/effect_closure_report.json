@@ -561,6 +561,45 @@
    "UNTAP": 42
   }
  },
+ "attack:dispatch": {
+  "deck_hosts": [
+   {
+    "card": "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   }
+  ],
+  "executable": 91,
+  "family": "attack_trigger",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 90,
+   "sideboard": 0
+  },
+  "steps": {
+   "E1": 19,
+   "E2": 5,
+   "E3": 33,
+   "E4": 25,
+   "E5": 9
+  },
+  "strict": 91,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 7,
+   "CREATE_TOKEN": 18,
+   "DAMAGE": 6,
+   "DISCARD,DRAW": 15,
+   "DRAW": 4,
+   "EXILE": 4,
+   "GAIN_LIFE": 4,
+   "LOSE_LIFE": 7,
+   "MILL": 5,
+   "SURVEIL": 6
+  }
+ },
  "attack_observer": {
   "deck_hosts": [
    {

@@ -79,6 +79,10 @@ FAMILY_CAST_TRIGGER = "cast_trigger"
 # dispatch_step_triggers`): what a permanent's "at the beginning of <step>"
 # ability performs.
 FAMILY_STEP_TRIGGER = "step_trigger"
+# The attack carrier's family (unit AK, `effect_carrier.
+# dispatch_attack_triggers`): what a permanent's typed attack ability
+# performs.
+FAMILY_ATTACK_TRIGGER = "attack_trigger"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -102,7 +106,15 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.GAIN_LIFE, Verb.DRAW,
                                             Verb.CREATE_TOKEN,
                                             Verb.PUT_COUNTERS, Verb.EXILE,
-                                            Verb.MILL, Verb.SURVEIL})}
+                                            Verb.MILL, Verb.SURVEIL}),
+            FAMILY_ATTACK_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
+                                              Verb.GAIN_LIFE, Verb.DRAW,
+                                              Verb.DISCARD,
+                                              Verb.CREATE_TOKEN,
+                                              Verb.PUT_COUNTERS, Verb.MILL,
+                                              Verb.SURVEIL,
+                                              Verb.KEYWORD_ACTION,
+                                              Verb.CONTINUOUS, Verb.EXILE})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -1102,12 +1114,12 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
 
 execute_exile.supports = _exile_supported
 # A graveyard target's exile runs in the card-flow family, and beside a
-# token or counter instruction in that family (unit GX); a battlefield
-# target's, in a cast trigger (unit UG); every other exile shape is
-# unrestricted, as before.
+# token or counter instruction in that family (unit GX), and in a step or
+# attack trigger (units BT, AK); a battlefield target's, in a cast trigger
+# (unit UG); every other exile shape is unrestricted, as before.
 execute_exile.allowed_families = (
     lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS,
-                         FAMILY_STEP_TRIGGER})
+                         FAMILY_STEP_TRIGGER, FAMILY_ATTACK_TRIGGER})
     if graveyard_target_exile(s)
     else frozenset({FAMILY_CAST_TRIGGER}) if exile_target_supported(s)
     else None)
@@ -1317,8 +1329,9 @@ def _audit_discarded(game: Any, player: int, card: Any) -> None:
 
 
 execute_discard.supports = discard_supported
-# Proven only where the cast-trigger carrier runs it (unit CT).
-execute_discard.allowed_families = lambda s: frozenset({FAMILY_CAST_TRIGGER})
+# Run where the cast-trigger and the attack carriers run it (units CT, AK).
+execute_discard.allowed_families = lambda s: frozenset({FAMILY_CAST_TRIGGER,
+                                                        FAMILY_ATTACK_TRIGGER})
 
 
 # ── CREATE_TOKEN (family tokens_counters, R2; printed tokens, unit TK) ─
@@ -1638,7 +1651,7 @@ def _characteristic_data(m: Modification) -> bool:
             and bool(d))
 
 
-def _characteristic_supported(s: EffectSpec) -> bool:
+def characteristic_supported(s: EffectSpec) -> bool:
     """A type, keyword or P/T change on the object one target slot names,
     until end of turn (CR 611.2a/c, 613.1d/f, 613.4c): the chosen object
     only, through the layer system's one-shot effects."""
@@ -1703,21 +1716,23 @@ def _characteristic(ctx: Resolution, s: EffectSpec) -> Outcome:
 
 def execute_continuous(ctx: Resolution, s: EffectSpec,
                        actors: Tuple[int, ...]) -> Outcome:
-    if _characteristic_supported(s):
+    if characteristic_supported(s):
         return _characteristic(ctx, s)
     return execute_permit(ctx, s, actors)
 
 
 execute_continuous.supports = (lambda s: _permit_supported(s)
-                               or _characteristic_supported(s))
-# A characteristic change runs in the type-change family (unit AT) and as
-# a rider of a token or counter instruction in the tokens/counters family
-# (unit PO: "Target creature gains your choice of ..."): the pump family's
-# keyword and P/T hosts stay on their legacy appliers until that family's
-# switch is proven host by host.
+                               or characteristic_supported(s))
+# A characteristic change runs in the type-change family (unit AT), as a
+# rider of a token or counter instruction in the tokens/counters family
+# (unit PO: "Target creature gains your choice of ..."), and in an attack
+# trigger (unit AK, whose targets the carrier picks as the trigger is put
+# on the stack): the pump family's keyword and P/T hosts stay on their
+# legacy appliers until that family's switch is proven host by host.
 execute_continuous.allowed_families = (
-    lambda s: frozenset({"type_change", FAMILY_TOKENS_COUNTERS})
-    if _characteristic_supported(s) else None)
+    lambda s: frozenset({"type_change", FAMILY_TOKENS_COUNTERS,
+                         FAMILY_ATTACK_TRIGGER})
+    if characteristic_supported(s) else None)
 
 
 # ── SACRIFICE: an edict (family edict, unit ED) ───────────────────────

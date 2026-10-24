@@ -4635,11 +4635,12 @@ class EVPlayer:
         # creature there is no target and the spell is not cast.
         if (getattr(t, 'has_targeted_pump', False)
                 and 'removal' not in tags):
-            mine = list(game.players[self.player_idx].creatures)
-            if not mine:
+            from ai.pump_target import own_pump_target
+            best = own_pump_target(
+                game, self.player_idx,
+                list(game.players[self.player_idx].creatures), snap)
+            if best is None:
                 return []
-            attacking = [c for c in mine if getattr(c, 'attacking', False)]
-            best = max(attacking or mine, key=lambda c: creature_value(c, snap))
             self._last_target_reason = f"own creature ({best.name})"
             return [best.instance_id]
 

@@ -1,5 +1,5 @@
 {
-  "combined": "acaa234617529dc9c3bd0d0a811348e3edf39b6dc2902d4ac265b803fac31c3b",
+  "combined": "88e6ad0648d0e85a399f3dd59ddf02d3139f4ba056d3819ec773412d8f18ccf5",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -93,9 +93,9 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 823,
-      "sha256": "edd79f5a3996cbc05221a59d7611ec5ece00a413eeee8077f06a03c6306a8eef",
-      "turns": 11,
+      "lines": 905,
+      "sha256": "185a3cd2aa239b3465bda8aae5b2cd2adf29e5a07e941d422631275dfa0a8477",
+      "turns": 9,
       "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
@@ -153,14 +153,14 @@
       "winner": "Eldrazi Tron"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
-      "lines": 767,
-      "sha256": "463c285a38d75d4eb4e42a0e451cf8da0fd994df73d53fd31563c4a17f10fb9b",
+      "lines": 792,
+      "sha256": "d6b57f202650b030b9599590bb4dbfccd306a3b8e46b7abfc9200061d9b078d1",
       "turns": 11,
       "winner": "Living End"
     },
     "bo3|Living End|Dimir Midrange|59000|g2": {
-      "lines": 612,
-      "sha256": "59873ff63d6bd42f31b82060c09770af55034786ec98f6f0f094a92533dfd477",
+      "lines": 611,
+      "sha256": "eca9a5a3a9e7ae349ff4e4dbbefb259fad955cba85bf414407cedf89824e26c5",
       "turns": 8,
       "winner": "Living End"
     }

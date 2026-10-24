@@ -1123,12 +1123,15 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
 
 def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
-                            controller: int):
+                            controller: int, printed: bool = True):
     """Resolve attack triggers by parsing the attacker's oracle text --
     the text of the face it shows: a transformed permanent has only its
     back face's abilities (CR 712.8e).
 
-    Called when a creature is declared as an attacker.
+    Called when a creature is declared as an attacker. With `printed`
+    False -- a card the attack carrier takes (unit AK) -- its printed
+    attack abilities are the carrier's and only its keyword's (mobilize)
+    are performed here.
     """
     oracle = attacker._effective_oracle_text().lower()
     if not oracle:
@@ -1141,7 +1144,7 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
     # branch below locates its own paragraph and runs the detail
     # regexes against it, so a separate ability's damage verb can't
     # feed the attack branch.
-    abilities = split_abilities(oracle)
+    abilities = split_abilities(oracle) if printed else []
 
     # Battle cry is handled by CombatManager._apply_battle_cry after all
     # attackers are declared — skipped here to avoid double-application.

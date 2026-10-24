@@ -1779,7 +1779,10 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         "cast:dispatch",
         # unit BT: a permanent's beginning-of-step trigger the step carrier
         # performs from its typed host (Emperor of Bones, Haliya)
-        "step:dispatch"}
+        "step:dispatch",
+        # unit AK: a permanent's attack trigger the attack carrier performs
+        # from its typed host (Tamiyo, Inquisitive Student's investigate)
+        "attack:dispatch"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

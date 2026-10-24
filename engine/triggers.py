@@ -251,15 +251,21 @@ class TriggerManager:
                 f"{card.name} → draws {trig.count} card(s)")
 
     @staticmethod
-    def trigger_attack(game: "GameState", attacker: CardInstance, controller: int):
-        """Trigger attack abilities."""
+    def trigger_attack(game: "GameState", attacker: CardInstance, controller: int,
+                       taken: frozenset = frozenset()):
+        """Trigger attack abilities. An attacker whose card the attack
+        carrier takes (`taken`, `effect_carrier.attack_taken`, unit AK) has
+        its printed attack abilities performed there once every attacker is
+        declared (CR 508.1m); the passes here that read its printed text
+        skip it, and its keyword abilities (annihilator, mobilize) stay."""
+        printed = attacker.instance_id not in taken
         # Energy on attack: only fire when the "get {E}" clause is actually in
         # the attack sentence. Guide of Souls has "get {E}" in its "whenever
         # another creature enters" clause and a SEPARATE "whenever you attack,
         # you may PAY {E}{E}{E}" clause — the old loose regex matched the
         # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and attacker.template.has_attack_trigger:
+        if printed and '{e}' in oracle and attacker.template.has_attack_trigger:
             for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
                 # Find this sentence's bounds
                 sentence_start = max(
@@ -323,19 +329,20 @@ class TriggerManager:
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
         # Complex attack-trigger land search (oracle: "search...two land cards")
-        if attacker.template.has_attack_trigger and getattr(attacker.template, 'has_dual_land_search', False):
+        if printed and attacker.template.has_attack_trigger and getattr(attacker.template, 'has_dual_land_search', False):
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(game, controller)
 
         # Generic oracle-text-based attack triggers (handles ALL cards)
         # Phlage, Ocelot Pride, battle cry, etc. all resolved from oracle text
         from .oracle_resolver import resolve_attack_trigger
-        resolve_attack_trigger(game, attacker, controller)
+        resolve_attack_trigger(game, attacker, controller, printed=printed)
 
         # Card-specific ATTACK handlers (e.g. Phelia blink-on-attack)
-        EFFECT_REGISTRY.execute(
-            attacker.template.name, EffectTiming.ATTACK, game, attacker, controller
-        )
+        if printed:
+            EFFECT_REGISTRY.execute(
+                attacker.template.name, EffectTiming.ATTACK, game, attacker,
+                controller)
 
         # Generic attack triggers from ability objects
         for ability in attacker.template.abilities:

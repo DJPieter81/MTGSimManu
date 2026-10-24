@@ -484,6 +484,23 @@ class PermanentEffects:
             out.extend([list(u) for u in units])
         return out
 
+    @staticmethod
+    def attached_host(game: "GameState", perm) -> "CardInstance | None":
+        """The permanent `perm` is attached to (CR 301.5, 303.4), or None.
+        An Equipment's bearer carries the `equipped_<id>` tag
+        (`GameState.attach_equipment`, the one owner of attaching it); an
+        Aura records `attached_to_id`. Read-only."""
+        tag = f"equipped_{perm.instance_id}"
+        aura_host = getattr(perm, "attached_to_id", None)
+        for player in game.players:
+            for c in player.battlefield:
+                if tag in getattr(c, "instance_tags", ()):
+                    return c
+        if aura_host is None:
+            return None
+        return next((c for player in game.players for c in player.battlefield
+                     if c.instance_id == aura_host), None)
+
     # ─── TAP-FOR-MANA TRIGGERS (CR 605.1b) ───────────────────────
 
     # Basic land subtypes a trigger may name ("whenever you tap a Forest for

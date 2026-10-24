@@ -99,6 +99,9 @@ FAMILY_CAST_TRIGGER = "cast_trigger"
 # dispatch_step_triggers`): a permanent's typed "at the beginning of
 # <step>" ability.
 FAMILY_STEP_TRIGGER = "step_trigger"
+# The attack carrier's family (unit AK, `effect_carrier.
+# dispatch_attack_triggers`): a permanent's typed attack ability.
+FAMILY_ATTACK_TRIGGER = "attack_trigger"
 FAMILIES = frozenset({FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                       FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                       FAMILY_STACK_MANA, FAMILY_TRIGGER})
@@ -777,6 +780,66 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
                     for s in iter_specs(h.specs)))
 
 
+# The attack carrier (unit AK, `effect_carrier.dispatch_attack_triggers`):
+# the verbs it resolves -- each an executor another family already runs --
+# and the refs no attack event supplies: the carrier binds neither the
+# attacker ("that creature") nor the defending player.
+_ATTACK_TRIGGER_VERBS = frozenset({
+    Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
+    Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
+    Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE})
+_UNBOUND_EVENT_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER,
+                                 RefKind.DEFENDING_PLAYER})
+
+
+def _names_unbound_event(s) -> bool:
+    """Does the spec name an object or player of the event the attack
+    carrier does not bind (`_UNBOUND_EVENT_REFS`)?"""
+    from .effect_spec import _SPEC_OWN_FIELDS, _refs
+    return any(r.kind in _UNBOUND_EVENT_REFS for name in _SPEC_OWN_FIELDS
+               for r in _refs(getattr(s, name)))
+
+
+def strict_attack_trigger(h: AbilityEffects) -> bool:
+    """An attack-triggered host the attack carrier takes (A38): a TRIGGERED
+    host whose head the grammar typed (`TriggerHead.attack`), every spec one
+    of `_ATTACK_TRIGGER_VERBS` with no residue or sub-ability -- its
+    intervening "if" aside, which the carrier checks as the ability
+    triggers and the dispatcher again as it resolves (CR 603.4) -- and
+    every target slot one the carrier picks as the trigger is put on the
+    stack. An exile is of a target card in a graveyard or of the top of
+    its controller's library; a continuous effect is a permission over
+    what that exile moved or a characteristic change until end of turn on
+    a target (the one spec with a duration); no spec names the attacker or
+    the defending player."""
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or h.trigger.attack is None \
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+        return False
+    bare = h
+    if h.trigger.intervening_if is not None:
+        bare = dataclasses.replace(h, trigger=dataclasses.replace(
+            h.trigger, intervening_if=None))
+    if not _strict_host(bare, _ATTACK_TRIGGER_VERBS, durations=True,
+                        conditions=True):
+        return False
+    from .effect_executors import characteristic_supported
+    specs = list(iter_specs(h.specs))
+    exiled = {s.seq for s in specs if _library_top_exile(s)}
+    for s in specs:
+        if _names_unbound_event(s):
+            return False
+        if s.verb is Verb.EXILE and s.seq not in exiled \
+                and not _graveyard_target_exile(s):
+            return False
+        if s.verb is Verb.CONTINUOUS and not (
+                _permission_over(s, exiled) or characteristic_supported(s)):
+            return False
+        if s.duration is not None and s.verb is not Verb.CONTINUOUS:
+            return False
+    return True
+
+
 def strict_edict(h: AbilityEffects) -> bool:
     """Every spec an edict: a SACRIFICE, unconditional, its shape the
     SACRIFICE executor's (a player set or a chosen player sacrifices a
@@ -798,6 +861,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_EDICT: strict_edict,
     FAMILY_CAST_TRIGGER: strict_cast_trigger,
     FAMILY_STEP_TRIGGER: strict_step_trigger,
+    FAMILY_ATTACK_TRIGGER: strict_attack_trigger,
 })
 
 

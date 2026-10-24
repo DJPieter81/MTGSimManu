@@ -3139,6 +3139,678 @@
   },
   {
    "pair": [
+    "attack:dispatch",
+    "Aang, Swift Savior // Aang and La, Ocean's Fury",
+    "TRIGGERED:1:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Adventurer's Airship",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Afterthought Sentry",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "All-Seeing Arbiter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Appendage Amalgam",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Ashnod's Harvester",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Audacious Thief",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Azula, On the Hunt",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Ballista Charger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier deals the damage to the target chosen as the trigger is put on the stack, one its requirement admits (CR 603.3d, 115.1); the legacy attack pass aimed it itself (a creature it kills, else the opponent's face, whatever the requirement)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Battlesong Berserker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Binding Geist // Spectral Binding",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Boosted Sloop",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Boulderborn Dragon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Bruse Tarl, Roving Rancher",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier exiles the top card and creates the token only if it is a land, else permits its cast (CR 608.2c) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made a generic 2/2 creature token whatever was exiled"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Burning-Tree Vandal",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Burrenton Shield-Bearers",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Captain Lannery Storm",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Careening Mine Cart",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Chasm Drake",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Cool but Rude",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Cryptolith Fragment // Aurora of Emrakul",
+    "TRIGGERED:1:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Darling of the Masses",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Decadent Dragon // Expensive Taste",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Dreadwing Scavenger",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Dream Trawler",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Drossclaw",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability of the Equipment as the creature it is attached to attacks (CR 301.5, 508.1m, 603.2); no legacy attack pass read a permanent other than the attacker"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Emet-Selch, Unsundered // Hades, Sorcerer of Eld",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Fear of Surveillance",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Furtive Courier",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Grave Titan",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Il Mheg Pixie",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Infectious Horror",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Infestation Expert // Infested Werewolf",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Infestation Expert // Infested Werewolf",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Laelia, the Blade Reforged",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Lazav, Wearer of Faces",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Library Larcenist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Loch Dragon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Ludevic, Necrogenius // Olag, Ludevic's Hubris",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Mardu Shadowspear",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Mardu Strike Leader",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Mayhem Patrol",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Misty Mountains Raider",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Moonglove Extractor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Moonsilver Spear",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability of the Equipment as the creature it is attached to attacks (CR 301.5, 508.1m, 603.2); no legacy attack pass read a permanent other than the attacker"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Myrel, Shield of Argive",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Mysterio's Phantasm",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Naomi, Pillar of Order",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Nightveil Sprite",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Null Group Biological Assets",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Overlord of the Boilerbilges",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier deals the damage to the target chosen as the trigger is put on the stack, one its requirement admits (CR 603.3d, 115.1); the legacy attack pass aimed it itself (a creature it kills, else the opponent's face, whatever the requirement)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Overlord of the Floodpits",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Overlord of the Mistmoors",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Overwhelmed Archivist // Archive Haunt",
+    "TRIGGERED:1:1"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Postmortem Professor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs every instruction of the ability once attackers are declared (CR 508.1m, 603.2) (each opponent loses the life; its controller gains life, draws or exiles as printed); the legacy attack pass performed only its life gain"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Pulse Tracker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Raging Regisaur",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier deals the damage to the target chosen as the trigger is put on the stack, one its requirement admits (CR 603.3d, 115.1); the legacy attack pass aimed it itself (a creature it kills, else the opponent's face, whatever the requirement)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Razorkin Hordecaller",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Restless Cottage",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Restless Reef",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Restless Vents",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Rocketeer Boostbuggy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Sally Pride, Lioness Leader",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Sanguine Syphoner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs every instruction of the ability once attackers are declared (CR 508.1m, 603.2) (each opponent loses the life; its controller gains life, draws or exiles as printed); the legacy attack pass performed only its life gain"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Screaming Phantom",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Shroudstomper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs every instruction of the ability once attackers are declared (CR 508.1m, 603.2) (each opponent loses the life; its controller gains life, draws or exiles as printed); the legacy attack pass performed only its life gain"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Sidisi, Brood Tyrant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Skysovereign, Consul Flagship",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier deals the damage to the target chosen as the trigger is put on the stack, one its requirement admits (CR 603.3d, 115.1); the legacy attack pass aimed it itself (a creature it kills, else the opponent's face, whatever the requirement)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Skystrike Officer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Slash, Reptile Rampager",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Smoldering Werewolf // Erupting Dreadwolf",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit AK: the attack carrier deals the damage to the target chosen as the trigger is put on the stack, one its requirement admits (CR 603.3d, 115.1); the legacy attack pass aimed it itself (a creature it kills, else the opponent's face, whatever the requirement)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Sphinx of False Conclusions",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Sungold Sentinel",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Svyelun of Sea and Sky",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Titans' Vanguard",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Tovolar's Huntmaster // Tovolar's Packleader",
+    "TRIGGERED:1:0"
+   ],
+   "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Treetop Ambusher",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Ultimecia, Time Sorceress // Ultimecia, Omnipotent",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Underworld Sentinel",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Vaultbreaker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Vedalken Mesmerist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier applies the characteristic change until end of turn to the target chosen as the trigger is put on the stack (CR 603.3d, 611.2a); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Vicious Conquistador",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs the ability once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Wreck Remover",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AK: the attack carrier performs every instruction of the ability once attackers are declared (CR 508.1m, 603.2) (each opponent loses the life; its controller gains life, draws or exiles as printed); the legacy attack pass performed only its life gain"
+  },
+  {
+   "pair": [
     "cast:dispatch",
     "Archmage of Runes",
     "TRIGGERED:0:1"
@@ -13680,6 +14352,41 @@
    "activated_effects:UNCLASSIFIED",
    "Zimone, Quandrix Prodigy",
    "ACTIVATED:0:0"
+  ],
+  [
+   "attack:dispatch",
+   "Delta Bloodflies",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Herald of Faith",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Moonrise Cleric",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Shopkeeper's Bane",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Smaug the Magnificent",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Stormbeacon Blade",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "attack:dispatch",
+   "Teacher's Pest",
+   "TRIGGERED:0:1"
   ],
   [
    "direct_damage",

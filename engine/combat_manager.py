@@ -116,6 +116,11 @@ class CombatManager:
                              f"attack assigned to {getattr(pw, 'name', pw)}",
                              game=game)
 
+        # The attack carrier (unit AK) takes the attack abilities of these
+        # attackers' cards, a card whole or not at all; the legacy attack
+        # passes perform none of their printed attack text.
+        from .effect_carrier import attack_taken, dispatch_attack_triggers
+        taken = attack_taken(attackers)
         for attacker in attackers:
             attacker.attacking = True
             attacker.attacked_planeswalker = attack_targets.get(attacker.instance_id)
@@ -128,7 +133,7 @@ class CombatManager:
                 defender=attack_targets.get(attacker.instance_id)))
 
             # Fire attack triggers via game_state
-            game.trigger_attack(attacker, active_player)
+            game.trigger_attack(attacker, active_player, taken)
 
         # CR 603.2: "whenever a creature attacks you …" observers.
         fired = self._fire_attack_observers(game, attackers)
@@ -149,6 +154,11 @@ class CombatManager:
 
         # Battle cry: Signal Pest and similar
         self._apply_battle_cry(game, attackers)
+
+        # CR 508.1m, 508.2: once every attacker is declared, the abilities
+        # that trigger on the declaration trigger; the carrier performs
+        # those of typed hosts, whichever permanent prints them.
+        dispatch_attack_triggers(game, attackers, active_player)
 
         if attackers:
             game.log.append(

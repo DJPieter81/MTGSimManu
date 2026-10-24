@@ -78,6 +78,9 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
       (`ai.modal.named_player_value`: tokens to the caster's side, a
       sacrifice to the opponent's, a mill to the graveyard it fuels); a
       tie keeps the default.
+    - A characteristic change that only helps its recipient goes on the
+      controller's own creature (`ai.pump_target.own_pump_target`: an
+      attacking one first, else the one worth most), as a cast pump does.
     Any other spec, or an aim the slot does not admit, keeps the engine's
     default pick."""
     from engine.callbacks import default_trigger_targets
@@ -117,6 +120,12 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
             return sorted(opposing, key=threat, reverse=True)[:n]
         need = int(getattr(req, "count_min", 0) or 0)
         return sorted(permanents, key=threat)[:need]
+    if getattr(spec, "verb", None) is Verb.CONTINUOUS and permanents:
+        from ai.pump_target import beneficial_change, own_pump_target
+        if beneficial_change(spec):
+            best = own_pump_target(game, player_idx, permanents)
+            if best is not None:
+                return [best]
     if getattr(spec, "verb", None) is Verb.DAMAGE:
         from ai.damage_targets import choose_damage_recipient
         from engine.effect_conditions import amount_value

@@ -105,10 +105,10 @@ from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
                                        unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
-from engine.effect_spec import (Amount, CastEvent, CombatDamageEvent,
-                                Condition, CostSnapshot, DrawEvent,
-                                EventHint, HostKind, KeywordSpec, Stage,
-                                StepEvent, TriggerHead, Unmodelled,
+from engine.effect_spec import (Amount, AttackEvent, CastEvent,
+                                CombatDamageEvent, Condition, CostSnapshot,
+                                DrawEvent, EventHint, HostKind, KeywordSpec,
+                                Stage, StepEvent, TriggerHead, Unmodelled,
                                 freeze_cost)
 from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
                                   split_activation_riders,
@@ -551,6 +551,40 @@ def _step_event(head: str) -> Optional[StepEvent]:
     return _STEP_EVENTS.get(phrases[0])
 
 
+# An attack head (CR 508.1m, 603.2): the closed table of whole attack
+# disjuncts, to who attacks and whether the ability triggers once per
+# attacker or once as attackers are declared ("one or more", CR 603.2c). A
+# disjunct the table does not read in full -- "attacks or blocks", "attacks
+# alone", "with N or more", "while saddled", a filtered subject -- leaves
+# the head untyped.
+_ATTACK_HINTS = frozenset({EventHint.SELF_ATTACKS, EventHint.ATTACKS_OTHER})
+_ATTACK_EVENTS = {
+    phrase: AttackEvent(attacker=who, per_combat=per)
+    for phrase, who, per in (
+        ("whenever ~ attacks", "self", False),
+        ("when ~ attacks", "self", False),
+        ("whenever ~ attack", "self", False),       # a plural name
+        ("whenever ~ enters or attacks", "self", False),
+        ("whenever equipped creature attacks", "equipped", False),
+        ("whenever enchanted creature attacks", "enchanted", False),
+        ("whenever a creature you control attacks", "yours", False),
+        ("whenever you attack", "yours", True),
+        ("whenever one or more creatures you control attack", "yours",
+         True),
+    )}
+
+
+def _attack_event(head: str) -> Optional[AttackEvent]:
+    """The attack the head's one attack disjunct names, read from the
+    closed table (`_ATTACK_EVENTS`); None when the head has no such
+    disjunct, more than one, or one the table does not read in full."""
+    parts = [p for p in _DISJUNCT_RE.split(head)
+             if _ATTACK_HINTS & set(_part_hints(p)[0])]
+    if len(parts) != 1:
+        return None
+    return _ATTACK_EVENTS.get(parts[0])
+
+
 def _event_hints(head: str) -> Tuple[Tuple[EventHint, ...], str]:
     out, step = [], ""
     for part in _DISJUNCT_RE.split(head):
@@ -859,9 +893,10 @@ def _head(hints, raw: str, **kw) -> TriggerHead:
               if EventHint.COMBAT_DAMAGE_TO_PLAYER in hints else None)
     cast = _cast_event(raw) if EventHint.SPELL_CAST in hints else None
     step = _step_event(raw) if EventHint.BEGINNING_OF in hints else None
+    attack = _attack_event(raw) if _ATTACK_HINTS & set(hints) else None
     return TriggerHead(event_hints=hints, raw=raw, names_player=player,
                        names_object=obj, draw=draw, combat_damage=combat,
-                       cast=cast, step_event=step, **kw)
+                       cast=cast, step_event=step, attack=attack, **kw)
 
 
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:
