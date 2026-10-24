@@ -11308,3 +11308,50 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **The cast manager's delirium hack:** the same loop grants Dragon's Rage Channeler flying when a noncreature spell is cast and never removes it. Its delirium static ability should grant flying exactly while the condition holds (CR 611.3a, unit CN's mechanism).
 - **The prowess keyword** stays on the same loop's temporary modifiers.
 - **Self changes in step triggers** (24 heads) wait for the step body to admit the continuous instruction.
+
+## Unit AN: "another target" on an ability's first target excludes the ability's own source (CR 115.1, 601.2c, 603.3d; 2026-10-24)
+
+**Source:** unit AK's lead ("another target", 257 hosts), and the census rows of Oliphaunt (Domain Zoo's cycler) and Phelia, Exuberant Shepherd.
+
+**Rule:** "Whenever this creature attacks, another target creature you control gets +2/+0 and gains trample until end of turn": the target is a creature other than the one whose ability it is (CR 115.1, 601.2c). With no such creature the ability has no legal target: a trigger is removed from the stack (CR 603.3d), and an activated ability cannot be activated (CR 602.2b). Where the ability names an earlier target ("target creature you control fights another target creature"), "another" sets the later target apart from that one instead.
+
+**The defect:** the target leaf read "another" / "other" and kept it only as the residue `target.exclude_source`, so every such host was refused by every carrier and stayed on its legacy pass, which for most of them did nothing. "Up to two other target creatures" also lost its count: the count reader stopped at "other".
+
+**Class:** 238 abilities of permanents print "another" or "other" before their first target: 162 triggered, 68 activated, 4 loyalty, 4 chapter. Registered: Oliphaunt, Phelia, Exuberant Shepherd, Solitude, Formidable Speaker. The two-target hosts (17 spells, 7 abilities) and the "other than ~" tails (11) keep their residue.
+
+**Steps:**
+- **Typed at load:** `TargetRequirement.excludes_source`. `target_solver._parse_placed` reads "another" / "other" printed between the count and the colour (`_other_before`) and sets it on the first requirement of its line (`_first_on_its_line`). The count is read past "other".
+- **The host:** the linker (`link._place_targets`) clears it on a requirement that is not its host's first and restores the residue there. The target leaf consumes a carried "another" with no residue.
+- **The solver:** `excluded_as_source`, read by the admission predicate behind castability, enumeration and the cast (`_admits_card`), and by the trigger carriers' slot choices (`legal_slot_choices`).
+- **Auditor `115.1/another_target_not_source`** at the carriers' target seam (`trigger_targets`), restated from the chosen objects' instance ids. Tested both ways, with `excluded_as_source` patched off.
+- **Harness:** a carrier that finds no legal choice for a required target (`trigger_targets` returns None) has entered the new path and refused the ability there, as an intervening if that holds on no board already counted. Garruk, Apex Predator's "+1: Destroy another target planeswalker" is proven that way: the boards hold no planeswalker but Garruk.
+
+**Tests:** 12, in `tests/test_another_target_of_a_permanents_ability_excludes_its_source.py`; 10 fail at `f6a3e71`, and the 2 that pass there are pins: no other legal target removes the trigger, and the silent audit. The target leaf's residue pin moves to the two-target form, beside a new pin that the carried "another" is no residue.
+
+**Pins:**
+- **Digest:** 1 of 27 games changes: Living End vs Dimir Midrange s59000 g1, with the same winner, turns and length. Replayed to its first divergence: at T11 Oliphaunt's attack trigger gives a Wistfulness +2/+0 and trample, so Dimir's emergency block moves to that Wistfulness. Accepted and re-recorded. **Anchor:** 29 passed.
+- **Harness:** 15 new pairs:
+  - 1 proven (Aetherjacket);
+  - 1 proven as refused for lack of a legal target: Garruk, Apex Predator's plus line, since the boards hold no planeswalker but Garruk;
+  - 13 intended, each with its reason: 9 attack triggers, 1 enter trigger and 3 graveyard activations the legacy passes performed nothing for.
+  - Totals: 2160 pairs, 419 proven, 1741 intended.
+- **Gate parity:** 5272/2145/3127 → 5287/2160/3127 (legacy fallback unchanged).
+- **Spec equivalence:** UNEXPLAINED 18060, unchanged.
+  - Basri's Acolyte and Felidar Savior, unmasked from UNMODELLED_CLAUSE, join the allowlisted LEGACY_TARGETED_DAMAGE_SCOPE row: the legacy flag reads lifelink's reminder text.
+  - Coverage grows: AGREE → DERIVED_COVERAGE_GROWTH on five removal rows (bounce; destroy artifact, enchantment, nonland permanent; exile permanent) and on etb_targeted_removal_data. The derived reading now types an "another target" removal the legacy field misses.
+  - UNMODELLED_CLAUSE → AGREE on exile_hits_noncreature (1) and has_destroy_or_exile (3). The closure report is locked in.
+- **Census:** residue `target.exclude_source` 258 → 35 (WIDENING 807 → 584; registered-deck cards 4 → 0). The baseline and the census doc are regenerated.
+- **Ratchets:** the loyalty-dispatch ratchet falls 380 → 379 (Garruk, Apex Predator's plus line), lowered with its note. Every other ratchet passes.
+- **Other pins:**
+  - The no-op fixture loses Oliphaunt's attack host (274 hosts, 71 no-op, floor 203).
+  - Sink into Stupor's pinned bounce_target disagreement digest moves with the requirement's new field. The disagreement itself is the same.
+  - The pre-refactor target-parse capture reads `excludes_source` only when it is set, as it reads `mana_value_bound` and `color_bound`. Exactly the 636 pool texts that carry it move, and one walker in the loyalty capture (Jace, the Living Guildpact's −3). Both entries are moved in place.
+  - The leaf edge table declares the linker's read of the target leaf, whose residue code it restores.
+- **Chunks:** 5446 + 2797 passed at `de34303`, from a pinned worktree. The first run, at the unamended commit, failed 3 in chunk A: the undeclared leaf edge and the two capture pins. All three are fixed in the same commit.
+
+**Measured:** by the `an-post` arm (pre = `sg-post`).
+
+**Leads, not built:**
+- **"Target X other than ~"** (11 hosts): the same source exclusion, printed as a tail.
+- **"Another" beside an earlier target** (24 hosts): the later target must differ from the earlier one (CR 115.3 lets one object be chosen for two "target" words unless the text says otherwise).
+- **Solitude's enter trigger** ("that creature's controller gains life equal to its power") and **Phelia's** exile-and-return still wait for their other instructions.
