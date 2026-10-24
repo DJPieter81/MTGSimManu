@@ -11150,7 +11150,7 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 
 **Pins (`adf71b4`):** digest byte-identical (27 games); anchor 29 passed; harness unchanged (1965 pairs, 390 proven, 1575 intended; the three affected intended reasons now name the tapped entry); gate parity 5092/1965/3127; spec equivalence, the census and the closure unchanged; every ratchet passes. Chunks: 5376 + 2795 passed.
 
-**Measured:** with units CK and AK by the `ak-post` arm.
+**Measured:** by the `ak-post` arm, recorded under unit AK. Its registered card, Cityscape Leveler, is not on the new path; every cell that moves is a Dimir Midrange cell.
 
 **Leads, not built:** tokens put onto the battlefield attacking (23 specs, plus mobilize, which the legacy attack pass makes as untyped 1/1s).
 
@@ -11172,7 +11172,7 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 
 **Pins (`8f4e067`):** digest byte-identical (27 games); anchor 29 passed; harness, spec equivalence (UNEXPLAINED 18060) and gate parity (5092/1965/3127) unchanged; every ratchet passes. Chunks: 5381 + 2795 passed; `test_extraction_performance` failed under load in chunk A and passed alone.
 
-**Measured:** with unit AK by the `ak-post` arm.
+**Measured:** by the `ak-post` arm, recorded under unit AK (no registered card prints the class).
 
 ## Unit AK: a permanent's attack ability is performed from its typed host once attackers are declared (CR 508.1m, 508.2, 603.2, 603.2c, 603.3b, 603.4; 2026-10-24)
 
@@ -11204,7 +11204,12 @@ The grammar typed every such head (`EventHint.BEGINNING_OF` and its step phrase)
 - **Per-match CPU** (n=4, user): Dimir vs Boros 22.21 → 22.17 s; Boros vs Zoo 24.22 → 24.11 s.
 - **Chunks:** 5413 + 2795 passed at `469879b` (with the audit fix below). The first run, at `4c9999a`, failed one test, `test_check_magic_numbers.py::test_baseline_seeded_to_current`: the new module `ai/pump_target.py` needs its seeded 0 entry in the magic-number baseline. That is fixed in the commit (`efe128e`), and both chunks re-ran from the re-pinned worktree.
 
-**Measured:** with units AK.0 and CK by the `ak-post` arm (pre = `iv-post`).
+**Measured:** by the `ak-post` arm (pre = `iv-post`, same seeds, n=20 Bo3, all 25 shards, run on `737b3e0`), for AK.0, CK, AK and the edict-audit fix together.
+- **Dimir Midrange +4.3 (45.5 → 49.8)**, the largest move; no deck moves more than 5 pp. Every other deck is within 0.7 (Azorius Blink −0.7, Izzet Prowess −0.7, Amulet Titan −0.6).
+- **39 cells change, every one of them a Dimir Midrange cell.** The largest: Azorius Blink vs Dimir 70 → 40, Azorius Control vs Dimir 40 → 10, Amulet Titan vs Dimir 65 → 40, Dimir vs Izzet Prowess 40 → 60.
+- **Replayed cell-exact** from pinned worktrees (`19cf0d1`, `737b3e0`): Azorius Blink vs Dimir reproduces (14/20 → 8/20; 6 seeds flip to Dimir, none back). In the first flipped seed (s52000), the first divergence is T2: Tamiyo attacks and investigates, and does so every turn after. On T7 Dimir cracks a Clue for its third card of the turn, and Tamiyo transforms (unit TF). Accepted as rules-correct.
+- **Bands:** 8 decks out of band, 50.4 pp total miss (7 and 49.0 before). Amulet Titan (44.6) is now 0.4 under its band; the rest are as before.
+- **Audit:** 0 violations (1 before, the auditor false positive fixed in `469879b`). Census rows 550 → 783, all from AK's new `603.2/attack_trigger_unresolved` row for the seven registered cards that stay on their legacy passes (Phelia, Archon of Cruelty, Guide of Souls, Oliphaunt, Primeval Titan, Ulamog, Territorial Kavu).
 
 **Leads, not built:**
 - **Attack shapes:** tokens put onto the battlefield attacking (23 specs, plus mobilize); bodies that name the attacker ("it gets +1/+0", 17) or the defending player (19); a counter on ~ (23); tap and untap (34); a block carrier for "attacks or blocks" (42).
