@@ -11349,9 +11349,103 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
   - The leaf edge table declares the linker's read of the target leaf, whose residue code it restores.
 - **Chunks:** 5446 + 2797 passed at `de34303`, from a pinned worktree. The first run, at the unamended commit, failed 3 in chunk A: the undeclared leaf edge and the two capture pins. All three are fixed in the same commit.
 
-**Measured:** by the `an-post` arm (pre = `sg-post`).
+**Measured:** by the `an-post` arm (pre = `sg-post`, same seeds, n=20 Bo3, all 25 shards, run on `13e16bb`).
+- **No deck moves more than 0.2 pp.** 21 cells change by one match each, 19 of them Living End cells: Living End plays Oliphaunt (x3), whose attack trigger now gives another creature +2/+0 and trample, as in the digest game.
+- **Bands:** 8 decks out of band, 50.6 pp total miss (50.4 before).
+- **Audit:** 0 violations. Census findings 661 → 645: Oliphaunt's row is gone (the attack carrier takes it). 11 registered rows remain:
+  - attack: Archon of Cruelty, Guide of Souls, Phelia, Primeval Titan, Territorial Kavu, Ulamog;
+  - cast: Pinnacle Emissary (unit BR takes it), Vengevine;
+  - step: Abhorrent Oculus, Ocelot Pride, Static Prison.
 
 **Leads, not built:**
 - **"Target X other than ~"** (11 hosts): the same source exclusion, printed as a tail.
 - **"Another" beside an earlier target** (24 hosts): the later target must differ from the earlier one (CR 115.3 lets one object be chosen for two "target" words unless the text says otherwise).
 - **Solitude's enter trigger** ("that creature's controller gains life equal to its power") and **Phelia's** exile-and-return still wait for their other instructions.
+
+## Unit SS: summoning sickness stops an attack, never a block (CR 302.6, 509.1a; 2026-10-24)
+
+**Source:** sizing unit BR. While checking how the attack planner reads blockers, a probe showed the AI attacking a Grizzly Bears into an untapped Serra Angel. The Angel had entered on its controller's last turn; with the same Angel unsick, the AI held back.
+
+**Rule:** a creature its controller has not controlled continuously since their most recent turn began can't attack and can't use {T} abilities (CR 302.6); haste lifts that (CR 702.10b). Nothing in the rule touches blocking (CR 509.1a): a creature cast on its controller's turn blocks on the next player's turn, and it attacks on its controller's next turn.
+
+**The defect:** the attack planner's board (`extract_virtual_board`) marked a creature unavailable when it was tapped or summoning sick, on both sides.
+- The planning player's creatures are its attackers: a haste creature that had just entered was left out of every attack.
+- The opponent's creatures are its blockers: a creature the opponent cast on their last turn was no blocker at all, so the AI attacked into it.
+- The fix for unit LE-T1 (2026-04-24) added the summoning-sickness read for the attacker's side; it applied it to the blockers too.
+- The blocker's next-turn reach (`_two_turn_lethal`) also left out the attacker's creatures that entered this turn, though they attack on their controller's next turn; `_racing_to_win` already counted them.
+
+**Class:** every creature, in every game where one entered since its controller's turn began. AI only; no card text.
+
+**Steps:**
+- **The planner's board:** each creature is unavailable exactly when the engine says it cannot take the role the planner gives it: `card.can_attack` for the planning player's creatures, `card.can_block` for the opponent's.
+- **The next-turn reach:** counts every creature the attacker controls that is not attacking, as `_racing_to_win`'s does.
+
+**Tests:** 6, in `tests/test_summoning_sickness_stops_an_attack_never_a_block.py`; 4 fail at `13e16bb`. The 2 that pass there pin a sick creature without haste and a tapped one. The decision test asserts the rule: the attack into an untapped blocker is the one made had the blocker been there since its controller's turn began.
+
+**Pins:**
+- **Digest:** 5 of 27 games change, with no winner change. Each was replayed to its first divergence, and each is an attack the planner no longer makes into an untapped creature that entered on its controller's last turn:
+  - Marauding Mako into Phelia;
+  - a Construct into Sire of Seven Deaths;
+  - Phelia into Elesh Norn;
+  - three Boros Energy creatures into Quantum Riddler;
+  - two Goblin tokens into Devourer of Destiny.
+  Accepted and re-recorded.
+- **Anchor:** 2 entries change, each replayed to its first divergence.
+  - Azorius Control (WST v2) vs Boros Energy s50000: an Elemental token no longer attacks into Wan Shi Tong (turns 11 → 12).
+  - Izzet Prowess vs Dimir Midrange s50500: a hasty Monastery Swiftspear attacks the turn it is cast. The game later goes the other way and the winner flips to Dimir Midrange.
+  Both are rules-correct and refreshed.
+- **Harness, gate parity, spec equivalence, census:** unchanged (no text is read).
+- **Chunks:** 5446 + 2803 passed at `332c45e`, from a pinned worktree.
+
+**Measured:** with unit BR, by the `br-post` arm (pre = `an-post`).
+
+**Leads, not built:**
+- **An attack trigger that removes a blocker:** Phelia's attack trigger exiles the would-be blocker, which the planner does not model. In the Jeskai Blink digest game, Phelia no longer attacks into Elesh Norn though the trigger would have exiled it.
+
+## Unit BR: a creature's own printed restriction on blocking applies while it is on the battlefield (CR 509.1a-b, 508.1c, 611.3a; 2026-10-24)
+
+**Source:** the `sg-post` census row `603.2/cast_trigger_unresolved` for Pinnacle Emissary (Affinity x4, Pinnacle Affinity x4). Its CREATE_TOKEN was strict but not executable: the token owner refused the Drone's granted "This token can block only creatures with flying".
+
+**Rule:** "This creature can't block" makes it no legal blocker; "this creature can't attack or block" makes it neither attacker nor blocker; "this creature can block only creatures with flying" makes it a legal blocker of a creature with flying and of no other creature. CR 509.1b: a restriction is an effect that says a creature can't block, or can't block unless some condition is met. A static ability applies while its permanent is on the battlefield (CR 611.3a), and a token has the abilities its creator gives it (CR 111.3).
+
+**The defect:**
+- The grammar typed "~ can't block" as a CONTINUOUS PROHIBIT on the object itself, but nothing read it.
+- "can block only creatures with flying" had no lemma.
+- So every such creature blocked anything (Bloodghast blocked).
+- The token owner refused a token granted either ability. Pinnacle Emissary's trigger stayed on its legacy branch, whose Drone had no text; the Rat and Satyr makers either made tokens without text or made nothing.
+- The AI's block filters copied only the flying rule.
+
+**Class:** the unconditional restrictions a creature prints on itself, by the reader: "~ can't block" 70 pool cards, "~ can't attack or block" 1, "~ can block only creatures with flying" 20. 30 cards grant one of them to a token they create. Registered: Pinnacle Emissary.
+
+**Steps:**
+- **Typed at load:** "<creature> can block only creatures with <keywords>" is a PROHIBIT block with `only_with` (a lexicon lemma, read by the payload leaf).
+- **The reader:** `continuous_effects.printed_object_restrictions` reads a permanent's unconditional restrictions on itself, on the face that is up, memoised per parsed-effects object. It is the one reader. It refuses a subject other than the permanent itself, a condition, another duration, residue and other qualifiers.
+- **The rule:**
+  - `rules_query.object_prohibited` reads the reader for "can't".
+  - `block_restricted`, `block_only_with` and `admits_blocked` are the pair rule. `CombatManager._can_block` reads `block_restricted`.
+  - The token owner builds a token granted such a restriction (`object_restriction_host`). Its text is read like any permanent's.
+- **The AI:**
+  - `decide_blockers` and `decide_attackers`' free-attacker check read `CombatManager._can_block`, replacing two copies of the flying rule.
+  - The planner's virtual creature carries the blocker's keyword groups and tests them with `admits_blocked`.
+  - `_has_evasion` asks whether any blocker may block.
+- **Auditor:** `509.1a/blocker_legal`'s restatement (`_own_restriction_forbids`) reads the blocker's own restrictions from its typed specs directly. Tested both ways: with the reader patched to nothing, a Cloud Elemental's and a Bloodghast's blocks are recorded.
+
+**Tests:** 17, in `tests/test_a_creatures_own_block_restriction_limits_what_it_blocks.py`; 16 fail at `332c45e`, and the silent audit passes there.
+
+**Pins:**
+- **Digest:** byte-identical (27). **Anchor:** 29.
+- **Harness:** 2171 pairs.
+  - Pinnacle Emissary's cast pair is proven identical: the Drone's text is the change.
+  - 10 new pairs are intended, each with its reason. Rat Out's and Satyr's Cunning's tokens get their names and text. Five enter triggers and one step trigger created nothing before.
+- **Gate parity:** 5296/2171/3125. Legacy fallback falls 3127 → 3125, and the parser ratchet (f) is lowered with it.
+- **Spec equivalence:** UNEXPLAINED 18060, unchanged. Typing its back face unmasks Devoted Grafkeeper's legacy reads of its disturb reminder and "from your graveyard" head; they join the two allowlisted rows that explain those reads.
+- **Census:** NO_LEMMA 1186 → 1164. The baseline, the census doc and the closure report are locked in (cast_trigger 92 → 93 executable hosts).
+- **Other pins:** the census pin of an untaken cast trigger moves to Whispering Wizard ("triggers only once each turn").
+- **Chunks:** 5463 + 2803 passed at `0a25a83`, from a pinned worktree.
+
+**Measured:** with unit SS, by the `br-post` arm (pre = `an-post`).
+
+**Leads, not built:**
+- **Conditional restrictions** ("can't block unless you control another Wolf", "can't attack unless defending player controls a Swamp"): 55 self statics print one. They need an "unless" condition read for the object.
+- **An Aura's or Equipment's restriction on the creature it is attached to** (Pacifism class, 36 typed): an Aura is attached only to its controller's own permanents today (`attach_aura`), so "Enchant creature" Auras cast on an opponent's creature come first (CR 303.4a).
+- **A group restriction as a static** (Dense Canopy, "black creatures can't block").
