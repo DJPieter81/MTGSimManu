@@ -147,10 +147,6 @@
    "TRIGGERED:0:2"
   ],
   [
-   "Oliphaunt",
-   "TRIGGERED:0:1"
-  ],
-  [
    "Ox of Agonas",
    "TRIGGERED:0:0"
   ],
@@ -291,5 +287,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 202
+ "state_changing_floor": 203
 }

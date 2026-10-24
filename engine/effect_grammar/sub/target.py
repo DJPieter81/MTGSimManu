@@ -65,7 +65,8 @@ from engine.effect_grammar.sub import quantity as _quantity
 from engine.effect_spec import Amount, AmountKind, Stage
 from engine.target_solver import ANY_NUMBER, TargetRequirement, parse_spans
 
-__all__ = ["LEAF", "DETAIL_CODES", "POSSESSIVE", "TargetSlot",
+__all__ = ["LEAF", "DETAIL_CODES", "POSSESSIVE", "EXCLUDE_SOURCE",
+           "TargetSlot",
            "target_words", "parse_target", "clear_caches"]
 
 LEAF = "target"
@@ -80,7 +81,7 @@ POSSESSIVE = "possessive"
 # pinned by the tests).
 _SCOPE_OPPONENT = "target.scope:opponent"
 _SCOPE_NOT_YOU = "target.scope:not_you"
-_EXCLUDE_SOURCE = "target.exclude_source"
+_EXCLUDE_SOURCE = EXCLUDE_SOURCE = "target.exclude_source"
 _COLORED = "target.colored"
 _NONTOKEN = "target.nontoken"
 _HISTORIC = "target.historic"
@@ -541,7 +542,10 @@ def _slot_rel(clause: str, a: int, b: int, lemma: str):
                         in_prefix = True
                         if row == "count":
                             count = _printed_count(m)
-                        elif row == "other":
+                        elif row == "other" and not req.excludes_source:
+                            # "another" the requirement does not carry
+                            # (beside an earlier target, it sets this one
+                            # apart from that target)
                             residue.add(_EXCLUDE_SOURCE)
                         break
             if hit is None or hit.end() == p:

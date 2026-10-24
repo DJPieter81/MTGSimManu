@@ -2,7 +2,7 @@
 "comment": "loyalty_abilities + back_face_loyalty_abilities per template with a printed loyalty line: sha256(name)[:12] -> sha256(repr(canonical slots))[:16]. Captured before the slot rule moved to loyalty_slot_for (design doc 2026-09-29, A12).",
 "walkers": {
 "0228190eb20f": "59d4c4374480b3e3",
-"035aedc1b856": "b1444ba0994f204f",
+"035aedc1b856": "3262d9df38a0af05",
 "03ba7c702e33": "4a379d4c80149cd8",
 "05195bddd092": "1ddcc342b10ab2c9",
 "05f3f805bb53": "d028467f5abc84bf",

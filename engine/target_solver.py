@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import FrozenSet, List, Literal, Optional, Tuple, TYPE_CHECKING
+from typing import Any, FrozenSet, List, Literal, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .cards import CardInstance
@@ -108,6 +108,14 @@ class TargetRequirement:
     # "monocolored" ("monocolored", ""), "multicolored" ("multicolored",
     # ""). Read at the colours the object shows now (CR 105.2b).
     color_bound: Optional[Tuple[str, str]] = None
+    # A printed "another" / "other" before the first target of its ability
+    # ("another target creature you control", "up to two other target
+    # creatures", CR 115.1): the ability's source is no legal choice
+    # (`excluded_as_source`). Set by `_parse_placed` on the first
+    # requirement of its line; the linker clears it on a requirement that is
+    # not its host's first, where "another" sets the target apart from the
+    # earlier one instead (unmodelled, kept as residue).
+    excludes_source: bool = False
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -404,6 +412,20 @@ def _singularize_targets_located(oracle_text: str):
     return norm, offsets
 
 
+_OTHER_BEFORE_RE = re.compile(r"(?<![\w'])(?:another|other)\s+$")
+
+
+def _other_before(norm: str, idx: int):
+    """Whether "another" / "other" is printed just before the target phrase
+    at `idx` (after its count words, before its colour), and where it
+    starts; (False, idx) when it is not."""
+    seg = norm[max(0, idx - 9):idx]
+    m = _OTHER_BEFORE_RE.search(seg)
+    if m is None:
+        return False, idx
+    return True, idx - (len(seg) - m.start())
+
+
 def _count_before(text: str, idx: int):
     """(count_min, count_max) from the words just before a target phrase:
     "up to N" → (0, N), "one or two" → (1, 2), "any number of" → (0, ∞),
@@ -421,6 +443,22 @@ def _count_before(text: str, idx: int):
     w = m.group(6)
     n = _NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
     return None if n is None or n == 1 else (n, n)
+
+
+def _first_on_its_line(norm: str, idx: int, starts) -> bool:
+    """Is the target phrase at `idx` the first one printed on its line (its
+    ability)? A later "another" target sets itself apart from the earlier
+    target, not from the source."""
+    line = norm.rfind("\n", 0, idx) + 1
+    return not any(line <= s < idx for s in starts if s >= 0)
+
+
+def excluded_as_source(req: TargetRequirement, card: Any, source: Any) -> bool:
+    """Is `card` the ability's own source, which a requirement printed with
+    "another" does not admit (CR 115.1, 601.2c)?"""
+    return (req.excludes_source and source is not None
+            and getattr(card, "instance_id", None)
+            == getattr(source, "instance_id", None))
 
 
 def _parse_placed(oracle_text: str):
@@ -451,6 +489,10 @@ def _parse_placed(oracle_text: str):
     for i, r in enumerate(reqs):
         idx = where[i]
         color, before = _color_before(norm, idx) if idx >= 0 else (None, idx)
+        other, before = _other_before(norm, before) if idx >= 0 \
+            else (False, before)
+        if other and _first_on_its_line(norm, idx, where.values()):
+            r = _dc.replace(r, excludes_source=True)
         counts = _count_before(norm, before) if idx >= 0 else None
         if counts is not None:
             r = _dc.replace(r, count_min=counts[0], count_max=counts[1],
@@ -1241,6 +1283,8 @@ def _admits_card(card: "CardInstance", req: TargetRequirement,
     (`enumerate_legal_targets`) and the cast (`target_admitted`) read."""
     if exclude is not None and card is exclude:
         return False
+    if excluded_as_source(req, card, source):
+        return False
     if req.zone == "battlefield":
         if not _matches_current_type(card, req.types):
             return False
@@ -1350,6 +1394,8 @@ def legal_slot_choices(game: "GameState", controller: int,
     for p in game.players:
         for card in p.battlefield:
             if not slot_admits_permanent(req, card, controller):
+                continue
+            if excluded_as_source(req, card, source):
                 continue
             if not can_be_targeted(card, source, controller):
                 continue

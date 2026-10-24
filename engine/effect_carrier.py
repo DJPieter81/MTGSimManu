@@ -678,7 +678,24 @@ def trigger_targets(game: Any, source: Any, controller: int,
                 controller, req, rest_p, rest_c)[:need - len(picked)]
         chosen.append(tuple(v if isinstance(v, int) else er.handle_of(v)
                             for v in picked))
+        _audit_another_target(game, source, req, picked)
     return tuple(chosen)
+
+
+def _audit_another_target(game: Any, source: Any, req: Any,
+                          picked: Sequence[Any]) -> None:
+    """CR 115.1, 601.2c, restated from the chosen objects' instance ids: a
+    target printed as "another" on its ability's first requirement is never
+    the ability's own source. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled() or not getattr(req, "excludes_source", False):
+        return
+    sid = getattr(source, "instance_id", None)
+    rules_audit.check("115.1/another_target_not_source",
+                      all(getattr(v, "instance_id", None) != sid
+                          for v in picked if not isinstance(v, int)),
+                      f"{getattr(source, 'name', '?')} targeted itself as "
+                      f"{req.raw_phrase!r}", game=game)
 
 
 def names_slot(s: Any, k: int) -> bool:

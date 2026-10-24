@@ -267,9 +267,11 @@ LEAF_EDGES = {
     # pre-gate are the participant leaf's, and the card-type nouns a
     # reference may name are the filter leaf's. A CR 701 action it freezes
     # as its expansion, and that expansion's text, are the keywords leaf's
-    # (one table).
+    # (one table). The source-exclusion residue it restores where "another"
+    # sets a host's later target apart from its first is the target leaf's
+    # code (one residue spelling).
     "link": frozenset({"normalize", "patterns", "structure", "lexicon",
-                       "participant", "filter", "keywords"}),
+                       "participant", "filter", "keywords", "target"}),
 }
 
 

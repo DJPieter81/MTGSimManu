@@ -969,9 +969,10 @@ def test_every_triggered_hosts_printed_body_names_that_host_or_an_ambiguity(card
 KNOWN_DECK_DISAGREEMENTS = {
     # legacy reads a permanent's activated burn line as a burn spell
     "direct_damage_data": {"Goblin Bombardment": "caad058ce7a2"},
-    # target.zone_union: legacy keeps one union member (design section 10)
+    # target.zone_union: legacy keeps one union member (design section 10);
+    # the digest moved when the requirement gained `excludes_source` (AN)
     "bounce_target": {
-        "Sink into Stupor // Soporific Springs": "d5da48714051"},
+        "Sink into Stupor // Soporific Springs": "f00d5be5512a"},
     # legacy refuses any text naming "this creature"
     "mass_graveyard_return": {"Tyvar, Jubilant Brawler": "5d5be987d596"},
     # the grammar refuses "target cards from graveyards" (no requirement)

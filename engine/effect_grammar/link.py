@@ -87,6 +87,7 @@ from engine.effect_grammar import patterns as _patterns
 from engine.effect_grammar import structure as _structure
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_grammar.sub import participant as _participant
+from engine.effect_grammar.sub.target import EXCLUDE_SOURCE as _EXCLUDE_SOURCE
 from engine.effect_grammar.sub import CACHE_SIZE, unmodelled
 from engine.effect_model import Modification, ModKind, Selector, SelectorKind
 from engine.effect_spec import replace as _copy_with
@@ -773,6 +774,14 @@ def _place_targets(node: _Node) -> List[_Node]:
     principals = []
     for role, req, _sp in cm.targets:
         k = host.add_target(req)
+        if req.excludes_source and k:
+            # "another" beside an earlier target of the host sets this one
+            # apart from that target, not from the source (CR 115.1): no
+            # requirement carries that, so it stays residue.
+            host.targets[k] = _copy_with(host.targets[k],
+                                         excludes_source=False)
+            node.fields["residue"] = tuple(node.get("residue")) + (
+                _EXCLUDE_SOURCE,)
         if role == "principal":
             principals.append(k)
         else:

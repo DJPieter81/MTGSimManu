@@ -4,7 +4,6 @@
   "deck_removal_ready_share": 0.2016,
   "deck_removal_typed_share": 0.8798,
   "deck_residue_by_code": {
-   "target.exclude_source": 4,
    "target.keyword:flying": 1,
    "target.scope:not_you": 2,
    "target.scope:opponent": 1,
@@ -38,7 +37,7 @@
   "residue_by_code": {
    "target.conjunctive_types": 23,
    "target.dependent_controller": 41,
-   "target.exclude_source": 258,
+   "target.exclude_source": 35,
    "target.keyword:awaken": 1,
    "target.keyword:cycling": 1,
    "target.keyword:defender": 5,
@@ -86,16 +85,16 @@
    "target.union:spacecraft": 2,
    "target.union:triggered": 6,
    "target.union:vehicle": 28,
-   "target.unparsed": 294
+   "target.unparsed": 295
   },
   "residue_by_polarity": {
    "NARROWING": 296,
-   "UNPARSED": 294,
-   "WIDENING": 807
+   "UNPARSED": 295,
+   "WIDENING": 584
   },
-  "typed_share": 0.7395,
+  "typed_share": 0.7397,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.799,
+   "ACTIVATED": 0.7991,
    "ALTERNATIVE_COST": 0.0,
    "CHAPTER": 0.7525,
    "KEYWORD": 0.0,
@@ -105,7 +104,7 @@
    "REPLACEMENT": 0.0,
    "SPELL": 0.7472,
    "STATIC": 0.6272,
-   "TRIGGERED": 0.7975,
+   "TRIGGERED": 0.7981,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
@@ -122,17 +121,17 @@
    "REFERENCE": 1367,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
-   "TARGET": 1155,
-   "TARGET_COUNT": 83,
+   "TARGET": 1156,
+   "TARGET_COUNT": 72,
    "TRIGGER_EMBEDDED": 165
   }
  },
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.799,
+    "share": 0.7991,
     "specs": 6670,
-    "typed": 5329
+    "typed": 5330
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -180,9 +179,9 @@
     "typed": 3373
    },
    "TRIGGERED": {
-    "share": 0.7975,
+    "share": 0.7981,
     "specs": 15290,
-    "typed": 12194
+    "typed": 12203
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -1191,7 +1190,7 @@
     1
    ]
   ],
-  "residue": 1397,
+  "residue": 1175,
   "specs": 44381,
   "sub_abilities": [
    [
@@ -1231,9 +1230,9 @@
     2
    ]
   ],
-  "typed": 32819,
-  "unmodelled": 11562,
-  "unmodelled_row_count": 1956,
+  "typed": 32829,
+  "unmodelled": 11552,
+  "unmodelled_row_count": 1949,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1597,5 +1596,5 @@
    ]
   ]
  },
- "session": "2026-10-23"
+ "session": "2026-10-24"
 }

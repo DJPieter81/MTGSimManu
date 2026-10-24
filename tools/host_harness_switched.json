@@ -2308,6 +2308,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Bonebind Orator",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit AN: the legacy activation performed nothing (the line was unclassified: \"another\" was residue); the dispatcher returns another target creature card from its controller's graveyard to hand, never the card exiled to pay the cost (CR 115.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Buried Ruin",
     "ACTIVATED:0:1"
    ],
@@ -2456,6 +2464,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Eerie Soultender",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit AN: the legacy activation performed nothing (the line was unclassified: \"another\" was residue); the dispatcher returns another target creature card from its controller's graveyard to hand, never the card exiled to pay the cost (CR 115.1)"
   },
   {
    "pair": [
@@ -2980,6 +2996,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Theoretical Necromancer",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit AN: the legacy activation performed nothing (the line was unclassified: \"another\" was residue); the dispatcher returns another target creature card from its controller's graveyard to hand, never the card exiled to pay the cost (CR 115.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Throne of the Grim Captain // The Grim Captain",
     "ACTIVATED:0:0"
    ],
@@ -3404,6 +3428,22 @@
   {
    "pair": [
     "attack:dispatch",
+    "Flesh Burrower",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Foot Elite",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Fortress Cyclops",
     "TRIGGERED:0:0"
    ],
@@ -3432,6 +3472,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Hardened Escort",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
   },
   {
    "pair": [
@@ -3628,6 +3676,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Oliphaunt",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Overlord of the Boilerbilges",
     "TRIGGERED:0:1"
    ],
@@ -3756,6 +3812,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Shredder, Unrelenting",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Shroudstomper",
     "TRIGGERED:0:1"
    ],
@@ -3812,6 +3876,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Starry-Eyed Skyrider",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Steadfast Cathar",
     "TRIGGERED:0:0"
    ],
@@ -3856,6 +3928,14 @@
     "TRIGGERED:1:0"
    ],
    "reason": "unit AK: the attack carrier creates the token its creator prints (CR 111.3, 111.10) once attackers are declared (CR 508.1m, 603.2); the legacy attack pass made none, or a generic N/N creature token from its 'create a N/N' pattern (no colour, subtype or keyword)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Trained Condor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
   },
   {
    "pair": [
@@ -3908,10 +3988,26 @@
   {
    "pair": [
     "attack:dispatch",
+    "Wingshield Agent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Wreck Remover",
     "TRIGGERED:0:0"
    ],
    "reason": "unit AK: the attack carrier performs every instruction of the ability once attackers are declared (CR 508.1m, 603.2) (each opponent loses the life; its controller gains life, draws or exiles as printed); the legacy attack pass performed only its life gain"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Yotian Frontliner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
   },
   {
    "pair": [
@@ -9588,6 +9684,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Deadwood Treefolk",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit AN: the legacy enter pass performed nothing for this host; the enter carrier returns another target creature card from its controller's graveyard to hand, never the source (CR 115.1)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Deep Forest Hermit",
     "TRIGGERED:0:1"
    ],
@@ -14327,6 +14431,11 @@
   ],
   [
    "activated_effects:UNCLASSIFIED",
+   "Aetherjacket",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:UNCLASSIFIED",
    "Ambassador Laquatus",
    "ACTIVATED:0:0"
   ],
@@ -15829,6 +15938,11 @@
    "planeswalker_manager:UNCLASSIFIED",
    "Elspeth, Sun's Champion",
    "LOYALTY:0:1"
+  ],
+  [
+   "planeswalker_manager:UNCLASSIFIED",
+   "Garruk, Apex Predator",
+   "LOYALTY:0:0"
   ],
   [
    "planeswalker_manager:UNCLASSIFIED",

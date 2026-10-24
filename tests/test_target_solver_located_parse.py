@@ -62,7 +62,7 @@ def pool_texts(db) -> set:
 # Fields added to TargetRequirement after the capture was taken: canonical
 # only when set, so a requirement that does not read one keeps the digest it
 # was captured with, and a re-capture moves exactly the texts that read it.
-_ADDED_AFTER_CAPTURE = ("mana_value_bound", "color_bound")
+_ADDED_AFTER_CAPTURE = ("mana_value_bound", "color_bound", "excludes_source")
 
 
 def canonical_requirement(r) -> tuple:

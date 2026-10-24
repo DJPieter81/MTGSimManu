@@ -110,8 +110,8 @@
    "id": "targeted_damage_reads_untargeted_damage",
    "class": "LEGACY_TARGETED_DAMAGE_SCOPE",
    "fields": ["deals_targeted_damage"],
-   "cards": ["Kain, Traitorous Dragoon", "Kutzil, Malamet Exemplar", "Quick-Draw Katana", "Shao Jun", "Zurgo Helmsmasher"],
-   "reason": "The legacy flag reads damage text with no target -- combat damage to a player, damage to each opponent, 'dealt damage by', or reminder text ('It deals combat damage before ...', 'Attach to target creature') -- as targeted damage; the view requires a DAMAGE spec with a target slot. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "cards": ["Basri's Acolyte", "Felidar Savior", "Kain, Traitorous Dragoon", "Kutzil, Malamet Exemplar", "Quick-Draw Katana", "Shao Jun", "Zurgo Helmsmasher"],
+   "reason": "The legacy flag reads damage text with no target -- combat damage to a player, damage to each opponent, 'dealt damage by', or reminder text ('It deals combat damage before ...', 'Attach to target creature') -- as targeted damage; the view requires a DAMAGE spec with a target slot. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair. Basri's Acolyte and Felidar Savior (lifelink's reminder 'Damage dealt by this creature' beside an enter trigger's 'up to two other target creatures') were masked until 2026-10-24 by that trigger's count, which the target leaf could not read past 'other'; unit AN reads it.",
    "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
   },
   {

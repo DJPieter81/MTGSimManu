@@ -171,6 +171,17 @@ def test_a_colour_qualifier_the_requirement_carries_is_consumed():
     assert req.color_bound == ("colored", "")
 
 
+def test_another_on_an_abilitys_only_target_is_carried_not_residue():
+    """Unit AN: "another target creature" as its ability's only target
+    excludes the source (`TargetRequirement.excludes_source`), consumed
+    with no residue (A21: a feature the requirement carries)."""
+    r = _parse("exile another target creature.", "another target creature")
+    assert r.value is not None, r
+    assert r.value.residue == ()
+    (req,) = r.value.requirements
+    assert req.excludes_source
+
+
 @pytest.mark.parametrize("host,phrase,code,polarity", [
     ("tap target permanent that player controls.",
      "target permanent that player controls", "target.dependent_controller",
@@ -184,8 +195,10 @@ def test_a_colour_qualifier_the_requirement_carries_is_consumed():
      WIDENING),
     ("exile target creature with power 3 or greater.",
      "target creature with power 3 or greater", "target.stat:power", WIDENING),
-    ("exile another target creature.", "another target creature",
-     "target.exclude_source", WIDENING),
+    # "another" beside an earlier target sets this one apart from it: no
+    # requirement carries that (unit AN carries the source exclusion only).
+    ("target creature you control fights another target creature.",
+     "another target creature", "target.exclude_source", WIDENING),
     ("destroy target creature other than ~.", "target creature other than ~",
      "target.exclude_source", WIDENING),
     ("destroy target artifact creature.", "target artifact creature",

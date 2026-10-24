@@ -506,30 +506,30 @@
     "strict": true
    }
   ],
-  "executable": 224,
-  "family": "card_flow",
+  "executable": 228,
+  "family": "removal",
   "hosts": {
    "mainboard": 8,
-   "pool": 214,
+   "pool": 218,
    "sideboard": 2
   },
   "steps": {
-   "E2": 113,
+   "E2": 117,
    "E3": 94,
    "E5": 17
   },
-  "strict": 224,
+  "strict": 228,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
    "CONTINUOUS,EXILE": 12,
-   "DESTROY": 78,
+   "DESTROY": 79,
    "DESTROY,MOVE,SEARCH,SHUFFLE": 3,
    "DRAW": 14,
    "DRAW,EXILE": 2,
    "EXILE": 5,
    "MILL": 40,
-   "MOVE": 29,
+   "MOVE": 32,
    "SURVEIL": 30
   }
  },
@@ -564,6 +564,13 @@
  "attack:dispatch": {
   "deck_hosts": [
    {
+    "card": "Oliphaunt",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
     "card": "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -571,11 +578,11 @@
     "strict": true
    }
   ],
-  "executable": 106,
+  "executable": 115,
   "family": "attack_trigger",
   "hosts": {
-   "mainboard": 1,
-   "pool": 105,
+   "mainboard": 2,
+   "pool": 113,
    "sideboard": 0
   },
   "steps": {
@@ -583,12 +590,12 @@
    "E2": 5,
    "E3": 33,
    "E4": 25,
-   "E5": 24
+   "E5": 33
   },
-  "strict": 106,
+  "strict": 115,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 22,
+   "CONTINUOUS": 31,
    "CREATE_TOKEN": 18,
    "DAMAGE": 6,
    "DISCARD,DRAW": 15,
@@ -1535,21 +1542,21 @@
     "strict": true
    }
   ],
-  "executable": 535,
+  "executable": 536,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 513,
+   "pool": 514,
    "sideboard": 0
   },
   "steps": {
-   "E2": 46,
+   "E2": 47,
    "E3": 197,
    "E4": 277,
    "E5": 10,
    "E6": 5
   },
-  "strict": 535,
+  "strict": 536,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
@@ -1559,7 +1566,7 @@
    "EXILE": 10,
    "EXILE,GAIN_LIFE": 3,
    "MILL": 37,
-   "MOVE": 33,
+   "MOVE": 34,
    "PUT_COUNTERS": 13,
    "SURVEIL": 47
   }
@@ -2213,7 +2220,7 @@
    "E3": 1,
    "none": 1
   },
-  "strict": 8,
+  "strict": 9,
   "sub_kinds": {},
   "verb_sets": {
    "DRAW,MOVE": 1,
@@ -2249,25 +2256,25 @@
     "strict": true
    }
   ],
-  "executable": 15,
+  "executable": 16,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
-   "pool": 14,
+   "pool": 15,
    "sideboard": 0
   },
   "steps": {
-   "E2": 5,
+   "E2": 6,
    "E3": 4,
    "E4": 3,
    "E5": 3
   },
-  "strict": 15,
+  "strict": 16,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 3,
    "CREATE_TOKEN": 1,
-   "DESTROY": 3,
+   "DESTROY": 4,
    "MILL": 3,
    "MOVE,REVEAL": 1,
    "PUT_COUNTERS": 2,
@@ -2418,7 +2425,7 @@
    "E5": 307,
    "none": 84
   },
-  "strict": 179,
+  "strict": 180,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 186,

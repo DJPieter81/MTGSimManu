@@ -811,6 +811,7 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
     real = er.resolve_ability
     from engine import effect_carrier as ec
     real_if = ec.intervening_if_holds_now
+    real_targets = ec.trigger_targets
 
     def counting(*a, **k):
         entered[0] += 1
@@ -826,9 +827,19 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
             refused[0] += 1
         return held
 
+    def targeting(*a, **k):
+        # A carrier whose host has a required target with no legal choice
+        # (CR 601.2c, 603.3d) has entered the new path even though nothing
+        # resolves: it refuses the ability there, by the target solver.
+        chosen = real_targets(*a, **k)
+        if chosen is None:
+            refused[0] += 1
+        return chosen
+
     t0 = time.process_time()
     er.resolve_ability = counting
     ec.intervening_if_holds_now = checking
+    ec.trigger_targets = targeting
     try:
         for p in pairs:
             key = [p.handler, p.card, p.host]
@@ -854,11 +865,14 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
                 proven.append(key)
                 if entered[0] == before:
                     # proven only as refused: its intervening "if" holds on
-                    # no board, so the new path refuses it as it triggers
+                    # no board, or a required target has no legal choice on
+                    # any board, so the new path refuses it as it triggers
+                    # or is activated
                     refused_at_trigger.append(key)
     finally:
         er.resolve_ability = real
         ec.intervening_if_holds_now = real_if
+        ec.trigger_targets = real_targets
     return {"pairs": len(pairs), "proven": sorted(proven),
             "diverging": sorted(diverging),
             "boards": list(built), "seeds": list(seeds),
@@ -964,7 +978,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"{len(diverging) - len(unexplained)} of them intended "
                   f"changes with a recorded reason; "
                   f"{len(rep['refused_at_trigger'])} proven only as refused "
-                  f"at trigger (an intervening if that holds on no board)")
+                  f"at trigger (an intervening if that holds on no board, or "
+                  f"a required target with no legal choice)")
             for k in unexplained[:20]:
                 print(f"  UNEXPLAINED divergence {list(k)}")
             for k in rep["undispatched"][:20] + rep["no_case"][:20]:
