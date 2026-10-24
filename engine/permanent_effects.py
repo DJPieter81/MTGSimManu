@@ -21,6 +21,7 @@ matching the manager pattern used across engine/*.py.
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 from typing import TYPE_CHECKING, List, Set
 
 from .cards import (COUNTER_KIND_MINUS,
@@ -120,6 +121,89 @@ def printed_token(spec) -> "dict | None":
         "oracle_text": " ".join(h.text.replace("~", "this token")
                                 for h in spec.granted),
     }
+
+
+# ─── PREDEFINED TOKENS (CR 111.10) ───────────────────────────────────
+
+# The predefined kinds the token owner builds. Each is a colorless artifact
+# token with its kind as its subtype and the ability its CR 111.10 rule
+# prints (the kind's row in `keywords.EXPANSIONS`). Any other kind is
+# refused by the executors that create tokens.
+PREDEFINED_TOKEN_KINDS = frozenset({"treasure", "food", "clue"})
+
+
+@lru_cache(maxsize=None)
+def _predefined_parts(kind: str):
+    """The text CR 111.10 gives a token of `kind` -- the token names itself
+    "this token" -- and its abilities, typed once per kind through the
+    parse-once owners every card's text goes through."""
+    from .effect_grammar.keywords import expansion_text
+    from .oracle_parser import (parse_activated_abilities,
+                                parse_sacrifice_mana_units)
+    text = expansion_text(kind).replace("~", "this token")
+    units = parse_sacrifice_mana_units(text) or []
+    return (text, tuple(parse_activated_abilities(text) or ()),
+            tuple(tuple(u) for u in units))
+
+
+def predefined_token(kind: str) -> "dict | None":
+    """The characteristics CR 111.10 defines for a predefined token of
+    `kind`, as `_put_tokens` builds them: "<Kind> Token", a colorless
+    artifact with subtype <Kind>, the text its rule prints and the
+    abilities typed from it (a sacrifice-for-mana ability also as
+    `sacrifice_mana_units`, the field mana payment spends). None for a
+    kind the owner does not build."""
+    if kind not in PREDEFINED_TOKEN_KINDS:
+        return None
+    text, abilities, units = _predefined_parts(kind)
+    return {
+        "name": f"{kind.title()} Token",
+        "card_types": [CardType.ARTIFACT],
+        "supertypes": [],
+        "subtypes": [kind.title()],
+        "colors": set(),
+        "power": None,
+        "toughness": None,
+        "keywords": set(),
+        "sacrifice_mana_units": units,
+        "activated_abilities": abilities,
+        "oracle_text": text,
+    }
+
+
+def _audit_predefined_tokens(game, kind: str, creator: int,
+                             tokens) -> None:
+    """CR 111.10 / 111.2, restated from each token's raw template and the
+    rule's own row (never from the builder): a <Kind> token is a colorless
+    artifact with subtype <Kind> whose text is the row, it has a typed
+    ability exactly when the row prints one, a sacrifice-for-mana ability
+    is in the field payment spends, and its creator owns and controls it.
+    Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .effect_grammar.keywords import EXPANSIONS
+    row = EXPANSIONS[kind].template
+    problems = []
+    for t in tokens:
+        tt = t.template
+        abilities = tt.activated_abilities or []
+        if tt.card_types != [CardType.ARTIFACT] or tt.colors \
+                or [s.lower() for s in tt.subtypes] != [kind]:
+            problems.append(f"{t.name} is {tt.card_types} {tt.subtypes} "
+                            f"{tt.colors}")
+        if (tt.oracle_text or "").replace("this token", "~") != row \
+                or bool(abilities) != bool(row):
+            problems.append(f"{t.name} has {len(abilities)} abilities for "
+                            f"{row!r}")
+        if any(a.is_mana_ability and a.cost.sacrifice_self
+               for a in abilities) != bool(tt.sacrifice_mana_units):
+            problems.append(f"{t.name}'s sacrifice mana is not spendable")
+        if t.owner != creator or t.controller != creator:
+            problems.append(f"{t.name} is P{t.controller + 1}'s, created by "
+                            f"P{creator + 1}")
+    rules_audit.check("111.10/predefined_token", not problems,
+                      "; ".join(problems), game=game)
 
 
 def observer_matches(spec: dict, creature: CardInstance) -> bool:
@@ -457,17 +541,28 @@ class PermanentEffects:
         hardcoding card-name-specific token registrations in
         TOKEN_DEFS.
 
+        A predefined kind (Treasure, Food, Clue) is the object its CR
+        111.10 rule defines (`predefined_token`), whatever else is passed.
+
         TOKEN_DEFS is preserved as a fallback for the small set of
-        canonical resource tokens (Treasure, Food, Clue, Goblin,
-        Soldier) where oracle text is not always passed by the
-        caller. Future cleanup will migrate every caller to pass
-        source_oracle so TOKEN_DEFS can be retired.
+        canonical creature tokens (Goblin, Soldier, ...) where oracle
+        text is not always passed by the caller. Future cleanup will
+        migrate every caller to pass source_oracle so TOKEN_DEFS can be
+        retired.
         """
         if token_spec is not None:
             built = printed_token(token_spec)
             if built is None:
                 raise ValueError(f"the token owner builds no {token_spec!r}")
             return PermanentEffects._put_tokens(game, controller, count, built)
+        # A predefined token is the object its CR 111.10 rule defines; the
+        # other arguments describe nothing it has.
+        built = predefined_token(token_type)
+        if built is not None:
+            tokens = PermanentEffects._put_tokens(game, controller, count,
+                                                  built)
+            _audit_predefined_tokens(game, token_type, controller, tokens)
+            return tokens
         tokens = []
         # Generic path: parse from the spawning card's oracle text.
         spec = None
@@ -595,9 +690,9 @@ class PermanentEffects:
     def _put_tokens(game: "GameState", controller: int, count: int,
                     built: dict) -> List[CardInstance]:
         """Put `count` tokens with the characteristics `built`
-        (`printed_token`) onto the battlefield under `controller`'s control
-        (CR 111.2). Each enters like any permanent: its own and every
-        watcher's enter triggers fire (CR 603.6a)."""
+        (`printed_token`, `predefined_token`) onto the battlefield under
+        `controller`'s control (CR 111.2). Each enters like any permanent:
+        its own and every watcher's enter triggers fire (CR 603.6a)."""
         tokens = []
         creature = CardType.CREATURE in built["card_types"]
         for _ in range(count):
@@ -616,6 +711,8 @@ class PermanentEffects:
             )
             template.sacrifice_mana_units = [
                 list(u) for u in built["sacrifice_mana_units"]]
+            template.activated_abilities = list(
+                built.get("activated_abilities", ()))
             instance = CardInstance(template=template, owner=controller,
                                     controller=controller,
                                     instance_id=game.next_instance_id(),

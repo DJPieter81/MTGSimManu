@@ -539,7 +539,6 @@ TOKEN_DEFS = {
     "drone": ("Drone", [CardType.ARTIFACT, CardType.CREATURE], 1, 1, set()),
     "cat": ("Cat", [CardType.CREATURE], 1, 1, set()),
     "elemental": ("Elemental", [CardType.CREATURE], 1, 1, set()),
-    "treasure": ("Treasure", [CardType.ARTIFACT], 0, 0, set()),
-    "food": ("Food", [CardType.ARTIFACT], 0, 0, set()),
-    "clue": ("Clue", [CardType.ARTIFACT], 0, 0, set()),
+    # Treasure, Food and Clue are predefined tokens (CR 111.10): the token
+    # owner builds them from their rules (`permanent_effects.predefined_token`).
 }

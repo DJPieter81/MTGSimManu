@@ -64,6 +64,7 @@ from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
                           Condition, ConditionKind, Destination, EffectSpec,
                           KeywordAction, Ref, RefKind, RefPart, TokenSpec,
                           Verb)
+from .permanent_effects import PREDEFINED_TOKEN_KINDS
 
 FAMILY_DAMAGE = "damage"
 FAMILY_CARD_FLOW = "card_flow"
@@ -1322,9 +1323,9 @@ execute_discard.allowed_families = lambda s: frozenset({FAMILY_CAST_TRIGGER})
 
 # ── CREATE_TOKEN (family tokens_counters, R2; printed tokens, unit TK) ─
 
-# The predefined tokens (CR 111.10) the token owner defines: Treasure,
-# Food and Clue (`player_state.TOKEN_DEFS`). Any other is refused.
-_PREDEFINED_TOKENS = frozenset({"treasure", "food", "clue"})
+# The predefined tokens (CR 111.10) the token owner builds from their rules
+# (`permanent_effects.PREDEFINED_TOKEN_KINDS`). Any other is refused.
+_PREDEFINED_TOKENS = PREDEFINED_TOKEN_KINDS
 # The printed player sets an instruction names as its acting players (CR
 # 111.2 for tokens, CR 701.17a for a mill): each opponent, each player, or
 # "you".
@@ -1390,12 +1391,13 @@ def execute_create_token(ctx: Resolution, s: EffectSpec,
 
 def _audit_tokens(ctx: Resolution, s: EffectSpec, made: dict) -> None:
     """CR 111.2 / 111.3, restated from the spec's raw fields (not from the
-    owner's builder): a token is controlled by the player who created it,
-    and has the power, toughness, card types, subtypes and colours its
-    creator printed. Observation only."""
+    owner's builder): a token is owned and controlled by the player who
+    created it, and a printed one has the power, toughness, card types,
+    subtypes and colours its creator printed (a predefined one's are its
+    CR 111.10 rule's, audited by the token owner). Observation only."""
     from . import rules_audit
     p = s.payload
-    if not rules_audit.enabled() or p.predefined is not None:
+    if not rules_audit.enabled():
         return
     problems = []
     for player, tokens in made.items():
@@ -1404,6 +1406,8 @@ def _audit_tokens(ctx: Resolution, s: EffectSpec, made: dict) -> None:
             if t.controller != player or t.owner != player:
                 problems.append(f"{t.name} controlled by P{t.controller + 1}, "
                                 f"created by P{player + 1}")
+            if p.predefined is not None:
+                continue
             if p.power is not None and (tt.power, tt.toughness) != \
                     (p.power.n, p.toughness.n):
                 problems.append(f"{t.name} is {tt.power}/{tt.toughness}")
