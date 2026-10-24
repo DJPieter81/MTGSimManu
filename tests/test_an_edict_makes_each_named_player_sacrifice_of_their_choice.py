@@ -187,3 +187,18 @@ def test_the_audit_is_silent_when_the_edict_takes_its_count(card_db, audit):
     _put(game, card_db, "Grizzly Bears", "battlefield", 1)
     _cast(game, card_db, "Sheoldred's Edict")
     assert "701.21a/edict" not in [f["rule"] for f in audit.drain()]
+
+
+def test_the_audit_reads_the_types_of_the_face_that_is_up(card_db, audit):
+    """A transformed permanent has only its back face's types (CR 712.8):
+    a planeswalker whose front face is a creature is no creature an edict
+    left behind."""
+    game = _game()
+    ajani = _put(game, card_db, "Ajani, Nacatl Pariah // Ajani, Nacatl "
+                 "Avenger", "battlefield", 1)
+    ajani.is_transformed = True
+    ajani.loyalty_counters = ajani.template.back_face_loyalty
+    bears = _put(game, card_db, "Grizzly Bears", "battlefield", 1)
+    _cast(game, card_db, "Cruel Edict")
+    assert bears.zone == "graveyard" and ajani.zone == "battlefield"
+    assert "701.21a/edict" not in [f["rule"] for f in audit.drain()]

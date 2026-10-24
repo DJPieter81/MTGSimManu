@@ -1830,10 +1830,17 @@ def _audit_edict(ctx: Resolution, s: EffectSpec, actors: Tuple[int, ...],
     f = s.filter
     types = set(f.types or ())
 
+    def printed(p):
+        # the printed types of the face that is up (CR 712.8): a
+        # transformed permanent has only its back face's
+        t = p.template
+        return (t.back_face_types if getattr(p, "is_transformed", False)
+                and t.back_face_types else t.card_types)
+
     def count(player):
         return sum(1 for p in ctx.game.players[player].battlefield
                    if (not types or any(t.value in types
-                                        for t in p.template.card_types))
+                                        for t in printed(p)))
                    and (f.token is None or bool(p.is_token) == f.token))
     for player in actors:
         want = max(0, before[player] - s.amount.n)
