@@ -11254,7 +11254,13 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Other pins:** gate parity 5183/2056/3127 → 5234/2107/3127 (legacy fallback unchanged); spec equivalence unchanged (UNEXPLAINED 18060), with the closure report's cast-trigger block locked in (18 → 69 executable hosts); the census and the no-op fixture unchanged; every ratchet passes.
 - **Chunks:** 5424 + 2795 passed at `180e847`, from a pinned worktree.
 
-**Measured:** by the `sg-post` arm with unit SG (pre = `ak-post`).
+**Measured:** by the `sg-post` arm (pre = `ak-post`, same seeds, n=20 Bo3, all 25 shards, run on `f6a3e71`), for CT.2, SG and the census audit fix together.
+- **No deck moves more than 0.1 pp** (Broodscale Bloodchief −0.1, Grixis Reanimator +0.1). One cell changes: Grixis Reanimator vs Broodscale Bloodchief, 45 → 50 (one match). Of the registered hosts the units take, Dragon's Rage Channeler's surveil is harness-identical; Glaring Fleshraker's Spawn changes only its name; Slickshot Show-Off's pump changes only the layer it is applied in. A flat field is the expected result.
+- **Bands:** 8 decks out of band, 50.4 pp total miss, unchanged.
+- **Audit:** 0 violations. Census rows 783 → 661. The rows of Dragon's Rage Channeler, Slickshot Show-Off and Glaring Fleshraker are gone (the carriers take them), and so is Vexing Bauble's (the census fix). 12 registered rows remain:
+  - attack: Archon of Cruelty, Guide of Souls, Oliphaunt, Phelia, Primeval Titan, Territorial Kavu, Ulamog;
+  - cast: Pinnacle Emissary, Vengevine;
+  - step: Abhorrent Oculus, Ocelot Pride, Static Prison.
 
 **Leads, not built:**
 - **SG:** an ability that changes its own source's characteristics until end of turn (418 pool cards print one in a triggered ability; cast heads 52, attack heads 88). Registered: Slickshot Show-Off, whose +2/+0 is applied today by the cast manager's oracle scan.
@@ -11296,7 +11302,7 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 
 **Audit fix (`bbde9d2`): the cast-trigger census omits a counter its own owner performs.** `603.2/cast_trigger_unresolved` recorded every cast-triggered counter as untaken, though the counter owner performs it from the typed `cast_counter` field (unit LK), so Vexing Bauble was a census row in every audited arm. Test: `tests/test_the_cast_trigger_census_records_only_a_trigger_no_owner_performs.py`, red at `3c06ed4`, beside a pin that an untaken head (Pinnacle Emissary) is still recorded. Observation only.
 
-**Measured:** by the `sg-post` arm with unit CT.2 (pre = `ak-post`).
+**Measured:** by the `sg-post` arm, recorded under unit CT.2: the field is flat (no deck moves more than 0.1 pp), with 0 violations.
 
 **Leads, not built:**
 - **The cast manager's delirium hack:** the same loop grants Dragon's Rage Channeler flying when a noncreature spell is cast and never removes it. Its delirium static ability should grant flying exactly while the condition holds (CR 611.3a, unit CN's mechanism).
