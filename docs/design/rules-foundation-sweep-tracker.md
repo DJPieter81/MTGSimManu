@@ -11254,8 +11254,51 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Other pins:** gate parity 5183/2056/3127 → 5234/2107/3127 (legacy fallback unchanged); spec equivalence unchanged (UNEXPLAINED 18060), with the closure report's cast-trigger block locked in (18 → 69 executable hosts); the census and the no-op fixture unchanged; every ratchet passes.
 - **Chunks:** 5424 + 2795 passed at `180e847`, from a pinned worktree.
 
+**Measured:** by the `sg-post` arm with unit SG (pre = `ak-post`).
+
 **Leads, not built:**
 - **SG:** an ability that changes its own source's characteristics until end of turn (418 pool cards print one in a triggered ability; cast heads 52, attack heads 88). Registered: Slickshot Show-Off, whose +2/+0 is applied today by the cast manager's oracle scan.
 - **FQ:** "this ability triggers only once each turn" (97 trigger hosts): a per-turn count for the carriers.
 - **The spell itself in a cast body** ("that spell", its mana value, a copy of it) and **an intervening "if"** on a cast head.
 - **Pinnacle Emissary's** token with a granted static ability.
+
+## Unit SG: an ability that changes its own source until end of turn changes it while it is the same object (CR 611.2a, 611.2c, 613.4c, 400.7; 2026-10-24)
+
+**Source:** the `ak-post` census row `603.2/cast_trigger_unresolved` for Slickshot Show-Off (Izzet Prowess x4), and unit CT.2's lead.
+
+**Rule:** "Whenever you cast a noncreature spell, this creature gets +2/+0 until end of turn" changes the ability's source as the ability resolves, until the turn ends (CR 611.2a, 613.4c), once for each time it triggers. "This creature" names the object the ability came from: a source that has left the battlefield, or left and come back as a new object, is not changed (CR 400.7, 611.2c).
+
+**The defect:** the trigger body admitted a characteristic change only on a target, so no carrier performed a self change.
+- **Cast triggers** fell to the cast manager's oracle scan (`cast_manager`, the "prowess-like" loop). It reads only "+N/+M", so a keyword grant did nothing. It also pumps on every noncreature spell, so an artifact spell pumped an instant-or-sorcery head.
+- **Attack triggers** did nothing.
+
+**Class:** 418 pool cards print a self characteristic change in a triggered ability (52 cast heads, 88 attack heads, 24 step heads). The cast carrier now takes 105 faces (78 before) and the attack carrier 119 (104 before). Registered: Slickshot Show-Off.
+
+**Steps:**
+- **The shape:** `effect_executors.changes_own_source`, an instruction naming its source and no target; `characteristic_supported` admits it beside the one-target change.
+- **The recipient:** `_characteristic_recipients` reads the source through `_source_on_battlefield`, the one read of "the source, still the object the ability came from on the battlefield". It is extracted from `_exile_self`, which now reads it too.
+- **The families:** the self change runs only in the attack and cast trigger families (`_OWN_SOURCE_CHANGE_FAMILIES`), whose hosts the harness proves. The type-change, tokens/counters and pump families keep their legacy passes for it.
+- **The legacy scan:** the cast manager's prowess-like loop skips the printed pump of a creature whose cast triggers the carrier takes (`effect_carrier.cast_taken`). The prowess keyword and the loop's delirium grant stay where they were.
+- **Auditor `611.2c/own_source_change`,** restated from the source card's raw zone and battlefield entry against the resolving Handle: the change is made exactly while the source is the same object. Tested both ways (the binder patched to the bare source object).
+
+**Tests:** 9, in `tests/test_an_ability_that_changes_its_own_source_changes_it_while_it_is_the_same_object.py`; 6 fail at `180e847`. The 3 that pass there are pins: one pump per spell, the pump ends in the cleanup step, and the silent audit.
+
+**Pins:**
+- **Digest:** byte-identical (27 games). **Anchor:** 29 passed.
+- **Harness:** 38 new pairs. 2 are proven only as refused at trigger (Sanctuary Raptor and Tilonalli's Knight, whose intervening if holds on no board). The other 36 are intended, each with its reason:
+  - 16 are cast pumps the cast manager's scan made, outside the harness's cast case;
+  - 5 are cast pumps it never made (heads other than noncreature or instant-or-sorcery);
+  - 2 are keyword grants nothing made;
+  - 13 are attack self changes the legacy attack pass never made.
+  - Totals: 2145 pairs, 417 proven, 1728 intended.
+- **Other pins:** gate parity 5234/2107/3127 → 5272/2145/3127 (legacy fallback unchanged); closure report locked in (cast_trigger 69 → 92, attack_trigger 91 → 106 executable hosts); spec equivalence (UNEXPLAINED 18060) and the census unchanged; the no-op fixture loses Slickshot Show-Off's cast host (274 hosts, 72 no-op, floor 202); every ratchet passes.
+- **Chunks:** 5433 + 2795 passed at `3c06ed4`, from a pinned worktree.
+
+**Audit fix (`bbde9d2`): the cast-trigger census omits a counter its own owner performs.** `603.2/cast_trigger_unresolved` recorded every cast-triggered counter as untaken, though the counter owner performs it from the typed `cast_counter` field (unit LK), so Vexing Bauble was a census row in every audited arm. Test: `tests/test_the_cast_trigger_census_records_only_a_trigger_no_owner_performs.py`, red at `3c06ed4`, beside a pin that an untaken head (Pinnacle Emissary) is still recorded. Observation only.
+
+**Measured:** by the `sg-post` arm with unit CT.2 (pre = `ak-post`).
+
+**Leads, not built:**
+- **The cast manager's delirium hack:** the same loop grants Dragon's Rage Channeler flying when a noncreature spell is cast and never removes it. Its delirium static ability should grant flying exactly while the condition holds (CR 611.3a, unit CN's mechanism).
+- **The prowess keyword** stays on the same loop's temporary modifiers.
+- **Self changes in step triggers** (24 heads) wait for the step body to admit the continuous instruction.
