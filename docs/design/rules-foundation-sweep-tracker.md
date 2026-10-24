@@ -11397,7 +11397,13 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Harness, gate parity, spec equivalence, census:** unchanged (no text is read).
 - **Chunks:** 5446 + 2803 passed at `332c45e`, from a pinned worktree.
 
-**Measured:** with unit BR, by the `br-post` arm (pre = `an-post`).
+**Measured:** by the `br-post` arm (pre = `an-post`, same seeds, n=20 Bo3, all 25 shards, run on `f4ef9d9`), with unit BR.
+- **No deck moves more than 1.8 pp** (Amulet Titan +1.8, Broodscale Bloodchief −1.7, Jeskai Blink −1.5, 4c Omnath +1.4). 290 cells change: every combat decision now counts fresh blockers, so most game trajectories diverge somewhere. The largest single cells (±20–30 pp, 4–6 matches of 20) fall within the sampling noise of a 20-match cell, and no deck's field rate moves past 2 pp.
+- **Bands:** 7 decks out of band, 52.1 pp total miss (8 and 50.6 before). Boros Energy is 75.8 (band [50, 70]) and Domain Zoo 78.2 ([50, 65]); Amulet Titan moves inside its band (46.2); Hollow One is 0.1 pp below its band.
+- **Audit:** 0 violations. Census findings 645 → 619: Pinnacle Emissary's row is gone (unit BR). 10 registered rows remain:
+  - attack: Archon of Cruelty (unit ED-T takes it), Guide of Souls, Phelia, Primeval Titan, Territorial Kavu, Ulamog;
+  - cast: Vengevine;
+  - step: Abhorrent Oculus, Ocelot Pride, Static Prison.
 
 **Leads, not built:**
 - **An attack trigger that removes a blocker:** Phelia's attack trigger exiles the would-be blocker, which the planner does not model. In the Jeskai Blink digest game, Phelia no longer attacks into Elesh Norn though the trigger would have exiled it.
@@ -11443,9 +11449,91 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Other pins:** the census pin of an untaken cast trigger moves to Whispering Wizard ("triggers only once each turn").
 - **Chunks:** 5463 + 2803 passed at `0a25a83`, from a pinned worktree.
 
-**Measured:** with unit SS, by the `br-post` arm (pre = `an-post`).
+**Measured:** by the `br-post` arm, recorded under unit SS: no deck moves more than 1.8 pp, 0 violations, and Pinnacle Emissary's census row is gone.
 
 **Leads, not built:**
 - **Conditional restrictions** ("can't block unless you control another Wolf", "can't attack unless defending player controls a Swamp"): 55 self statics print one. They need an "unless" condition read for the object.
 - **An Aura's or Equipment's restriction on the creature it is attached to** (Pacifism class, 36 typed): an Aura is attached only to its controller's own permanents today (`attach_aura`), so "Enchant creature" Auras cast on an opponent's creature come first (CR 303.4a).
 - **A group restriction as a static** (Dense Canopy, "black creatures can't block").
+
+## Unit ED-T: an edict in a triggered ability makes the players it names sacrifice (CR 701.21a, 603.2, 101.4; 2026-10-24)
+
+**Source:** the `an-post` census row `603.2/attack_trigger_unresolved` for Archon of Cruelty (Goryo's Vengeance x3, Grixis Reanimator x4). Sizing it showed that Fleshbag Marauder's enter trigger does nothing.
+
+**Rule:** "When this creature enters, each player sacrifices a creature of their choice": as the trigger resolves, each player chooses a creature they control, in APNAP order, and all are sacrificed at once (CR 701.21a, 101.4). "Target opponent sacrifices a creature or planeswalker of their choice, discards a card, and loses 3 life" asks the same of the chosen player. The player who discards chooses the card (CR 701.9b). A player who controls nothing the edict describes sacrifices nothing.
+
+**The defect:**
+- The edict executor ran only for spells (unit ED).
+- The trigger body the attack and cast carriers share refused SACRIFICE, and the enter-trigger carrier's families held no edict. Fleshbag Marauder's and Oath of Liliana's enter triggers did nothing.
+- The discard executor ran only for its controller, so "target opponent discards a card" kept Archon of Cruelty's host off the attack carrier.
+- Archon of Cruelty's attack was the legacy oracle branch, which chose the opponent's sacrifice and discard for them (the least powerful creature, the cheapest card). Its enter trigger is a name-keyed handler.
+
+**Class:** 38 pool cards print an edict in a triggered ability. The enter carrier takes the player-set ones (each player, each opponent), and the attack carrier takes Archon of Cruelty's. Registered: Archon of Cruelty.
+
+**Steps:**
+- **The trigger body:** admits the edict (`_strict_trigger_body`, the cast and attack families, `execute_sacrifice.allowed_families`).
+- **The enter carrier:** takes a host every instruction of which is an edict naming a player set (`ETB_FAMILIES` gains the edict family; it has no slot to bind).
+- **The discard executor:** runs for the players an instruction names (a player set or a chosen player), each discarding cards of their own choice. The controller's own discard is unchanged.
+- **Retired:** the legacy oracle attack-drain branch. Archon of Cruelty was its only card, and the attack carrier now takes its host. The effect-parser ratchet (b) falls 96 → 91.
+- **Auditor:** `701.21a/edict` (unit ED), restated from the battlefield's raw printed types, now also runs for the enter and attack carriers. Tested both ways: with `_sacrifice` patched to nothing, Oath of Liliana's enter trigger is recorded.
+
+**Tests:** 9, in `tests/test_an_edict_in_a_triggered_ability_makes_the_named_players_sacrifice.py`; 6 fail at `0a25a83`. The 3 that pass there are pins: a player with nothing to sacrifice, the silent audit, and Archon's attack performing its whole body (the legacy branch did, choosing for the opponent). The two older drain tests (`tests/test_attack_trigger_drain.py`) now declare the attack instead of calling the retired branch.
+
+**Pins:**
+- **Digest:** 1 of 27 games changes: Creatures Toolbox vs Grixis Reanimator s56000, with the same winner and turns. Replayed to its first divergence: at T8 Archon of Cruelty attacks, and its controller's opponent now chooses the sacrifice (Tyvar, Jubilant Brawler, where the legacy branch took Devoted Druid) and the discard. Accepted and re-recorded. **Anchor:** 29.
+- **Harness:** 2185 pairs. The 14 new pairs are all intended, each with its reason: 13 enter edicts the legacy pass did not perform, and Archon's attack, whose legacy pass is retired.
+- **Gate parity:** 5296/2171/3125 → 5310/2185/3125 (legacy fallback unchanged).
+- **Spec equivalence and census:** unchanged. The closure report is locked in.
+- **Ratchets:** effect-parser (b) 96 → 91, lowered in the commit. Every other ratchet passes.
+- **Chunks:** 5472 + 2803 passed at `cdff276`, from a pinned worktree. The first run of chunk A failed one test: the discard executor wrote its per-player result into a dict by subscript, which the executors' purity test forbids (`test_effect_family_damage`: assignments only to locals and the executors' own tables). It now builds the pairs, and the commit was amended before the re-run.
+
+**Measured:** with unit DP, by the `dp-post` arm (pre = `br-post`).
+
+**Leads, not built:**
+- **An enter trigger's edict aimed at a chosen player** (Crude Bent Blade, Trial of Ambition, Gatekeeper of Malakir): the enter carrier binds no player targets yet.
+- **Archon of Cruelty's enter trigger** is still its name-keyed handler, which also chooses for the opponent. It needs the enter carrier to run the shared trigger body and bind its target player.
+- **Dies triggers' edicts** (Grave Pact, Dictate of Erebos, Butcher of Malakir): no carrier takes a dies observer's body.
+
+## Unit DP: an attack trigger's "defending player" is the player the attack is made against (CR 506.2, 508.5; 2026-10-24)
+
+**Source:** the `br-post` census row `603.2/attack_trigger_unresolved` for Ulamog, the Ceaseless Hunger (Eldrazi Tron x1).
+
+**Rule:** "Whenever this creature attacks, defending player loses 1 life and you gain 1 life": the defending player is the player being attacked, or the controller of the planeswalker being attacked (CR 506.2, 508.5). In a two-player game that is the attacking player's opponent. "Defending player exiles the top twenty cards of their library": "their" reads back to the clause's own player. There is a defending player only once attackers are declared, so no other trigger event names one.
+
+**The defect:**
+- The attack carrier left the defending player unbound, so every attack trigger naming it was refused and kept its legacy pass.
+- That pass did the controller's half and skipped the defending player's: Agate-Blade Assassin, Brutal Hordechief, Restless Fortress and Odious Witch gained life that no one lost. Silent Skimmer, Nemesis of Reason and Campaign of Vengeance did nothing; Falkenrath Perforator's damage was already dealt.
+- Ulamog's line was not typed at all: the library-top possessors held "your", "that player's" and "defending player's", not "their", and no rule bound a player possessive to its own clause's actor.
+
+**Class:** 23 pool cards print an attack trigger naming the defending player; 16 print "<player> exiles the top <N> cards of their library". Registered: Ulamog, the Ceaseless Hunger.
+
+**Steps:**
+- **The event:** `TriggerEvent.defending_player`, named only by the attack carrier. `effect_carrier.defending_player` is the one opponent in a two-player game, and None otherwise (nothing is bound to a guessed player). `event_player(ctx, ref)` reads it for a defending-player ref, and the event's player for "that player". The attack carrier no longer leaves the defending player unbound.
+- **The executors:** the named-player executors (mill, tokens) take a player the event names as their actor ("defending player mills ten cards", "that player mills two cards"). The library-top exile runs for the library of the player the event names, moved by that player, and the shared trigger body admits it.
+- **Only an attack names one:** the step, draw, combat-damage and enter carriers take no host naming the defending player (`effect_views.names_defending_player`). This closes, for them, the executors' widening above: the first draft let the step carrier bind it to the active player. No pool host is refused by it.
+- **The grammar:** the filter leaf reads "their" as a library-top possessor. The linker binds a player anaphor in a clause's object to that clause's own one acting player ("defending player exiles ... of their library"), before searching earlier clauses.
+- **Auditor `508.5/defending_player`:** restated from the attackers: the named player is a player in the game who controls none of the attacking creatures. Tested both ways, with the carrier patched to name the attacking player.
+- **The ordinal cast-trigger view** (tooling; nothing reads it at runtime): it reads the grammar's one ordinal table, so "their first spell each turn" is ordinal 1, and only when the ordinal spell is the one cast. "Your first noncreature spell" and "a spell other than your first" are none.
+
+**Tests:** 10, in `tests/test_an_attack_trigger_names_the_defending_player.py`; 5 fail at `cdff276`. The other 5 pass there: the silent audit, and 4 that guard this unit's own widening (red against its first draft). The ordinal view has 5 in `tests/test_effect_spec_equivalence_tool.py`; "first" and "fifth" are red at `cdff276`. At the dispatcher (`tests/test_effect_resolver_sequencing.py`), a binding test: the defending player acts only when the event names one. Two pins there move with the unit: the exile's filter keys gain the defending player's library, and the unbindable-actor test now takes "that creature's controller".
+
+**Pins:**
+- **Digest:** 1 of 27 games changes: Domain Zoo vs Eldrazi Tron s51000, with the same winner and turns. Replayed to its first divergence: at T23 Ulamog attacks, and Domain Zoo, the defending player, exiles its top twenty cards (the legacy pass exiled nothing). Accepted and re-recorded. **Anchor:** 29, unchanged.
+- **Harness:** 2198 pairs. Of the 13 new ones, 12 are intended, each with its reason: 10 attack hosts, Memory Erosion's "that player mills two cards" on a cast, and Nightveil Specter's combat-damage exile. The 13th, Manic Scribe's upkeep "that player mills three cards", is proven identical to its legacy pass. The no-op fixture loses Ulamog's attack host (state-changing floor 203 → 204).
+- **Gate parity:** 5310/2185/3125 → 5323/2198/3125 (legacy fallback unchanged).
+- **Spec equivalence:** UNEXPLAINED 18060 → 18059, AGREE +15 (cast_targets, has_destroy_or_exile and the ordinal view). Typing "their library" unmasks 8 legacy-side disagreements, each allowlisted with its reason:
+  - `has_recurring_trigger` reads any "whenever" head (5 cards, plus Sire of Stagnation's draw flag; LEGACY_RECURRING_TRIGGER_SCOPE);
+  - Mind's Dilation's free cast is read as a permission (LEGACY_MAY_CAST_SCOPE);
+  - Malboro's swampcycling reminder is read as a tutor (REMINDER_TEXT).
+
+  The ordinal view's UNEXPLAINED falls 2 → 1; Jace, Unraveler of Secrets' emblem remains.
+- **Census:** REFERENCE 1367 → 1357; typed share 0.7402 → 0.7404 (deck cards 0.7736 → 0.7747). Closure locked in.
+- **Ratchets:** all pass, unchanged.
+- **Chunks:** 5488 + 2803 passed at `03a58d1`, from a pinned worktree. The first run, at `3b08082`, failed those two dispatcher pins in chunk A; they are updated in the commit.
+
+**Measured:** with unit ED-T, by the `dp-post` arm (pre = `br-post`).
+
+**Leads, not built:**
+- **"That player" in an attack trigger** (EVENT_PLAYER) stays unbound in the attack carrier, though in a two-player game it is the defending player.
+- **A multiplayer defending player** needs the attack's per-attacker defender: the combat manager assumes two players.
+- **The combat-damage carrier** could name the defending player too (CR 506.2 holds through the combat damage step); no pool host needs it yet.
