@@ -23,8 +23,13 @@ def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
 
     Returns (color, amount) or None if not a ritual.
     E.g., "Add {R}{R}{R}" → ("R", 3)
+
+    Reminder text is stripped first (CR 207.2: it has no effect): a
+    Treasure maker's "(It's an artifact with "{T}, Sacrifice this token:
+    Add one mana of any color.")" quotes the token's ability, not the
+    spell's.
     """
-    oracle = oracle.lower()
+    oracle = strip_reminder_text(oracle or '').lower()
     # Use word boundaries to avoid matching "additional" (e.g. in "Kicker {W}
     # (You may pay an additional {W}..." on Orim's Chant, which was being
     # mis-parsed as a 2-W ritual and producing mana instead of silencing).

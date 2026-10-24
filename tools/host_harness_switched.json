@@ -3716,6 +3716,14 @@
   {
    "pair": [
     "create_token",
+    "Elemental Masterpiece",
+    "SPELL:0:0"
+   ],
+   "reason": "unit RM: no longer typed as a ritual from its Treasure's reminder text (CR 207.2), the spell host reaches the dispatcher, which performs the instructions it prints -- the Treasure (CR 111.10a) and any printed token (CR 111.3); the legacy apply builds no Treasure"
+  },
+  {
+   "pair": [
+    "create_token",
     "Elemental Summoning",
     "SPELL:0:0"
    ],
@@ -4404,6 +4412,14 @@
   {
    "pair": [
     "dispatched",
+    "Ancestors' Aid",
+    "SPELL:0:0"
+   ],
+   "reason": "unit RM: no longer typed as a ritual from its Treasure's reminder text (CR 207.2), the spell host reaches the dispatcher, which performs the instructions it prints -- the Treasure (CR 111.10a) and any printed token (CR 111.3); the legacy apply builds no Treasure"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Angrath's Rampage",
     "MODE:0:0:mode0"
    ],
@@ -5048,6 +5064,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Elemental Masterpiece",
+    "SPELL:0:0"
+   ],
+   "reason": "unit RM: no longer typed as a ritual from its Treasure's reminder text (CR 207.2), the spell host reaches the dispatcher, which performs the instructions it prints -- the Treasure (CR 111.10a) and any printed token (CR 111.3); the legacy apply builds no Treasure"
   },
   {
    "pair": [
@@ -6260,6 +6284,14 @@
   {
    "pair": [
     "dispatched",
+    "Reckless Ransacking",
+    "SPELL:0:0"
+   ],
+   "reason": "unit RM: no longer typed as a ritual from its Treasure's reminder text (CR 207.2), the spell host reaches the dispatcher, which performs the instructions it prints -- the Treasure (CR 111.10a) and any printed token (CR 111.3); the legacy apply builds no Treasure"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Recollect",
     "SPELL:0:0"
    ],
@@ -6868,10 +6900,26 @@
   {
    "pair": [
     "dispatched",
+    "Strike It Rich",
+    "SPELL:0:0"
+   ],
+   "reason": "unit RM: no longer typed as a ritual from its Treasure's reminder text (CR 207.2), the spell host reaches the dispatcher, which performs the instructions it prints -- the Treasure (CR 111.10a) and any printed token (CR 111.3); the legacy apply builds no Treasure"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Struggle // Survive",
     "SPELL:0:0"
    ],
    "reason": "An amount equal to the number of permanents of a card type (or a subtype) its caster controls is that number when the spell resolves (unit MR, `effect_conditions.quantity_value`, CR 608.2h); the damage family's executor deals it. Legacy evaluated no count amount, so the spell dealt nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sudden Breakthrough",
+    "SPELL:0:0"
+   ],
+   "reason": "unit RM: no longer typed as a ritual from its Treasure's reminder text (CR 207.2), the spell host reaches the dispatcher, which performs the instructions it prints -- the Treasure (CR 111.10a) and any printed token (CR 111.3); the legacy apply builds no Treasure"
   },
   {
    "pair": [

@@ -689,12 +689,12 @@
    "UNMODELLED_CLAUSE": 264
   },
   "ritual_mana": {
-   "AGREE": 22513,
+   "AGREE": 22645,
    "DERIVED_COVERAGE_GROWTH": 6,
    "LEGACY_RITUAL_MANA": 1,
-   "REMINDER_TEXT": 190,
+   "REMINDER_TEXT": 57,
    "UNEXPLAINED": 2,
-   "UNMODELLED_CLAUSE": 26
+   "UNMODELLED_CLAUSE": 27
   },
   "sacrifice_mana_units": {
    "AGREE": 22723,
@@ -760,13 +760,13 @@
   }
  },
  "gate_parity": {
-  "legacy_fallback": 3138,
-  "new_path": 1936,
+  "legacy_fallback": 3132,
+  "new_path": 1942,
   "pairs": 5074
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813781,
+  "AGREE": 2813913,
   "DERIVED_COVERAGE_GROWTH": 7842,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
@@ -779,9 +779,9 @@
   "LEGACY_TEAM_GRANT_SCOPE": 1,
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
-  "REMINDER_TEXT": 202,
+  "REMINDER_TEXT": 69,
   "SEMANTIC_FIX": 38,
   "UNEXPLAINED": 18113,
-  "UNMODELLED_CLAUSE": 9334
+  "UNMODELLED_CLAUSE": 9335
  }
 }

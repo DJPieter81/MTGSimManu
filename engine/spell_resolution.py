@@ -961,6 +961,27 @@ class ResolutionManager:
 
 
     @staticmethod
+    def _audit_ritual_from_rules_text(game: "GameState", card) -> None:
+        """CR 207.2, restated from the spell's typed instructions (the
+        effect grammar types rules text, never reminder text): a spell that
+        resolves as a ritual has an instruction that adds mana -- typed, or
+        one the grammar left untyped whose own text adds it. Observation
+        only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        from .effect_spec import Verb, iter_specs
+        adds = any(s.verb is Verb.ADD_MANA
+                   or (s.verb is Verb.UNMODELLED
+                       and re.search(r"\badd\b", s.raw or ""))
+                   for h in card.template.effects.walk(include_sub=False)
+                   for s in iter_specs(h.specs))
+        rules_audit.check(
+            "207.2/ritual_from_rules_text", adds,
+            f"{card.name} resolved as a ritual its rules text does not print",
+            game=game)
+
+    @staticmethod
     def _execute_spell_effects(game: "GameState", item: StackItem):
         """Execute the effects of an instant/sorcery spell."""
         card = item.source
@@ -971,6 +992,7 @@ class ResolutionManager:
         # Rituals: add mana to pool (oracle-derived from template)
         ritual_data = card.template.ritual_mana
         if ritual_data:
+            ResolutionManager._audit_ritual_from_rules_text(game, card)
             color, amount = ritual_data
             if color == "any":
                 game.players[controller].mana_pool.add("R", 2)
