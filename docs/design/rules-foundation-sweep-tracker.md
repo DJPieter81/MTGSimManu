@@ -11597,9 +11597,92 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Ratchets:** card-name registry 74 → 73, lowered in the commit. Every other ratchet passes.
 - **Chunks:** 5500 + 2803 passed at `7f30252`, from a pinned worktree.
 
-**Measured:** by the `mtr-post` arm (pre = `dp-post`).
+**Measured:** by the `mtr-post` arm (pre = `dp-post`, same seeds, n=20 Bo3, all 25 shards, run on `61df7f7`), with the edict audit fix.
+- **No deck moves more than 1.5 pp** (Domain Zoo −1.5: Territorial Kavu's attack now performs the mode its controller chooses). All 24 cells that change are in Domain Zoo's row or column, each by one to three matches of 20.
+- **Bands:** 7 decks out of band, total miss 52.1 → 50.2 pp (Domain Zoo 13.2 → 11.8 above its band).
+- **Audit:** 0 violations; the edict auditor's fix holds.
+- **Census:** Territorial Kavu's row is gone. 7 registered rows remain:
+  - attack: Guide of Souls, Phelia, Primeval Titan;
+  - cast: Vengevine;
+  - step: Abhorrent Oculus, Ocelot Pride, Static Prison.
 
 **Leads, not built:**
 - **A one-card graveyard removal is aimed by keystone first.** The pick (`graveyard_removal.choose_removal_target`, unit SXT) ranks an opposing keystone above a card with a use from the graveyard (Seasoned Pyromancer). For a one-card exile, only a card still useful in the graveyard is worth taking; a by-name removal also reaches the other copies.
 - **Mode values the currency has no term for** (draw, life, damage) are worth nothing, so such modes are chosen only to make up the header's fewest, in printed order.
 - **The other 119 modal hosts** wait on their bodies: bounce and pump under the enter carrier, damage to a creature, "choose one that hasn't been chosen this turn" (Genku), and modes after a payment's reflexive trigger (Voltstorm Angel, Hylda of the Icy Crown).
+
+## Unit WT: a triggered ability that targets a permanent with ward is countered unless its controller pays (CR 702.21a, 603.3d; 2026-10-25)
+
+**Source:** a prerequisite for unit XL. Retiring Leyline Binding's enter handler would also retire the only ward check a trigger ever met: the one the stack ran for a name-keyed enter handler with cast-time targets (`spell_resolution._handle_permanent_etb`).
+
+**Rule:** ward is a triggered ability of the warded permanent: "whenever this permanent becomes the target of a spell or ability an opponent controls, counter it unless that player pays <cost>" (CR 702.21a). A triggered ability takes its targets as it is put on the stack (CR 603.3d), so they meet ward then. An unpaid ward counters the whole ability.
+
+**The defect:** the carriers bound a triggered ability's targets in `effect_carrier.put_on_stack` and resolved it without asking ward. Ugin, Eye of the Storms' cast trigger exiled a Ward {4} permanent for free. The AI's trigger target pick likewise aimed at a warded permanent whose ward it could not pay, which only gets the ability countered.
+
+**Class:** every triggered ability a carrier puts on the stack with a target, against the pool's warded permanents. Registered: Kappa Cannoneer (Affinity x4, Pinnacle Affinity x4), Sire of Seven Deaths (Eldrazi Ramp x2), Colossal Skyturtle (Living End x1).
+
+**Steps:**
+- **One seam:** `effect_carrier.ward_counters` asks the one ward gate (`optional_costs.ward_gate`) about the targets a triggered ability took, as the stack asks a spell. `put_on_stack` reads it for every carrier; `effect_resolver.resolve_sub_ability` reads it for a parent's reflexive or delayed ability.
+- **Auditor `702.21a/ward_paid`:** the stack's own restatement from the raw ward fields, now read at the trigger seam too. Tested both ways, with the gate patched away.
+- **AI:** `resolution_choices.pick_trigger_targets` never aims a removal trigger at a permanent whose ward it would not pay (`ward_targeting.ward_rules_out_target`; the trigger commits no more mana).
+
+**Tests:** 6, in `tests/test_a_triggered_ability_targeting_a_warded_permanent_meets_its_ward.py`: a cast trigger is countered unpaid and resolves paid; a reflexive trigger (Ajani's 0) meets its target's ward; the AI aims away from a ward it cannot pay; the auditor both ways. 5 fail at `61df7f7` (the silent audit passes).
+
+**Pins:** digest byte-identical (27 games); anchor 29, unchanged; ratchets clean; harness, spec equivalence and census unchanged. **Chunks:** 5506 + 2803 passed at `86d4ad8`, from a pinned worktree.
+
+**Measured:** with unit XL by the `xl-post` arm (pre = `mtr-post`).
+
+**Leads, not built:**
+- **An activated loyalty line** binds its targets through `trigger_targets` and meets no ward; a stack-borne activation meets it as it resolves.
+- **The AI's other trigger picks** (a bounce, a tap, a counter) keep the engine's default and do not read ward.
+
+## Unit XL: an object exiled until a permanent leaves the battlefield returns when it leaves (CR 610.3, 610.3a, 610.3c, 400.7; 2026-10-25)
+
+**Source:** research for the census row `603.2/step_trigger_unresolved` for Static Prison (Boros Energy x1). Its upkeep payment protects an exile that was never performed. Leyline Binding (Domain Zoo x4, 4c Omnath x4) exiled for good through a name-keyed handler.
+
+**Rule:** "When this creature enters, exile target creature an opponent controls until this creature leaves the battlefield." The exile is a one-shot effect. A second one-shot effect, created immediately after the source leaves the battlefield by any route, returns the card to the zone it left: to the battlefield under its owner's control, as a new object (CR 610.3, 610.3c, 400.7). A source that has already left when the exile would begin exiles nothing (CR 610.3a). A card that has left exile since is a new object the return does not find; a token that left the battlefield has ceased to exist (CR 400.7, 111.8). The enter trigger takes its target as it is put on the stack (CR 603.3d).
+
+**The defect:**
+- No enter family took the host, and the legacy parser leaves the shape out on purpose (`parse_etb_targeted_removal`), so the exile was never performed: Static Prison, Banisher Priest, Banishing Light and the rest.
+- Leyline Binding's name-keyed handler exiled through the removal resolver, for good, with no return.
+
+**Class:** 97 pool cards print an exile "until ~ leaves the battlefield"; 63 as an enter trigger that exiles a target permanent. The enter carrier takes 50. The other 13 wait on:
+- a target qualifier left as residue (Silkwrap, Earth Kingdom Jailer, Buried in the Garden, Deputy of Detention);
+- an instruction no family runs (Static Prison's energy, Driftgloom Coyote's conditional counter, 4 unmodelled clauses);
+- a second enter trigger of the card no family takes (Prison Realm's scry, Static Net's life and Powerstone, Lassoed by the Law's token).
+
+Registered: Leyline Binding (taken), Static Prison (refused).
+
+**Steps:**
+- **The zone funnel owns both halves.** `ZoneManager.exile_until_leaves` exiles the card and links it to the source object (instance id, battlefield entry, CR 400.7). Every battlefield departure through `move_card`, and a blink, returns what that object exiled (`_return_linked`): to the battlefield under its owner's control, with its enter triggers, or to another zone it left. A card that leaves exile is forgotten (`_forget_linked`); a token does not return.
+- **The executor:** `effect_executors.exile_until_leaves` (a target permanent, until ~ leaves) is performed through the funnel, and performs nothing when its source has left (CR 610.3a). Its family is `enter_exile`.
+- **The view and the carrier:** `effect_views.strict_enter_exile` is the shared trigger body with the linked exile among it. The enter carrier takes that family with its targets taken as it is put on the stack (`put_on_stack`: the controller's pick, ward from unit WT); the other enter families keep their unbound slots (A35). The discard, characteristic-change and sacrifice executors stay out of the family, which waits on their own harness proof.
+- **Retired:** Leyline Binding's enter handler; the card-name registry falls 73 → 72.
+- **Auditor `610.3/linked_return`:** at the departure seam, restated from the cards' zones: once its source has left, no card it exiled until then that was still in exile is left there (tokens aside). Tested both ways, with the return patched away.
+
+**Tests:** 17, in `tests/test_an_object_exiled_until_a_permanent_leaves_returns_when_it_leaves.py`; 12 fail at `86d4ad8`. They cover:
+- the exile, the AI's pick, and no legal target;
+- CR 610.3a;
+- the return by four routes, under the owner as a new object, through a blink;
+- a card that left exile since, and a token;
+- the carrier and the refused Static Prison;
+- the registered member;
+- the auditor both ways.
+
+**Pins:**
+- **Digest:** 5 of 27 games change, all with the same winners and turns. Four change in log text only. In Domain Zoo vs Eldrazi Tron s51000, Ulamog's cast trigger exiles a Binding at T22 and the Karn it held returns. Replayed and accepted.
+- **Anchor:** Jeskai Blink vs 4c Omnath s50000 goes 13 → 12 turns, same winner. At T8 Witch Enchanter destroys the Binding, Phelia returns, and Supreme Verdict takes it with the rest. Refreshed.
+- **Harness:** 2251 pairs; the 49 new are intended (the legacy enter pass performed nothing, and the handler is retired).
+- **Gate parity:** 5327/2202/3125 → 5376/2251/3125 (legacy fallback unchanged).
+- **Spec equivalence and census:** unchanged; closure locked in.
+- **Ratchets:** card-name registry 73 → 72, lowered in the commit; every other ratchet passes.
+- **Chunks:** 5523 + 2803 passed at `d9b8e3c`, from a pinned worktree.
+
+**Measured:** with unit WT by the `xl-post` arm (pre = `mtr-post`).
+
+**Leads, not built:**
+- **Static Prison's enter host** waits on an executor for "you get {E}{E}" (PLAYER_COUNTERS). The legacy entry path grants the energy, so taking the host means retiring that grant.
+- **Undying and persist** return a creature without the funnel; a source that returns that way does not give back what it exiled.
+- **The hand-exile class** (Kitesail Freebooter's "until", Tidehollow Sculler's leaves-the-battlefield return, CR 603.6c) is the legacy resolver's, returned on death only.
+- **A full enter trigger body** (the attack and cast carriers' body under the enter head) would switch 950 faces off their legacy resolvers; a unit of its own.
+- **The AI** does not value removing a permanent that holds an exiled card.
