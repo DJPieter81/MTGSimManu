@@ -18,12 +18,12 @@ Prison, Banisher Priest and 60-odd others); Leyline Binding's name-keyed
 handler exiled for good, with no return.
 
 Class: 97 pool cards print an exile "until ~ leaves the battlefield"; 63
-of them as an enter trigger exiling a target permanent, 50 of which the
+of them as an enter trigger exiling a target permanent, 51 of which the
 enter carrier's linked-exile family takes (the rest wait on a target
 qualifier left as residue, an instruction no family runs, or a second
 enter trigger of the card no family takes). Registered: Leyline Binding
-(Domain Zoo x4, 4c Omnath x4), Static Prison (Boros Energy x1; its energy
-instruction waits on its own unit). Card names are fixture carriers.
+(Domain Zoo x4, 4c Omnath x4), Static Prison (Boros Energy x1, its energy
+given since unit EN). Card names are fixture carriers.
 """
 from __future__ import annotations
 
@@ -181,9 +181,10 @@ def test_the_enter_carrier_takes_a_host_holding_the_linked_exile(card_db):
 
 def test_a_host_with_an_instruction_the_family_does_not_run_is_refused(
         card_db):
-    # Static Prison: "... You get {E}{E}." -- no executor gives energy yet.
+    # Hostage Taker: "... You may cast that card for as long as it remains
+    # exiled, ..." -- a clause the grammar leaves unmodelled.
     from engine.effect_carrier import etb_plan
-    assert etb_plan(card_db.get_card("Static Prison").effects.faces[0]) \
+    assert etb_plan(card_db.get_card("Hostage Taker").effects.faces[0]) \
         is None
 
 

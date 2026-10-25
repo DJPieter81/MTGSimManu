@@ -200,10 +200,6 @@
   ],
   [
    "Static Prison",
-   "TRIGGERED:0:0"
-  ],
-  [
-   "Static Prison",
    "TRIGGERED:0:1"
   ],
   [
@@ -283,5 +279,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 204
+ "state_changing_floor": 205
 }

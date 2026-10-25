@@ -1694,18 +1694,6 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             if not _fires:
                 continue
 
-        # ── "Whenever you cast a noncreature spell, you get {E}" ──
-        # Matches Ocelot Pride and any future card with this exact trigger.
-        if (permanent.template.has_noncreature_spell_cast_trigger
-                and getattr(permanent.template, 'has_energy_production', False)
-                and not spell_cast.template.is_creature
-                and permanent.controller == caster_idx
-                and 'create' not in oracle):  # exclude token-creators to avoid double-fire
-            import re as _re
-            m = _re.search(r'you get\s+((?:\{e\})+)', oracle)
-            energy_count = m.group(1).count('{e}') if m else 1
-            game.produce_energy(caster_idx, energy_count, permanent.name)
-
         # ── "Whenever you cast a[n] <type> spell, create a token" ──
         # CR 603 cast-triggered token, generalised across spell TYPE.
         # The spell-type condition + count are parsed once at DB load into

@@ -726,12 +726,10 @@ class ResolutionManager:
                 game.continuous_effects.register(effect)
             game.continuous_effects.recalculate(game)
 
-        # Energy production on ETB (from oracle-derived template property)
-        if template.energy_production > 0:
-            game.players[controller].add_energy(template.energy_production)
-            game.log.append(f"T{game.display_turn} P{controller+1}: "
-                            f"{template.name} produces {template.energy_production} energy "
-                            f"(total: {game.players[controller].energy_counters})")
+        # Energy a permanent's text gives is given by the ability that
+        # prints it, as that ability resolves (unit EN, CR 122.1): an enter
+        # trigger's through the enter carrier, never as the permanent enters
+        # whatever ability printed it.
 
         # Torpor Orb: suppress creature ETB abilities
         torpor_active = any(

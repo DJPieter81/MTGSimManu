@@ -599,21 +599,21 @@
     "strict": true
    }
   ],
-  "executable": 127,
+  "executable": 130,
   "family": "attack_trigger",
   "hosts": {
    "mainboard": 5,
-   "pool": 122,
+   "pool": 125,
    "sideboard": 0
   },
   "steps": {
    "E1": 26,
    "E2": 7,
    "E3": 36,
-   "E4": 25,
+   "E4": 28,
    "E5": 33
   },
-  "strict": 127,
+  "strict": 130,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 31,
@@ -807,7 +807,7 @@
     "strict": false
    }
   ],
-  "executable": 104,
+  "executable": 108,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
@@ -886,21 +886,21 @@
     "strict": true
    }
   ],
-  "executable": 94,
+  "executable": 95,
   "family": "cast_trigger",
   "hosts": {
    "mainboard": 6,
-   "pool": 88,
+   "pool": 89,
    "sideboard": 0
   },
   "steps": {
    "E1": 16,
    "E2": 2,
    "E3": 21,
-   "E4": 30,
+   "E4": 31,
    "E5": 25
   },
-  "strict": 94,
+  "strict": 95,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 25,
@@ -968,20 +968,20 @@
     "strict": true
    }
   ],
-  "executable": 33,
+  "executable": 34,
   "family": "combat_damage_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 31,
+   "pool": 32,
    "sideboard": 0
   },
   "steps": {
    "E2": 1,
    "E3": 20,
-   "E4": 8,
+   "E4": 9,
    "E5": 4
   },
-  "strict": 33,
+  "strict": 34,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN,EXILE": 1,
@@ -990,7 +990,8 @@
    "DRAW": 16,
    "DRAW,GAIN_LIFE": 1,
    "DRAW,LOSE_LIFE": 3,
-   "EXILE": 1
+   "EXILE": 1,
+   "PLAYER_COUNTERS": 1
   }
  },
  "combat_prevention": {
@@ -1319,11 +1320,11 @@
     "strict": true
    }
   ],
-  "executable": 500,
+  "executable": 501,
   "family": "damage",
   "hosts": {
    "mainboard": 21,
-   "pool": 476,
+   "pool": 477,
    "sideboard": 3
   },
   "steps": {
@@ -1331,9 +1332,9 @@
    "E2": 81,
    "E3": 111,
    "E4": 127,
-   "E5": 27
+   "E5": 28
   },
-  "strict": 500,
+  "strict": 501,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 14,
@@ -1551,6 +1552,13 @@
     "strict": true
    },
    {
+    "card": "Static Prison",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Thought Monitor",
     "host": "TRIGGERED:0:2",
     "part": "mainboard",
@@ -1579,30 +1587,30 @@
     "strict": true
    }
   ],
-  "executable": 605,
+  "executable": 661,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 23,
-   "pool": 582,
+   "mainboard": 24,
+   "pool": 637,
    "sideboard": 0
   },
   "steps": {
    "E2": 109,
    "E3": 197,
-   "E4": 284,
+   "E4": 340,
    "E5": 10,
    "E6": 5
   },
-  "strict": 605,
+  "strict": 661,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 10,
    "CREATE_TOKEN": 269,
    "DRAW": 109,
    "EXILE": 55,
-   "EXILE,GAIN_LIFE": 6,
    "MILL": 37,
    "MOVE": 34,
+   "PLAYER_COUNTERS": 55,
    "PUT_COUNTERS": 13,
    "SACRIFICE": 14,
    "SURVEIL": 47
@@ -2391,20 +2399,20 @@
     "strict": true
    }
   ],
-  "executable": 93,
+  "executable": 95,
   "family": "step_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 91,
+   "pool": 93,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
    "E2": 3,
    "E3": 28,
-   "E4": 38
+   "E4": 40
   },
-  "strict": 93,
+  "strict": 95,
   "sub_kinds": {},
   "verb_sets": {
    "CREATE_TOKEN": 30,
@@ -2454,12 +2462,12 @@
   "family": "pump_restrict",
   "hosts": {
    "mainboard": 4,
-   "pool": 390,
+   "pool": 389,
    "sideboard": 0
   },
   "steps": {
    "E4": 3,
-   "E5": 307,
+   "E5": 306,
    "none": 84
   },
   "strict": 180,

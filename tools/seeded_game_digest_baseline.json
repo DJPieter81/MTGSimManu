@@ -1,5 +1,5 @@
 {
-  "combined": "acd30924154c6b710c31f5340d3c671f7416d419bca05ae3e292149b0ab59abc",
+  "combined": "a97ee4b2e18421a8aced9b23332fbef6ba76eb274f19b57f7b7306a2eba1ee68",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -33,8 +33,8 @@
       "winner": "Azorius Control"
     },
     "bo1|Boros Energy|Affinity|50000": {
-      "lines": 469,
-      "sha256": "80815134d5af40385efa372ed397a12cdb56362acb5dfadb1448b9e6725defc3",
+      "lines": 472,
+      "sha256": "15da927d54aa8a35f304f5e5687f09dbf90c04c74f012baef3c565a62d956b61",
       "turns": 6,
       "winner": "Affinity"
     },
@@ -123,16 +123,16 @@
       "winner": "Domain Zoo"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g2": {
-      "lines": 400,
-      "sha256": "8d2c90ee774d8a5e854bb50ae016d1cf6dd943b37300a776918c7f9e4f9b5a22",
+      "lines": 399,
+      "sha256": "2175e6f92841571c4c53c921d239262f0b1fb361ad2bd25485686c0159ecfb58",
       "turns": 6,
       "winner": "Boros Energy"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g3": {
-      "lines": 460,
-      "sha256": "f59ae151e2420a48043118653913afb57ab1d79c0d03c5fdc689668e2cc5b484",
-      "turns": 6,
-      "winner": "Domain Zoo"
+      "lines": 728,
+      "sha256": "6d615c28991a051e39f129003ae0d6d3a2212ec805eb2350cbe8f59131803257",
+      "turns": 9,
+      "winner": "Boros Energy"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g1": {
       "lines": 1431,

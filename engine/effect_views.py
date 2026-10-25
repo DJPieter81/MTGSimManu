@@ -680,7 +680,8 @@ def strict_draw_trigger(h: AbilityEffects) -> bool:
 FAMILY_COMBAT_DAMAGE_TRIGGER = "combat_damage_trigger"
 _COMBAT_DAMAGE_TRIGGER_VERBS = frozenset({
     Verb.DRAW, Verb.CREATE_TOKEN, Verb.EXILE, Verb.CONTINUOUS, Verb.DAMAGE,
-    Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.KEYWORD_ACTION})
+    Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.KEYWORD_ACTION,
+    Verb.PLAYER_COUNTERS})
 # The dealers it resolves: the source itself ("~"). An Equipment's or an
 # Aura's "equipped / enchanted creature deals" waits for its own step.
 _COMBAT_DAMAGE_DEALERS = frozenset({"self"})
@@ -742,7 +743,7 @@ def strict_trigger(h: AbilityEffects) -> bool:
 _STEP_TRIGGER_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.EXILE, Verb.MILL,
-    Verb.SURVEIL})
+    Verb.SURVEIL, Verb.PLAYER_COUNTERS})
 _STEP_TARGET_ZONES = _TRIGGER_TARGET_ZONES | {"graveyard"}
 
 
@@ -778,7 +779,8 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
 _TRIGGER_BODY_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
-    Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE})
+    Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE,
+    Verb.PLAYER_COUNTERS})
 _ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER})
 _CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
                                 RefKind.DEFENDING_PLAYER})

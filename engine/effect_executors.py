@@ -91,12 +91,13 @@ FAMILY_ATTACK_TRIGGER = "attack_trigger"
 # harness proof.
 FAMILY_ENTER_EXILE = "enter_exile"
 
-# The verbs a typed trigger's body runs (units AK, CT.2, XL).
+# The verbs a typed trigger's body runs (units AK, CT.2, XL, EN).
 _TRIGGER_BODY_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
                                  Verb.DRAW, Verb.DISCARD, Verb.CREATE_TOKEN,
                                  Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
                                  Verb.KEYWORD_ACTION, Verb.CONTINUOUS,
-                                 Verb.EXILE, Verb.SACRIFICE})
+                                 Verb.EXILE, Verb.SACRIFICE,
+                                 Verb.PLAYER_COUNTERS})
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -110,6 +111,7 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_TOKENS_COUNTERS: frozenset({Verb.KEYWORD_ACTION,
                                                Verb.CREATE_TOKEN,
                                                Verb.PUT_COUNTERS,
+                                               Verb.PLAYER_COUNTERS,
                                                Verb.CONTINUOUS, Verb.EXILE}),
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
@@ -119,7 +121,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.GAIN_LIFE, Verb.DRAW,
                                             Verb.CREATE_TOKEN,
                                             Verb.PUT_COUNTERS, Verb.EXILE,
-                                            Verb.MILL, Verb.SURVEIL}),
+                                            Verb.MILL, Verb.SURVEIL,
+                                            Verb.PLAYER_COUNTERS}),
             FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
 
@@ -2145,6 +2148,77 @@ def execute_mill(ctx: Resolution, s: EffectSpec,
 execute_mill.supports = _mill_supported
 
 
+# ── PLAYER_COUNTERS (unit EN) ─────────────────────────────────────────
+
+def player_counters_supported(s: EffectSpec) -> bool:
+    """"<Players> get(s) <counters>" ("you get {E}{E}", "each opponent
+    gets a poison counter", "you get {E} for each creature you control",
+    CR 122.1): each acting player the dispatcher binds -- the controller,
+    a printed player set, the player chosen for a target, the controller
+    of a chosen object, the player the event names -- gets the printed
+    counters, of one kind a player carries (`PermanentEffects.
+    PLAYER_COUNTER_KINDS`), through the one owner."""
+    from .effect_spec import CounterSpec
+    from .permanent_effects import PermanentEffects
+    p = s.payload
+    kinds = tuple(getattr(p, "kinds", ()) or ())
+    if s.verb is not Verb.PLAYER_COUNTERS or not isinstance(p, CounterSpec) \
+            or p.choice or not kinds or len(set(kinds)) != 1 \
+            or kinds[0] not in PermanentEffects.PLAYER_COUNTER_KINDS:
+        return False
+    if s.optional or s.alternatives or s.flags or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.duration is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.target is not None or s.target_slot is not None:
+        return False
+    if not (_named_players_supported(s.actor)
+            or names_target_player(s.actor)):
+        return False
+    return s.amount is None or conditions.amount_supported(s.amount)
+
+
+def execute_player_counters(ctx: Resolution, s: EffectSpec,
+                            actors: Tuple[int, ...]) -> Outcome:
+    from .permanent_effects import PermanentEffects
+    kind = s.payload.kinds[0]
+    per = _amount(ctx, s) if s.amount is not None else 1
+    n = len(s.payload.kinds) * per
+    if n <= 0 or not actors:
+        return Outcome(False, {})
+    cause = getattr(_source_object(ctx), "name", "")
+    for p in actors:
+        before = _player_counter_count(ctx.game.players[p], kind)
+        PermanentEffects.give_player_counters(ctx.game, p, kind, n, cause)
+        _audit_player_counters(ctx, p, kind, before, n)
+    return Outcome(True, {p: (n,) for p in actors})
+
+
+execute_player_counters.supports = player_counters_supported
+
+
+def _player_counter_count(player: Any, kind: str) -> int:
+    """The audit's read of a player's counters of `kind`, from the raw
+    fields."""
+    return int(getattr(player, f"{kind}_counters", 0) or 0)
+
+
+def _audit_player_counters(ctx: Resolution, player: int, kind: str,
+                           before: int, n: int) -> None:
+    """CR 122.1, restated from the player's raw counter field: a player
+    told to get N counters of a kind has N more of them. Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    now = _player_counter_count(ctx.game.players[player], kind)
+    rules_audit.check(
+        "122.1/player_counters", now - before == n,
+        f"{getattr(_source_object(ctx), 'name', '?')}: P{player + 1} got "
+        f"{now - before} of {n} {kind} counters", game=ctx.game)
+
+
 # ── ADD_MANA (family card_flow, an enter trigger's mana; unit EM) ─────
 
 # The five colours a "one mana of any color" choice ranges over (CR 105.1).
@@ -2235,6 +2309,7 @@ EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTORS[Verb.PUT_COUNTERS] = execute_put_counters
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
+EXECUTORS[Verb.PLAYER_COUNTERS] = execute_player_counters
 EXECUTORS[Verb.ADD_MANA] = execute_add_mana
 EXECUTORS[Verb.DISCARD] = execute_discard
 EXECUTORS[Verb.REVEAL] = execute_reveal

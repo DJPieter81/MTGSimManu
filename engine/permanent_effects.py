@@ -1102,6 +1102,25 @@ class PermanentEffects:
                         f"+{amount} energy from {source_name} "
                         f"(total: {game.players[player_idx].energy_counters})")
 
+    # The counters a player has that the engine keeps (CR 122.1): energy
+    # (CR 107.14) and poison (CR 122.1f).
+    PLAYER_COUNTER_KINDS = frozenset({"energy", "poison"})
+
+    @staticmethod
+    def give_player_counters(game: "GameState", player_idx: int, kind: str,
+                             amount: int, source_name: str = "") -> None:
+        """The one owner of a player getting counters (CR 122.1): `amount`
+        counters of `kind`, one of `PLAYER_COUNTER_KINDS`."""
+        if kind == "energy":
+            PermanentEffects.produce_energy(game, player_idx, amount,
+                                            source_name)
+            return
+        player = game.players[player_idx]
+        player.add_poison(amount)
+        game.log.append(f"T{game.display_turn} P{player_idx+1}: "
+                        f"+{amount} poison from {source_name} "
+                        f"(total: {player.poison_counters})")
+
 
     @staticmethod
     def spend_energy_for_effect(game: "GameState", player_idx: int, amount: int,

@@ -3180,6 +3180,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Aethergeode Miner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Afterthought Sentry",
     "TRIGGERED:0:1"
    ],
@@ -3500,6 +3508,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Glint-Sleeve Siphoner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Graceful Cat",
     "TRIGGERED:0:0"
    ],
@@ -3760,6 +3776,14 @@
     "TRIGGERED:1:1"
    ],
    "reason": "unit AK: the attack carrier draws and discards as printed (a 'may' discard when its controller takes it, CR 608.2c) once attackers are declared (CR 508.1m, 603.2); no legacy attack pass performed it: the legacy pass reads only the attacker's own text, with no pattern for this instruction"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Phyrexian Ironworks",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -4240,6 +4264,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: its controller gains 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Dynavolt Tower",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -4800,6 +4832,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Longtusk Cub",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -6972,6 +7012,14 @@
   {
    "pair": [
     "dispatched",
+    "Highspire Infusion",
+    "SPELL:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Hive Stirrings",
     "SPELL:0:0"
    ],
@@ -9036,6 +9084,102 @@
   {
    "pair": [
     "etb:dispatch",
+    "Aether Chaser",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Herder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Hub",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Inspector",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Meltdown",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Poisoner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Swooper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aether Theorist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aethersphere Harvester",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aetherstorm Roc",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aetherstream Leopard",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aethertorch Renegade",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Aftermath Analyst",
     "TRIGGERED:0:0"
    ],
@@ -9524,6 +9668,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Bristling Hydra",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Broadcast Rambler",
     "TRIGGERED:0:0"
    ],
@@ -9732,6 +9884,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Chthonian Nightmare",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Circle of Confinement",
     "TRIGGERED:0:0"
    ],
@@ -9812,6 +9972,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Conduit Goblin",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Conduit Pylons",
     "TRIGGERED:0:0"
    ],
@@ -9824,6 +9992,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Consul's Shieldguard",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Consulate Surveillance",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -9908,6 +10092,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Cyclops Superconductor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Cytoplast Root-Kin",
     "TRIGGERED:0:1"
    ],
@@ -9952,6 +10144,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Deadlock Trap",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -10156,6 +10356,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Eddytrail Hawk",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Edgewall Pack",
     "TRIGGERED:0:1"
    ],
@@ -10212,6 +10420,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Electrostatic Pummeler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Electrozoa",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Elegant Parlor",
     "TRIGGERED:0:1"
    ],
@@ -10256,6 +10480,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Emissary of Soulfire",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -10700,6 +10932,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Glint-Sleeve Siphoner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Gloomshrieker",
     "TRIGGERED:0:1"
    ],
@@ -10736,6 +10976,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gonti's Aether Heart",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -10964,6 +11212,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Hexgold Slith",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Hidden Grotto",
     "TRIGGERED:0:0"
    ],
@@ -10976,6 +11232,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hightide Hermit",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -11064,6 +11328,14 @@
     "TRIGGERED:0:2"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ichor Rats",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -11160,6 +11432,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Janjeet Sentry",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -11336,6 +11616,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lathnu Hellion",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -11580,6 +11868,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Maulfist Doorbuster",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Maverick Thopterist",
     "TRIGGERED:0:1"
    ],
@@ -11692,6 +11988,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Minister of Inquiries",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Mirror Golem",
     "TRIGGERED:0:0"
    ],
@@ -11736,6 +12040,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Multiform Wonder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -12252,6 +12564,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Primal Prayers",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Proctor of Potential",
     "TRIGGERED:0:0"
    ],
@@ -12444,10 +12764,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Riddle Gate Gargoyle",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Ridgescale Tusker",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Riparian Tiger",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -12556,6 +12892,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sage of Shaila's Claim",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sailor of Means",
     "TRIGGERED:0:0"
    ],
@@ -12632,6 +12976,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Scrapper Champion",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -12740,6 +13092,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Servant of the Conduit",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Servo Schematic",
     "TRIGGERED:0:0"
    ],
@@ -12800,6 +13160,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Shipwreck Moray",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -12916,6 +13284,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Smelted Chargebug",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Snooping Newsie",
     "TRIGGERED:0:0"
    ],
@@ -12924,10 +13300,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Solar Transformer",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Solitary Cell",
     "TRIGGERED:0:0"
    ],
    "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Solstice Zealot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -13004,6 +13396,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Spontaneous Artist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Spreading Seas",
     "TRIGGERED:0:1"
    ],
@@ -13040,6 +13440,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Static Prison",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "units XL, EN: the enter trigger exiles its target until the enchantment leaves the battlefield (CR 610.3) and gives its controller two energy counters (CR 122.1), the energy once; the legacy pass performed no exile and gave the energy on entry"
   },
   {
    "pair": [
@@ -13164,6 +13572,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Tempest Harvester",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Tempting Witch",
     "TRIGGERED:0:0"
    ],
@@ -13264,6 +13680,54 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thriving Grubs",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thriving Ibex",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thriving Rats",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thriving Rhino",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thriving Skyclaw",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thriving Turtle",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -13500,6 +13964,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Unstable Amulet",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Urban Utopia",
     "TRIGGERED:0:1"
    ],
@@ -13584,6 +14056,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Voltaic Brawler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Voltstorm Angel",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -13712,6 +14200,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Whirler Virtuoso",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -14048,6 +14544,14 @@
     "LOYALTY:0:2"
    ],
    "reason": "unit UG: the line's colour qualifier is the requirement's colour bound, no longer grammar residue, so the loyalty carrier destroys the target permanent it chose; the legacy planeswalker manager left the line unclassified and performed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Aethersquall Ancient",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [
@@ -14408,6 +14912,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Phyrexian Vatmother",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
   },
   {
    "pair": [

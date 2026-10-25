@@ -354,6 +354,10 @@ class PlayerState:
             return True
         return False
 
+    def add_poison(self, amount: int):
+        """Add poison counters (CR 122.1f; ten or more lose, CR 704.5c)."""
+        self.poison_counters += amount
+
     # ── Views over the effect registry (fixtures and legacy readers) ──
 
     def _registry(self):
