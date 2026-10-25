@@ -11487,7 +11487,7 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Ratchets:** effect-parser (b) 96 → 91, lowered in the commit. Every other ratchet passes.
 - **Chunks:** 5472 + 2803 passed at `cdff276`, from a pinned worktree. The first run of chunk A failed one test: the discard executor wrote its per-player result into a dict by subscript, which the executors' purity test forbids (`test_effect_family_damage`: assignments only to locals and the executors' own tables). It now builds the pairs, and the commit was amended before the re-run.
 
-**Measured:** with unit DP, by the `dp-post` arm (pre = `br-post`).
+**Measured:** by the `dp-post` arm, recorded under unit DP: no deck moves more than 1.1 pp, and Archon of Cruelty's census row is gone. The arm's one violation was the edict auditor's own misreading, fixed in `faaff7c`.
 
 **Leads, not built:**
 - **An enter trigger's edict aimed at a chosen player** (Crude Bent Blade, Trial of Ambition, Gatekeeper of Malakir): the enter carrier binds no player targets yet.
@@ -11531,9 +11531,32 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 - **Ratchets:** all pass, unchanged.
 - **Chunks:** 5488 + 2803 passed at `03a58d1`, from a pinned worktree. The first run, at `3b08082`, failed those two dispatcher pins in chunk A; they are updated in the commit.
 
-**Measured:** with unit ED-T, by the `dp-post` arm (pre = `br-post`).
+**Measured:** by the `dp-post` arm (pre = `br-post`, same seeds, n=20 Bo3, all 25 shards, run on `f13b0f5`), with unit ED-T.
+- **No deck moves more than 1.1 pp** (Eldrazi Tron +1.1: Ulamog's attack now exiles twenty cards). 18 cells change, each by one match of 20.
+- **Bands:** unchanged: 7 decks out of band, 52.1 pp total miss.
+- **Audit:** 1 violation, `701.21a/edict` (Goryo's Vengeance vs Broodscale Bloodchief s51500). It is the auditor's own misreading, fixed in `faaff7c` (next section).
+- **Census:** the rows for Archon of Cruelty and Ulamog are gone. 8 registered rows remain:
+  - attack: Guide of Souls, Phelia, Primeval Titan, Territorial Kavu;
+  - cast: Vengevine;
+  - step: Abhorrent Oculus, Ocelot Pride, Static Prison.
 
 **Leads, not built:**
 - **"That player" in an attack trigger** (EVENT_PLAYER) stays unbound in the attack carrier, though in a two-player game it is the defending player.
 - **A multiplayer defending player** needs the attack's per-attacker defender: the combat manager assumes two players.
 - **The combat-damage carrier** could name the defending player too (CR 506.2 holds through the combat damage step); no pool host needs it yet.
+
+## Audit fix: the edict auditor counts only the permanents the edict could take (CR 701.21a; 2026-10-25)
+
+**Source:** the `dp-post` arm's one violation, `701.21a/edict` in Goryo's Vengeance vs Broodscale Bloodchief s51500 (game 3, T7).
+
+**What happened:**
+- Archon of Cruelty's attack made its opponent sacrifice an Eldrazi Spawn.
+- While the attack trigger was still resolving, Blade of the Bloodchief's death trigger put a counter on Basking Broodscale, and Basking Broodscale's own trigger created a new Spawn.
+- The auditor counted every matching permanent left after the edict, the new Spawn among them, so a correct edict read as one that took nothing.
+
+**Fix:** the auditor records the instance ids of the permanents the edict could take before the sacrifice (its own restatement of the description, on the face that is up), and counts only those afterwards. The executor no longer computes the count while the audit is off.
+
+**Tests:** `test_the_audit_counts_only_the_permanents_the_edict_could_take` (Doomed Traveler's Spirit, created inside a Cruel Edict), red at `f13b0f5`. The both-ways pair is unchanged and green. Digest byte-identical; the violating match reproduces no violation.
+
+**Lead, not built:**
+- **A trigger that triggers during a resolution resolves inside it.** Here a death trigger and a counter trigger both resolved before the attack trigger finished; CR 603.3 puts them on the stack the next time a player would receive priority. It belongs with unit SB (#102): the engine's dies observers and counter triggers resolve inside the zone funnel.
