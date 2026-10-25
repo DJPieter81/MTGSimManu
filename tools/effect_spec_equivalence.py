@@ -941,15 +941,23 @@ def _part(name: str, mb: frozenset, sb: frozenset) -> str:
 
 
 def _pair(handler, family, t, h, label, part, switched) -> Pair:
+    from engine.effect_carrier import mode_hosts
     from engine.effect_resolver import can_execute
+    from engine.effect_spec import HostKind
     v = _views()
     verbs, subs = host_verbs(h)
     strict = v.STRICT.get(family)
+    # A modal triggered host is performed as its chosen modes, each a host
+    # of its own (`effect_carrier.trigger_mode_host`, unit MTR): those are
+    # what the carrier holds to its shape.
+    parts = (mode_hosts(h) if h.kind is HostKind.TRIGGERED and h.modes
+             else (h,))
     return Pair(handler=handler, family=family, card=t.name, host=label,
                 part=part, verbs=verbs, sub_kinds=subs,
                 step=earliest_step(verbs),
-                strict=bool(strict and strict(h)),
-                executable=can_execute(h, family), switched=switched)
+                strict=bool(strict and all(strict(x) for x in parts)),
+                executable=all(can_execute(x, family) for x in parts),
+                switched=switched)
 
 
 def _clause_contexts(t, ce):

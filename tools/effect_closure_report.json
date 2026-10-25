@@ -585,6 +585,13 @@
     "strict": true
    },
    {
+    "card": "Territorial Kavu",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Ulamog, the Ceaseless Hunger",
     "host": "TRIGGERED:0:2",
     "part": "mainboard",
@@ -592,21 +599,21 @@
     "strict": true
    }
   ],
-  "executable": 126,
+  "executable": 127,
   "family": "attack_trigger",
   "hosts": {
-   "mainboard": 4,
+   "mainboard": 5,
    "pool": 122,
    "sideboard": 0
   },
   "steps": {
    "E1": 26,
    "E2": 7,
-   "E3": 35,
+   "E3": 36,
    "E4": 25,
    "E5": 33
   },
-  "strict": 126,
+  "strict": 127,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 31,
@@ -1565,32 +1572,32 @@
     "strict": true
    }
   ],
-  "executable": 554,
+  "executable": 556,
   "family": "card_flow",
   "hosts": {
    "mainboard": 22,
-   "pool": 532,
+   "pool": 534,
    "sideboard": 0
   },
   "steps": {
-   "E2": 60,
+   "E2": 61,
    "E3": 197,
-   "E4": 282,
+   "E4": 283,
    "E5": 10,
    "E6": 5
   },
-  "strict": 554,
+  "strict": 556,
   "sub_kinds": {},
   "verb_sets": {
    "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
-   "CREATE_TOKEN": 268,
+   "CREATE_TOKEN": 269,
    "DRAW": 109,
    "EXILE": 10,
    "MILL": 37,
    "MOVE": 34,
    "PUT_COUNTERS": 13,
-   "SACRIFICE": 13,
+   "SACRIFICE": 14,
    "SURVEIL": 47
   }
  },
@@ -2377,20 +2384,20 @@
     "strict": true
    }
   ],
-  "executable": 92,
+  "executable": 93,
   "family": "step_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 90,
+   "pool": 91,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
    "E2": 3,
-   "E3": 27,
+   "E3": 28,
    "E4": 38
   },
-  "strict": 92,
+  "strict": 93,
   "sub_kinds": {},
   "verb_sets": {
    "CREATE_TOKEN": 30,

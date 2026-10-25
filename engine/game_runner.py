@@ -298,6 +298,12 @@ class AICallbacks(GameCallbacks):
         return pick_trigger_targets(game, player_idx, source, spec, req,
                                     players, permanents, x_value=x_value)
 
+    def choose_trigger_modes(self, game, player_idx, source, host, legal,
+                             choose):
+        from ai.modal import select_trigger_modes
+        return select_trigger_modes(game, player_idx, source, host, legal,
+                                    choose)
+
     def choose_harmonize_tapper(self, game, player_idx, card, tappers):
         """The engine's default (`default_harmonize_tapper`): the most power
         reduces the cost the most, and a bigger reduction is a bigger X."""

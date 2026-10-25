@@ -220,6 +220,14 @@ def select_modal_modes(game, card, controller: int, targets=None,
         legal = modal_spell.legal_modes(game, card, controller, targets or [])
     values = {i: mode_value(game, card, controller, i, targets, x_value)
               for i in legal}
+    return _pick_modes(legal, values, lo, hi)
+
+
+def _pick_modes(legal, values, lo: int, hi: int) -> list:
+    """The one choosing rule, for a modal spell and a modal trigger alike:
+    every legal mode worth more than nothing, up to the most the header
+    allows; then, short of its fewest, the best of the rest. Ties break
+    toward the earlier mode. In printed order."""
     ranked = sorted(legal, key=lambda i: (values[i], -i), reverse=True)
     chosen = [i for i in ranked if values[i] > 0][:hi]
     for i in ranked:
@@ -228,6 +236,60 @@ def select_modal_modes(game, card, controller: int, targets=None,
         if i not in chosen:
             chosen.append(i)
     return sorted(chosen)
+
+
+def _graveyard_exile_value(game, controller: int, source, host) -> float:
+    """What an "exile [up to one] target card from a graveyard" of `host`
+    takes from its owner: the worth of the best card it may take that is
+    worth denying them (`ai.graveyard_removal.worth_aiming_at`: a keystone
+    of their plan, or still a resource to them there), nothing when none
+    is."""
+    from ai.graveyard_removal import worth_aiming_at
+    from engine.effect_executors import graveyard_target_exile
+    from engine.effect_spec import iter_specs
+    from engine.target_solver import legal_slot_choices
+    value = 0.0
+    for s in iter_specs(host.specs):
+        if not graveyard_target_exile(s) or s.target_slot is None \
+                or s.target_slot >= len(host.targets):
+            continue
+        _, cards = legal_slot_choices(game, controller,
+                                      host.targets[s.target_slot],
+                                      source=source)
+        value += max((_perm_worth(c) for c in cards
+                      if worth_aiming_at(game, controller, c)), default=0.0)
+    return value
+
+
+def trigger_mode_value(game, controller: int, source, host) -> float:
+    """What performing one mode of a modal triggered ability is worth to
+    its controller, read from the mode as a host of its own
+    (`engine.effect_carrier.trigger_mode_host`), in this module's
+    currency: its instructions that name their acting players
+    (`_named_players_value`: tokens, counters, mill, edicts) and its exile
+    of a card from a graveyard (`_graveyard_exile_value`). Any other
+    instruction adds nothing (no tuning knob), so such a mode is chosen
+    only to make up the header's fewest."""
+    from engine.effect_spec import Verb, iter_specs
+    verbs = {s.verb for s in iter_specs(host.specs)}
+    value = sum(_named_players_value(game, source, controller, host, verb)
+                for verb in (Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL,
+                             Verb.SACRIFICE) if verb in verbs)
+    return value + _graveyard_exile_value(game, controller, source, host)
+
+
+def select_trigger_modes(game, controller: int, source, host, legal,
+                         choose) -> list:
+    """The modes a modal triggered ability's controller chooses as it is
+    put on the stack (CR 603.3c), by the modal spell's rule
+    (`_pick_modes`) over `trigger_mode_value`, among the `legal` modes the
+    engine offers (CR 700.2a)."""
+    from engine.effect_carrier import trigger_mode_host
+    lo, hi = choose
+    values = {i: trigger_mode_value(game, controller, source,
+                                    trigger_mode_host(host, i))
+              for i in legal}
+    return _pick_modes(legal, values, lo, hi)
 
 
 def worth_casting_without_targets(game, card, controller: int) -> bool:

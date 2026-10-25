@@ -3988,6 +3988,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Territorial Kavu",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit MTR: the attack carrier takes a modal trigger each of whose modes it runs, and performs the mode its controller chooses as it is put on the stack (CR 603.3c, 700.2); the legacy side was a name-keyed handler that chose the mode in the engine, now retired, so it performs nothing"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Titans' Vanguard",
     "TRIGGERED:0:1"
    ],
@@ -10188,6 +10196,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Exhibition Magician",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MTR: the enter carrier takes a modal trigger each of whose modes it runs, and performs the mode its controller chooses as it is put on the stack (CR 603.3c, 700.2); the legacy enter pass performed no mode"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Exhumer Thrull",
     "TRIGGERED:0:1"
    ],
@@ -10392,6 +10408,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit WX: an {X} in the mana cost now binds the X the enter trigger prints (CR 107.3a, the X paid to cast the permanent), so it draws X cards through the draw owner; the legacy enter path resolved nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gaius van Baelsar",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MTR: the enter carrier takes a modal trigger each of whose modes it runs, and performs the mode its controller chooses as it is put on the stack (CR 603.3c, 700.2); the legacy enter pass performed no mode"
   },
   {
    "pair": [
@@ -13800,6 +13824,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Etherwrought Page",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MTR: the step carrier takes a modal trigger each of whose modes it runs, and performs the mode its controller chooses as it is put on the stack (CR 603.3c, 700.2); the legacy step pass performed no mode"
   },
   {
    "pair": [

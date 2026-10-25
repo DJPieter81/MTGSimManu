@@ -129,22 +129,153 @@ def _as_chosen(spec: Any) -> Any:
     return dataclasses.replace(spec, **branches) if branches else spec
 
 
+def _mode_as_host(mode: Any, **fields: Any) -> Any:
+    """A typed mode (`AbilityEffects.modes[i]` of a modal host) as a host of
+    its own: its grouped target requirements are its slots once the mode is
+    chosen (CR 700.2a); `fields` replace the mode's own (a trigger's head)."""
+    import dataclasses
+    return dataclasses.replace(
+        mode, specs=tuple(_as_chosen(s) for s in mode.specs),
+        targets=tuple(dataclasses.replace(r, mode_group=None)
+                      for r in mode.targets), **fields)
+
+
 def chosen_mode_host(template: Any, index: int,
                      effects: Any = None) -> Optional[Any]:
     """A modal spell's chosen mode as a host of its own: the typed mode
     host (`AbilityEffects.modes[index]` of the spell host) whose grouped
     target requirements are its slots. None when the spell has no such
     mode."""
-    import dataclasses
     effects = template.effects if effects is None else effects
     modes = effects.modes(0)
     if not 0 <= index < len(modes):
         return None
-    host = modes[index]
-    return dataclasses.replace(
-        host, specs=tuple(_as_chosen(s) for s in host.specs),
-        targets=tuple(dataclasses.replace(r, mode_group=None)
-                      for r in host.targets))
+    return _mode_as_host(modes[index])
+
+
+def trigger_mode_host(host: Any, index: int) -> Optional[Any]:
+    """A modal triggered ability's mode as a host of its own (CR 700.2): the
+    typed mode under its parent's trigger head -- what a carrier checks,
+    picks targets for and resolves once the mode is chosen. None when the
+    host has no such mode."""
+    modes = getattr(host, "modes", None) or ()
+    if not 0 <= index < len(modes):
+        return None
+    return _mode_as_host(modes[index], kind=host.kind, trigger=host.trigger)
+
+
+def mode_hosts(host: Any) -> tuple:
+    """Every mode of a modal triggered `host`, each a host of its own
+    (`trigger_mode_host`), in printed order."""
+    return tuple(trigger_mode_host(host, i)
+                 for i in range(len(getattr(host, "modes", None) or ())))
+
+
+def _takes(h: Any, family: str) -> bool:
+    """Is the triggered host `h` in `family`'s strict shape and executable?
+    A modal host is when it prints no instruction before its modes, its
+    header asks for a number of modes it has, and each mode -- a host of
+    its own under `h`'s head (`trigger_mode_host`) -- is (CR 700.2). One
+    rule for every trigger carrier's plan."""
+    from .effect_views import STRICT
+    strict = STRICT[family]
+    if not getattr(h, "modes", None):
+        return strict(h) and er.can_execute(h, family)
+    lo, hi = h.choose
+    if h.specs or not 0 <= lo <= hi or hi < 1 or lo > len(h.modes):
+        return False
+    return all(strict(m) and er.can_execute(m, family)
+               for m in mode_hosts(h))
+
+
+def _mode_open(game: Any, source: Any, controller: int, mode: Any) -> bool:
+    """CR 700.2a: a mode can be chosen only when each target it requires has
+    a legal choice (`target_solver.legal_slot_choices`)."""
+    from .target_solver import legal_slot_choices
+    for req in mode.targets:
+        if req.count_min:
+            players, permanents = legal_slot_choices(game, controller, req,
+                                                     source=source)
+            if not players and not permanents:
+                return False
+    return True
+
+
+def _held_modes(asked: Any, legal: Sequence[int], lo: int,
+                hi: int) -> list:
+    """The controller's answer held to the rules (CR 700.2): only legal,
+    distinct modes, at most the header's most; short of its fewest, the
+    lowest legal modes complete it (a deterministic engine completion, as
+    `modal_spell.choose_modes`'s). In printed order."""
+    chosen: list = []
+    for i in asked or ():
+        if isinstance(i, int) and not isinstance(i, bool) and i in legal \
+                and i not in chosen and len(chosen) < hi:
+            chosen.append(i)
+    for i in legal:
+        if len(chosen) >= lo:
+            break
+        if i not in chosen:
+            chosen.append(i)
+    return sorted(chosen)
+
+
+def choose_trigger_modes(game: Any, source: Any, controller: int,
+                         host: Any) -> tuple:
+    """CR 603.3c, 700.2: the modes a modal triggered ability's controller
+    chooses as it is put on the stack -- the controller's answer
+    (`callbacks.choose_trigger_modes`) among the legal modes (`_mode_open`),
+    held to the header (`_held_modes`) -- each a host of its own
+    (`trigger_mode_host`), in printed order. () when fewer modes are legal
+    than the header's fewest: the ability is removed from the stack."""
+    lo, hi = host.choose
+    hosts = mode_hosts(host)
+    legal = [i for i, m in enumerate(hosts)
+             if _mode_open(game, source, controller, m)]
+    if len(legal) < lo:
+        return ()
+    asked = game.callbacks.choose_trigger_modes(
+        game, controller, source, host, list(legal), (lo, hi))
+    chosen = _held_modes(asked, legal, lo, hi)
+    _audit_trigger_modes(game, source, host, chosen)
+    return tuple(hosts[i] for i in chosen)
+
+
+def _audit_trigger_modes(game: Any, source: Any, host: Any,
+                         chosen: Sequence[int]) -> None:
+    """CR 700.2, restated from the raw header: the chosen modes are distinct
+    modes the host prints, as many as its header allows. Observation
+    only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    lo, hi = host.choose
+    n = len(host.modes)
+    rules_audit.check(
+        "700.2/trigger_modes",
+        len(set(chosen)) == len(chosen) and all(0 <= i < n for i in chosen)
+        and lo <= len(chosen) <= hi,
+        f"{getattr(source, 'name', '?')}: modes {list(chosen)} chosen under "
+        f"a header of {lo} to {hi} of {n}", game=game)
+
+
+def put_on_stack(game: Any, source: Any, controller: int,
+                 host: Any) -> list:
+    """CR 603.3c-d: what a triggered ability takes as it is put on the
+    stack -- a modal one's chosen modes (`choose_trigger_modes`), each a
+    host of its own -- with each one's targets (`trigger_targets`):
+    ``[(host, chosen)]`` in printed order. Empty when the ability is
+    removed: a required target has no legal choice, or no mode is
+    chosen."""
+    hosts = (choose_trigger_modes(game, source, controller, host)
+             if getattr(host, "modes", None) else (host,))
+    out = []
+    for h in hosts:
+        chosen = trigger_targets(game, source, controller, h)
+        if chosen is None:
+            return []
+        out.append((h, chosen))
+    return out
 
 
 def mode_family(template: Any, index: int,
@@ -412,10 +543,11 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     the face has no such host or any one of them does not qualify (a card
     is taken whole or not at all, so no trigger of it resolves twice or not
     at all). An enter event names no defending player (CR 506.2), so a host
-    naming one is not taken. One owner, read by the carrier and the
-    closure."""
+    naming one is not taken. A modal host is taken as `_takes` takes one,
+    each of its modes held to the same checks. One owner, read by the
+    carrier and the closure."""
     from .effect_spec import EventHint, HostKind
-    from .effect_views import STRICT, names_defending_player
+    from .effect_views import names_defending_player
     hosts = [h for h in face_hosts
              if h.kind is HostKind.TRIGGERED and h.trigger is not None
              and EventHint.SELF_ENTERS in h.trigger.event_hints]
@@ -423,10 +555,11 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
         return None
     plan = []
     for h in hosts:
-        family = None if names_defending_player(h) else next(
-            (f for f in ETB_FAMILIES
-             if STRICT[f](h) and er.can_execute(h, f)
-             and _slots_picked_by_executors(h)), None)
+        parts = mode_hosts(h) if h.modes else (h,)
+        family = None if any(names_defending_player(x)
+                             or not _slots_picked_by_executors(x)
+                             for x in parts) else next(
+            (f for f in ETB_FAMILIES if _takes(h, f)), None)
         if family is None:
             return None
         plan.append((h, family))
@@ -439,8 +572,9 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
     through the dispatcher when `etb_plan` takes the face; None otherwise,
     and the legacy resolver runs. The engine resolves enter triggers on
     entry, so every slot reaches its executor unbound and the controller
-    picks there (CR 603.3d, A35). Returns whether any host performed
-    anything."""
+    picks there (CR 603.3d, A35); a modal host's modes are chosen then
+    (`choose_trigger_modes`, CR 603.3c). Returns whether any host
+    performed anything."""
     template = getattr(card, "template", None)
     if template is None or getattr(template, "is_loyalty_clause", False) \
             or not er.dispatch_enabled():
@@ -453,10 +587,13 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
         return None
     performed = False
     for h, family in plan:
-        performed |= bool(er.resolve_ability(
-            game, er.handle_of(card), controller, h,
-            tuple(() for _ in h.targets), family=family,
-            source_object=card))
+        parts = choose_trigger_modes(game, card, controller, h) \
+            if h.modes else (h,)
+        for part in parts:
+            performed |= bool(er.resolve_ability(
+                game, er.handle_of(card), controller, part,
+                tuple(() for _ in part.targets), family=family,
+                source_object=card))
     return performed
 
 
@@ -499,10 +636,9 @@ def _in_draw_step(game: Any) -> bool:
 
 def _draw_family(h: Any) -> Optional[str]:
     """`DRAW_FAMILY` when the draw-triggered host `h` is in its strict
-    shape and executable; None otherwise."""
-    from .effect_views import STRICT
-    if h.trigger is None or not STRICT[DRAW_FAMILY](h) \
-            or not er.can_execute(h, DRAW_FAMILY):
+    shape and executable (`_takes`: a modal host when each of its
+    modes is); None otherwise."""
+    if h.trigger is None or not _takes(h, DRAW_FAMILY):
         return None
     return DRAW_FAMILY
 
@@ -554,10 +690,9 @@ def combat_damage_matches(event: Any, controller: int, damaged: int,
 
 def _combat_damage_family(h: Any) -> Optional[str]:
     """`COMBAT_DAMAGE_FAMILY` when the combat-damage-triggered host `h` is
-    in its strict shape and executable; None otherwise."""
-    from .effect_views import STRICT
-    if h.trigger is None or not STRICT[COMBAT_DAMAGE_FAMILY](h) \
-            or not er.can_execute(h, COMBAT_DAMAGE_FAMILY):
+    in its strict shape and executable (`_takes`: a modal host when each
+    of its modes is); None otherwise."""
+    if h.trigger is None or not _takes(h, COMBAT_DAMAGE_FAMILY):
         return None
     return COMBAT_DAMAGE_FAMILY
 
@@ -610,14 +745,12 @@ def dispatch_combat_damage_triggers(game: Any, dealer: Any, damaged: int, *,
         if not combat_damage_matches(h.trigger.combat_damage, controller,
                                      damaged, to_planeswalker):
             continue
-        chosen = trigger_targets(game, dealer, controller, h)
-        if chosen is None:
-            continue
-        performed |= bool(er.resolve_ability(
-            game, er.handle_of(dealer), controller, h, chosen,
-            family=family, event=event, source_object=dealer))
-        if game.game_over:
-            break
+        for part, chosen in put_on_stack(game, dealer, controller, h):
+            performed |= bool(er.resolve_ability(
+                game, er.handle_of(dealer), controller, part, chosen,
+                family=family, event=event, source_object=dealer))
+            if game.game_over:
+                return performed
     return performed
 
 
@@ -765,14 +898,12 @@ def dispatch_draw_triggers(game: Any, drawer: int) -> bool:
             for h, family in plan:
                 if not draw_matches(game, h.trigger.draw, controller, drawer):
                     continue
-                chosen = trigger_targets(game, src, controller, h)
-                if chosen is None:
-                    continue
-                performed |= bool(er.resolve_ability(
-                    game, er.handle_of(src), controller, h, chosen,
-                    family=family, event=event, source_object=src))
-                if game.game_over:
-                    return performed
+                for part, chosen in put_on_stack(game, src, controller, h):
+                    performed |= bool(er.resolve_ability(
+                        game, er.handle_of(src), controller, part, chosen,
+                        family=family, event=event, source_object=src))
+                    if game.game_over:
+                        return performed
     return performed
 
 
@@ -839,10 +970,9 @@ def cast_matches(event: Any, controller: int, caster: int,
 
 def _cast_family(h: Any) -> Optional[str]:
     """`CAST_FAMILY` when the cast-triggered host `h` is in its strict
-    shape and executable; None otherwise."""
-    from .effect_views import STRICT
-    if h.trigger is None or not STRICT[CAST_FAMILY](h) \
-            or not er.can_execute(h, CAST_FAMILY):
+    shape and executable (`_takes`: a modal host when each of its
+    modes is); None otherwise."""
+    if h.trigger is None or not _takes(h, CAST_FAMILY):
         return None
     return CAST_FAMILY
 
@@ -898,11 +1028,9 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
                                       caster, spell)
             if not fires:
                 continue
-            chosen = trigger_targets(game, src, controller, h)
-            if chosen is None:
-                continue
-            triggered.append((src, er.handle_of(src), controller, h, family,
-                              chosen))
+            for part, chosen in put_on_stack(game, src, controller, h):
+                triggered.append((src, er.handle_of(src), controller, part,
+                                  family, chosen))
     for src, handle, controller, h, family, chosen in triggered:
         er.resolve_ability(game, handle, controller, h, chosen, family=family,
                            event=event, source_object=src)
@@ -1047,10 +1175,9 @@ def step_matches(event: Any, step: str, controller: int, active: int) -> bool:
 
 def _step_family(h: Any) -> Optional[str]:
     """`STEP_FAMILY` when the beginning-of-step host `h` is in its strict
-    shape and executable; None otherwise."""
-    from .effect_views import STRICT
-    if h.trigger is None or not STRICT[STEP_FAMILY](h) \
-            or not er.can_execute(h, STEP_FAMILY):
+    shape and executable (`_takes`: a modal host when each of its
+    modes is); None otherwise."""
+    if h.trigger is None or not _takes(h, STEP_FAMILY):
         return None
     return STEP_FAMILY
 
@@ -1157,11 +1284,9 @@ def dispatch_step_triggers(game: Any, step: str) -> set:
                                            "as it triggers")
                 if not holds:
                     continue
-                chosen = trigger_targets(game, src, controller, h)
-                if chosen is None:
-                    continue
-                triggered.append((src, er.handle_of(src), controller, h,
-                                  family, chosen))
+                for part, chosen in put_on_stack(game, src, controller, h):
+                    triggered.append((src, er.handle_of(src), controller,
+                                      part, family, chosen))
     # CR 603.3b: the active player's triggers are put on the stack first,
     # so the non-active player's resolve first.
     triggered.sort(key=lambda t: t[2] == active)
@@ -1329,10 +1454,9 @@ def attack_count(game: Any, event: Any, src: Any, controller: int,
 
 def _attack_family(h: Any) -> Optional[str]:
     """`ATTACK_FAMILY` when the attack-triggered host `h` is in its strict
-    shape and executable; None otherwise."""
-    from .effect_views import STRICT
-    if h.trigger is None or not STRICT[ATTACK_FAMILY](h) \
-            or not er.can_execute(h, ATTACK_FAMILY):
+    shape and executable (`_takes`: a modal host when each of its
+    modes is); None otherwise."""
+    if h.trigger is None or not _takes(h, ATTACK_FAMILY):
         return None
     return ATTACK_FAMILY
 
@@ -1473,11 +1597,10 @@ def dispatch_attack_triggers(game: Any, attackers: Sequence[Any],
                     if not intervening_if_holds_now(game, src, controller, h,
                                                     event=event):
                         continue
-                    chosen = trigger_targets(game, src, controller, h)
-                    if chosen is None:
-                        continue
-                    triggered.append((src, er.handle_of(src), controller, h,
-                                      family, chosen))
+                    for part, chosen in put_on_stack(game, src, controller,
+                                                     h):
+                        triggered.append((src, er.handle_of(src), controller,
+                                          part, family, chosen))
     # CR 603.3b: the active player's triggers are put on the stack first,
     # so the non-active player's resolve first.
     triggered.sort(key=lambda t: t[2] == active)

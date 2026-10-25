@@ -15,7 +15,8 @@ to discover and present these costs — no mechanic-named callbacks.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Optional, Protocol, Sequence
+from typing import (TYPE_CHECKING, Any, List, Optional, Protocol, Sequence,
+                    Tuple)
 
 if TYPE_CHECKING:
     from engine.game_state import GameState
@@ -221,6 +222,21 @@ class GameCallbacks(Protocol):
         for a trigger). Return up to `req.count_max` of them; the engine
         keeps only legal, distinct members and fills a required target the
         answer leaves short (`default_trigger_targets`).
+        """
+        ...
+
+    def choose_trigger_modes(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        host: Any, legal: List[int], choose: Tuple[int, int],
+    ) -> List[int]:
+        """Which modes does a modal triggered ability's controller choose
+        as it is put on the stack (CR 603.3c)? `host` is the ability's
+        typed host, `legal` the indices of the modes that may be chosen (CR
+        700.2a: a mode whose required target has no legal choice can't
+        be), `choose` the header's (fewest, most). Return mode indices; the
+        engine keeps only legal, distinct ones, at most the most, and
+        completes the fewest with the lowest legal modes
+        (`effect_carrier.choose_trigger_modes`).
         """
         ...
 
@@ -463,6 +479,14 @@ class DefaultCallbacks:
                                players, permanents, x_value=0):
         """Default: `default_trigger_targets`, printed data only."""
         return default_trigger_targets(player_idx, req, players, permanents)
+
+    def choose_trigger_modes(self, game, player_idx, source, host, legal,
+                             choose):
+        """Default: the first legal modes, as many as the header's fewest --
+        one when it allows choosing none ("choose up to one") -- printed
+        data only."""
+        lo, hi = choose
+        return list(legal[:max(lo, min(1, hi))])
 
     def choose_harmonize_tapper(self, game, player_idx, card, tappers):
         """Default: the greatest power, the first in battlefield order on a
