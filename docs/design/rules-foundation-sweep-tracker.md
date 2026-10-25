@@ -11733,7 +11733,14 @@ Unit XL's refusal test now carries Hostage Taker.
 - **No-op fixture:** loses Static Prison's enter host (floor 204 → 205).
 - **Chunks:** 5532 + 2803 passed at `b78895b`, from a pinned worktree.
 
-**Measured:** with unit UP by the `en-up-post` arm (pre = `xl-post`).
+**Measured:** with unit UP by the `en-up-post` arm (pre = `xl-post`, same seeds, n=20 Bo3, all 25 shards, run on `941ad9b`).
+- **No deck moves more than 1.1 pp:** Boros Energy +1.1, from Static Prison's energy, its first-main-phase payment and its sacrifice. All 30 cells that change are in Boros Energy's row or column.
+- **Bands:** 7 decks out of band, total miss 49.7 → 50.3 pp (Boros Energy 5.5 → 6.7 above its band).
+- **Audit:** 0 violations in 493 findings.
+- **Census:** Static Prison's row is gone. 6 registered rows remain:
+  - attack: Guide of Souls, Phelia, Primeval Titan;
+  - cast: Vengevine;
+  - step: Abhorrent Oculus, Ocelot Pride.
 
 **Leads, not built:**
 - **Glassblower's and Woodweaver's Puzzleknot** got their enter energy from the retired entry grant, which read it as the text's first "you get {E}". Their enter triggers' other instructions (scry; gain life) keep them out of the enter families. They wait on the full enter trigger body (unit XL's lead).
@@ -11797,7 +11804,7 @@ The other two that pass at the parent are the silent audit and the payer refusal
 - **Ratchets:** `ai/unless_value.py` enters the magic-number ratchet at 0; every ratchet passes.
 - **Chunks:** 5541 + 2803 passed at `db5c104`, from a pinned worktree. The first run at the unamended commit failed one pin, `test_the_dispatcher_tables_hold_exactly_the_landed_families`, which now names the UNLESS evaluator.
 
-**Measured:** with unit EN by the `en-up-post` arm (pre = `xl-post`).
+**Measured:** with unit EN by the `en-up-post` arm (pre = `xl-post`; see unit EN). Static Prison's census row is gone.
 
 **Leads, not built:**
 - **A static enchantment has no term in `position_value`, and neither does energy.** An "unless" payment that keeps one exiled projects equal to declining, and the tie declines (Leyline of the Guildpact, above). The board snapshot also leaves out a returned planeswalker's loyalty pool, which `permanent_threat` credits by hand.
@@ -11806,3 +11813,89 @@ The other two that pass at the parent are the silent audit and the payer refusal
 - **"Unless they pay" and "unless that player pays"** (Isolation Cell, Blood Clock, Chancellor of the Annex): the grammar leaves the payer unbound. Binding it to the player the trigger names is a grammar unit.
 - **Other "unless" instructions in the step family:** Electrozoa's self-tap has no executor, and the damage executor refuses Force of Nature's damage to its own controller.
 - **A counted cost** (Fettergeist's "{1} for each other creature you control") and granted upkeep costs (Kataki, War's Wage; Magus of the Tabernacle) stay untyped.
+
+## Unit TU: a search finds the cards its description admits, chosen by its searcher, and the instruction after it puts them where it says (CR 701.19a-c, 701.20a; 2026-10-25)
+
+**Source:** the census row `603.2/attack_trigger_unresolved` for Primeval Titan (Amulet Titan x3), and the name-keyed enter handlers of Primeval Titan and Ranger-Captain of Eos.
+
+**Rule:** "Whenever this creature enters or attacks, you may search your library for up to two land cards, put them onto the battlefield tapped, then shuffle."
+- The searcher looks through their library and finds cards its description admits (CR 701.19a). Which cards are found is the searcher's choice.
+- A search for cards with a stated quality may find fewer of them, even none (CR 701.19b). A search for a number of cards alone finds that many while the library holds them (CR 701.19c).
+- The found cards go where the next instruction puts them: onto the battlefield (tapped or untapped as printed), into the hand, into the graveyard. Then the library is shuffled (CR 701.20a).
+- The search is a search for every "whenever a player searches their library" watcher, whatever it finds.
+
+**The defect:**
+- The search executor read two shapes, "a basic land card" (unit LA) and the cards named like a chosen object (unit SX). Every other search was refused, so the attack carrier refused Primeval Titan's trigger.
+- Titan's enter and attack searches ran through a name-keyed handler (`_primeval_titan_search`). It chose the lands in the engine by fixed priorities (bounce lands, then lands with a damage ability, then haste-granting lands) and never counted the search. Ranger-Captain of Eos's enter search was a name-keyed handler too.
+- The legacy spell resolver performed most searches as nothing. It approximated some tutors as a draw (Ignite the Beacon, Plea for Guidance, Journey of Discovery, Seek the Horizon, Tooth and Nail). It put basic lands where their text does not: Lay of the Land and Sylvan Scrying onto the battlefield instead of the hand, Search for Tomorrow and Terramorph tapped, Beneath the Sands and Migration Path one land to each zone, and Edge of Autumn regardless of its condition.
+
+**Class:** 772 pool cards print a library search (39 registered-deck cards, 286 copies). The typed path takes 223 more hosts:
+- 77 enter triggers, 4 attack, 1 combat damage, 1 step;
+- 61 spells or chosen modes;
+- 35 tutor activations: the same cards on every board, the log line's wording only;
+- 40 activations the legacy classifier does not read (UNCLASSIFIED), now performed;
+- 4 loyalty lines.
+
+Registered: Primeval Titan (Amulet Titan x3), Ranger-Captain of Eos (Boros Energy x2), Expedition Map (Eldrazi Tron), Fiend Artisan (Creatures Toolbox), Elvish Reclaimer (Amulet Titan).
+
+**Steps:**
+- **Description:** `library_description` reads a library filter through the one description owner, on the battlefield key set (`conditions.description_supported`, unit PF), with at most one subtype. The grammar types "a Forest or Island card" as both subtypes, which the owner reads as required together, so a two-subtype search stays refused (a lead below).
+- **Executor:** `library_search` / `execute_library_search`. The controller is offered the library cards the description admits, bounded where the text says "with mana value X or less" (`permanent_described` with `bound_values`). They choose through `callbacks.choose_cards` and find at most the printed count. A search for a number of cards alone fills to that count (CR 701.19c). `LandManager.note_library_search` counts the search, so its watchers trigger. The log names the found cards only when the text reveals them.
+- **Put:** `searched_moved` / `_put_searched`. Found cards still in the library go to the destination the instruction names:
+  - a land onto the battlefield through `LandManager.put_land_from_library`, with its landfall;
+  - another permanent card through the zone funnel, with its enter abilities (an instant or sorcery card stays, CR 110.4);
+  - a card into the hand or the graveyard.
+- **Gate:** an executor that binds an earlier instruction's result names whose (`result_verbs`), and `can_execute` refuses a RESULT ref to any other.
+  - A put of found cards names a SEARCH; the put of a revealed card names a REVEAL.
+  - "Return that card to the battlefield instead" after a move (Shepherd of the Clouds) names neither, so it stays refused.
+  - `execute_move` routes by the same referent.
+- **Carriers:** the enter families (card flow) and the trigger bodies (attack, step, combat damage, cast) take SEARCH, MOVE and SHUFFLE, and "then shuffle" is the controller's (`shuffle_supported`).
+- **AI:** `ai.resolution_choices.pick_cards`. A land search picks by the AI's one land valuation, one land at a time with the picks already made (`_choose_land_delivery`, batch-aware: two bounce lands never return each other). Any other card comes by the tutor delivery choice (`choose_tutor_delivery`).
+- **Retired:** the name-keyed enter handlers of Primeval Titan and Ranger-Captain of Eos, `_primeval_titan_search`, and the attack branch in `engine/triggers.py` that called it. Registry 72 → 70.
+- **Auditor `701.19/search_found`:** restated from the raw description. The found cards are distinct, at most the printed count, all from the searcher's library, and each has the types, supertypes and subtypes the description names. Tested both ways, with the description owner patched to admit everything.
+
+**Tests:** 12, in `tests/test_a_search_finds_the_cards_its_description_admits.py`; 8 fail at `941ad9b`. They cover:
+- as many cards as it names, put tapped, the search counted;
+- the attack trigger searches;
+- only the cards the description admits (a creature card with mana value 1 or less);
+- a search for a quality may find none and still counts;
+- the searcher chooses, and the AI picks by its land valuation;
+- refused: another player's search, a search for either of two subtypes;
+- a put of found cards names a search, never another instruction;
+- the registered members resolve from their typed hosts;
+- the auditor both ways.
+
+Unit OG's two Vivien, Arkbow Ranger tests caught this unit's first cut. That cut routed "put it into your hand" after a reveal to the searched-card put, which looks in the library and finds nothing. `tests/test_primeval_titan_oracle_only_land_priority.py` keeps only the typed haste-activation field test. The X-tutor bookkeeping test counts a delivered Primeval Titan's own enter search.
+
+**Pins:**
+- **Digest:** 5 of 27 games change, the same winners. Replayed to the first divergence and accepted:
+  - Amulet Titan vs Eldrazi Tron s54500 and Jeskai Blink vs Eldrazi Tron s59500 g1 and g2: Expedition Map's log line only. It finds the same Tron land.
+  - Azorius Control (WST v2) vs Boros Energy s53500, and Boros Energy vs Domain Zoo s58000 g3: Ranger-Captain of Eos finds Ragavan by the AI's tutor delivery choice, where the retired handler took Guide of Souls. Both are legal picks. In g3 Boros Energy wins on turn 8 instead of 9.
+- **Anchor:** 29, unchanged.
+- **Harness:** 2567 pairs (421 proven identical, 2146 intended); the 223 new are intended, with reasons by carrier. In the trigger carriers the legacy resolver performed no search. In spells it did none, drew a card instead, or put a land elsewhere. Tutor activations differ in their log line only. The UNCLASSIFIED activations and loyalty lines were refused.
+- **Gate parity:** 5468/2344/3124 → 5654/2567/3087: 223 more host pairs on the typed path, and the legacy fallback falls by 37.
+- **No-op fixture:** Elvish Reclaimer's activation joins the registered-deck hosts the self-check runs (274 → 275, state-changing floor 206 → 207). The no-op set is unchanged.
+- **Spec equivalence:** the closure and the gate-parity counts are locked in. Per-field AGREE and UNEXPLAINED are unchanged (2,813,963 and 18,059).
+- **Census:** registered-deck removal-family clauses that are ready to run rise from 53 to 67 (20.5% → 26.0%), because their search and shuffle riders are now executable. Typed shares are unchanged. Locked in.
+- **Ratchets:**
+  - card-name registry 72 → 70;
+  - loyalty dispatch 379 → 375 (four loyalty search lines now executable);
+  - oracle runtime parse 155 → 153 (the retired handler's text reads);
+  - zone mutation 36 → 34 (the retired handlers' raw zone writes);
+  - effect-parser (f) 3124 → 3087, with the gate parity's legacy fallback;
+  - every ratchet passes.
+- **Chunks:** 5553 + 2797 passed at `884c585`, from a pinned worktree (chunk B at `04e5324`, whose code and chunk-B tests are the same). The first run, at `04e5324`, failed three pins, now updated:
+  - the executor-purity test names `result_verbs` as a declaration;
+  - the closure pin names the two tutor-activation handlers;
+  - the ramp finisher's attack test declares attackers and resolves the stack, instead of calling the retired trigger-time search.
+
+**Measured:** by the `tu-post` arm (pre = `en-up-post`), pending.
+
+**Leads, not built:**
+- **The AI's land valuation has no term for a land that grants haste or deals damage.** The retired handler ranked those first. `CardTemplate.grants_haste_activation` now has no runtime reader.
+- **`CardTemplate.has_dual_land_search` is dead.** Its one reader was the retired attack branch. Delete it, with its parser and its equivalence row, in a cleanup commit.
+- **A union of subtypes** ("a Forest or Island card", every fetch land) is typed as both subtypes. The grammar needs a disjunctive filter before those searches can be taken.
+- **A search whose destination is the top of the library** (23 hosts) stays refused.
+- **A search another player makes** ("each opponent may search", "its controller searches") stays with unit LA's basic-land executor or refused.
+- **Spells an earlier legacy handler claims** stay on it (Nature's Rhythm, through the X-creature tutor).
+- **Elvish Reclaimer's activation** (Amulet Titan) is now performed when the AI's activation menu picks it. The `tu-post` arm measures what the AI makes of it.
