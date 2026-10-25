@@ -97,7 +97,8 @@ _TRIGGER_BODY_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
                                  Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
                                  Verb.KEYWORD_ACTION, Verb.CONTINUOUS,
                                  Verb.EXILE, Verb.SACRIFICE,
-                                 Verb.PLAYER_COUNTERS})
+                                 Verb.PLAYER_COUNTERS, Verb.SEARCH,
+                                 Verb.MOVE, Verb.SHUFFLE})
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -123,7 +124,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.PUT_COUNTERS, Verb.EXILE,
                                             Verb.MILL, Verb.SURVEIL,
                                             Verb.PLAYER_COUNTERS,
-                                            Verb.SACRIFICE}),
+                                            Verb.SACRIFICE, Verb.SEARCH,
+                                            Verb.MOVE, Verb.SHUFFLE}),
             FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
 
@@ -531,26 +533,75 @@ def searched_to_battlefield(s: Any) -> bool:
             and s.chooser is Chooser.CONTROLLER and named_searcher(s.actor))
 
 
+# The zones the instruction after a search puts what it found into (unit
+# TU): the battlefield (tapped or not), the hand, the graveyard.
+_SEARCHED_DEST_ZONES = frozenset({"battlefield", "hand", "graveyard"})
+# CR 110.4: an instant or sorcery card is no permanent card.
+_NONPERMANENT_TYPES = frozenset({CardType.INSTANT, CardType.SORCERY})
+
+
+def searched_moved(s: Any) -> bool:
+    """"[and] put it <onto the battlefield [tapped] | into your hand | into
+    your graveyard>": the cards an earlier search of this resolution found,
+    put there by their searcher (CR 701.19a, unit TU). Revealing them is
+    the search's."""
+    d, r = s.dest, s.ref
+    return (s.verb is Verb.MOVE and isinstance(d, Destination)
+            and d.zone in _SEARCHED_DEST_ZONES
+            and dataclasses.replace(d, tapped=False)
+            == Destination(zone=d.zone)
+            and (not d.tapped or d.zone == "battlefield")
+            and isinstance(r, Ref) and r.kind is RefKind.RESULT
+            and isinstance(r.index, int) and r.part is RefPart.ALL
+            and r.n is None and r.of is None
+            and s.flags <= {"may_scope", "if_you_do"} and s.target is None
+            and s.filter is None and s.amount is None and s.payload is None
+            and s.duration is None and s.group is None
+            and not s.alternatives and not s.optional and s.subject is None
+            and s.chooser is Chooser.CONTROLLER
+            and (s.actor is None or named_searcher(s.actor)))
+
+
 def _put_searched(ctx: Resolution, s: EffectSpec,
                   actors: Tuple[int, ...]) -> Outcome:
-    """Each searcher's found card, still in its library, enters the
-    battlefield under its control through the land-entry owner, and its
-    landfall triggers."""
+    """Each searcher's found cards, still in its library, go where the
+    instruction puts them (CR 701.19a): a land onto the battlefield under
+    its searcher through the land-entry owner (its entry rules and enter
+    abilities) with its landfall; another permanent card through the zone
+    funnel with its enter abilities (CR 603.6a); a card into the hand or
+    the graveyard through the zone funnel. A card no permanent can be stays
+    in the library (CR 400.4a)."""
     from .land_manager import LandManager
+    game = ctx.game
     produced = ctx.results.get(s.ref.index) or {}
     cause = getattr(_source_object(ctx), "name", "")
+    zone = s.dest.zone
     moved = {}
     for p in actors:
         for h in produced.get(p, ()):
             if not isinstance(h, Handle) or h.zone != "library":
                 continue
-            card = ctx.game.get_card_by_id(h.instance_id)
+            card = game.get_card_by_id(h.instance_id)
             if card is None or card.zone != "library" \
-                    or all(card is not c for c in ctx.game.players[p].library):
+                    or all(card is not c for c in game.players[p].library):
                 continue
-            LandManager.put_land_from_library(ctx.game, card, p,
-                                              s.dest.tapped, cause)
-            LandManager.trigger_landfall(ctx.game, p)
+            if zone == "battlefield" and card.template.is_land:
+                LandManager.put_land_from_library(game, card, p,
+                                                  s.dest.tapped, cause)
+                LandManager.trigger_landfall(game, p)
+            elif zone == "battlefield":
+                if _NONPERMANENT_TYPES & set(card.template.card_types):
+                    continue
+                if not game.zone_mgr.move_card(game, card, "library",
+                                               "battlefield", cause=cause,
+                                               controller_override=p):
+                    continue
+                if s.dest.tapped:            # CR 614.1c: it enters tapped
+                    card.tap()
+                game._handle_permanent_etb(card, p)
+            elif not game.zone_mgr.move_card(game, card, "library", zone,
+                                             cause=cause):
+                continue
             moved.setdefault(p, []).append(handle_of(card))
     return Outcome(bool(moved), {p: tuple(v) for p, v in moved.items()})
 
@@ -748,11 +799,24 @@ def _put_revealed(ctx: Resolution, s: EffectSpec) -> Outcome:
     return Outcome(bool(moved), {ctx.controller: tuple(moved)})
 
 
+def _named_result(ctx: Resolution, s: EffectSpec) -> Any:
+    """The instruction of the resolving host whose result `s` names (its
+    RESULT ref), or None."""
+    from .effect_spec import iter_specs
+    r = s.ref
+    if not isinstance(r, Ref) or r.kind is not RefKind.RESULT:
+        return None
+    return next((x for x in iter_specs(ctx.ability.specs)
+                 if x.seq == r.index), None)
+
+
 def execute_move(ctx: Resolution, s: EffectSpec,
                  actors: Tuple[int, ...]) -> Outcome:
     if self_return_transformed(s):
         return _return_self_transformed(ctx, s)
-    if searched_to_battlefield(s):
+    named = _named_result(ctx, s)
+    if getattr(named, "verb", None) is Verb.SEARCH \
+            and (searched_to_battlefield(s) or searched_moved(s)):
         return _put_searched(ctx, s, actors)
     if land_from_hand(s):
         return _put_land_from_hand(ctx, s)
@@ -764,8 +828,23 @@ def execute_move(ctx: Resolution, s: EffectSpec,
 execute_move.supports = (lambda s: _move_to_hand_supported(s)
                          or self_return_transformed(s)
                          or searched_to_battlefield(s)
+                         or searched_moved(s)
                          or land_from_hand(s)
                          or revealed_to_hand(s))
+# A put of "it" / "them" binds an earlier instruction's result, and which
+# instruction decides what is put: the cards a SEARCH found, or the card a
+# REVEAL brought from outside the game. A result of any other instruction
+# ("return that card to the battlefield instead", after a move) is neither.
+def _move_result_verbs(s: Any) -> Any:
+    verbs = set()
+    if searched_to_battlefield(s) or searched_moved(s):
+        verbs.add(Verb.SEARCH)
+    if revealed_to_hand(s):
+        verbs.add(Verb.REVEAL)
+    return frozenset(verbs) or None
+
+
+execute_move.result_verbs = _move_result_verbs
 # An unbound slot is the controller's choice through `choose_cards`, so a
 # carrier with no targets to bind (the enter-trigger carrier) may take it.
 execute_move.picks_unbound_slots = True
@@ -2599,6 +2678,116 @@ def search_supported(s: EffectSpec) -> bool:
     return _basic_land_search(s) or same_name_search(s)
 
 
+# The counts a library search names (unit TU): "a"/"N" cards, "up to N".
+_LIBRARY_SEARCH_COUNTS = frozenset({AmountKind.LITERAL, AmountKind.UP_TO})
+
+
+def library_description(f: Any) -> bool:
+    """A description of cards in a library that its one owner reads as it
+    reads a permanent's (`effect_conditions.description_supported`, the
+    characteristic bounds with it): "a land card", "a creature card with
+    mana value 1 or less" (unit TU). A description naming two or more
+    subtypes is refused: the owner reads them all as required, and the
+    grammar types the union "a Forest or Island card" the same way."""
+    return (isinstance(f, CardFilter) and f.zone == "library" and not f.zones
+            and len(f.subtypes) <= 1
+            and conditions.description_supported(
+                dataclasses.replace(f, zone="battlefield"), bounds=True))
+
+
+def library_search(s: EffectSpec) -> bool:
+    """"[You may] search your library for <a | N | up to N> <description>
+    card(s) [, reveal it]": the controller looks through their library and
+    finds up to that many cards the description admits (CR 701.19a-b),
+    the description read by its one owner as it reads a permanent's
+    (`effect_conditions.description_supported`, characteristic bounds
+    included). The searcher is the controller, whose choice the executor
+    asks; "each opponent may search" is refused. A basic-land search keeps
+    its own shape (`_basic_land_search`, unit LA)."""
+    a = s.amount
+    return (s.verb is Verb.SEARCH and library_description(s.filter)
+            and isinstance(a, Amount) and a.kind in _LIBRARY_SEARCH_COUNTS
+            and isinstance(a.n, int) and a.n >= 1 and a.quantity is None
+            and a.ref is None and a.inner is None
+            and _acts_as_controller(s.actor)
+            and s.flags <= {"reveal", "if_you_do"}
+            and s.target is None and s.target_slot is None and s.ref is None
+            and s.dest is None and s.payload is None and s.duration is None
+            and s.group is None and not s.alternatives and s.subject is None
+            and s.other is None and s.chooser is Chooser.CONTROLLER
+            and not _basic_land_search(s))
+
+
+def _quantity_only(f: CardFilter) -> bool:
+    """"a card", "two cards": a description stating no quality."""
+    return {k for k, _ in f.as_tuple()} - {"raw"} == {"zone"}
+
+
+def execute_library_search(ctx: Resolution, s: EffectSpec,
+                           actors: Tuple[int, ...]) -> Outcome:
+    """The controller looks through their library (CR 701.19a) and finds
+    the cards it chooses (`callbacks.choose_cards`) among those the
+    description admits, at most as many as the instruction names. A search
+    for a stated quality may find fewer, even none (CR 701.19b); one for a
+    number of cards alone finds that many while the library holds them
+    (CR 701.19c). The search is made either way, and counted for the
+    watchers of a library search."""
+    from .callbacks import default_card_pick
+    from .land_manager import LandManager
+    game, p = ctx.game, ctx.controller
+    g = dataclasses.replace(s.filter, zone="battlefield")
+    bounds = conditions.bound_values(game, p, g, _source_object(ctx),
+                                     ctx.source_lki, ctx.x_value)
+    library = game.players[p].library
+    pool = [c for c in library
+            if conditions.permanent_described(c, g, None, bounds)]
+    LandManager.note_library_search(game, p)
+    n = s.amount.n
+    found = []
+    for c in game.callbacks.choose_cards(ctx, s, pool, n) or ():
+        if any(c is x for x in pool) and all(c is not y for y in found):
+            found.append(c)
+    found = found[:n]
+    need = min(n, len(pool)) if _quantity_only(s.filter) else 0
+    if len(found) < need:
+        rest = [c for c in pool if all(c is not y for y in found)]
+        found += default_card_pick(rest, need - len(found))
+    _audit_search_found(ctx, s, found, {c.instance_id for c in library})
+    shown = ", ".join(c.name for c in found) if "reveal" in s.flags \
+        else f"{len(found)} card(s)"
+    game.log.append(f"T{game.display_turn} P{p + 1}: searches their library"
+                    f" and finds {shown or 'nothing'}")
+    return Outcome(True, {p: tuple(handle_of(c) for c in found)})
+
+
+def _audit_search_found(ctx: Resolution, s: EffectSpec, found: list,
+                        library_ids: set) -> None:
+    """Rules audit (CR 701.19a-b), restated from the found cards' printed
+    fields: a search found distinct cards of its searcher's library, no
+    more than it names, each of the card types, supertypes and subtypes
+    its description states. Observes only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    f = s.filter
+    ok = (len(found) <= s.amount.n
+          and len({c.instance_id for c in found}) == len(found))
+    for c in found:
+        t = c.template
+        types = {ct.value for ct in t.card_types}
+        supers = {x.value for x in (t.supertypes or ())}
+        subs = {str(x).lower() for x in (t.subtypes or ())}
+        ok = (ok and c.instance_id in library_ids
+              and (not f.types or bool(types & f.types))
+              and f.all_types <= types and not types & f.not_types
+              and f.supertypes <= supers and not supers & f.not_supertypes
+              and f.subtypes <= subs and not subs & f.not_subtypes)
+    rules_audit.check(
+        "701.19/search_found", ok,
+        f"{getattr(_source_object(ctx), 'name', '?')}'s search for "
+        f"{f.raw or 'cards'} found {[c.name for c in found]}", game=ctx.game)
+
+
 def execute_search(ctx: Resolution, s: EffectSpec,
                    actors: Tuple[int, ...]) -> Outcome:
     """Each searcher looks through their library for a basic land card
@@ -2664,16 +2853,20 @@ def _search_dispatch(ctx: Resolution, s: EffectSpec,
                      actors: Tuple[int, ...]) -> Outcome:
     if same_name_search(s):
         return _search_same_name(ctx, s)
+    if library_search(s):
+        return execute_library_search(ctx, s, actors)
     return execute_search(ctx, s, actors)
 
 
-_search_dispatch.supports = search_supported
+_search_dispatch.supports = lambda s: search_supported(s) or library_search(s)
 execute_search.supports = search_supported
 
 
 def shuffle_supported(s: EffectSpec) -> bool:
-    """"<players> shuffle(s)" after their search (CR 701.20a)."""
-    return (s.verb is Verb.SHUFFLE and named_searcher(s.actor)
+    """"[<players>] shuffle(s)" after their search (CR 701.20a); "then
+    shuffle" names no player and is the controller's (unit TU)."""
+    return (s.verb is Verb.SHUFFLE
+            and (s.actor is None or named_searcher(s.actor))
             and s.flags <= {"may_scope"} and s.target is None
             and s.ref is None and s.filter is None and s.amount is None
             and s.dest is None and s.payload is None and s.duration is None
@@ -2788,6 +2981,8 @@ EXECUTOR_FILTER_KEYS[Verb.SEARCH] |= frozenset(
     + [("owner", Ref(kind, of=t)) for t in _TARGET_REFS
        for kind in (RefKind.OWNER_OF, RefKind.CONTROLLER_OF)]
     + [("named", t) for t in _TARGET_REFS])
+# ... and any library description its one owner reads (unit TU).
+EXECUTOR_DESCRIPTIONS[Verb.SEARCH] = library_description
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
 CONDITION_EVALUATORS[ConditionKind.OBJECT] = evaluate_object
 CONDITION_EVALUATORS[ConditionKind.HISTORY] = evaluate_history

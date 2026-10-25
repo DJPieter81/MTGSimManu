@@ -435,12 +435,13 @@ def test_a_filter_subject_executes_only_entries_something_evaluates(
 def test_an_untargeted_card_filter_is_held_to_the_same_support(er, run, monkeypatch):
     run.register(Verb.SEARCH, _Recorder())
     # a filter no evaluator and no declared executor entry covers (the
-    # search executor declares "a basic land card" only, unit LA)
+    # search executor declares "a basic land card" (unit LA) and the
+    # library descriptions its one owner reads (unit TU), never a position)
     s = _spec(Verb.SEARCH, 0, filter=CardFilter(zone="library",
-                                                 subtypes=frozenset({"forest"})))
+                                                 position="top"))
     assert er.can_execute(_host(s)) is False
     monkeypatch.setitem(er.EXECUTOR_FILTER_KEYS, Verb.SEARCH, frozenset(
-        {("zone", "library"), ("subtypes", ("forest",))}))
+        {("zone", "library"), ("position", "top")}))
     assert er.can_execute(_host(s)) is True
 
 

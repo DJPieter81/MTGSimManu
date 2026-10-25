@@ -317,6 +317,15 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
             families = allowed(s)
             if families is not None and family not in families:
                 return False
+        # A shape that binds an earlier instruction's result says whose
+        # (`result_verbs`); a RESULT ref naming any other instruction is
+        # refused.
+        bound = getattr(executor, "result_verbs", None)
+        verbs = bound(s) if bound is not None else None
+        if verbs is not None:
+            named = by_seq.get(getattr(s.ref, "index", None))
+            if named is None or named.verb not in verbs:
+                return False
     # Defence in depth: every spec a RESULT ref can name (this host's, an
     # outer host's) is itself walked and refused if UNMODELLED, so this
     # never changes the verdict today; it keeps the rule local to the ref.

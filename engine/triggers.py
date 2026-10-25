@@ -328,11 +328,6 @@ class TriggerManager:
                 game.log.append(f"T{game.display_turn}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
-        # Complex attack-trigger land search (oracle: "search...two land cards")
-        if printed and attacker.template.has_attack_trigger and getattr(attacker.template, 'has_dual_land_search', False):
-            from .card_effects import _primeval_titan_search
-            _primeval_titan_search(game, controller)
-
         # Generic oracle-text-based attack triggers (handles ALL cards)
         # Phlage, Ocelot Pride, battle cry, etc. all resolved from oracle text
         from .oracle_resolver import resolve_attack_trigger

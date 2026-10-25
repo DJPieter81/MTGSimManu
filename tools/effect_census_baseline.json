@@ -1,7 +1,7 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.2054,
+  "deck_removal_ready_share": 0.2597,
   "deck_removal_typed_share": 0.8876,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
@@ -265,8 +265,8 @@
     "clauses": 258,
     "gate": 0.85,
     "met": false,
-    "ready": 53,
-    "ready_share": 0.2054,
+    "ready": 67,
+    "ready_share": 0.2597,
     "typed": 229,
     "typed_share": 0.8876
    },

@@ -386,10 +386,10 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 4,
   "family": "card_flow",
   "hosts": {
    "mainboard": 1,
@@ -399,7 +399,7 @@
   "steps": {
    "E3": 4
   },
-  "strict": 0,
+  "strict": 4,
   "sub_kinds": {},
   "verb_sets": {
    "MOVE,SEARCH,SHUFFLE": 4
@@ -412,10 +412,10 @@
     "host": "ACTIVATED:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 31,
   "family": "card_flow",
   "hosts": {
    "mainboard": 1,
@@ -426,7 +426,7 @@
    "E3": 31,
    "none": 1
   },
-  "strict": 0,
+  "strict": 31,
   "sub_kinds": {},
   "verb_sets": {
    "MOVE,SEARCH,SHUFFLE": 31,
@@ -453,6 +453,13 @@
     "card": "Demolition Field",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Elvish Reclaimer",
+    "host": "ACTIVATED:0:1",
+    "part": "sideboard",
     "step": "E3",
     "strict": true
    },
@@ -506,19 +513,19 @@
     "strict": true
    }
   ],
-  "executable": 228,
+  "executable": 268,
   "family": "removal",
   "hosts": {
    "mainboard": 8,
-   "pool": 218,
-   "sideboard": 2
+   "pool": 257,
+   "sideboard": 3
   },
   "steps": {
-   "E2": 117,
-   "E3": 94,
+   "E2": 119,
+   "E3": 132,
    "E5": 17
   },
-  "strict": 228,
+  "strict": 268,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 5,
@@ -526,10 +533,10 @@
    "DESTROY": 79,
    "DESTROY,MOVE,SEARCH,SHUFFLE": 3,
    "DRAW": 14,
-   "DRAW,EXILE": 2,
    "EXILE": 5,
    "MILL": 40,
    "MOVE": 32,
+   "MOVE,SEARCH,SHUFFLE": 38,
    "SURVEIL": 30
   }
  },
@@ -578,6 +585,13 @@
     "strict": true
    },
    {
+    "card": "Primeval Titan",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -599,21 +613,21 @@
     "strict": true
    }
   ],
-  "executable": 130,
+  "executable": 134,
   "family": "attack_trigger",
   "hosts": {
-   "mainboard": 5,
-   "pool": 125,
+   "mainboard": 6,
+   "pool": 128,
    "sideboard": 0
   },
   "steps": {
    "E1": 26,
    "E2": 7,
-   "E3": 36,
+   "E3": 40,
    "E4": 28,
    "E5": 33
   },
-  "strict": 130,
+  "strict": 134,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 31,
@@ -807,23 +821,23 @@
     "strict": false
    }
   ],
-  "executable": 108,
+  "executable": 109,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
-   "pool": 808,
+   "pool": 803,
    "sideboard": 0
   },
   "steps": {
    "E1": 2,
    "E2": 2,
-   "E3": 337,
+   "E3": 332,
    "E4": 53,
    "E5": 116,
    "E6": 34,
    "none": 274
   },
-  "strict": 85,
+  "strict": 90,
   "sub_kinds": {
    "DELAYED": 6,
    "REFLEXIVE": 2
@@ -968,20 +982,20 @@
     "strict": true
    }
   ],
-  "executable": 34,
+  "executable": 35,
   "family": "combat_damage_trigger",
   "hosts": {
    "mainboard": 2,
-   "pool": 32,
+   "pool": 33,
    "sideboard": 0
   },
   "steps": {
    "E2": 1,
-   "E3": 20,
+   "E3": 21,
    "E4": 9,
    "E5": 4
   },
-  "strict": 34,
+  "strict": 35,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN,EXILE": 1,
@@ -991,6 +1005,7 @@
    "DRAW,GAIN_LIFE": 1,
    "DRAW,LOSE_LIFE": 3,
    "EXILE": 1,
+   "MOVE,SEARCH,SHUFFLE": 1,
    "PLAYER_COUNTERS": 1
   }
  },
@@ -1068,7 +1083,7 @@
     "strict": false
    }
   ],
-  "executable": 182,
+  "executable": 184,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1243,6 +1258,13 @@
     "strict": true
    },
    {
+    "card": "Nature's Rhythm",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Practiced Offense",
     "host": "SPELL:0:0",
     "part": "mainboard",
@@ -1320,21 +1342,21 @@
     "strict": true
    }
   ],
-  "executable": 501,
+  "executable": 565,
   "family": "damage",
   "hosts": {
-   "mainboard": 21,
-   "pool": 477,
+   "mainboard": 22,
+   "pool": 540,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
    "E2": 81,
-   "E3": 111,
+   "E3": 175,
    "E4": 127,
    "E5": 28
   },
-  "strict": 501,
+  "strict": 565,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 14,
@@ -1345,7 +1367,7 @@
    "DRAW,MOVE": 7,
    "MILL": 16,
    "MOVE": 52,
-   "PUT_COUNTERS": 7,
+   "MOVE,SEARCH,SHUFFLE": 63,
    "SACRIFICE": 25
   }
  },
@@ -1517,8 +1539,22 @@
     "strict": true
    },
    {
+    "card": "Primeval Titan",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Quantum Riddler",
     "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Ranger-Captain of Eos",
+    "host": "TRIGGERED:0:0",
     "part": "mainboard",
     "step": "E3",
     "strict": true
@@ -1587,29 +1623,29 @@
     "strict": true
    }
   ],
-  "executable": 661,
+  "executable": 738,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 24,
-   "pool": 637,
+   "mainboard": 26,
+   "pool": 712,
    "sideboard": 0
   },
   "steps": {
    "E2": 109,
-   "E3": 197,
+   "E3": 274,
    "E4": 340,
    "E5": 10,
    "E6": 5
   },
-  "strict": 661,
+  "strict": 738,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS,EXILE": 10,
    "CREATE_TOKEN": 269,
    "DRAW": 109,
    "EXILE": 55,
    "MILL": 37,
    "MOVE": 34,
+   "MOVE,SEARCH,SHUFFLE": 77,
    "PLAYER_COUNTERS": 55,
    "PUT_COUNTERS": 13,
    "SACRIFICE": 14,
@@ -2064,7 +2100,7 @@
     "strict": true
    }
   ],
-  "executable": 11,
+  "executable": 12,
   "family": "removal",
   "hosts": {
    "mainboard": 6,
@@ -2301,20 +2337,20 @@
     "strict": true
    }
   ],
-  "executable": 16,
+  "executable": 20,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
-   "pool": 15,
+   "pool": 19,
    "sideboard": 0
   },
   "steps": {
    "E2": 6,
-   "E3": 4,
+   "E3": 8,
    "E4": 3,
    "E5": 3
   },
-  "strict": 16,
+  "strict": 20,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,EXILE": 3,
@@ -2322,6 +2358,7 @@
    "DESTROY": 4,
    "MILL": 3,
    "MOVE,REVEAL": 1,
+   "MOVE,SEARCH,SHUFFLE": 4,
    "PUT_COUNTERS": 2,
    "SACRIFICE": 2
   }
@@ -2406,20 +2443,20 @@
     "strict": true
    }
   ],
-  "executable": 124,
+  "executable": 125,
   "family": "step_trigger",
   "hosts": {
    "mainboard": 3,
-   "pool": 121,
+   "pool": 122,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
    "E2": 32,
-   "E3": 28,
+   "E3": 29,
    "E4": 40
   },
-  "strict": 124,
+  "strict": 125,
   "sub_kinds": {},
   "verb_sets": {
    "CREATE_TOKEN": 30,
@@ -2636,17 +2673,17 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Nature's Rhythm",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
-    "strict": false
+    "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 2,
   "family": "card_flow",
   "hosts": {
    "mainboard": 2,
@@ -2657,7 +2694,7 @@
    "E3": 3,
    "E5": 2
   },
-  "strict": 0,
+  "strict": 3,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,MOVE,SEARCH,SHUFFLE": 2,

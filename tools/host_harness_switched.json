@@ -2275,6 +2275,294 @@
   },
   {
    "pair": [
+    "activated_effects:TUTOR_CREATURE_TO_BATTLEFIELD",
+    "Fiend Artisan",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_CREATURE_TO_BATTLEFIELD",
+    "Myr Turbine",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_CREATURE_TO_BATTLEFIELD",
+    "Shadow-Rite Priest",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_CREATURE_TO_BATTLEFIELD",
+    "Shadowborn Apostle",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Artificer's Intuition",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Case of the Stashed Skeleton",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Citanul Flute",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Expedition Map",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Fauna Shaman",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "From Beyond",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Greenseeker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Horizon Seeker",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Horizon Spellbomb",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Hour of Victory",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Inventors' Fair",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Journeyer's Kite",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Keys to the House",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Lagomos, Hand of Hatred",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Maelstrom of the Spirit Dragon",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Ominous Parcel",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Planar Portal",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Priest of the Wakening Sun",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Razaketh, the Foulblooded",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Renegade Map",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Ring of Three Wishes",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Scrapyard Recombiner",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Tamiyo's Journal",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Thaumatic Compass // Spires of Orazca",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "The Masters of Evil",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Thornvault Forager",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Traveler's Amulet",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Wanderer's Twig",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "Weathered Wayfarer",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "World Map",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:TUTOR_TO_HAND",
+    "World Map",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation's search resolves on the dispatcher and finds the card the legacy tutor resolver found, on every board; only the log line differs (the search executor's 'searches their library and finds ...', naming the card only when the text reveals it)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Armillary Sphere",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
     "activated_effects:UNCLASSIFIED",
     "Asmodeus the Archfiend",
     "ACTIVATED:0:1"
@@ -2296,6 +2584,14 @@
     "ACTIVATED:0:3"
    ],
    "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Blighted Woodland",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2324,6 +2620,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Burnished Hart",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Charforger",
     "ACTIVATED:0:2"
    ],
@@ -2344,6 +2648,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Colossal Rattlewurm",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2404,6 +2716,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Dawntreader Elk",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Deepwood Denizen",
     "ACTIVATED:0:1"
    ],
@@ -2460,6 +2780,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Dreamscape Artist",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Dross Skullbomb",
     "ACTIVATED:0:1"
    ],
@@ -2476,6 +2804,22 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Elvish Reclaimer",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Embodiment of Spring",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Emergent Haunting",
     "ACTIVATED:0:1"
    ],
@@ -2488,6 +2832,30 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit EE: a pre-unit no-op (the legacy path resolved nothing for this UNCLASSIFIED line); the destroy owner now destroys each permanent its description admits (CR 701.8a), a bound read off the source's counters taken from what it last had as its cost removed it (CR 608.2h)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Escape Tunnel",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Everbark Shaman",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Evolving Wilds",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2516,6 +2884,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Font of Fertility",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Font of Return",
     "ACTIVATED:0:0"
    ],
@@ -2536,6 +2912,14 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Frontier Guide",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2572,6 +2956,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Greater Tanuki",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Gretchen Titchwillow",
     "ACTIVATED:0:0"
    ],
@@ -2592,6 +2984,22 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Hobbit Hole",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Honored Knight-Captain",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2628,10 +3036,42 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Khalni Heart Expedition",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Kishla Village",
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Knight of the Reliquary",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Korlash, Heir to Blackblade",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Kuldotha Forgemaster",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2656,6 +3096,14 @@
     "ACTIVATED:0:0"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the controller surveils the printed number through the surveil owner (CR 701.42); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Madblind Mountain",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: the activation shuffles its controller's library (CR 701.20a), performed from its typed host; the legacy activation path refused the UNCLASSIFIED ability"
   },
   {
    "pair": [
@@ -2724,10 +3172,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Myr Mindservant",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: the activation shuffles its controller's library (CR 701.20a), performed from its typed host; the legacy activation path refused the UNCLASSIFIED ability"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Mystic Forge",
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile (CR 406); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Neverwinter Dryad",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2740,10 +3204,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Night Dealings",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Nyx Weaver",
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the chosen card returns from the controller's graveyard to its hand through the card-flow MOVE executor (CR 608.2b); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Oashra Cultivator",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2780,10 +3260,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Prismatic Vista",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Professional Face-Breaker",
     "ACTIVATED:0:2"
    ],
    "reason": "An activated ability the legacy classifier leaves UNCLASSIFIED resolves from its typed text through the dispatcher (unit A, `effect_carrier.activation_family`): the top card of the controller's library goes to exile with a permission to play it for the printed duration (CR 406, 601.2a); legacy had no apply, so the activation did nothing."
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Promising Vein",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2828,6 +3324,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Sakura-Tribe Elder",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Salvage Scout",
     "ACTIVATED:0:0"
    ],
@@ -2856,6 +3360,22 @@
     "ACTIVATED:0:1"
    ],
    "reason": "unit GX: the card chosen in a graveyard is now exiled through the zone funnel (CR 701.13a, 608.2b); no legacy path exiled a graveyard target, so the host resolved as nothing (an enter trigger's target is its controller's pick, A36; a draw or life gain beside the exile is performed too)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Shire Terrace",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Silkwing Scout",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -2940,6 +3460,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Steelshaper Apprentice",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Suburban Sanctuary",
     "ACTIVATED:0:2"
    ],
@@ -2968,6 +3496,22 @@
     "ACTIVATED:0:0"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Templar Knight",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Terramorphic Expanse",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -3052,6 +3596,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Transmutation Font",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Tuskeri Firewalker",
     "ACTIVATED:0:0"
    ],
@@ -3084,6 +3636,14 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Urza's Cave",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Vantress Gargoyle",
     "ACTIVATED:0:3"
    ],
@@ -3100,10 +3660,26 @@
   {
    "pair": [
     "activated_effects:UNCLASSIFIED",
+    "Vibrant Cityscape",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
     "Wand of Vertebrae",
     "ACTIVATED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Warped Landscape",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -3120,6 +3696,30 @@
     "ACTIVATED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Wayfarer's Bauble",
+    "ACTIVATED:0:0"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Wight of the Reliquary",
+    "ACTIVATED:0:2"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
+  },
+  {
+   "pair": [
+    "activated_effects:UNCLASSIFIED",
+    "Wild-Field Scarecrow",
+    "ACTIVATED:0:1"
+   ],
+   "reason": "unit TU: an activated ability the legacy classifier does not read (UNCLASSIFIED) is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy activation path refused it"
   },
   {
    "pair": [
@@ -3636,6 +4236,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Lumbering Worldwagon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Mardu Shadowspear",
     "TRIGGERED:0:0"
    ],
@@ -3792,6 +4400,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit AK: the attack carrier performs every instruction of the ability once attackers are declared (CR 508.1m, 603.2) (each opponent loses the life; its controller gains life, draws or exiles as printed); the legacy attack pass performed only its life gain"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Primeval Titan",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: the trigger's search is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the retired name-keyed handler chose the lands in the engine by fixed priorities and never counted the search"
   },
   {
    "pair": [
@@ -4004,6 +4620,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Sword of the Animist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
     "TRIGGERED:0:1"
    ],
@@ -4128,6 +4752,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit AN: the legacy attack pass performed nothing for this host (the grammar kept \"another\" as residue); the attack carrier gives another target creature its controller controls the printed change until end of turn, never the attacker itself (CR 115.1)"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
+    "Zur the Enchanter",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -4800,6 +5432,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission. The legacy substring path is retired (R2.4): the harness's legacy side resolves nothing."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Higure, the Still Wind",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -5948,6 +6588,14 @@
   {
    "pair": [
     "dispatched",
+    "Archdruid's Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Archive Trap",
     "SPELL:0:1"
    ],
@@ -6084,6 +6732,14 @@
   {
    "pair": [
     "dispatched",
+    "Beneath the Sands",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Bestial Incursion",
     "SPELL:0:0"
    ],
@@ -6164,6 +6820,22 @@
   {
    "pair": [
     "dispatched",
+    "Buried Alive",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bushwhack",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Cabaretti Charm",
     "MODE:0:0:mode0"
    ],
@@ -6208,6 +6880,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, keywords, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Call the Gatewatch",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -6476,6 +7156,22 @@
   {
    "pair": [
     "dispatched",
+    "Demonic Bargain",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Demonic Collusion",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Devour in Flames",
     "SPELL:0:1"
    ],
@@ -6488,6 +7184,22 @@
     "SPELL:0:0"
    ],
    "reason": "An edict spell resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No legacy handler performed an edict, so the spell did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Diabolic Intent",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Diabolic Tutor",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -6564,6 +7276,30 @@
   {
    "pair": [
     "dispatched",
+    "Edge of Autumn",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Eerie Procession",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Eladamri's Call",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Electrify",
     "SPELL:0:0"
    ],
@@ -6604,6 +7340,14 @@
   {
    "pair": [
     "dispatched",
+    "Enduring Ideal",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Engulfing Eruption",
     "SPELL:0:0"
    ],
@@ -6637,6 +7381,14 @@
    "pair": [
     "dispatched",
     "Evolution Charm",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Evolution Charm",
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
@@ -6648,6 +7400,14 @@
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Explosive Vegetation",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -6664,6 +7424,14 @@
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen edict mode resolves through the dispatcher (unit ED, the edict family): each player it names sacrifices the permanents it matches, chosen by that player through the `choose_sacrifice` seam (CR 701.21a, 101.4). No clause handler performed an edict, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fabricate",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -6844,6 +7612,14 @@
   {
    "pair": [
     "dispatched",
+    "Glimpse the Core",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Glimpse the Unthinkable",
     "SPELL:0:0"
    ],
@@ -6980,6 +7756,14 @@
   {
    "pair": [
     "dispatched",
+    "Harrow",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Heartfire",
     "SPELL:0:1"
    ],
@@ -7052,6 +7836,30 @@
   {
    "pair": [
     "dispatched",
+    "Idyllic Tutor",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ignite the Beacon",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver drew a card in place of the search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Illicit Shipment",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Improvised Club",
     "SPELL:0:1"
    ],
@@ -7088,6 +7896,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit PO: no legacy path read 'put a +1/+1 counter on each creature you control' on a spell, so it resolved as nothing; the counters executor now puts them (CR 122.1)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Into the North",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7148,6 +7964,14 @@
   {
    "pair": [
     "dispatched",
+    "Journey of Discovery",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver drew a card in place of the search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Jump Scare",
     "SPELL:0:0"
    ],
@@ -7184,6 +8008,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Kayla's Command",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7232,6 +8064,14 @@
     "SPELL:0:1"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Lay of the Land",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
   },
   {
    "pair": [
@@ -7404,10 +8244,26 @@
   {
    "pair": [
     "dispatched",
+    "Mastermind's Acquisition",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Memory Sluice",
     "SPELL:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Merchant Scroll",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7424,6 +8280,14 @@
     "SPELL:0:0"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Migration Path",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
   },
   {
    "pair": [
@@ -7532,6 +8396,14 @@
   {
    "pair": [
     "dispatched",
+    "Natural Connection",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Nature's Spiral",
     "SPELL:0:0"
    ],
@@ -7544,6 +8416,22 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "New Generation's Technique",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Nissa's Expedition",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7644,10 +8532,26 @@
   {
    "pair": [
     "dispatched",
+    "Plea for Guidance",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver drew a card in place of the search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Practiced Offense",
     "SPELL:0:0"
    ],
    "reason": "unit PO: the whole spell now resolves on the dispatcher: a +1/+1 counter on each creature the target player controls, which the legacy pump handler skipped, and the keyword its controller chooses on resolution (the engine's default is the first printed, the legacy grant's) (CR 115.1, 122.1, 608.2d)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Primal Command",
+    "MODE:0:3:mode3"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7672,6 +8576,14 @@
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Profane Tutor",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7772,6 +8684,22 @@
   {
    "pair": [
     "dispatched",
+    "Rampant Growth",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ranger's Path",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Rankle's Prank",
     "MODE:0:2:mode2"
    ],
@@ -7784,6 +8712,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit BR: the token's creator grants it \"This token can't block\"; the token owner now builds it (it refused any granted ability but a sacrifice-for-mana one), so the dispatcher creates the token named for its subtype with that text, which restricts it (CR 111.3, 111.4, 509.1a), where the legacy pass created a token named in lower case, with no text"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Razaketh's Rite",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put another card of the library into the hand and never counted the search"
   },
   {
    "pair": [
@@ -7808,6 +8744,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reap and Sow",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -7932,6 +8876,14 @@
   {
    "pair": [
     "dispatched",
+    "Reshape",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Resourceful Return",
     "SPELL:0:0"
    ],
@@ -7944,6 +8896,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Return from the Wilds",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8012,6 +8972,22 @@
   {
    "pair": [
     "dispatched",
+    "Road // Ruin",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Roamer's Routine",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Rob the Archives",
     "SPELL:0:1"
    ],
@@ -8040,6 +9016,14 @@
     "SPELL:0:1"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sarkhan's Triumph",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8093,6 +9077,14 @@
    "pair": [
     "dispatched",
     "Scour for Scrap",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Scour for Scrap",
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
@@ -8104,6 +9096,14 @@
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Search for Tomorrow",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
   },
   {
    "pair": [
@@ -8120,6 +9120,14 @@
     "MODE:0:1:mode1"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Seek the Horizon",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver drew a card in place of the search"
   },
   {
    "pair": [
@@ -8188,6 +9196,14 @@
   {
    "pair": [
     "dispatched",
+    "Shared Roots",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Shelob's Ambush",
     "SPELL:0:0"
    ],
@@ -8248,6 +9264,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Solve the Equation",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8332,10 +9356,26 @@
   {
    "pair": [
     "dispatched",
+    "Splinter's Technique",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Spore Swarm",
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Spring // Mind",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8392,6 +9432,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Steelshaper's Gift",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8548,6 +9596,14 @@
   {
    "pair": [
     "dispatched",
+    "Sylvan Scrying",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Take Up Arms",
     "SPELL:0:0"
    ],
@@ -8572,6 +9628,14 @@
   {
    "pair": [
     "dispatched",
+    "Terramorph",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Thassa's Bounty",
     "SPELL:0:0"
    ],
@@ -8592,6 +9656,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit PO: the whole spell now resolves on the dispatcher: four 1/1 Hero creature tokens (the token owner gives them their printed subtype, where the legacy handler made untyped creature tokens), then a +1/+1 counter on each creature its controller controls, which the legacy route skipped (CR 111.3, 122.1, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thirsting Roots",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8636,10 +9708,34 @@
   {
    "pair": [
     "dispatched",
+    "Thunderherd Migration",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Thundering Rebuke",
     "SPELL:0:0"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Time of Need",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Titania's Command",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -8668,6 +9764,14 @@
   {
    "pair": [
     "dispatched",
+    "Tooth and Nail",
+    "MODE:0:0:mode0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver drew a card in place of the search"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Torrent of Stone",
     "SPELL:0:0"
    ],
@@ -8680,6 +9784,22 @@
     "SPELL:0:0"
    ],
    "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Trapmaker's Snare",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Traverse the Ulvenwald",
+    "SPELL:0:0"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver put the land it found somewhere its text does not (the battlefield in place of the hand, tapped in place of untapped, or one land to each), or ignored the spell's condition"
   },
   {
    "pair": [
@@ -8808,6 +9928,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit DW: the legacy draw clause dropped 'target player mills N'; the mill is performed with the draw (CR 701.17a, 608.2c)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Whir of Invention",
+    "SPELL:0:1"
+   ],
+   "reason": "unit TU: as the spell resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy spell resolver performed no search"
   },
   {
    "pair": [
@@ -9252,6 +10380,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Alpine Guide",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Alquist Proft, Master Sleuth",
     "TRIGGERED:0:1"
    ],
@@ -9264,6 +10400,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ambitious Farmhand // Seasoned Cathar",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -9408,6 +10552,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Aurochs Herd",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -9596,6 +10748,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Borderland Ranger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Borrowed Time",
     "TRIGGERED:0:0"
    ],
@@ -9640,6 +10800,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit IV.2: investigate is typed as the Clue its player creates (CR 701.16a), so the dispatcher takes the host whole; the legacy apply made no Clue (it read the Clue's reminder text as a draw, CR 207.2, or did nothing)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Brightglass Gearhulk",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -9812,6 +10980,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Case of the Shattered Pact",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Cast Out",
     "TRIGGERED:0:1"
    ],
@@ -9848,6 +11024,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Changeling Wayfinder",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -9908,6 +11092,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Civic Wayfinder",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Clachan Festival",
     "TRIGGERED:0:0"
    ],
@@ -9920,6 +11112,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Cloud, Midgar Mercenary",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10008,6 +11208,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit EN: the counters this ability gives a player (energy, CR 107.14; poison, CR 122.1f) are given through the one owner as it resolves (CR 122.1); the legacy pass gave none -- its entry path gave the first 'you get {E}' of a card's text on entry, whatever ability printed it, and skipped every enter trigger's"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Corpse Connoisseur",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10244,10 +11452,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Disciples of Gix",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Disturbing Conversion",
     "TRIGGERED:0:2"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Djeru, With Eyes Open",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10352,6 +11576,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit PF: the instruction puts its +1/+1 counters on each permanent its controller controls that its description admits now -- each other Ally / Human / artifact creature, two on each creature (CR 122.1, 608.2h, 613); the legacy resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ecologist's Terrarium",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10508,6 +11740,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Encroaching Dragonstorm",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Energy Refractor",
     "TRIGGERED:0:0"
    ],
@@ -10520,6 +11760,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Environmental Scientist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10552,6 +11800,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Everything Pizza",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10636,6 +11892,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Farfinder",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Farhaven Elf",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Fate Foretold",
     "TRIGGERED:0:1"
    ],
@@ -10668,10 +11940,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Fierce Empath",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Fierce Witchstalker",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Fighter Class",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10844,6 +12132,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "General Tazri",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Generous Ent",
     "TRIGGERED:0:1"
    ],
@@ -10908,6 +12204,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Gladiolus Amicitia",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Glass Casket",
     "TRIGGERED:0:0"
    ],
@@ -10948,10 +12252,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Goblin Engineer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Goblin Instigator",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Goblin Matron",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Godo, Bandit Warlord",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -10980,6 +12308,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Golos, Tireless Pilgrim",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Gonti's Aether Heart",
     "TRIGGERED:0:0"
    ],
@@ -11000,6 +12336,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gravebreaker Lamia",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -11164,6 +12508,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Heaped Harvest",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Hearthcage Giant",
     "TRIGGERED:0:0"
    ],
@@ -11176,6 +12528,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Heliod's Pilgrim",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -11308,6 +12668,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Huatli, Poet of Unity // Roar of the Fifth People",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Hugs, Grisly Guardian",
     "TRIGGERED:0:1"
    ],
@@ -11344,6 +12712,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: no legacy apply performed the draw; the DRAW executor draws through the draw owner (CR 121.1)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Imperial Recruiter",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -11588,6 +12964,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Kor Cartographer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Kulrath Zealot",
     "TRIGGERED:0:0"
    ],
@@ -11676,6 +13060,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Liliana's Shade",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Liminal Hold",
     "TRIGGERED:0:0"
    ],
@@ -11756,6 +13148,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Lumbering Worldwagon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Lush Portico",
     "TRIGGERED:0:1"
    ],
@@ -11824,6 +13224,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Marshals' Pathcruiser",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -11956,6 +13364,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Micromancer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Midnight Scavengers // Chittering Host",
     "TRIGGERED:0:0"
    ],
@@ -12020,6 +13436,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Molten Man, Inferno Incarnate",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Mourner's Shield",
     "TRIGGERED:0:0"
    ],
@@ -12068,10 +13492,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Mycosynth Wellspring",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Myr Battlesphere",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Myr Kinsmith",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -12164,6 +13604,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Nissa, Vastwood Seer // Nissa, Sage Animist",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Noggle Robber",
     "TRIGGERED:0:0"
    ],
@@ -12252,6 +13700,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Omen of the Hunt",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Ominous Roost",
     "TRIGGERED:0:0"
    ],
@@ -12280,6 +13736,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ondu Giant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -12380,6 +13844,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Path to the World Tree",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Patron of the Valiant",
     "TRIGGERED:0:1"
    ],
@@ -12440,6 +13912,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pilgrim of the Ages",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Pilgrim's Eye",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -12572,6 +14060,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Primeval Titan",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: the trigger's search is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the retired name-keyed handler chose the lands in the engine by fixed priorities and never counted the search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Proctor of Potential",
     "TRIGGERED:0:0"
    ],
@@ -12684,6 +14180,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Ranger of Eos",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ranger-Captain of Eos",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: the trigger's search is performed from its typed host: the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the retired name-keyed handler chose the creature card in the engine and never counted the search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Rapacious Dragon",
     "TRIGGERED:0:1"
    ],
@@ -12696,6 +14208,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Recruiter of the Guard",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -12856,6 +14376,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Rune-Scarred Demon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13060,6 +14588,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Self-Assembler",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Seller of Songbirds",
     "TRIGGERED:0:0"
    ],
@@ -13156,6 +14692,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Shield-Wall Sentinel",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Shielding Plax",
     "TRIGGERED:0:1"
    ],
@@ -13228,10 +14772,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Simulacrum Shaper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Skeletal Vampire",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Skittering Surveyor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13308,6 +14868,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Solemn Simulacrum",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Solitary Cell",
     "TRIGGERED:0:0"
    ],
@@ -13380,10 +14948,42 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sphinx Summoner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Spider-Ham, Peter Porker",
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spider-Man, Brooklyn Visionary",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spineseeker Centipede",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Spirit of the Aldergard",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13492,6 +15092,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Stoneforge Mystic",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Stormchaser's Talent",
     "TRIGGERED:0:0"
    ],
@@ -13512,6 +15120,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Strixhaven Skycoach",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13556,6 +15172,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Sylvan Ranger",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Syr Elenora, the Discerning",
     "TRIGGERED:0:1"
    ],
@@ -13596,6 +15220,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Thalia's Lancers",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thalia's Lieutenant",
     "TRIGGERED:0:0"
    ],
@@ -13624,6 +15256,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the legacy self-mill branch dropped the draw printed after the mill; both are performed in printed order (CR 608.2c)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "The Seriema",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13732,6 +15372,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Thr\u00f3r's Map",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thundering Falls",
     "TRIGGERED:0:1"
    ],
@@ -13784,6 +15432,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Topiary Stomper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Totem-Guide Hartebeest",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13844,6 +15508,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Treasure Mage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Treetop Freedom Fighters",
     "TRIGGERED:0:1"
    ],
@@ -13860,10 +15532,34 @@
   {
    "pair": [
     "etb:dispatch",
+    "Tribute Mage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Triceraton Commander",
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the cost's X is 0 on the harness boards, so neither path creates a token (state and log identical); only the carrier's result differs"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trinket Mage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trophy Mage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -13920,6 +15616,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ulvenwald Hydra",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -14028,6 +15732,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Vile Entomber",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Vile Mutilator",
     "TRIGGERED:0:2"
    ],
@@ -14080,6 +15792,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit BR: the legacy enter pass created nothing for this host; the token owner now builds a token granted a restriction on itself, so the enter carrier creates it with that text (CR 111.3, 509.1a-b)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Vorinclex // The Grand Evolution",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -14228,6 +15948,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Wild Wanderer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Wily Goblin",
     "TRIGGERED:0:0"
    ],
@@ -14268,10 +15996,26 @@
   {
    "pair": [
     "etb:dispatch",
+    "Wood Elves",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Woodland Acolyte // Mend the Wilds",
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Woodland Bellower",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [
@@ -14500,6 +16244,22 @@
   {
    "pair": [
     "planeswalker_manager:UNCLASSIFIED",
+    "Koth, Fire of Resistance",
+    "LOYALTY:0:0"
+   ],
+   "reason": "unit TU: the loyalty line is performed from its typed instructions (CR 606.1): the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy loyalty resolver could not execute the line (UNCLASSIFIED)"
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Liliana of the Dark Realms",
+    "LOYALTY:0:0"
+   ],
+   "reason": "unit TU: the loyalty line is performed from its typed instructions (CR 606.1): the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy loyalty resolver could not execute the line (UNCLASSIFIED)"
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
     "Liliana of the Veil",
     "LOYALTY:0:1"
    ],
@@ -14532,10 +16292,26 @@
   {
    "pair": [
     "planeswalker_manager:UNCLASSIFIED",
+    "Samut, the Tested",
+    "LOYALTY:0:2"
+   ],
+   "reason": "unit TU: the loyalty line is performed from its typed instructions (CR 606.1): the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy loyalty resolver could not execute the line (UNCLASSIFIED)"
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
     "Sorin of House Markov // Sorin, Ravenous Neonate",
     "LOYALTY:1:1"
    ],
    "reason": "Unit LY: the legacy kind refused the line (no resolver: nothing was performed); the loyalty carrier performs its typed instructions (CR 606.1, 608.2c): its controller creates a Food token."
+  },
+  {
+   "pair": [
+    "planeswalker_manager:UNCLASSIFIED",
+    "Tezzeret, Cruel Captain",
+    "LOYALTY:0:2"
+   ],
+   "reason": "unit TU: the loyalty line is performed from its typed instructions (CR 606.1): the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy loyalty resolver could not execute the line (UNCLASSIFIED)"
   },
   {
    "pair": [
@@ -15136,6 +16912,14 @@
     "TRIGGERED:0:2"
    ],
    "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Ratcatcher",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
   },
   {
    "pair": [

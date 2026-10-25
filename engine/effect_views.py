@@ -465,6 +465,9 @@ def _permission_over(s, exiled) -> bool:
 # per-host harness proves them (A38: a new executor never silently switches
 # a host).
 _CARD_FLOW_SWITCHED = frozenset({Verb.SURVEIL, Verb.MOVE, Verb.MILL})
+# A library search and the shuffle after it (unit TU, CR 701.19a, 701.20a);
+# the put of what it found is a MOVE, switched above.
+_LIBRARY_SEARCH_VERBS = frozenset({Verb.SEARCH, Verb.SHUFFLE})
 
 
 def _enter_trigger_mana(h: AbilityEffects) -> bool:
@@ -553,7 +556,8 @@ def strict_card_flow(h: AbilityEffects) -> bool:
             or _outside_the_game_host(h):
         return True
     if not _strict_host(h, _CARD_FLOW_SWITCHED | _IMPULSE_VERBS
-                        | {Verb.GAIN_LIFE}, durations=True, conditions=True):
+                        | _LIBRARY_SEARCH_VERBS | {Verb.GAIN_LIFE},
+                        durations=True, conditions=True):
         return False
     exiled = {s.seq for s in iter_specs(h.specs)
               if _library_top_exile(s) or _hand_exile(s)}
@@ -681,7 +685,7 @@ FAMILY_COMBAT_DAMAGE_TRIGGER = "combat_damage_trigger"
 _COMBAT_DAMAGE_TRIGGER_VERBS = frozenset({
     Verb.DRAW, Verb.CREATE_TOKEN, Verb.EXILE, Verb.CONTINUOUS, Verb.DAMAGE,
     Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.KEYWORD_ACTION,
-    Verb.PLAYER_COUNTERS})
+    Verb.PLAYER_COUNTERS, Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE})
 # The dealers it resolves: the source itself ("~"). An Equipment's or an
 # Aura's "equipped / enchanted creature deals" waits for its own step.
 _COMBAT_DAMAGE_DEALERS = frozenset({"self"})
@@ -723,7 +727,20 @@ def strict_combat_damage_trigger(h: AbilityEffects) -> bool:
             return False
         if s.duration is not None and s.verb is not Verb.CONTINUOUS:
             return False
+        if not _search_part(s):
+            return False
     return True
+
+
+def _search_part(s) -> bool:
+    """A MOVE in a trigger's body is the put of what an earlier search of
+    it found (unit TU: "search your library for ..., put it <there>, then
+    shuffle", CR 701.19a): never another move. Every other verb answers
+    True; whether its shape is an executor's is `can_execute`'s question
+    (A38)."""
+    from .effect_executors import searched_moved, searched_to_battlefield
+    return s.verb is not Verb.MOVE or searched_moved(s) \
+        or searched_to_battlefield(s)
 
 
 def strict_trigger(h: AbilityEffects) -> bool:
@@ -743,7 +760,8 @@ def strict_trigger(h: AbilityEffects) -> bool:
 _STEP_TRIGGER_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.EXILE, Verb.MILL,
-    Verb.SURVEIL, Verb.PLAYER_COUNTERS, Verb.SACRIFICE})
+    Verb.SURVEIL, Verb.PLAYER_COUNTERS, Verb.SACRIFICE, Verb.SEARCH,
+    Verb.MOVE, Verb.SHUFFLE})
 _STEP_TARGET_ZONES = _TRIGGER_TARGET_ZONES | {"graveyard"}
 
 
@@ -766,8 +784,8 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
         bare = dataclasses.replace(h, trigger=dataclasses.replace(
             h.trigger, intervening_if=None))
     return (_strict_host(bare, _STEP_TRIGGER_VERBS, conditions=True)
-            and all(s.verb is not Verb.EXILE or _graveyard_target_exile(s)
-                    for s in iter_specs(h.specs)))
+            and all((s.verb is not Verb.EXILE or _graveyard_target_exile(s))
+                    and _search_part(s) for s in iter_specs(h.specs)))
 
 
 # The body a typed trigger's carrier performs (units AK, CT.2): the verbs
@@ -780,7 +798,7 @@ _TRIGGER_BODY_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
     Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE,
-    Verb.PLAYER_COUNTERS})
+    Verb.PLAYER_COUNTERS, Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE})
 _ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER})
 _CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
                                 RefKind.DEFENDING_PLAYER})
@@ -841,6 +859,8 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
             return False
         if s.duration is not None and s.verb is not Verb.CONTINUOUS \
                 and not linked:
+            return False
+        if not _search_part(s):
             return False
     return True
 

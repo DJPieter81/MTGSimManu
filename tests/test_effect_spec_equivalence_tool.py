@@ -1817,7 +1817,11 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
         "step:dispatch",
         # unit AK: a permanent's attack trigger the attack carrier performs
         # from its typed host (Tamiyo, Inquisitive Student's investigate)
-        "attack:dispatch"}
+        "attack:dispatch",
+        # unit TU: a tutor activation whose library search the dispatcher
+        # performs from its typed host (Expedition Map, Fiend Artisan)
+        "activated_effects:TUTOR_TO_HAND",
+        "activated_effects:TUTOR_CREATURE_TO_BATTLEFIELD"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

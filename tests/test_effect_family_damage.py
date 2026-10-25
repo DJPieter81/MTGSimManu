@@ -298,11 +298,11 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                                              "EXECUTOR_FILTER_KEYS",
                                              "EXECUTOR_DESCRIPTIONS"))
                 # an executor's declarations: the shapes it binds, that it
-                # picks an unbound slot itself, and the families a shape is
-                # switched in
+                # picks an unbound slot itself, the families a shape is
+                # switched in, and whose result a shape binds
                 own_attr = (isinstance(t, ast.Attribute)
                             and t.attr in ("supports", "picks_unbound_slots",
-                                           "allowed_families")
+                                           "allowed_families", "result_verbs")
                             and isinstance(t.value, ast.Name))
                 assert own_table or own_attr, f"line {node.lineno}"
 
