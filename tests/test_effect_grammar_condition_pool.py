@@ -32,6 +32,7 @@ from collections import Counter
 
 import pytest
 
+from engine.cards import ActivationCost
 from engine.effect_model import Selector, SelectorKind
 from engine.effect_spec import (Amount, AmountKind, CardFilter, Condition,
                                 ConditionKind, Quantity, QuantityKind, Ref,
@@ -304,6 +305,12 @@ _WITNESSES = (
      dict(_ITS_CONTROLLER_PAYS, cost=_cost("{2}")), (("ref", "its"),)),
     ("Metallic Rebuke", "unless its controller pays {3}", "",
      dict(_ITS_CONTROLLER_PAYS, cost=_cost("{3}")), (("ref", "its"),)),
+    # Energy is a player counter (CR 107.14, 122.1); paying it removes that
+    # many, which the cost snapshot holds as `energy` (unit UP).
+    ("Static Prison", "unless you pay {e}", "",
+     {"kind": ConditionKind.UNLESS, "pred": "pays", "ref": None,
+      "payer": Selector(SelectorKind.PLAYER),
+      "cost": freeze_cost(ActivationCost(energy=1))}, ()),
 )
 
 # Printed conditions the closed table must refuse rather than type as
@@ -313,9 +320,6 @@ _REFUSED = (
     ("Mystical Dispute", "if it targets a blue spell", "condition.targets"),
     ("Ral, Monsoon Mage // Ral, Leyline Prodigy", "if you win the flip",
      "condition.coin_flip"),
-    # Energy is a player counter (CR 122.1), not a mana or life payment the
-    # cost snapshot holds.
-    ("Static Prison", "unless you pay {e}", "condition.unless_cost"),
 )
 
 # Printed phrases that are structure, never conditions (section 6).

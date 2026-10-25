@@ -14564,6 +14564,14 @@
   {
    "pair": [
     "step:dispatch",
+    "Arc Runner",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Arcbound Overseer",
     "TRIGGERED:0:0"
    ],
@@ -14584,6 +14592,14 @@
     "TRIGGERED:1:2"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Ball Lightning",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
   },
   {
    "pair": [
@@ -14692,6 +14708,22 @@
   {
    "pair": [
     "step:dispatch",
+    "Dress Down",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Drifter il-Dal",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Dross Harvester",
     "TRIGGERED:0:1"
    ],
@@ -14740,10 +14772,34 @@
   {
    "pair": [
     "step:dispatch",
+    "Frostbite Pyromental",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Glimmervoid",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Goblin Assault",
     "TRIGGERED:0:0"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Goblin Boom Keg",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
   },
   {
    "pair": [
@@ -14772,10 +14828,42 @@
   {
    "pair": [
     "step:dispatch",
+    "Groundbreaker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Haazda Shield Mate",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Hanweir Militia Captain // Westvale Cult Leader",
     "TRIGGERED:1:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Hell's Thunder",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Hellspark Elemental",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
   },
   {
    "pair": [
@@ -14796,10 +14884,26 @@
   {
    "pair": [
     "step:dispatch",
+    "Impetuous Devils",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Jin-Gitaxias, Core Augur",
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Kami of the Tended Garden",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
   },
   {
    "pair": [
@@ -14812,6 +14916,46 @@
   {
    "pair": [
     "step:dispatch",
+    "Krosan Cloudscraper",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Kuro, Pitlord",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Lathnu Hellion",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Lightning Serpent",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Lightning Skelemental",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Lord Skitter, Sewer King",
     "TRIGGERED:0:1"
    ],
@@ -14820,10 +14964,34 @@
   {
    "pair": [
     "step:dispatch",
+    "Mark of the Oni",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Master of the Wild Hunt",
     "TRIGGERED:0:0"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Measure of Wickedness",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Melancholy",
+    "TRIGGERED:0:3"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
   },
   {
    "pair": [
@@ -14864,6 +15032,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Nicol Bolas",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
   },
   {
    "pair": [
@@ -14924,6 +15100,14 @@
   {
    "pair": [
     "step:dispatch",
+    "Piru, the Volatile",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Pitiless Horde",
     "TRIGGERED:0:0"
    ],
@@ -14944,6 +15128,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Putrefax",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
   },
   {
    "pair": [
@@ -15012,6 +15204,22 @@
   {
    "pair": [
     "step:dispatch",
+    "Spark Elemental",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Spark Trooper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Splinterfright",
     "TRIGGERED:0:2"
    ],
@@ -15032,6 +15240,22 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Static Prison",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "units XL, UP: at its controller's first main phase the trigger offers the {E} 'unless' cost (CR 118.12, 107.14) and, unpaid, sacrifices the enchantment, so what it exiled until it left returns (CR 701.21a, 610.3); the legacy step pass offered no cost and sacrificed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Stenchskipper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit UP: at its step the trigger sacrifices its own source while it is still that object (CR 701.21a, 400.7), with the other instructions it prints; the legacy step pass sacrificed nothing"
   },
   {
    "pair": [
@@ -15160,6 +15384,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Wild Leotau",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit UP: at its step the trigger offers its controller the 'unless' cost (CR 118.12; energy counters, CR 107.14, or mana) and, unpaid, sacrifices its own source while it is still that object (CR 701.21a, 400.7); the legacy step pass offered no cost and sacrificed nothing"
   }
  ],
  "pairs": [

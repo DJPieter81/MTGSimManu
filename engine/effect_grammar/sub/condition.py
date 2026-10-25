@@ -115,9 +115,9 @@ from engine.effect_grammar.sub import payload as _payload
 from engine.effect_grammar.sub import quantity as _Q
 from engine.effect_model import Selector, SelectorKind
 from engine.effect_spec import (Amount, AmountKind, CardFilter, Condition,
-                                ConditionKind, CostSnapshot, Quantity,
-                                QuantityKind, Ref, RefKind, Stage, Unmodelled,
-                                Verb)
+                                ConditionKind, CostSnapshot, CounterSpec,
+                                Quantity, QuantityKind, Ref, RefKind, Stage,
+                                Unmodelled, Verb, freeze_cost)
 
 __all__ = ["LEAF", "DETAIL_CODES", "PREDICATES", "HISTORY_PREDS", "OPS",
            "LKI", "parse_condition", "clear_caches"]
@@ -1357,6 +1357,17 @@ _U = Tuple[Optional[Condition], Optional[Tuple[str, str]],
            Tuple[Tuple[str, str], ...], frozenset, int]
 
 
+def _energy_cost(value) -> Optional[CostSnapshot]:
+    """"{E}{E}" as an "unless" payment: the energy counters it removes from
+    its payer (CR 107.14), as the cost owner's snapshot."""
+    kinds = getattr(value, "kinds", None)
+    if not isinstance(value, CounterSpec) or value.choice or not kinds \
+            or set(kinds) != {"energy"}:
+        return None
+    from engine.cards import ActivationCost
+    return freeze_cost(ActivationCost(energy=len(kinds)))
+
+
 def _unless_rel(t: str) -> _U:
     """The condition of "unless <t>" and the length of ``t`` it consumed
     (a trailing "instead" is the frame's)."""
@@ -1367,7 +1378,8 @@ def _unless_rel(t: str) -> _U:
             pay = _payload.parse_payload(_PAY, t, m.span("cost"), None)
             if pay.unmodelled is not None:
                 return None, (pay.unmodelled, ""), (), frozenset(), 0
-            if pay.value is None or not isinstance(pay.value, CostSnapshot):
+            cost = _energy_cost(pay.value) or pay.value
+            if cost is None or not isinstance(cost, CostSnapshot):
                 return None, ("unless_cost", ""), (), frozenset(), 0
             end = pay.span[1]
             tail = join_spans(t, pay.rest_spans) if pay.rest_spans else ""
@@ -1378,7 +1390,7 @@ def _unless_rel(t: str) -> _U:
                     frozenset(), 0
             value = Condition(ConditionKind.UNLESS, pred="pays",
                               payer=player.selector, ref=player.ref,
-                              cost=pay.value, raw=t[:end])
+                              cost=cost, raw=t[:end])
             return (value, None, player.anaphor_pending("player"), frozenset(),
                     end)
     m = _UNLESS_ACTION_RE.match(t)

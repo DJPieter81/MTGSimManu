@@ -21,12 +21,13 @@ from pydantic import BaseModel, ConfigDict, Field
 # effect kind onto an EVSnapshot delta.
 CostKind = Literal[
     "life", "mana", "discard", "sacrifice",
-    "tap_creatures", "exile_from_gy",
+    "tap_creatures", "exile_from_gy", "energy",
 ]
 EffectKind = Literal[
     "etb_untapped", "produce_mana", "draw_cards",
     "deal_damage", "search_library", "reanimate",
     "exile_target", "counter_target", "scry_then_draw",
+    "prevent_effect",
 ]
 ChoiceSource = Literal[
     "cast", "target", "optional_cost",
@@ -80,6 +81,10 @@ class OptionalCost(BaseModel):
     effect: EffectDescriptor
     apply_to_game: Callable[..., Any]
     apply_to_snap: Callable[..., Any]
+    # The projection of declining when declining is no "do nothing": an
+    # "unless" cost (CR 118.12), whose instruction happens unless paid.
+    # None: declining leaves the position as it is.
+    skip_to_snap: Optional[Callable[..., Any]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 

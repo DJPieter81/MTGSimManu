@@ -743,7 +743,7 @@ def strict_trigger(h: AbilityEffects) -> bool:
 _STEP_TRIGGER_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.EXILE, Verb.MILL,
-    Verb.SURVEIL, Verb.PLAYER_COUNTERS})
+    Verb.SURVEIL, Verb.PLAYER_COUNTERS, Verb.SACRIFICE})
 _STEP_TARGET_ZONES = _TRIGGER_TARGET_ZONES | {"graveyard"}
 
 

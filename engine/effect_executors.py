@@ -122,7 +122,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.CREATE_TOKEN,
                                             Verb.PUT_COUNTERS, Verb.EXILE,
                                             Verb.MILL, Verb.SURVEIL,
-                                            Verb.PLAYER_COUNTERS}),
+                                            Verb.PLAYER_COUNTERS,
+                                            Verb.SACRIFICE}),
             FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
 
@@ -1951,6 +1952,8 @@ def _sacrifice(ctx: Resolution, perm: Any) -> None:
 
 def execute_sacrifice(ctx: Resolution, s: EffectSpec,
                       actors: Tuple[int, ...]) -> Outcome:
+    if sacrifice_self(s):
+        return _sacrifice_self(ctx)
     n = s.amount.n
     choices = []
     for player in actors:                        # choices in APNAP order
@@ -2022,13 +2025,41 @@ def _audit_edict(ctx: Resolution, s: EffectSpec, actors: Tuple[int, ...],
                           f"more than {want}", game=ctx.game)
 
 
-execute_sacrifice.supports = _sacrifice_supported
+def sacrifice_self(s: EffectSpec) -> bool:
+    """"Sacrifice ~" (CR 701.21a): the ability's controller moves its
+    source, while it is still the object the ability came from (CR 400.7),
+    from the battlefield to its owner's graveyard."""
+    r = s.ref
+    return (s.verb is Verb.SACRIFICE and isinstance(r, Ref)
+            and r.kind is RefKind.SELF and r.index is None and r.of is None
+            and r.n is None and _acts_as_controller(s.actor)
+            and s.amount is None and s.target is None
+            and s.target_slot is None and s.subject is None
+            and s.other is None and s.filter is None and s.group is None
+            and s.dest is None and s.duration is None and s.payload is None
+            and not s.optional and not s.alternatives and not s.flags
+            and s.chooser is Chooser.CONTROLLER)
+
+
+def _sacrifice_self(ctx: Resolution) -> Outcome:
+    card = _source_on_battlefield(ctx)
+    if card is None:                 # CR 400.7: a new object, not the source
+        return Outcome(False, {})
+    h = handle_of(card)
+    _sacrifice(ctx, card)
+    return Outcome(True, {ctx.controller: (h,)})
+
+
+execute_sacrifice.supports = (lambda s: _sacrifice_supported(s)
+                              or sacrifice_self(s))
 # An edict runs only in its own family (unit ED): the removal family's
-# other sacrifices (costs, "sacrifice ~") stay with their carriers.
-# Run where the edict family and the trigger bodies of the cast and attack
-# carriers run it (units ED, ED-T).
-execute_sacrifice.allowed_families = lambda s: frozenset({
-    FAMILY_EDICT, FAMILY_CAST_TRIGGER, FAMILY_ATTACK_TRIGGER})
+# other sacrifices (costs) stay with their carriers. Run where the edict
+# family and the trigger bodies of the cast and attack carriers run it
+# (units ED, ED-T); "sacrifice ~" where the step carrier runs it (unit UP).
+execute_sacrifice.allowed_families = lambda s: (
+    frozenset({FAMILY_STEP_TRIGGER}) if sacrifice_self(s)
+    else frozenset({FAMILY_EDICT, FAMILY_CAST_TRIGGER,
+                    FAMILY_ATTACK_TRIGGER}))
 
 
 # ── Conditions ────────────────────────────────────────────────────────
@@ -2096,6 +2127,36 @@ def evaluate_object(ctx: Resolution, cond: Condition) -> bool:
 
 
 evaluate_object.supports = _object_condition_supported
+
+
+def unless_supported(cond: Condition) -> bool:
+    """The "unless" conditions this evaluator offers: "<instruction> unless
+    you pay <cost>", a cost the payment owner charges (`optional_costs.
+    unless_cost_payable`). The payer must be the printed "you": an unbound
+    payer ("unless they pay") names another player, never the
+    controller."""
+    from .optional_costs import unless_cost_payable
+    return (cond.pred == "pays" and cond.ref is None
+            and cond.payer is not None and _acts_as_controller(cond.payer)
+            and unless_cost_payable(cond.cost))
+
+
+def evaluate_unless(ctx: Resolution, cond: Condition) -> bool:
+    """CR 118.12: "<instruction> unless you pay <cost>" means "you may pay
+    <cost>; if you don't, <instruction>". As the instruction is about to
+    be performed its payer, the controller, is offered the cost through
+    the payment owner (`optional_costs.offer_unless_cost`); True -- the
+    instruction happens -- unless it was paid. A cost the payer cannot pay
+    is not paid."""
+    from .effect_spec import iter_specs
+    from .optional_costs import offer_unless_cost
+    guarded = next((s for s in iter_specs(ctx.ability.specs)
+                    if s.condition is cond), None)
+    return not offer_unless_cost(ctx.game, ctx.controller, cond.cost,
+                                 _source_object(ctx), guarded)
+
+
+evaluate_unless.supports = unless_supported
 
 
 # ── MILL (family card_flow, unit ML) ──────────────────────────────────
@@ -2730,3 +2791,4 @@ EXECUTOR_FILTER_KEYS[Verb.SEARCH] |= frozenset(
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
 CONDITION_EVALUATORS[ConditionKind.OBJECT] = evaluate_object
 CONDITION_EVALUATORS[ConditionKind.HISTORY] = evaluate_history
+CONDITION_EVALUATORS[ConditionKind.UNLESS] = evaluate_unless

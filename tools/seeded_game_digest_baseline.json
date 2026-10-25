@@ -1,5 +1,5 @@
 {
-  "combined": "a97ee4b2e18421a8aced9b23332fbef6ba76eb274f19b57f7b7306a2eba1ee68",
+  "combined": "6e6f42f4313c46c03bca67080cb4ebf88b973c0f0e3703e32163a75798f80887",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -33,8 +33,8 @@
       "winner": "Azorius Control"
     },
     "bo1|Boros Energy|Affinity|50000": {
-      "lines": 472,
-      "sha256": "15da927d54aa8a35f304f5e5687f09dbf90c04c74f012baef3c565a62d956b61",
+      "lines": 479,
+      "sha256": "5ecffbc38e728ccca28a75d6a9f477b90b3c981585d72e03d3fc5ff0e90bf339",
       "turns": 6,
       "winner": "Affinity"
     },
@@ -123,14 +123,14 @@
       "winner": "Domain Zoo"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g2": {
-      "lines": 399,
-      "sha256": "2175e6f92841571c4c53c921d239262f0b1fb361ad2bd25485686c0159ecfb58",
+      "lines": 401,
+      "sha256": "b166ba0fa0d5b7062b53e620884c128a61a3d8ece93c40d2a221f51ac2f3926f",
       "turns": 6,
       "winner": "Boros Energy"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g3": {
-      "lines": 728,
-      "sha256": "6d615c28991a051e39f129003ae0d6d3a2212ec805eb2350cbe8f59131803257",
+      "lines": 730,
+      "sha256": "978f28d821945ebb8be6b291c2ca4be86b898d002458c24862b50f8a2cd54cbe",
       "turns": 9,
       "winner": "Boros Energy"
     },

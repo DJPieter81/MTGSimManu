@@ -373,3 +373,90 @@ def offer_ward_tax(game: "GameState", warded_card: "CardInstance",
     if not game.callbacks.decide_optional_cost(game, casting_player_idx, opt):
         return False
     return bool(opt.apply_to_game(game, casting_player_idx))
+
+
+# ── "Unless" costs (CR 118.12) ─────────────────────────────────────────
+
+def unless_cost_payable(cost) -> bool:
+    """The "unless" costs this owner charges: energy counters (CR 107.14) or
+    mana with no X, hybrid or Phyrexian pip, alone -- nothing else."""
+    from engine.effect_spec import CostSnapshot
+    if not isinstance(cost, CostSnapshot):
+        return False
+    ac = cost.thaw()
+    mana = ac.mana
+    if (ac.tap_self or ac.untap_self or ac.life or ac.sacrifice_self
+            or ac.exile_self or ac.sacrifice_type or ac.discard_cards
+            or ac.put_counter_kind or ac.remove_counter_kind
+            or ac.exile_from_graveyard_cards or ac.x_count or ac.unpayable
+            or mana.x_count or mana.hybrid or mana.phyrexian):
+        return False
+    return (ac.energy > 0) != (mana.cmc > 0)
+
+
+def offer_unless_cost(game: "GameState", payer_idx: int, cost,
+                      source: "CardInstance", guarded) -> bool:
+    """CR 118.12: offer `payer_idx` the "unless" cost of the instruction
+    `guarded` that `source`'s ability is about to perform; True iff paid.
+
+    Affordability is an engine-side rules gate, as for ward
+    (`offer_ward_tax`): energy is paid only from at least as many energy
+    counters (CR 107.14), mana only while the payer can produce that much;
+    an unaffordable cost is not offered and is not paid. The decision is
+    the payer's (`decide_optional_cost`), weighing what paying spends
+    against the instruction declining lets happen (`skip_to_snap`)."""
+    ac = cost.thaw()
+    player = game.players[payer_idx]
+    energy, mana = ac.energy, ac.mana
+    if energy:
+        if player.energy_counters < energy:
+            return False
+        descriptor = CostDescriptor(kind="energy", amount=energy)
+
+        def _to_game(g, p, n=energy):
+            return g.players[p].spend_energy(n)
+    else:
+        if player.available_mana_estimate < mana.cmc:
+            return False
+        descriptor = CostDescriptor(kind="mana", amount=mana.cmc)
+
+        def _to_game(g, p, m=mana):
+            from engine.mana_payment import ManaPayment
+            return ManaPayment.tap_lands_for_mana(g, p, m)
+
+    def _to_snap(s, n=energy, m=(0 if energy else mana.cmc)):
+        from ai.unless_value import project_unless_paid
+        return project_unless_paid(s, n, m)
+
+    def _skip(s):
+        from ai.unless_value import project_unless_declined
+        return project_unless_declined(game, payer_idx, source, guarded, s)
+
+    opt = OptionalCost(
+        name=f"unless:{getattr(source, 'name', '')}", cost=descriptor,
+        effect=EffectDescriptor(kind="prevent_effect", magnitude=1),
+        apply_to_game=_to_game, apply_to_snap=_to_snap, skip_to_snap=_skip)
+    if not game.callbacks.decide_optional_cost(game, payer_idx, opt):
+        return False
+    before = player.energy_counters
+    paid = bool(opt.apply_to_game(game, payer_idx))
+    _audit_unless_paid(game, payer_idx, energy, before, paid)
+    if paid:
+        game.log.append(f"T{game.display_turn} P{payer_idx+1}: pays "
+                        f"{'{E}' * energy if energy else mana.cmc} for "
+                        f"{getattr(source, 'name', '?')}")
+    return paid
+
+
+def _audit_unless_paid(game: "GameState", payer_idx: int, energy: int,
+                       before: int, paid: bool) -> None:
+    """Rules audit (CR 118.12, 107.14), restated from the payer's raw
+    energy field: an energy "unless" cost reported paid removed exactly
+    that many energy counters. Observes only."""
+    from engine.rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on() or not paid or not energy:
+        return
+    now = game.players[payer_idx].energy_counters
+    _audit_check("118.12/unless_paid", before - now == energy,
+                 f"P{payer_idx + 1} paid {{E}} x{energy} but {before} -> "
+                 f"{now} energy", game=game)

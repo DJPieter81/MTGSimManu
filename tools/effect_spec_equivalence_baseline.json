@@ -392,10 +392,10 @@
    "UNMODELLED_CLAUSE": 945
   },
   "has_discard_effect": {
-   "AGREE": 22255,
+   "AGREE": 22256,
    "DERIVED_COVERAGE_GROWTH": 88,
    "UNEXPLAINED": 224,
-   "UNMODELLED_CLAUSE": 171
+   "UNMODELLED_CLAUSE": 170
   },
   "has_draw_effect": {
    "AGREE": 20900,
@@ -613,8 +613,8 @@
    "AGREE": 22738
   },
   "loot_data": {
-   "AGREE": 22701,
-   "DERIVED_COVERAGE_GROWTH": 27,
+   "AGREE": 22700,
+   "DERIVED_COVERAGE_GROWTH": 28,
    "UNEXPLAINED": 4,
    "UNMODELLED_CLAUSE": 6
   },
@@ -763,13 +763,13 @@
  },
  "gate_parity": {
   "legacy_fallback": 3124,
-  "new_path": 2315,
-  "pairs": 5439
+  "new_path": 2344,
+  "pairs": 5468
  },
  "templates": 22738,
  "totals": {
   "AGREE": 2813963,
-  "DERIVED_COVERAGE_GROWTH": 7868,
+  "DERIVED_COVERAGE_GROWTH": 7869,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 7,
@@ -786,6 +786,6 @@
   "REMINDER_TEXT": 71,
   "SEMANTIC_FIX": 38,
   "UNEXPLAINED": 18059,
-  "UNMODELLED_CLAUSE": 9300
+  "UNMODELLED_CLAUSE": 9299
  }
 }

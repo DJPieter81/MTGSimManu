@@ -207,6 +207,15 @@ class ZoneManager:
                 (card, from_zone, source.name))
         return True
 
+    def linked_to(self, source: "CardInstance") -> list:
+        """The cards `source` -- the object it is now -- has exiled until it
+        leaves the battlefield, each with the zone it returns to:
+        ``[(card, zone)]``. A read for the AI's projections; the return is
+        `_return_linked`'s."""
+        key = (source.instance_id, source.battlefield_entry_seq)
+        return [(card, zone) for card, zone, _ in self._until_leaves.get(key, ())
+                if card.zone == "exile" and not getattr(card, "is_token", False)]
+
     def _forget_linked(self, card: "CardInstance") -> None:
         """CR 400.7: a card that leaves exile is a new object that no
         return names."""

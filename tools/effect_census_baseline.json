@@ -2,7 +2,7 @@
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
   "deck_removal_ready_share": 0.2054,
-  "deck_removal_typed_share": 0.8837,
+  "deck_removal_typed_share": 0.8876,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
    "target.scope:not_you": 2,
@@ -18,11 +18,11 @@
    "target.union:triggered": 1,
    "target.unparsed": 4
   },
-  "deck_typed_share": 0.7747,
+  "deck_typed_share": 0.7759,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 6,
    "CLAUSE": 22,
-   "CONDITION": 19,
+   "CONDITION": 18,
    "DURATION": 3,
    "FILTER": 25,
    "ITERATION": 2,
@@ -92,7 +92,7 @@
    "UNPARSED": 295,
    "WIDENING": 584
   },
-  "typed_share": 0.7404,
+  "typed_share": 0.7405,
   "typed_share_by_host_kind": {
    "ACTIVATED": 0.7991,
    "ALTERNATIVE_COST": 0.0,
@@ -102,15 +102,15 @@
    "MANA_ABILITY": 0.9448,
    "MODE": 0.7941,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7472,
+   "SPELL": 0.7473,
    "STATIC": 0.6313,
-   "TRIGGERED": 0.7988,
+   "TRIGGERED": 0.799,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
    "AMOUNT": 680,
    "CLAUSE": 1693,
-   "CONDITION": 1141,
+   "CONDITION": 1137,
    "DELAY": 16,
    "DURATION": 53,
    "FILTER": 1528,
@@ -169,9 +169,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7472,
+    "share": 0.7473,
     "specs": 9998,
-    "typed": 7471
+    "typed": 7472
    },
    "STATIC": {
     "share": 0.6313,
@@ -179,9 +179,9 @@
     "typed": 3395
    },
    "TRIGGERED": {
-    "share": 0.7988,
+    "share": 0.799,
     "specs": 15290,
-    "typed": 12213
+    "typed": 12216
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -250,9 +250,9 @@
      "typed": 33
     },
     "TRIGGERED": {
-     "share": 0.8829,
+     "share": 0.8878,
      "specs": 205,
-     "typed": 181
+     "typed": 182
     },
     "UNKNOWN": {
      "share": 0.0,
@@ -267,11 +267,11 @@
     "met": false,
     "ready": 53,
     "ready_share": 0.2054,
-    "typed": 228,
-    "typed_share": 0.8837
+    "typed": 229,
+    "typed_share": 0.8876
    },
    "specs": 870,
-   "typed": 674
+   "typed": 675
   },
   "keyword_lines": [
    [
@@ -1230,9 +1230,9 @@
     2
    ]
   ],
-  "typed": 32861,
-  "unmodelled": 11520,
-  "unmodelled_row_count": 1949,
+  "typed": 32865,
+  "unmodelled": 11516,
+  "unmodelled_row_count": 1946,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1596,5 +1596,5 @@
    ]
   ]
  },
- "session": "2026-10-24"
+ "session": "2026-10-25"
 }

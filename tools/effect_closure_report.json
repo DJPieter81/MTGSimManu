@@ -817,11 +817,11 @@
   "steps": {
    "E1": 2,
    "E2": 2,
-   "E3": 336,
+   "E3": 337,
    "E4": 53,
    "E5": 116,
    "E6": 34,
-   "none": 275
+   "none": 274
   },
   "strict": 85,
   "sub_kinds": {
@@ -831,12 +831,12 @@
   "verb_sets": {
    "CONTINUOUS,DRAW": 54,
    "CONTINUOUS,SCRY": 22,
-   "DISCARD,DRAW": 48,
+   "DISCARD,DRAW": 49,
    "DRAW": 40,
    "DRAW,LOSE_LIFE": 18,
    "DRAW,MOVE": 33,
    "DRAW,SCRY": 17,
-   "DRAW,UNMODELLED": 78,
+   "DRAW,UNMODELLED": 77,
    "MOVE,UNMODELLED": 27,
    "UNMODELLED": 18
   }
@@ -2397,33 +2397,40 @@
     "part": "mainboard",
     "step": "E3",
     "strict": true
+   },
+   {
+    "card": "Static Prison",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
    }
   ],
-  "executable": 95,
+  "executable": 124,
   "family": "step_trigger",
   "hosts": {
-   "mainboard": 2,
-   "pool": 93,
+   "mainboard": 3,
+   "pool": 121,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
-   "E2": 3,
+   "E2": 32,
    "E3": 28,
    "E4": 40
   },
-  "strict": 95,
+  "strict": 124,
   "sub_kinds": {},
   "verb_sets": {
    "CREATE_TOKEN": 30,
    "CREATE_TOKEN,LOSE_LIFE": 3,
    "DRAW": 10,
-   "DRAW,LOSE_LIFE": 3,
    "GAIN_LIFE": 4,
    "GAIN_LIFE,LOSE_LIFE": 6,
    "LOSE_LIFE": 12,
    "MILL": 6,
    "PUT_COUNTERS": 5,
+   "SACRIFICE": 28,
    "SURVEIL": 7
   }
  },

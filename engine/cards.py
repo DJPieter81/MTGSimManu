@@ -243,6 +243,11 @@ class ActivationCost:
     # self-limiting, so it satisfies the no-free-repeatable rule the way a tap
     # cost does.
     life: int = 0
+    # `energy` is the number of {E} paid: energy counters the payer removes
+    # (CR 107.14: payable only while they have that many). Set by an
+    # "unless you pay {E}" cost (unit UP); the activation parser leaves a
+    # printed energy cost unpayable.
+    energy: int = 0
     sacrifice_self: bool = False
     # Sibling of `sacrifice_self` with a different destination zone: the
     # source is EXILED as part of the cost (CR 602.2b). Equally

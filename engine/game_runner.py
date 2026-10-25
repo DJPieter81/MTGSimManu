@@ -157,6 +157,15 @@ class AICallbacks(GameCallbacks):
             name=opt.name, apply=opt.apply_to_snap,
             source="optional_cost",
         )
+        if opt.skip_to_snap is not None:
+            # Declining an "unless" cost is no "do nothing": the instruction
+            # it would stop happens (CR 118.12). Pay exactly when paying is
+            # worth more than that.
+            from ai.ev_evaluator import snapshot_from_game
+            now = snapshot_from_game(game, player_idx)
+            declined = opt.skip_to_snap(now.fast_replace())
+            return best_choice(game, player_idx, archetype, [pay],
+                               baseline=declined, snap_now=now) is pay
 
         def _skip(s):
             return s
