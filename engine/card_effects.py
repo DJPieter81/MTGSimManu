@@ -690,7 +690,9 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
 # the typed path first (tests/test_targeted_removal_shared_resolver.py). The
 # non-generic conditions keep their handlers: Assassin's Trophy (basic-land
 # search rider), Fatal Push ("if it has" revolt), Prismatic Ending (Converge
-# colors-spent), Leyline Binding (ETB linked "until leaves" exile).
+# colors-spent). Leyline Binding's handler, which exiled for good, is retired:
+# its enter trigger is the enter carrier's linked exile, returned when the
+# enchantment leaves (unit XL, CR 610.3).
 
 
 @EFFECT_REGISTRY.register("Ephemerate", EffectTiming.SPELL_RESOLVE,
@@ -1204,7 +1206,7 @@ def _resolve_nonland_permanent_removal(
         against it.
     mv_max_fn: optional (game, card, controller, item) -> int | None,
       the resolution-time mana-value ceiling. None means the card has
-      no such condition at all (Assassin's Trophy, Leyline Binding).
+      no such condition at all (Assassin's Trophy).
     """
     from .cards import Keyword
 
@@ -1373,16 +1375,6 @@ def fatal_push_resolve(game, card, controller, targets=None, item=None):
         zone_dest="graveyard", types=frozenset({"creature"}),
         mv_max_fn=_fatal_push_mv_max,
     )
-
-
-@EFFECT_REGISTRY.register("Leyline Binding", EffectTiming.ETB,
-                           description="Exile target nonland permanent an opponent controls")
-def leyline_binding_etb(game, card, controller, targets=None, item=None):
-    _resolve_nonland_permanent_removal(
-        game, card, controller, targets, item,
-        zone_dest="exile", log_verb="exiles",
-    )
-
 
 
 # ═══════════════════════════════════════════════════════════════════

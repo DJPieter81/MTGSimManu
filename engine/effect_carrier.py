@@ -545,14 +545,19 @@ def audit_loyalty_target(game: Any, pw: Any, controller: int, req: Any,
 
 # The families whose hosts the enter-trigger carrier takes: card flow,
 # tokens and counters (unit ET: "create <N> <token>" through the token owner
-# with its typed spec, CR 111.3), and edicts naming a player set ("each
-# player sacrifices a creature of their choice", unit ED-T, CR 701.21a: no
-# slot to bind). An enter trigger whose target another
+# with its typed spec, CR 111.3), edicts naming a player set ("each player
+# sacrifices a creature of their choice", unit ED-T, CR 701.21a: no slot to
+# bind), and the linked exile ("exile target <permanent> until ~ leaves the
+# battlefield", unit XL, CR 610.3). An enter trigger whose target another
 # family resolves (damage, removal) is still chosen by its legacy resolver,
 # which picks on entry; the dispatcher's unbound slot would go to that
 # owner's rule (A36), not to the same object. `_slots_picked_by_executors`
 # keeps a tokens-and-counters host with a slot its executor does not pick.
-ETB_FAMILIES = ("card_flow", "tokens_counters", "edict")
+ETB_FAMILIES = ("card_flow", "tokens_counters", "edict", "enter_exile")
+# The enter families whose hosts take their targets as they are put on the
+# stack (`put_on_stack`: the controller's pick, ward, CR 603.3d, 702.21a);
+# the others' slots reach their executors unbound, picked there (A35).
+ETB_BOUND_FAMILIES = frozenset({"enter_exile"})
 
 
 def _slots_picked_by_executors(host: Any) -> bool:
@@ -576,13 +581,14 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     """The enter-trigger carrier's plan for one face: ``[(host, family)]``
     for every TRIGGERED(SELF_ENTERS) host of `face_hosts` when each is in an
     `ETB_FAMILIES` family's strict shape, executable, and has its slots
-    picked by its own executors (`_slots_picked_by_executors`); None when
-    the face has no such host or any one of them does not qualify (a card
-    is taken whole or not at all, so no trigger of it resolves twice or not
-    at all). An enter event names no defending player (CR 506.2), so a host
-    naming one is not taken. A modal host is taken as `_takes` takes one,
-    each of its modes held to the same checks. One owner, read by the
-    carrier and the closure."""
+    bound as it is put on the stack (`ETB_BOUND_FAMILIES`) or picked by its
+    own executors (`_slots_picked_by_executors`); None when the face has no
+    such host or any one of them does not qualify (a card is taken whole or
+    not at all, so no trigger of it resolves twice or not at all). An enter
+    event names no defending player (CR 506.2), so a host naming one is not
+    taken. A modal host is taken as `_takes` takes one, each of its modes
+    held to the same checks. One owner, read by the carrier and the
+    closure."""
     from .effect_spec import EventHint, HostKind
     from .effect_views import names_defending_player
     hosts = [h for h in face_hosts
@@ -593,10 +599,11 @@ def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     plan = []
     for h in hosts:
         parts = mode_hosts(h) if h.modes else (h,)
-        family = None if any(names_defending_player(x)
-                             or not _slots_picked_by_executors(x)
-                             for x in parts) else next(
-            (f for f in ETB_FAMILIES if _takes(h, f)), None)
+        family = None if any(names_defending_player(x) for x in parts) \
+            else next((f for f in ETB_FAMILIES if _takes(h, f) and (
+                f in ETB_BOUND_FAMILIES
+                or all(_slots_picked_by_executors(x) for x in parts))),
+                None)
         if family is None:
             return None
         plan.append((h, family))
@@ -608,10 +615,11 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
     permanent's TRIGGERED(SELF_ENTERS) hosts on the face it shows, resolved
     through the dispatcher when `etb_plan` takes the face; None otherwise,
     and the legacy resolver runs. The engine resolves enter triggers on
-    entry, so every slot reaches its executor unbound and the controller
-    picks there (CR 603.3d, A35); a modal host's modes are chosen then
-    (`choose_trigger_modes`, CR 603.3c). Returns whether any host
-    performed anything."""
+    entry. A host of a bound family takes its modes and targets as it is
+    put on the stack (`put_on_stack`, CR 603.3c-d); every other host's
+    slots reach its executors unbound and the controller picks there (CR
+    603.3d, A35), its modes chosen then (`choose_trigger_modes`, CR
+    603.3c). Returns whether any host performed anything."""
     template = getattr(card, "template", None)
     if template is None or getattr(template, "is_loyalty_clause", False) \
             or not er.dispatch_enabled():
@@ -624,13 +632,16 @@ def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
         return None
     performed = False
     for h, family in plan:
-        parts = choose_trigger_modes(game, card, controller, h) \
-            if h.modes else (h,)
-        for part in parts:
+        if family in ETB_BOUND_FAMILIES:
+            parts = put_on_stack(game, card, controller, h)
+        else:
+            parts = [(part, tuple(() for _ in part.targets)) for part in (
+                choose_trigger_modes(game, card, controller, h)
+                if h.modes else (h,))]
+        for part, chosen in parts:
             performed |= bool(er.resolve_ability(
-                game, er.handle_of(card), controller, part,
-                tuple(() for _ in part.targets), family=family,
-                source_object=card))
+                game, er.handle_of(card), controller, part, chosen,
+                family=family, source_object=card))
     return performed
 
 

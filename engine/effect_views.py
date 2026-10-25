@@ -102,6 +102,10 @@ FAMILY_STEP_TRIGGER = "step_trigger"
 # The attack carrier's family (unit AK, `effect_carrier.
 # dispatch_attack_triggers`): a permanent's typed attack ability.
 FAMILY_ATTACK_TRIGGER = "attack_trigger"
+# The enter carrier's linked-exile family (unit XL, `effect_carrier.
+# dispatch_etb`): a permanent's enter trigger that exiles a target permanent
+# until it leaves the battlefield (CR 610.3).
+FAMILY_ENTER_EXILE = "enter_exile"
 FAMILIES = frozenset({FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                       FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                       FAMILY_STACK_MANA, FAMILY_TRIGGER})
@@ -789,7 +793,8 @@ def _names_unbound_event(s, unbound: frozenset) -> bool:
 
 
 def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
-                         battlefield_exile: bool = False) -> bool:
+                         battlefield_exile: bool = False,
+                         linked_exile: bool = False) -> bool:
     """The body a trigger carrier performs from a typed host (A38): every
     spec one of `_TRIGGER_BODY_VERBS` with no residue or sub-ability -- an
     intervening "if" aside, which the carrier that admits one checks as the
@@ -798,12 +803,13 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
     exile is of a target card in a graveyard, of the top of its
     controller's library or the library of the player the event names (by
     that player: "defending player exiles the top twenty cards of their
-    library") or, `battlefield_exile`, of a target permanent; a
-    continuous effect is a permission over what that exile moved or a
-    characteristic change until end of turn on a target (the one spec with
-    a duration). A head that limits how often it triggers ("this ability
-    triggers only once each turn") is refused: no carrier counts its
-    triggers yet."""
+    library"), `battlefield_exile`, of a target permanent or,
+    `linked_exile`, of a target permanent until the source leaves the
+    battlefield (CR 610.3); a continuous effect is a permission over what
+    that exile moved or a characteristic change until end of turn on a
+    target (with the linked exile, the specs with a duration). A head that
+    limits how often it triggers ("this ability triggers only once each
+    turn") is refused: no carrier counts its triggers yet."""
     if h.trigger.frequency_raw:
         return False
     bare = h
@@ -815,21 +821,24 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
         return False
     from .effect_executors import (characteristic_supported,
                                    exile_target_supported,
-                                   exile_top_supported)
+                                   exile_top_supported, exile_until_leaves)
     specs = list(iter_specs(h.specs))
     exiled = {s.seq for s in specs if _library_top_exile(s)}
     for s in specs:
         if _names_unbound_event(s, unbound):
             return False
+        linked = linked_exile and exile_until_leaves(s)
         if s.verb is Verb.EXILE and s.seq not in exiled \
                 and not _graveyard_target_exile(s) \
                 and not exile_top_supported(s) \
-                and not (battlefield_exile and exile_target_supported(s)):
+                and not (battlefield_exile and exile_target_supported(s)) \
+                and not linked:
             return False
         if s.verb is Verb.CONTINUOUS and not (
                 _permission_over(s, exiled) or characteristic_supported(s)):
             return False
-        if s.duration is not None and s.verb is not Verb.CONTINUOUS:
+        if s.duration is not None and s.verb is not Verb.CONTINUOUS \
+                and not linked:
             return False
     return True
 
@@ -864,6 +873,32 @@ def strict_cast_trigger(h: AbilityEffects) -> bool:
     return _strict_trigger_body(h, _CAST_UNBOUND_REFS, battlefield_exile=True)
 
 
+# An enter event names the entering object, which a self-enter host calls
+# "~", and no player (CR 603.6a): no ref of the event is bound.
+_ENTER_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER,
+                                 RefKind.DEFENDING_PLAYER})
+
+
+def strict_enter_exile(h: AbilityEffects) -> bool:
+    """An enter-triggered host the enter carrier takes with its targets
+    taken as it is put on the stack (A38, CR 603.3d): a TRIGGERED host
+    whose head is its source entering, with no intervening "if", every
+    target slot one the carrier picks, and the trigger body
+    (`_strict_trigger_body`) with an exile of a target permanent until the
+    source leaves the battlefield among it (`effect_executors.
+    exile_until_leaves`, CR 610.3)."""
+    from .effect_executors import exile_until_leaves
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or EventHint.SELF_ENTERS not in h.trigger.event_hints \
+            or h.trigger.intervening_if is not None \
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+        return False
+    return (any(exile_until_leaves(s) for s in iter_specs(h.specs))
+            and _strict_trigger_body(h, _ENTER_UNBOUND_REFS,
+                                     battlefield_exile=True,
+                                     linked_exile=True))
+
+
 def strict_edict(h: AbilityEffects) -> bool:
     """Every spec an edict: a SACRIFICE, unconditional, its shape the
     SACRIFICE executor's (a player set or a chosen player sacrifices a
@@ -886,6 +921,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_CAST_TRIGGER: strict_cast_trigger,
     FAMILY_STEP_TRIGGER: strict_step_trigger,
     FAMILY_ATTACK_TRIGGER: strict_attack_trigger,
+    FAMILY_ENTER_EXILE: strict_enter_exile,
 })
 
 

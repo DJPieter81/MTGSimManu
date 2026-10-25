@@ -1488,6 +1488,13 @@
     "strict": true
    },
    {
+    "card": "Leyline Binding",
+    "host": "TRIGGERED:0:2",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
     "card": "Lush Portico",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -1572,28 +1579,28 @@
     "strict": true
    }
   ],
-  "executable": 556,
+  "executable": 605,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 22,
-   "pool": 534,
+   "mainboard": 23,
+   "pool": 582,
    "sideboard": 0
   },
   "steps": {
-   "E2": 61,
+   "E2": 109,
    "E3": 197,
-   "E4": 283,
+   "E4": 284,
    "E5": 10,
    "E6": 5
   },
-  "strict": 556,
+  "strict": 605,
   "sub_kinds": {},
   "verb_sets": {
-   "ADD_MANA": 5,
    "CONTINUOUS,EXILE": 10,
    "CREATE_TOKEN": 269,
    "DRAW": 109,
-   "EXILE": 10,
+   "EXILE": 55,
+   "EXILE,GAIN_LIFE": 6,
    "MILL": 37,
    "MOVE": 34,
    "PUT_COUNTERS": 13,

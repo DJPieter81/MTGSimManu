@@ -1,10 +1,10 @@
 {
-  "combined": "1dfeec3338e5661c27d776b942b90c56b4e0bbae091066a97e51008e7f646191",
+  "combined": "acd30924154c6b710c31f5340d3c671f7416d419bca05ae3e292149b0ab59abc",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
       "lines": 700,
-      "sha256": "51eafd4b5de5589af84020add70cb02c781a0fde34320cec5c835b242d79ffea",
+      "sha256": "a21bb836fb5ba28960ec9e7337c72a3d22c9b31990eb493c52928f4c0d9bbe81",
       "turns": 7,
       "winner": "Ruby Storm"
     },
@@ -51,8 +51,8 @@
       "winner": "Domain Zoo"
     },
     "bo1|Domain Zoo|Eldrazi Tron|51000": {
-      "lines": 1470,
-      "sha256": "c28aa846e46ec160e95e0b565e362b6b58ea833f653aa509372dad0be60d53f2",
+      "lines": 1471,
+      "sha256": "a38eb758942db707eb97efd8246b3da3d528b5f1ae052129f52966ddcfcdc087",
       "turns": 24,
       "winner": "Eldrazi Tron"
     },
@@ -118,19 +118,19 @@
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {
       "lines": 606,
-      "sha256": "40027918d8e1eacc0c759940cdaa3f45a2169a4bb3cf037ed1cb94c0be3ed962",
+      "sha256": "1a8156b0ce6b02967b14147837fec013d15324db4ed62ef87cf354c9be31fb24",
       "turns": 8,
       "winner": "Domain Zoo"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g2": {
       "lines": 400,
-      "sha256": "57abb8b959ac5690e7ce79c8bf4d9fc39963db0bdfafa526c98a9ba8fcb8e93c",
+      "sha256": "8d2c90ee774d8a5e854bb50ae016d1cf6dd943b37300a776918c7f9e4f9b5a22",
       "turns": 6,
       "winner": "Boros Energy"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g3": {
       "lines": 460,
-      "sha256": "bc6428faad1e3a17f588913b42f39f0a91de5e4c1954ab939528a17daa033f4b",
+      "sha256": "f59ae151e2420a48043118653913afb57ab1d79c0d03c5fdc689668e2cc5b484",
       "turns": 6,
       "winner": "Domain Zoo"
     },

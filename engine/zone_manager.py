@@ -26,7 +26,10 @@ class ZoneManager:
     """Handles all card movement between zones."""
 
     def __init__(self):
-        pass
+        # CR 610.3: the cards exiled until a source leaves the battlefield,
+        # keyed by that source's object -- (instance id, battlefield entry),
+        # CR 400.7 -- each with the zone it returns to and its source's name.
+        self._until_leaves: dict = {}
 
     # ── Public API ──────────────────────────────────────────────────
 
@@ -94,6 +97,10 @@ class ZoneManager:
             game._creature_dies(card, cause=cause)
             return True
         was_creature = self._creature_on_battlefield(card, from_zone)
+        # The object leaving the battlefield, read before it leaves: what
+        # it exiled until it left returns once it has (CR 610.3).
+        leaving = ((card.instance_id, card.battlefield_entry_seq)
+                   if from_zone == "battlefield" else None)
 
         # ── Graveyard-to-exile replacement (CR 614.1a, 614.6) ───────
         # Decided before the card leaves its zone: a replacement that
@@ -112,9 +119,10 @@ class ZoneManager:
             source_list.remove(card)
         if from_zone == "exile":
             # CR 400.7: a card leaving exile is a new object; an effect
-            # that named the exiled object (a permission to play it) no
-            # longer names it.
+            # that named the exiled object (a permission to play it, a
+            # return when its exiler leaves) no longer names it.
             game.continuous_effects.forget_object(card.instance_id)
+            self._forget_linked(card)
         # CR 400.7: a card that changes zones is a new object; a flashback
         # granted to the old one does not follow it.
         from .cast_manager import end_flashback_grant
@@ -173,7 +181,81 @@ class ZoneManager:
                 f"{from_zone} -> {actual_to} ({cause})"
             )
 
+        if leaving is not None:
+            self._source_left(game, leaving)
         return True
+
+    # ── "Until ~ leaves the battlefield" (CR 610.3) ─────────────────
+
+    def exile_until_leaves(self, game: "GameState", card: "CardInstance",
+                           source: "CardInstance", cause: str = "") -> bool:
+        """CR 610.3: exile `card` until `source` leaves the battlefield --
+        the one-shot exile, and the link from which the second one-shot
+        effect, the return to the zone `card` left, is made once the
+        object `source` is now (its battlefield entry, CR 400.7) leaves
+        (`_return_linked`). CR 610.3a: a source no longer on the
+        battlefield moves nothing. Returns whether `card` was exiled."""
+        if source is None or source.zone != "battlefield":
+            return False
+        key = (source.instance_id, source.battlefield_entry_seq)
+        from_zone = card.zone
+        if not self.move_card(game, card, from_zone, "exile", cause=cause):
+            return False
+        if card.zone == "exile" and source.zone == "battlefield" \
+                and source.battlefield_entry_seq == key[1]:
+            self._until_leaves.setdefault(key, []).append(
+                (card, from_zone, source.name))
+        return True
+
+    def _forget_linked(self, card: "CardInstance") -> None:
+        """CR 400.7: a card that leaves exile is a new object that no
+        return names."""
+        for key, linked in list(self._until_leaves.items()):
+            kept = [e for e in linked if e[0] is not card]
+            if not kept:
+                del self._until_leaves[key]
+            elif len(kept) != len(linked):
+                self._until_leaves[key] = kept
+
+    def _source_left(self, game: "GameState", key: tuple) -> None:
+        """The object `key` names has left the battlefield: what it exiled
+        until then returns (CR 610.3). Auditor `610.3/linked_return`."""
+        from .rules_audit import enabled as _audit_on
+        linked = tuple(self._until_leaves.get(key, ())) if _audit_on() else ()
+        self._return_linked(game, key)
+        if linked:
+            self._audit_linked_return(game, linked)
+
+    def _return_linked(self, game: "GameState", key: tuple) -> None:
+        """CR 610.3, 610.3c: each card the departed source `key` exiled
+        until it left, still in exile as the same object (`_forget_linked`,
+        CR 400.7), returns to the zone it left -- to the battlefield under
+        its owner's control, a new object whose enter triggers trigger as
+        any entry's (CR 603.6a). A token that left the battlefield has
+        ceased to exist and does not return (CR 111.8)."""
+        for card, zone, source_name in self._until_leaves.pop(key, ()):
+            if card.zone != "exile" or getattr(card, "is_token", False):
+                continue
+            cause = f"{source_name} left the battlefield"
+            if zone != "battlefield":
+                self.move_card(game, card, "exile", zone, cause=cause)
+            elif self.move_card(game, card, "exile", "battlefield",
+                                cause=cause, controller_override=card.owner):
+                game._handle_permanent_etb(card, card.owner)
+
+    @staticmethod
+    def _audit_linked_return(game: "GameState", linked: tuple) -> None:
+        """Rules audit (CR 610.3), restated from the cards' zones: once its
+        source has left the battlefield, no card it exiled until then that
+        was still in exile -- a card, not a token (CR 111.8) -- is left
+        there. Observes only."""
+        from .rules_audit import check as _audit_check
+        left = [card.name for card, _, _ in linked
+                if card.zone == "exile" and not getattr(card, "is_token",
+                                                        False)]
+        _audit_check("610.3/linked_return", not left,
+                     f"{linked[0][2]} left the battlefield; {left} stayed "
+                     f"in exile", game=game)
 
     def move_card_to_graveyard(
         self, game: "GameState", card: "CardInstance", cause: str = ""
@@ -491,6 +573,7 @@ class ZoneManager:
           implementation).
         """
         from_controller = card.controller
+        leaving = (card.instance_id, card.battlefield_entry_seq)
 
         # ── Leave battlefield ───────────────────────────────────────
         if card in game.players[from_controller].battlefield:
@@ -505,6 +588,10 @@ class ZoneManager:
         card._game_state = game
         card.zone = "battlefield"
         game.players[to_controller].battlefield.append(card)
+
+        # The object that left is not the one that entered (CR 400.7):
+        # what it exiled until it left returns (CR 610.3).
+        self._source_left(game, leaving)
 
     # ── Internal Helpers ────────────────────────────────────────────
 

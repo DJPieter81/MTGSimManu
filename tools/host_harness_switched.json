@@ -8988,6 +8988,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Aang's Iceberg",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Abbot of Keral Keep",
     "TRIGGERED:0:1"
    ],
@@ -9056,6 +9064,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit EM: the enter trigger adds its mana to its controller's pool (CR 106.1, 603.6a); the legacy route performed nothing ({R})"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Alabaster Host Intercessor",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9132,6 +9148,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Annex Sentry",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Ant-Man's Army",
     "TRIGGERED:0:0"
    ],
@@ -9204,6 +9228,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Assimilation Aegis",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Astral Wingspan",
     "TRIGGERED:0:2"
    ],
@@ -9264,6 +9296,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E.2 (enter-trigger carrier; no legacy enter branch since E.2 retired the tag-gated regrowth branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver returns no card for any card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher returns the card its controller picks out of the legal cards in its graveyard (CR 603.3d, 608.2b; the card-flow family's MOVE through the zone funnel, the choice through choose_cards and, for 'you may', choose_optional_effect -- A35)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Banisher Priest",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Banishing Light",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9356,6 +9404,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Bishop of Binding",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Blade Splicer",
     "TRIGGERED:0:0"
    ],
@@ -9392,6 +9448,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Borrowed Time",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9480,6 +9544,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Brutal Cathar // Moonrage Brute",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9588,6 +9660,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Cast Out",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Cat Collector",
     "TRIGGERED:0:0"
    ],
@@ -9600,6 +9680,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Chained to the Rocks",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9640,6 +9728,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit RX: the draw's own condition ('if you control a creature with a +1/+1 counter on it') is a count the description owner answers (CR 608.2c); the legacy enter resolver never drew"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Circle of Confinement",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Citizen's Arrest",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9696,6 +9800,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Conclave Tribunal",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9876,6 +9988,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Detention Chariot",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Devoted Grafkeeper // Departed Soulkeeper",
     "TRIGGERED:0:0"
    ],
@@ -9888,6 +10008,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dimensional Exile",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -9992,6 +10120,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dusk Rose Reliquary",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -10252,6 +10388,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Fairgrounds Warden",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Faith Unbroken",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Fate Foretold",
     "TRIGGERED:0:1"
    ],
@@ -10336,6 +10488,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger puts its +1/+1 counters on each creature its controller controls (CR 122.1, 603.6a); the legacy enter resolver placed none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Food Coma",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -10512,6 +10672,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: the same mill (same cards, same zones) through the mill owner; the log names the source without the legacy ' mill' suffix and drops the legacy 'ETB: mill N' line"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Glass Casket",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -10708,6 +10876,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Hardlight Containment",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Harmonious Archon",
     "TRIGGERED:0:2"
    ],
@@ -10792,6 +10968,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hieromancer's Cage",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -10964,6 +11148,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Isolation Zone",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ixalan's Binding",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Jennika, Bad Apple Big Sister",
     "TRIGGERED:0:0"
    ],
@@ -10984,6 +11184,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Journey to Oblivion",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -11156,6 +11364,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Leyline Binding",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Lightshell Duo",
     "TRIGGERED:0:1"
    ],
@@ -11168,6 +11384,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Liminal Hold",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -11268,6 +11492,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Makeshift Binding",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Malcator, Purity Overseer",
     "TRIGGERED:0:0"
    ],
@@ -11280,6 +11512,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mardu Siegebreaker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -11352,6 +11592,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Memory Trap",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -11512,6 +11760,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mystical Tether",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -11708,6 +11964,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "On Thin Ice",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Orchard Strider",
     "TRIGGERED:0:0"
    ],
@@ -11720,6 +11984,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Ossification",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -11812,6 +12084,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Perilous Snare",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Persuasive Interrogators",
     "TRIGGERED:0:0"
    ],
@@ -11900,6 +12180,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Portable Hole",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Portal to Phyrexia",
     "TRIGGERED:0:0"
    ],
@@ -11912,6 +12200,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Prayer of Binding",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -12356,6 +12652,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Seal from Existence",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Seam Rip",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Search Party Captain",
     "TRIGGERED:0:1"
    ],
@@ -12456,6 +12768,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Sheltered by Ghosts",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -12604,6 +12924,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Solitary Cell",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Soul of Migration",
     "TRIGGERED:0:1"
    ],
@@ -12708,6 +13036,22 @@
   {
    "pair": [
     "etb:dispatch",
+    "Stasis Snare",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Static Snare",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Sterling Hound",
     "TRIGGERED:0:0"
    ],
@@ -12744,6 +13088,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Stormplain Detainment",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -12884,6 +13236,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Thopter Arrest",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thopter Engineer",
     "TRIGGERED:0:0"
    ],
@@ -12964,6 +13324,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Touch the Spirit Realm",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Tough Cookie",
     "TRIGGERED:0:0"
    ],
@@ -12984,6 +13352,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Trapped in the Screen",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [
@@ -13292,6 +13668,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Web Up",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Web-Warriors",
     "TRIGGERED:0:0"
    ],
@@ -13336,6 +13720,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "White Auracite",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit XL: the enter carrier's linked-exile family takes an enter trigger that exiles a target permanent until its source leaves the battlefield, with the trigger body beside it: its target is taken as it is put on the stack (CR 603.3d) and the zone funnel exiles it until the source leaves, returning it then under its owner's control (CR 610.3, 610.3c); the legacy enter pass left the shape out and performed nothing, and Leyline Binding's name-keyed handler, which exiled for good, is retired"
   },
   {
    "pair": [

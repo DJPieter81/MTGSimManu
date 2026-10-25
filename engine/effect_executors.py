@@ -83,6 +83,20 @@ FAMILY_STEP_TRIGGER = "step_trigger"
 # dispatch_attack_triggers`): what a permanent's typed attack ability
 # performs.
 FAMILY_ATTACK_TRIGGER = "attack_trigger"
+# The enter carrier's linked-exile family (unit XL, `effect_carrier.
+# dispatch_etb`): an enter trigger that exiles a target permanent until its
+# source leaves the battlefield (CR 610.3), with the trigger body beside it
+# -- less the instructions whose executors run in named families only (a
+# discard, a characteristic change, a sacrifice), which wait on their own
+# harness proof.
+FAMILY_ENTER_EXILE = "enter_exile"
+
+# The verbs a typed trigger's body runs (units AK, CT.2, XL).
+_TRIGGER_BODY_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
+                                 Verb.DRAW, Verb.DISCARD, Verb.CREATE_TOKEN,
+                                 Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
+                                 Verb.KEYWORD_ACTION, Verb.CONTINUOUS,
+                                 Verb.EXILE, Verb.SACRIFICE})
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -100,29 +114,14 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
             FAMILY_EDICT: frozenset({Verb.SACRIFICE}),
             FAMILY_REMOVAL: frozenset({Verb.DESTROY, Verb.SEARCH, Verb.MOVE,
                                        Verb.SHUFFLE}),
-            FAMILY_CAST_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
-                                            Verb.GAIN_LIFE, Verb.DRAW,
-                                            Verb.DISCARD,
-                                            Verb.CREATE_TOKEN,
-                                            Verb.PUT_COUNTERS, Verb.MILL,
-                                            Verb.SURVEIL,
-                                            Verb.KEYWORD_ACTION,
-                                            Verb.CONTINUOUS, Verb.EXILE,
-                                            Verb.SACRIFICE}),
+            FAMILY_CAST_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_STEP_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.GAIN_LIFE, Verb.DRAW,
                                             Verb.CREATE_TOKEN,
                                             Verb.PUT_COUNTERS, Verb.EXILE,
                                             Verb.MILL, Verb.SURVEIL}),
-            FAMILY_ATTACK_TRIGGER: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
-                                              Verb.GAIN_LIFE, Verb.DRAW,
-                                              Verb.DISCARD,
-                                              Verb.CREATE_TOKEN,
-                                              Verb.PUT_COUNTERS, Verb.MILL,
-                                              Verb.SURVEIL,
-                                              Verb.KEYWORD_ACTION,
-                                              Verb.CONTINUOUS, Verb.EXILE,
-                                              Verb.SACRIFICE})}
+            FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
+            FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -1020,14 +1019,61 @@ def _audit_target_exiled(ctx: Resolution, perm: Any) -> None:
             f"{perm.name} on the battlefield", game=ctx.game)
 
 
+def exile_until_leaves(s: EffectSpec) -> bool:
+    """"[You may] exile [up to N] target <permanent> until ~ leaves the
+    battlefield" (CR 610.3): the permanents chosen for the slot, the
+    controller choosing, each exiled through the zone funnel's linked
+    exile (`ZoneManager.exile_until_leaves`), which returns it to the
+    battlefield under its owner's control when the source leaves (CR
+    610.3c). "You may" is the dispatcher's question (A35), asked before
+    this runs."""
+    d, req = s.duration, s.target
+    return (s.verb is Verb.EXILE and req is not None
+            and s.target_slot is not None and req.zone == "battlefield"
+            and req.mode_group is None and not req.max_mana_value_is_x
+            and getattr(d, "kind", None) is DurationKind.UNTIL_LEAVES
+            and d.obj is None and not s.alternatives and s.filter is None
+            and s.group is None and s.dest is None and s.payload is None
+            and s.chooser is Chooser.CONTROLLER and not s.flags
+            and s.actor is None and s.ref is None and s.amount is None
+            and s.subject is None and s.other is None)
+
+
+def _exile_until_source_leaves(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """CR 610.3a: a source no longer on the battlefield as the object the
+    ability came from exiles nothing. Else each chosen permanent still a
+    legal target (CR 608.2b) is exiled until that object leaves (CR
+    610.3)."""
+    source = _source_on_battlefield(ctx)
+    if source is None:
+        return Outcome(False, {})
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    out = {}
+    for value in slot:
+        perm = _bind_recipient(ctx, s.target, source, value)
+        if perm is None or isinstance(perm, int):
+            continue
+        controller, h = perm.controller, handle_of(perm)
+        if ctx.game.zone_mgr.exile_until_leaves(ctx.game, perm, source,
+                                                cause=source.name):
+            ctx.game.log.append(
+                f"T{ctx.game.display_turn} P{ctx.controller+1}: "
+                f"{source.name} exiles {perm.name} until it leaves the "
+                f"battlefield")
+            out.setdefault(controller, []).append(h)
+        _audit_target_exiled(ctx, perm)
+    return Outcome(bool(out), {p: tuple(v) for p, v in out.items()})
+
+
 def _exile_supported(s: EffectSpec) -> bool:
     """The top N of a library, the controller's whole hand, the ability's
     own permanent ("exile ~"), the cards an earlier instruction found
     ("exile them"), the cards chosen in a graveyard, or the permanents
-    chosen on the battlefield. Any other exile is refused."""
+    chosen on the battlefield, for good or until the source leaves. Any
+    other exile is refused."""
     return (exile_top_supported(s) or _exile_hand_supported(s)
             or self_exile(s) or exile_found(s) or graveyard_target_exile(s)
-            or exile_target_supported(s))
+            or exile_target_supported(s) or exile_until_leaves(s))
 
 
 def _exile_them(ctx: Resolution, s: EffectSpec) -> Outcome:
@@ -1122,6 +1168,8 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
         return _exile_graveyard_targets(ctx, s)
     if exile_target_supported(s):
         return _exile_targets(ctx, s)
+    if exile_until_leaves(s):
+        return _exile_until_source_leaves(ctx, s)
     if _is_your_hand(s.filter):
         return _exile_hand(ctx)
     n = _amount(ctx, s)
@@ -1141,15 +1189,17 @@ def execute_exile(ctx: Resolution, s: EffectSpec,
 execute_exile.supports = _exile_supported
 # A graveyard target's exile runs in the card-flow family, and beside a
 # token or counter instruction in that family (unit GX), and in a step,
-# attack or cast trigger (units BT, AK, CT.2); a battlefield target's, in a
-# cast trigger (unit UG); every other exile shape is unrestricted, as
+# attack, cast or enter trigger (units BT, AK, CT.2, XL); a battlefield
+# target's, in a cast trigger (unit UG), and until the source leaves, in an
+# enter trigger (unit XL); every other exile shape is unrestricted, as
 # before.
 execute_exile.allowed_families = (
     lambda s: frozenset({FAMILY_CARD_FLOW, FAMILY_TOKENS_COUNTERS,
                          FAMILY_STEP_TRIGGER, FAMILY_ATTACK_TRIGGER,
-                         FAMILY_CAST_TRIGGER})
+                         FAMILY_CAST_TRIGGER, FAMILY_ENTER_EXILE})
     if graveyard_target_exile(s)
     else frozenset({FAMILY_CAST_TRIGGER}) if exile_target_supported(s)
+    else frozenset({FAMILY_ENTER_EXILE}) if exile_until_leaves(s)
     else None)
 # An enter trigger's graveyard target nobody chose is its controller's pick
 # through `choose_cards` (A36), as for the graveyard MOVE.
