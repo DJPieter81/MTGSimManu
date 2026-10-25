@@ -11560,3 +11560,46 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 
 **Lead, not built:**
 - **A trigger that triggers during a resolution resolves inside it.** Here a death trigger and a counter trigger both resolved before the attack trigger finished; CR 603.3 puts them on the stack the next time a player would receive priority. It belongs with unit SB (#102): the engine's dies observers and counter triggers resolve inside the zone funnel.
+
+## Unit MTR: a modal triggered ability's controller chooses its modes as it is put on the stack, and the chosen modes are performed (CR 603.3c, 700.2, 700.2a; 2026-10-25)
+
+**Source:** the `dp-post` census row `603.2/attack_trigger_unresolved` for Territorial Kavu (Domain Zoo x4).
+
+**Rule:** "Whenever this creature attacks, choose one — • Discard a card. If you do, draw a card. • Exile up to one target card from a graveyard." As the trigger is put on the stack, its controller chooses as many modes as the header says (CR 603.3c), then the chosen modes' targets (CR 603.3d). A mode whose required target has no legal choice can't be chosen; with no mode chosen, the ability is removed (CR 700.2a). The chosen modes are performed in printed order (CR 700.2).
+
+**The defect:**
+- No trigger carrier took a modal host. Its instructions are its modes', none its own, so the strict shapes refused it, and every modal trigger kept its legacy pass.
+- That pass performed no mode, except Territorial Kavu's name-keyed attack handler. The handler chose the mode in the engine with literals and moved the exiled card around the zone funnel.
+
+**Class:** 159 modal triggered abilities in the pool, 123 under the carriers' heads (77 enter, 22 step, 9 attack, 9 cast, 6 combat damage). 140 are "choose one", none prints a cost per mode, and 9 print an instruction before their modes (refused). The carriers take 4 today (Territorial Kavu, Etherwrought Page, Exhibition Magician, Gaius van Baelsar); the rest wait on bodies the carriers do not run yet. Registered: Territorial Kavu.
+
+**Steps:**
+- **A mode as a host of its own:** `trigger_mode_host` / `mode_hosts` put a mode under its parent's trigger head, with its grouped targets as its slots. This is the transformation `chosen_mode_host` already made for spells, now one helper.
+- **One takeability rule:** `_takes`, read by the attack, cast, step, draw and combat-damage families and by the enter plan. A modal host is taken when it prints nothing before its modes, its header asks for a number of modes it has, and each mode is in the family's shape and executable.
+- **The choice:** `choose_trigger_modes` finds the legal modes (each required target has a legal choice, CR 700.2a) and asks the controller (`callbacks.choose_trigger_modes`). The answer is held to legal, distinct modes, at most the header's most, and completed to its fewest with the lowest legal modes.
+- **On the stack:** `put_on_stack` replaces `trigger_targets` at the five carrier call sites: one (host, targets) pair per chosen mode, in printed order. The enter carrier chooses the modes on entry and resolves each with its slots unbound (A35).
+- **The AI:** `ai.modal.select_trigger_modes` applies the modal spell's rule (now one `_pick_modes` for both) over `trigger_mode_value`, in that module's currency:
+  - `_named_players_value` for tokens, counters, mill and edicts;
+  - an exile from a graveyard is worth the best card it may take that is worth denying its owner (`graveyard_removal.worth_aiming_at`).
+
+  Kavu exiles a graveyard card worth denying, else rummages.
+- **Retired:** Territorial Kavu's name-keyed attack handler; the card-name registry ratchet falls 74 → 73. Its tests now declare the attack and pin the AI's rule.
+- **Auditor `700.2/trigger_modes`:** at the mode choice, restated from the raw header: the chosen modes are distinct printed modes, as many as the header allows. Tested both ways, with the hold patched to keep every legal mode.
+- **The closure** (`tools/effect_spec_equivalence._pair`) judges a modal triggered host by its modes, as the carrier does.
+
+**Tests:** 11, in `tests/test_a_modal_triggered_ability_performs_the_modes_chosen_as_it_triggers.py`; 8 fail at `f90fef0`. The other 3 are the default rummage (the retired handler rummaged too), a refused host with an instruction before its modes (Voltstorm Angel), and the silent audit.
+
+**Pins:**
+- **Digest:** 1 of 27 games changes: Boros Energy vs Domain Zoo s58000 g1, with the same winner and turns. Replayed to its first divergence: at T7 Kavu takes the exile mode, as the handler did, and the AI's graveyard-removal pick exiles Ocelot Pride where the handler took Seasoned Pyromancer. Both are legal choices. Accepted and re-recorded. **Anchor:** 29, unchanged.
+- **Harness:** 2202 pairs. The 4 new are intended, each with its reason: the legacy side performed no mode, and Kavu's handler is retired.
+- **Gate parity:** 5323/2198/3125 → 5327/2202/3125 (legacy fallback unchanged).
+- **Spec equivalence and census:** unchanged; closure locked in.
+- **Ratchets:** card-name registry 74 → 73, lowered in the commit. Every other ratchet passes.
+- **Chunks:** 5500 + 2803 passed at `7f30252`, from a pinned worktree.
+
+**Measured:** by the `mtr-post` arm (pre = `dp-post`).
+
+**Leads, not built:**
+- **A one-card graveyard removal is aimed by keystone first.** The pick (`graveyard_removal.choose_removal_target`, unit SXT) ranks an opposing keystone above a card with a use from the graveyard (Seasoned Pyromancer). For a one-card exile, only a card still useful in the graveyard is worth taking; a by-name removal also reaches the other copies.
+- **Mode values the currency has no term for** (draw, life, damage) are worth nothing, so such modes are chosen only to make up the header's fewest, in printed order.
+- **The other 119 modal hosts** wait on their bodies: bounce and pump under the enter carrier, damage to a creature, "choose one that hasn't been chosen this turn" (Genku), and modes after a payment's reflexive trigger (Voltstorm Angel, Hylda of the Icy Crown).
