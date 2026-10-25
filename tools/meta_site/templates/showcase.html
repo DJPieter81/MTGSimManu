@@ -15,6 +15,7 @@ section { display: grid; gap: var(--s-4); }
 .sh { display: grid; gap: .4rem; max-width: 68ch; }
 .sh h2 { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); }
 .sh p { margin: 0; color: var(--ink-2); }
+code, .code { font: 500 .92em/1.4 var(--f-data); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; padding: 0 .3em; overflow-wrap: anywhere; }
 
 /* Hero */
 .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: var(--s-6); align-items: center; }
@@ -29,7 +30,7 @@ section { display: grid; gap: var(--s-4); }
 .mosaic i.self { background: var(--paper); }
 .figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
 @media (max-width: 700px) { .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.fig { padding: var(--s-3) var(--s-3) var(--s-3) 0; display: grid; gap: .2rem; }
+.fig { padding: var(--s-3) var(--s-3) var(--s-3) 0; display: grid; gap: .2rem; align-content: start; }
 .fig + .fig { padding-left: var(--s-3); border-left: 1px solid var(--rule); }
 @media (max-width: 700px) { .fig:nth-child(3) { border-left: 0; padding-left: 0; } .fig:nth-child(n+3) { border-top: 1px solid var(--rule); } }
 .fig .v { font: 600 clamp(1.5rem, 1.2rem + 1vw, 2.1rem)/1.1 var(--f-data); }
@@ -48,6 +49,127 @@ section { display: grid; gap: var(--s-4); }
 .axis { display: grid; grid-template-columns: minmax(10rem, 14rem) minmax(260px, 1fr) 4rem 6.5rem; gap: .8rem; min-width: 620px; color: var(--ink-3); font: 500 var(--s-1)/1 var(--f-data); }
 .axis span:nth-child(2) { display: flex; justify-content: space-between; }
 
+/* Rules pipeline: the stage rail */
+.rail { display: grid; gap: 0; border-top: 1px solid var(--rule); counter-reset: stage; }
+.stage { counter-increment: stage; display: grid; grid-template-columns: 2.4rem minmax(11rem, 15rem) minmax(0, 1fr) minmax(8rem, 11rem); gap: var(--s-3); align-items: start; padding: var(--s-3) 0; border-bottom: 1px solid var(--rule); position: relative; }
+.stage::before { content: counter(stage); font: 600 var(--s-2)/1 var(--f-data); color: var(--accent); width: 1.9rem; height: 1.9rem; display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 50%; background: var(--sheet); position: relative; z-index: 1; }
+.stage:not(:last-child)::after { content: ""; position: absolute; left: calc(.95rem - .5px); top: calc(var(--s-3) + 1.9rem); bottom: calc(-1 * var(--s-3)); width: 1px; background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.stage h3 { font-size: var(--s-4); }
+.stage .own { display: block; margin-top: .3rem; font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink-3); overflow-wrap: anywhere; }
+.stage p { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.stage .sfig { text-align: right; display: grid; gap: .15rem; }
+.stage .sfig b { font: 600 clamp(1.25rem, 1.05rem + .7vw, 1.6rem)/1.1 var(--f-data); font-variant-numeric: tabular-nums; }
+.stage .sfig span { color: var(--ink-3); font-size: var(--s-1); }
+@media (max-width: 860px) {
+  .stage { grid-template-columns: 2.4rem minmax(0, 1fr); }
+  .stage > div:nth-of-type(2), .stage .sfig { grid-column: 2; }
+  .stage .sfig { text-align: left; grid-auto-flow: column; justify-content: start; align-items: baseline; gap: .5rem; }
+}
+.auditor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-4); padding: var(--s-4); background: var(--sheet); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: var(--radius); }
+@media (max-width: 860px) { .auditor { grid-template-columns: minmax(0, 1fr); } }
+.auditor h3 { font-size: var(--s-4); }
+.auditor p { margin: .4rem 0 0; color: var(--ink-2); }
+.bars { display: grid; gap: .45rem; align-content: start; }
+.bar { display: grid; grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr) 2.5rem; gap: .6rem; align-items: center; font-size: var(--s-1); }
+.bar .bl { color: var(--ink-2); }
+.bar .bt { display: grid; gap: 2px; padding: 2px; background: var(--paper); border-radius: 3px; }
+.bar .bt i { display: block; height: 8px; min-width: 2px; background: var(--accent); border-radius: 2px; }
+.bar .bt i.u { background: color-mix(in srgb, var(--accent) 45%, var(--sheet)); }
+.bar .bt i.z { min-width: 0; }
+.bar .bn { font-family: var(--f-data); text-align: right; font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: .9rem; font-size: var(--s-1); color: var(--ink-3); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; background: var(--accent); }
+.legend i.u { background: color-mix(in srgb, var(--accent) 45%, var(--sheet)); }
+
+/* Trace a card */
+.tabs { display: flex; flex-wrap: wrap; gap: .4rem; }
+.tab { font: 600 var(--s-2)/1 var(--f-body); padding: .55rem .8rem; border-radius: 99px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink-2); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.trace { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: var(--s-4); align-items: start; }
+@media (max-width: 920px) { .trace { grid-template-columns: minmax(0, 1fr); } }
+.cardtext { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--s-3); display: grid; gap: .6rem; box-shadow: var(--shadow); }
+.cardtext h3 { font-size: var(--s-4); }
+.cardtext .ot { display: grid; gap: .45rem; font-size: var(--s-2); }
+.cardtext .ot p { margin: 0; }
+.cardtext .why { margin: 0; color: var(--ink-2); font-size: var(--s-1); border-top: 1px solid var(--rule); padding-top: .6rem; }
+.hosts { display: grid; gap: var(--s-3); }
+.host { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--sheet); padding: var(--s-3); display: grid; gap: .6rem; }
+.host header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; }
+.host header .head { font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink-2); }
+.route { display: flex; flex-wrap: wrap; gap: .35rem; }
+.chip.taken { color: var(--win); border-color: color-mix(in srgb, var(--win) 45%, transparent); }
+.chip.refused { color: var(--lose); border-color: color-mix(in srgb, var(--lose) 45%, transparent); }
+.chip.kind { font-family: var(--f-data); }
+.verdicts { font: 500 var(--s-1)/1.5 var(--f-data); color: var(--ink-3); }
+.specs { display: grid; gap: .5rem; }
+.spec { display: grid; gap: .3rem; padding-left: .7rem; border-left: 2px solid var(--rule); }
+.spec .line { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem; }
+.spec .seq { font: 500 var(--s-1)/1 var(--f-data); color: var(--ink-3); }
+.spec .verb { font: 600 var(--s-2)/1.2 var(--f-data); letter-spacing: .02em; }
+.spec .raw { color: var(--ink-2); font-size: var(--s-1); font-style: italic; }
+.spec .kv { display: flex; flex-wrap: wrap; gap: .3rem .9rem; font-size: var(--s-1); color: var(--ink-2); }
+.spec .kv span { overflow-wrap: anywhere; }
+.spec .kv i { font-style: normal; color: var(--ink-3); margin-right: .25rem; }
+.spec .ex { font: 500 var(--s-1)/1.3 var(--f-data); color: var(--ink-3); }
+.spec .ex.ok::before { content: "→ "; color: var(--win); }
+.spec .ex.no { color: var(--lose); }
+.spec .ex.no::before { content: "✕ "; }
+.branch { display: grid; gap: .4rem; margin-left: .2rem; }
+.branch > .label { margin-top: .1rem; }
+.mode { display: grid; gap: .45rem; }
+.mode > .label { color: var(--accent); }
+.tnote { color: var(--ink-3); font-size: var(--s-1); margin: 0; }
+
+/* Boundary */
+.seam { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.qa { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--s-3); padding: .7rem 0; border-bottom: 1px solid var(--rule); align-items: start; }
+@media (max-width: 760px) { .qa { grid-template-columns: minmax(0, 1fr); gap: .4rem; } }
+.qa .m { display: block; font: 600 var(--s-1)/1.4 var(--f-data); color: var(--ink); margin-bottom: .2rem; }
+.qa .q { color: var(--ink-2); font-size: var(--s-2); }
+.qa .a { display: grid; gap: .3rem; justify-items: start; }
+.qa .a small { font: 500 var(--s-1)/1.45 var(--f-data); color: var(--ink-3); overflow-wrap: anywhere; }
+.chip.by-ai { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.toggle { justify-self: start; font: 600 var(--s-2)/1 var(--f-body); color: var(--accent); background: none; border: 0; padding: .3rem 0; cursor: pointer; }
+
+/* Guard rails */
+.guards { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--s-5); align-items: start; }
+@media (max-width: 920px) { .guards { grid-template-columns: minmax(0, 1fr); } }
+.ratchets { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.rt { display: grid; grid-template-columns: minmax(0, 1fr) 4.5rem 10.5rem; gap: .8rem; align-items: center; padding: .6rem 0; border-bottom: 1px solid var(--rule); }
+@media (max-width: 520px) { .rt { grid-template-columns: minmax(0, 1fr) 4rem; } .rt .chip { grid-column: 1 / -1; justify-self: start; } }
+.rt b { display: block; font-weight: 600; }
+.rt small { color: var(--ink-3); font-size: var(--s-1); }
+.rt .n { font: 600 var(--s-4)/1 var(--f-data); text-align: right; font-variant-numeric: tabular-nums; }
+.rt .chip { justify-self: end; }
+.chip.zero { color: var(--win); border-color: color-mix(in srgb, var(--win) 45%, transparent); }
+.proofs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+@media (max-width: 520px) { .proofs { grid-template-columns: minmax(0, 1fr); } }
+.proof { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: .8rem .9rem; display: grid; gap: .25rem; align-content: start; }
+.proof b { font: 600 var(--s-5)/1.1 var(--f-data); font-variant-numeric: tabular-nums; }
+.proof span { font-size: var(--s-1); color: var(--ink-2); }
+.proof small { font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink-3); }
+.protocol { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--s-3); counter-reset: pr; padding: 0; margin: 0; list-style: none; }
+.protocol li { counter-increment: pr; display: grid; gap: .35rem; align-content: start; padding-top: .7rem; border-top: 2px solid var(--ink); }
+.protocol li h3 { font-size: var(--s-3); }
+.protocol li h3::before { content: counter(pr) "  "; font-family: var(--f-data); color: var(--accent); white-space: pre; }
+.protocol li p { margin: 0; color: var(--ink-2); font-size: var(--s-2); }
+
+/* Ledger */
+.ledger-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--s-4); align-items: start; }
+@media (max-width: 860px) { .ledger-top { grid-template-columns: minmax(0, 1fr); } }
+.lstat { display: grid; gap: .3rem; }
+.lstat b { font: 600 clamp(2rem, 1.6rem + 1.4vw, 2.8rem)/1 var(--f-data); }
+.lstat span { color: var(--ink-2); }
+.search { font: 400 var(--s-2)/1.2 var(--f-body); padding: .6rem .75rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--sheet); color: var(--ink); width: min(100%, 26rem); }
+.units { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.unit { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr) minmax(0, 12rem) 6.2rem; gap: .8rem; padding: .55rem 0; border-bottom: 1px solid var(--rule); align-items: baseline; font-size: var(--s-2); }
+@media (max-width: 760px) { .unit { grid-template-columns: 4.6rem minmax(0, 1fr); } .unit .cr, .unit .dt { grid-column: 2; } }
+.unit .ucode { font: 600 var(--s-1)/1.3 var(--f-data); color: var(--accent); }
+.unit .cr { font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink-3); overflow-wrap: anywhere; }
+.unit .dt { font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink-3); text-align: right; }
+@media (max-width: 760px) { .unit .dt { text-align: left; } }
+.unit .ai { font-size: .68rem; padding: 0 .4em; margin-left: .35rem; vertical-align: 1px; }
+
 /* Timeline */
 .tl { display: grid; gap: 0; border-left: 2px solid var(--rule); margin-left: .4rem; }
 .tl details { position: relative; padding: 0 0 var(--s-4) var(--s-4); }
@@ -60,7 +182,7 @@ section { display: grid; gap: var(--s-4); }
 .tl ul { margin: .6rem 0 0; padding-left: 1.1rem; color: var(--ink-2); font-size: var(--s-1); display: grid; gap: .25rem; max-width: 80ch; }
 .more { font: 600 var(--s-1)/1 var(--f-body); color: var(--accent); }
 
-/* Pipeline */
+/* AI pipeline */
 .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-3); counter-reset: st; }
 @media (max-width: 860px) { .steps { grid-template-columns: minmax(0, 1fr); } }
 .step { counter-increment: st; display: grid; gap: .45rem; padding: var(--s-3); background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); align-content: start; }
@@ -78,7 +200,9 @@ section { display: grid; gap: var(--s-4); }
 .layers p { color: var(--ink-2); max-width: 76ch; }
 .files { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: .5rem; }
 .file { font-size: var(--s-1); color: var(--ink-2); padding: .5rem .6rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--sheet); }
-.file b { display: block; font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink); }
+.file b { display: flex; justify-content: space-between; gap: .6rem; font: 500 var(--s-1)/1.4 var(--f-data); color: var(--ink); }
+.file b span { color: var(--ink-3); font-weight: 400; white-space: nowrap; }
+.file b code { background: none; border: 0; padding: 0; overflow-wrap: anywhere; }
 
 /* Replays + roadmap */
 .reps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: .5rem; }
@@ -102,7 +226,7 @@ footer { border-top: 1px solid var(--rule); padding-top: var(--s-4); color: var(
       <span class="label" id="eyebrow"></span>
       <h1 id="h1">Every Modern matchup, played to the end.</h1>
       <p id="lede"></p>
-      <div class="cta"><a class="btn" id="to-matrix" href="#">Open the matrix</a><a class="btn ghost" id="to-repo" href="#">Source on GitHub</a></div>
+      <div class="cta"><a class="btn" id="to-matrix" href="#">Open the matrix</a><a class="btn ghost" href="#rules-h">How the rules engine works</a><a class="btn ghost" id="to-repo" href="#">Source on GitHub</a></div>
     </div>
     <div class="mosaic" id="mosaic" role="img" aria-label="Win-rate matrix of every registered deck against every other"></div>
   </section>
@@ -115,20 +239,65 @@ footer { border-top: 1px solid var(--rule); padding-top: var(--s-4); color: var(
     <div class="field" id="field"></div>
   </section>
 
+  <section aria-labelledby="rules-h">
+    <div class="sh"><span class="label">Rules engine</span><h2 id="rules-h">From printed text to a resolved effect</h2>
+      <p id="rules-p"></p></div>
+    <div class="rail" id="rail"></div>
+    <div class="auditor" id="auditor"></div>
+  </section>
+
+  <section aria-labelledby="trace-h">
+    <div class="sh"><span class="label">Trace a card</span><h2 id="trace-h">What the engine reads, and who performs it</h2>
+      <p>Each trace below is the engine's own output for a real card: its hosts as the grammar typed them, the carrier and family that take each host, and the executor each instruction runs. A host no carrier takes shows the verdicts that refused it.</p></div>
+    <div class="tabs" id="trace-tabs" role="tablist" aria-label="Example cards"></div>
+    <div class="trace" id="trace" role="tabpanel"></div>
+    <p class="tnote" id="trace-note"></p>
+  </section>
+
+  <section aria-labelledby="seam-h">
+    <div class="sh"><span class="label">The seam</span><h2 id="seam-h">The engine asks; the AI answers</h2>
+      <p id="seam-p"></p></div>
+    <div class="seam" id="seam"></div>
+    <button class="toggle" id="seam-more" type="button" aria-expanded="false"></button>
+  </section>
+
+  <section aria-labelledby="p-h">
+    <div class="sh"><span class="label">The AI</span><h2 id="p-h">How a play is chosen</h2>
+      <p>Six steps run every time the AI holds priority. Every number is in one unit, turns of clock, so a burn spell and a creature compete on one scale.</p></div>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <section aria-labelledby="g-h">
+    <div class="sh"><span class="label">Guard rails</span><h2 id="g-h">What a change has to pass</h2>
+      <p id="g-p"></p></div>
+    <div class="guards">
+      <div style="display:grid;gap:var(--s-3)"><h3 style="font-size:var(--s-4)">Ratchets, as of this build</h3><div class="ratchets" id="ratchets"></div></div>
+      <div style="display:grid;gap:var(--s-3)"><h3 style="font-size:var(--s-4)">Proofs on record</h3><div class="proofs" id="proofs"></div></div>
+    </div>
+    <ol class="protocol" id="protocol"></ol>
+  </section>
+
+  <section aria-labelledby="u-h">
+    <div class="sh"><span class="label">Rules ledger</span><h2 id="u-h">Every unit, one rule each</h2>
+      <p>Read from the headings of docs/design/rules-foundation-sweep-tracker.md when this page was built. Each unit names one rule, the Comprehensive Rules it cites, and the day it landed.</p></div>
+    <div class="ledger-top">
+      <div class="lstat" id="lstat"></div>
+      <div style="display:grid;gap:.6rem"><div class="bars" id="crbars"></div><div class="legend"><span><i class="u"></i>units citing a chapter</span><span><i></i>auditor invariants in it</span></div></div>
+    </div>
+    <input class="search" id="usearch" type="search" placeholder="Filter by rule, unit or CR number" aria-label="Filter the units">
+    <div class="units" id="units"></div>
+    <button class="toggle" id="units-more" type="button" aria-expanded="false"></button>
+  </section>
+
   <section aria-labelledby="t-h">
     <div class="sh"><span class="label">Engine changelog</span><h2 id="t-h">What changed, and what it moved</h2>
       <p>Each entry is a class of rules or AI behaviour, fixed once for every card it covers, with the measurement that judged it.</p></div>
     <div class="tl" id="tl"></div>
   </section>
 
-  <section aria-labelledby="p-h">
-    <div class="sh"><span class="label">The AI</span><h2 id="p-h">How a play is chosen</h2>
-      <p>Six steps run on every priority the AI holds. Every number is in the same unit, turns of clock and life, so a burn spell and a creature compete on one scale.</p></div>
-    <div class="steps" id="steps"></div>
-  </section>
-
   <section aria-labelledby="l-h">
-    <div class="sh"><span class="label">Architecture</span><h2 id="l-h">The layers, and the files that own them</h2></div>
+    <div class="sh"><span class="label">Architecture</span><h2 id="l-h">The layers, and the files that own them</h2>
+      <p>Line counts are read from the tree when the page is built.</p></div>
     <div class="layers" id="layers"></div>
   </section>
 
@@ -155,8 +324,12 @@ footer { border-top: 1px solid var(--rule); padding-top: var(--s-4); color: var(
 <script>
 const S = JSON.parse(document.getElementById('site-data').textContent);
 const D = S.decks, N = D.length, P = S.prov, C = S.content, proj = C.project || {};
+const A = C.architecture || {}, F = C.foundation || {}, T = C.trace || {};
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt = n => Number(n).toLocaleString('en-US');
+// `code` spans in prose, after escaping.
+const prose = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+const fmt = n => n == null ? '—' : Number(n).toLocaleString('en-US');
+const pct = x => x == null ? '—' : `${(x * 100).toFixed(1)}%`;
 const css = getComputedStyle(document.documentElement);
 function heat(v) {
   const p = k => css.getPropertyValue(k).trim().split(/\s+/).map(parseFloat);
@@ -167,12 +340,15 @@ function heat(v) {
 }
 const links = proj.links || {};
 const order = [...D.keys()].sort((a, b) => D[b].weighted_wr - D[a].weighted_wr);
+const proofs = F.proofs || {}, census = proofs.census || {}, gate = proofs.gate_parity || {};
+const vocab = T.vocabulary || {}, audit = F.audit || {};
+const ratchet = key => (F.ratchets || []).find(r => r.key === key);
 
 function hero() {
   document.getElementById('eyebrow').textContent = `${proj.name || 'MTGSimManu'} · Modern · run of ${P.generated.slice(0, 10)}`;
   document.getElementById('lede').textContent =
     `${N} competitive Modern decks, each paired against every other ${P.n_per_pair} times in best-of-three with sideboards. ` +
-    `${fmt(P.total_matches)} matches, played by an AI that scores every play in turns of clock, on an engine that records every rule it breaks.`;
+    `${fmt(P.total_matches)} matches, played by an AI that scores every play in turns of clock, on an engine that parses each card's rules text into typed data once, and records every rule it breaks.`;
   document.getElementById('to-matrix').href = links.matrix || 'modern_meta_matrix_full.html';
   document.getElementById('to-repo').href = links.repo || '#';
   const mo = document.getElementById('mosaic');
@@ -187,7 +363,7 @@ function hero() {
   const cb = proj.codebase || {};
   const figs = [[fmt(P.total_matches), `best-of-three matches at ${P.n_per_pair} per pairing`],
     [`${S.cal.decks_in_band}/${S.cal.decks_total}`, 'decks inside their calibration band'],
-    [P.rules_audit_violations == null ? '—' : fmt(P.rules_audit_violations), 'rule violations recorded by the runtime auditor'],
+    [P.rules_audit_violations == null ? '—' : fmt(P.rules_audit_violations), 'rule violations the auditor recorded in this run'],
     [fmt((cb.engine_lines || 0) + (cb.ai_lines || 0)), `lines across ${fmt((cb.engine_modules || 0) + (cb.ai_modules || 0))} engine and AI modules`]];
   document.getElementById('figs').innerHTML = figs.map(([v, k]) => `<div class="fig"><span class="v">${esc(v)}</span><span class="k">${esc(k)}</span></div>`).join('');
 }
@@ -206,6 +382,169 @@ function field() {
   document.getElementById('field').innerHTML = h;
 }
 
+// The live figure each pipeline stage shows: [value, caption].
+function stageFigure(key) {
+  const owners = ratchet('single_owner');
+  return ({
+    cards: [fmt(census.cards), 'cards in the pool'],
+    typed: [pct(census.typed_share), `of ${fmt(census.specs)} instructions typed`],
+    vocabulary: [fmt(vocab.verbs), `verbs over ${fmt(vocab.host_kinds)} host kinds`],
+    gate: [fmt(gate.new_path), `of ${fmt(gate.pairs)} host pairs on the typed path`],
+    strict: [fmt((vocab.strict_views || []).length), 'strict views, one per family'],
+    executors: [fmt((vocab.executor_verbs || []).length), `verbs with an executor, ${fmt((vocab.condition_evaluators || []).length)} condition evaluators`],
+    owners: [owners ? fmt(owners.now) : '—', 'second paths left; may only fall'],
+  })[key] || ['', ''];
+}
+
+function crChapters() {
+  const units = {}, inv = {};
+  (F.ledger || []).forEach(u => new Set((u.cr || []).map(c => c[0])).forEach(ch => { units[ch] = (units[ch] || 0) + 1; }));
+  (audit.by_chapter || []).forEach(c => { inv[c.chapter] = c.count; });
+  const names = Object.fromEntries((audit.by_chapter || []).map(c => [c.chapter, c.name]));
+  const fallback = {'1': 'Game concepts', '2': 'Parts of a card', '3': 'Card types', '4': 'Zones', '5': 'Turn structure', '6': 'Spells, abilities and effects', '7': 'Additional rules'};
+  return Object.keys(fallback).map(ch => ({ch, name: names[ch] || fallback[ch], units: units[ch] || 0, inv: inv[ch] || 0}));
+}
+
+function bars(el, rows, withUnits) {
+  const max = Math.max(1, ...rows.map(r => Math.max(withUnits ? r.units : 0, r.inv)));
+  const seg = (n, cls) => `<i class="${cls} ${n ? '' : 'z'}" style="width:${n / max * 100}%"></i>`;
+  el.innerHTML = rows.map(r => `<div class="bar"><span class="bl">${esc(r.ch)}xx · ${esc(r.name)}</span>
+    <span class="bt">${withUnits ? seg(r.units, 'u') : ''}${seg(r.inv, '')}</span>
+    <span class="bn">${withUnits ? `${r.units}<br>` : ''}${r.inv}</span></div>`).join('');
+}
+
+function rules() {
+  const R = A.rules || {};
+  document.getElementById('rules-p').textContent = R.intro || '';
+  document.getElementById('rail').innerHTML = (R.stages || []).map(st => {
+    const [v, k] = stageFigure(st.figure);
+    return `<div class="stage"><div><h3>${esc(st.title)}</h3><span class="own">${esc(st.owner)}</span></div>
+      <p>${prose(st.body)}</p><div class="sfig"><b>${esc(v)}</b><span>${esc(k)}</span></div></div>`;
+  }).join('');
+  const au = R.auditor || {};
+  const inv = (audit.invariants || []).length, cen = (audit.census || []).length;
+  document.getElementById('auditor').innerHTML = `<div><span class="label">${esc(au.owner || '')}</span><h3>${esc(au.title || '')}</h3><p>${prose(au.body || '')}</p>
+      <p><b class="mono">${fmt(inv)}</b> invariants and <b class="mono">${fmt(cen)}</b> census rows in the engine's source, by Comprehensive Rules chapter:</p></div>
+    <div class="bars" id="audit-bars"></div>`;
+  bars(document.getElementById('audit-bars'), crChapters(), false);
+}
+
+function specHTML(s) {
+  const kv = (s.fields || []).map(([k, v]) => `<span><i>${esc(k)}</i>${esc(v)}</span>`).join('');
+  const ex = s.executor || {};
+  const exe = ex.name ? `<span class="ex ${ex.supports ? 'ok' : 'no'}">${esc(ex.name)}${ex.supports ? '' : ' refuses this shape'}</span>`
+    : `<span class="ex no">no executor for ${esc(s.verb)}</span>`;
+  let kids = '';
+  for (const [k, label] of [['then', 'then'], ['otherwise', 'otherwise'], ['alternatives', 'or']]) {
+    if ((s[k] || []).length) kids += `<div class="branch"><span class="label">${label}</span>${s[k].map(specHTML).join('')}</div>`;
+  }
+  return `<div class="spec"><div class="line"><span class="seq">#${s.seq}</span><span class="verb">${esc(s.verb)}</span>${s.raw ? `<span class="raw">“${esc(s.raw)}”</span>` : ''}</div>
+    ${kv ? `<div class="kv">${kv}</div>` : ''}${exe}${kids}</div>`;
+}
+
+function routeHTML(r, kind) {
+  r = r || {};
+  if ((r.taken || []).length) return r.taken.map(t => `<span class="chip taken">${esc(t.carrier)} carrier → ${esc(t.family)}</span>`).join('');
+  if (kind === 'KEYWORD') return '<span class="chip">keyword line: read by the rules engine directly</span>';
+  if (kind === 'STATIC') return '<span class="chip">static: continuous effects and rule queries</span>';
+  const v = (r.verdicts || []).map(x => `${x.family}: strict ${x.strict ? '✓' : '✕'} · executable ${x.executable ? '✓' : '✕'}`).join('  ·  ');
+  const which = (r.carriers || []).length ? `${r.carriers.join(', ')} carrier refused` : 'no typed carrier for this event yet';
+  return `<span class="chip refused">${esc(which)}: legacy path</span>${r.legacy_kind ? `<span class="chip">legacy kind ${esc(r.legacy_kind)}</span>` : ''}${v ? `<div class="verdicts">${esc(v)}</div>` : ''}`;
+}
+
+function traceCard(i) {
+  const cards = T.cards || [];
+  const c = cards[i];
+  document.querySelectorAll('#trace-tabs .tab').forEach((b, k) => { b.setAttribute('aria-selected', String(k === i)); b.tabIndex = k === i ? 0 : -1; });
+  if (!c) { document.getElementById('trace').innerHTML = '<p class="tnote">No trace is committed yet (python -m tools.meta_site.trace).</p>'; return; }
+  const ot = (c.oracle || '').split('\n').map(p => `<p>${esc(p)}</p>`).join('');
+  const hosts = (c.hosts || []).map(h => {
+    const head = h.head ? `<span class="head">${esc(h.head.raw)}${h.head.events.length ? ` · ${esc(h.head.events.join(', ').toLowerCase())}` : ''}</span>` : '';
+    const kw = (h.keywords || []).length ? `<span class="head">${esc(h.keywords.join(', '))}</span>` : '';
+    const modes = (h.modes || []).map(m => `<div class="mode"><span class="label">mode ${m.index + 1} of ${h.modes.length}</span><span class="raw" style="color:var(--ink-2);font-size:var(--s-1)">${esc(m.text)}</span><div class="specs">${m.specs.map(specHTML).join('')}</div></div>`).join('');
+    const choose = (h.modes || []).length && (h.choose || []).length ? `<span class="chip">choose ${h.choose[0] === h.choose[1] ? h.choose[0] : `${h.choose[0]}–${h.choose[1]}`}</span>` : '';
+    return `<article class="host"><header><span class="chip kind">${esc(h.kind)}</span>${choose}${head}${kw}</header>
+      <div class="route">${routeHTML(h.route, h.kind)}</div>
+      ${(h.specs || []).length ? `<div class="specs">${h.specs.map(specHTML).join('')}</div>` : ''}${modes}</article>`;
+  }).join('');
+  document.getElementById('trace').innerHTML = `<div class="cardtext"><h3>${esc(c.card)}</h3><div class="ot">${ot}</div><p class="why">${esc(c.why || '')}</p></div><div class="hosts">${hosts}</div>`;
+}
+
+function traces() {
+  const cards = T.cards || [];
+  const tabs = document.getElementById('trace-tabs');
+  tabs.innerHTML = cards.map((c, i) => `<button class="tab" role="tab" type="button" data-i="${i}">${esc(c.card)}</button>`).join('');
+  tabs.addEventListener('click', e => { const b = e.target.closest('.tab'); if (b) traceCard(+b.dataset.i); });
+  tabs.addEventListener('keydown', e => {
+    const k = {ArrowRight: 1, ArrowLeft: -1}[e.key]; if (!k || !cards.length) return;
+    const cur = [...tabs.children].findIndex(b => b.getAttribute('aria-selected') === 'true');
+    const n = (cur + k + cards.length) % cards.length; traceCard(n); tabs.children[n].focus();
+  });
+  traceCard(0);
+  document.getElementById('trace-note').textContent = T.commit ? `Traced by tools/meta_site/trace.py from the card database at commit ${T.commit}.` : '';
+}
+
+const BY = {ai: ['AI', 'by-ai'], player: ["the player's own AI", 'by-ai'], default: ['engine default, printed data', ''], callbacks: ['AI callbacks', 'by-ai']};
+function seam() {
+  document.getElementById('seam-p').textContent = (A.boundary || {}).intro || '';
+  const rows = F.choices || [];
+  const show = 8;
+  const row = r => {
+    const [label, cls] = BY[r.by] || [r.by, ''];
+    const fns = (r.answers || []).map(f => f.replace(/^ai\./, 'ai/').replace(/\.([^.]+)$/, '.py · $1')).join('<br>');
+    return `<div class="qa"><div><span class="m">${esc(r.method)}</span><span class="q">${prose(r.asks)}</span></div>
+      <div class="a"><span class="chip ${cls}">${esc(label)}</span>${fns ? `<small>${fns}</small>` : ''}</div></div>`;
+  };
+  const el = document.getElementById('seam'), more = document.getElementById('seam-more');
+  const draw = all => { el.innerHTML = (all ? rows : rows.slice(0, show)).map(row).join(''); more.textContent = all ? 'Show fewer' : `Show all ${rows.length} choice points`; more.setAttribute('aria-expanded', String(all)); };
+  let all = false; draw(all);
+  more.hidden = rows.length <= show;
+  more.addEventListener('click', () => { all = !all; draw(all); });
+}
+
+function guards() {
+  const G = A.guards || {};
+  document.getElementById('g-p').textContent = G.intro || '';
+  document.getElementById('ratchets').innerHTML = (F.ratchets || []).map(r => {
+    const zero = r.rule === 'pinned at 0' && r.now === 0;
+    return `<div class="rt"><div><b>${esc(r.label)}</b><small>${prose(r.counts)}</small></div><span class="n">${fmt(r.now)}</span><span class="chip ${zero ? 'zero' : ''}">${esc(r.rule)}</span></div>`;
+  }).join('');
+  const h = proofs.harness || {}, eq = proofs.equivalence || {}, dg = proofs.digest || {};
+  const tiles = [
+    [fmt(h.identical), 'switched hosts proven identical to their legacy path', `${(h.boards || []).length} boards × ${(h.seeds || []).length} seeds`],
+    [fmt(h.intended), 'differences kept on purpose, each with its written reason', 'tools/host_harness_switched.json'],
+    [fmt(gate.legacy_fallback), `host pairs still on the legacy fallback, of ${fmt(gate.pairs)}`, 'gate parity: may only fall'],
+    [pct(census.typed_share), `of ${fmt(census.specs)} instructions typed (${pct(census.deck_typed_share)} in registered decks)`, 'effect census: may only rise'],
+    [fmt(eq.unexplained), `legacy field values the grammar's derivation differs from with no classified reason, against ${fmt(eq.agree)} that agree`, 'spec equivalence: may only fall'],
+    [fmt(dg.games), 'seeded games replayed byte for byte on every change', 'tools/seeded_game_digest.py'],
+  ];
+  document.getElementById('proofs').innerHTML = tiles.map(([v, k, s]) => `<div class="proof"><b>${esc(v)}</b><span>${esc(k)}</span><small>${esc(s)}</small></div>`).join('');
+  document.getElementById('protocol').innerHTML = (G.protocol || []).map(p => `<li><h3>${esc(p.title)}</h3><p>${prose(p.body)}</p></li>`).join('');
+}
+
+function ledger() {
+  const L = [...(F.ledger || [])].reverse();
+  const dates = L.map(u => u.date).sort();
+  const cites = new Set(L.flatMap(u => u.cr || []));
+  document.getElementById('lstat').innerHTML = `<b>${fmt(L.length)}</b><span>units from ${esc(dates[0] || '—')} to ${esc(dates[dates.length - 1] || '—')}, citing ${fmt(cites.size)} distinct Comprehensive Rules sections; ${fmt(L.filter(u => u.ai).length)} of them are AI decision units.</span>`;
+  bars(document.getElementById('crbars'), crChapters(), true);
+  const el = document.getElementById('units'), more = document.getElementById('units-more'), q = document.getElementById('usearch');
+  const show = 12;
+  let all = false;
+  const draw = () => {
+    const needle = q.value.trim().toLowerCase();
+    const hit = needle ? L.filter(u => `${u.code} ${u.rule} ${(u.cr || []).join(' ')}`.toLowerCase().includes(needle)) : L;
+    const rows = all || needle ? hit : hit.slice(0, show);
+    el.innerHTML = rows.map(u => `<div class="unit"><span class="ucode">${esc(u.code)}</span><span>${prose(u.rule)}${u.ai ? '<span class="chip ai">AI</span>' : ''}</span><span class="cr">${u.cr && u.cr.length ? 'CR ' + esc(u.cr.join(', ')) : ''}</span><span class="dt">${esc(u.date)}</span></div>`).join('') || '<p class="tnote">No unit matches.</p>';
+    more.hidden = !!needle || L.length <= show;
+    more.textContent = all ? 'Show the latest 12' : `Show all ${L.length} units`;
+    more.setAttribute('aria-expanded', String(all));
+  };
+  q.addEventListener('input', draw);
+  more.addEventListener('click', () => { all = !all; draw(); });
+  draw();
+}
+
 function timeline() {
   const es = (C.timeline && C.timeline.entries) || [];
   document.getElementById('tl').innerHTML = es.map((e, k) => `<details class="${e.status === 'p1' ? 'p1' : ''}" ${k < 3 ? 'open' : ''}>
@@ -214,11 +553,16 @@ function timeline() {
 }
 
 function pipeline() {
-  const st = (C.architecture && C.architecture.pipeline) || [];
-  document.getElementById('steps').innerHTML = st.map(s => `<div class="step"><h3>${esc(s.title)}</h3><p>${esc(s.body)}</p><code>${esc(s.formula)}</code></div>`).join('');
-  const ly = (C.architecture && C.architecture.layers) || [];
-  document.getElementById('layers').innerHTML = ly.map(l => `<details><summary><h3>${esc(l.title)}</h3><span>${(l.files || []).length} files</span></summary>
-    <p>${esc(l.body)}</p><div class="files">${(l.files || []).map(f => `<div class="file"><b>${esc(f.name)}</b>${esc(f.note)}</div>`).join('')}</div></details>`).join('');
+  const st = A.pipeline || [];
+  document.getElementById('steps').innerHTML = st.map(s => `<div class="step"><h3>${esc(s.title)}</h3><p>${prose(s.body)}</p><code>${esc(s.formula)}</code></div>`).join('');
+  const lines = F.lines || {};
+  const ly = A.layers || [];
+  document.getElementById('layers').innerHTML = ly.map(l => {
+    const files = l.files || [];
+    const total = files.reduce((n, f) => n + (lines[f.path] || 0), 0);
+    return `<details><summary><h3>${esc(l.title)}</h3><span>${files.length} files${total ? ` · ${fmt(total)} lines` : ''}</span></summary>
+    <p>${prose(l.body)}</p><div class="files">${files.map(f => `<div class="file"><b><code>${esc(f.path || f.name)}</code>${lines[f.path] ? `<span>${fmt(lines[f.path])} ln</span>` : ''}</b>${esc(f.note)}</div>`).join('')}</div></details>`;
+  }).join('');
 }
 
 function replays() {
@@ -236,10 +580,11 @@ function roadmap() {
   document.getElementById('lg-p').textContent = lg.body || '';
   document.getElementById('lg-a').href = links.legacy || '#';
   document.getElementById('foot').innerHTML = `<span>${esc(proj.credits || '')}</span>
-    <span>Data: data/meta_site.json · run ${esc(P.generated.slice(0, 16).replace('T', ' '))} · commit ${esc(P.commit || '—')} · ${P.n_per_pair} matches per pairing · seeds ${P.seed_start} + ${P.seed_step}·k · draws ${P.draws} · aborted ${P.aborted}</span>`;
+    <span>Data: data/meta_site.json · run ${esc(P.generated.slice(0, 16).replace('T', ' '))} · built at commit ${esc(P.commit || '—')} · ${P.n_per_pair} matches per pairing · seeds ${P.seed_start} + ${P.seed_step}·k · draws ${P.draws} · aborted ${P.aborted}</span>
+    <span>Engine figures (ratchets, proofs, audit rules, choice points, unit ledger, line counts) are read from the tree at that commit${T.commit ? `; card traces from the card database at commit ${esc(T.commit)}` : ''}.</span>`;
 }
 
-function all() { hero(); field(); timeline(); pipeline(); replays(); roadmap(); }
+function all() { hero(); field(); rules(); traces(); seam(); guards(); ledger(); timeline(); pipeline(); replays(); roadmap(); }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', hero);
 all();
 </script>

@@ -1,29 +1,29 @@
 {
  "items": [
   {
-   "title": "Grammar stage 5: measure and prove",
+   "title": "The census rows still open",
    "state": "next",
-   "body": "Lock the census and equivalence baselines, re-run the seeded digest and both suite halves, and record the exit criteria in the design doc."
+   "body": "Registered cards whose triggers no carrier takes yet: an optional payment whose reflexive trigger is the effect (Guide of Souls), a delayed return at the next end step (Phelia), the city's blessing and token copies (Ocelot Pride), a cast trigger that works from the graveyard (Vengevine), manifest dread (Abhorrent Oculus). Each is sized first, built at ten or more pool cards, and otherwise recorded as a gap."
   },
   {
-   "title": "Effect families switch to the grammar",
+   "title": "State-based actions only at priority",
    "state": "planned",
-   "body": "Twelve families (removal, damage, card draw, tokens, counters, pump, restrictions, mana, …) move from per-shape parsers to the one dispatcher, each with a failing test and a byte-identical or rules-correct game digest. The effect-parser ratchet may only fall."
+   "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
   },
   {
-   "title": "Triggers on an event bus",
+   "title": "Dimir Midrange, root cause first",
    "state": "planned",
-   "body": "TriggerSpec over the same grammar, real trigger stack items in APNAP order, and upkeep and end-step triggers for the roughly 940 pool cards that have them."
+   "body": "Best-of-three replays against Boros Energy and Azorius Control (WST v2) name the AI subsystem where expected value diverges from correct play. The finding is written up in docs/ before any code."
   },
   {
-   "title": "Engine rules stop reading classifier tags",
+   "title": "The legacy path keeps shrinking",
    "state": "planned",
-   "body": "On-draw triggers, ETB surveil and graveyard return, impulse draw and the sorcery-speed lockout read parsed effects; tags remain AI hints only."
+   "body": "Every unit moves hosts from the legacy fallback to the typed path. Gate parity's fallback count and the name-keyed registry may only fall, so the shrink cannot be quietly undone."
   },
   {
    "title": "Marvel Super Heroes in the card database",
    "state": "blocked",
-   "body": "The set is still missing; the refresh needs an environment that can reach mtgjson.com."
+   "body": "The set is still missing. The refresh needs an environment that can reach mtgjson.com."
   }
  ]
 }

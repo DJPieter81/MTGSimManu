@@ -231,3 +231,111 @@ def test_the_audit_count_is_read_from_the_results_it_describes(tmp_path):
     (root / "metagame_results.json").write_text(json.dumps(res))
     assert build_data.build_site_data(root, shares=shares).provenance \
         .rules_audit_violations is None, "an unaudited run shows no count"
+
+
+# ── The rules foundation, read from the tree (tools/meta_site/foundation) ──
+
+def test_the_ratchet_board_reads_each_baseline_it_finds(tmp_path):
+    """Each ratchet's count is its baseline file's, with the direction CI
+    allows; a ratchet whose baseline is absent is left out, never guessed."""
+    from tools.meta_site.foundation import ratchet_board
+    root, _ = _repo(tmp_path)
+    (root / "tools" / "card_name_registry_baseline.json").write_text(
+        json.dumps({"total": 5, "description": "fixture"}))
+    (root / "tools" / "abstraction_baseline.json").write_text(
+        json.dumps({"hardcoded_name_count": 0, "deck_gate_count": 0,
+                    "_comment": "fixture"}))
+    (root / "tools" / "single_owner_baseline.json").write_text(
+        json.dumps({"_comment": "x", "target_pick": 1, "damage_write": 2}))
+    rows = {r["key"]: r for r in ratchet_board(root)}
+    assert set(rows) == {"registry", "names", "deck_gates", "single_owner"}
+    assert (rows["registry"]["now"], rows["registry"]["rule"]) == (5, "may only fall")
+    assert (rows["names"]["now"], rows["names"]["rule"]) == (0, "pinned at 0")
+    assert rows["single_owner"]["now"] == 3, "a category baseline is summed"
+
+
+def test_the_audit_rule_ids_are_read_from_the_engine_source(tmp_path):
+    """An id passed to census(...) or ending in _unresolved is a census row;
+    every other CR-phrased id is an invariant, counted by CR chapter."""
+    from tools.meta_site.foundation import audit_rules
+    root, _ = _repo(tmp_path)
+    (root / "engine").mkdir()
+    (root / "engine" / "x.py").write_text(
+        'rules_audit.check("101.2/cast_limit", ok)\n'
+        'rules_audit.check("603.2/step_trigger_once", ok)\n'
+        'rules_audit.census("608.2/uncountable_scaler", key)\n'
+        'rule = "603.2/attack_trigger_unresolved"\n')
+    a = audit_rules(root)
+    assert a["invariants"] == ["101.2/cast_limit", "603.2/step_trigger_once"]
+    assert a["census"] == ["603.2/attack_trigger_unresolved",
+                           "608.2/uncountable_scaler"]
+    assert [(c["chapter"], c["count"]) for c in a["by_chapter"]] == [("1", 1), ("6", 1)]
+
+
+def test_the_unit_ledger_is_read_from_the_tracker_headings(tmp_path):
+    """A heading "## Unit <code>: <rule> (<CR cites>; <date>)" is one unit;
+    a heading without a date in its last parenthesis is not."""
+    from tools.meta_site.foundation import ledger
+    root, _ = _repo(tmp_path)
+    (root / "docs" / "design").mkdir(parents=True)
+    (root / "docs" / "design" / "rules-foundation-sweep-tracker.md").write_text(
+        "## Unit AB: a rule with (a parenthesis) in it (CR 101.2, 603.3b; 2026-10-25)\n"
+        "## Unit CD — a choice the AI makes (AI, 2026-10-24)\n"
+        "## Units EF and GH: two units in one heading (CR 702.21a; 2026-10-23)\n"
+        "## Unit XY: no date here (CR 101.2)\n"
+        "### Unit ZZ: a sub-heading is not a unit (2026-10-22)\n")
+    units = ledger(root)
+    assert [(u["code"], u["date"]) for u in units] == [
+        ("AB", "2026-10-25"), ("CD", "2026-10-24"), ("EF and GH", "2026-10-23")]
+    assert units[0]["rule"] == "a rule with (a parenthesis) in it"
+    assert units[0]["cr"] == ["101.2", "603.3b"]
+    assert (units[0]["ai"], units[1]["ai"]) == (False, True)
+
+
+def test_the_choice_points_name_who_answers_each_engine_question(tmp_path):
+    """Every method of the callbacks protocol is a choice point; the AI
+    callbacks' method names the ai.* functions it calls, or the seat's own
+    AI; a method the AI does not override is the engine's default."""
+    from tools.meta_site.foundation import choice_points
+    root, _ = _repo(tmp_path)
+    (root / "engine").mkdir()
+    (root / "engine" / "callbacks.py").write_text(
+        "class GameCallbacks(Protocol):\n"
+        "    def choose_cards(self, ctx, spec, pool, n):\n"
+        "        '''Pick up to `n` cards. More words.'''\n"
+        "    def choose_amount(self, ctx, spec, lo, hi):\n"
+        "        '''Pick an amount in [lo, hi].'''\n"
+        "    def choose_cast_targets(self, game, idx, card):\n"
+        "        '''Which targets does a spell take?'''\n")
+    (root / "engine" / "game_runner.py").write_text(
+        "from ai.board_eval import evaluate_action, Action\n"
+        "class AICallbacks(GameCallbacks):\n"
+        "    def choose_cards(self, ctx, spec, pool, n):\n"
+        "        from ai.resolution_choices import pick_cards\n"
+        "        return pick_cards(ctx.game, ctx, spec, pool, n)\n"
+        "    def choose_cast_targets(self, game, idx, card):\n"
+        "        return getattr(self, '_players', {}).get(idx)._choose_targets(game, card)\n")
+    rows = {r["method"]: r for r in choice_points(root)}
+    assert rows["choose_cards"]["by"] == "ai"
+    assert rows["choose_cards"]["answers"] == ["ai.resolution_choices.pick_cards"]
+    assert rows["choose_cards"]["asks"] == "Pick up to `n` cards."
+    assert rows["choose_amount"]["by"] == "default"
+    assert rows["choose_cast_targets"]["by"] == "player"
+
+
+def test_the_site_data_carries_the_trace_and_the_foundation(tmp_path):
+    """The trace file is content like the narrative; the foundation is
+    computed at build time, and the layer files' line counts are the
+    tree's."""
+    root, shares = _repo(tmp_path)
+    content = root / "tools" / "meta_site" / "content"
+    content.mkdir(parents=True)
+    (content / "trace.json").write_text(json.dumps({"commit": "abc1234", "cards": []}))
+    (content / "architecture.json").write_text(json.dumps(
+        {"layers": [{"files": [{"path": "tools/calibration_bands.json"}]}]}))
+    data = build_data.build_site_data(root, shares=shares)
+    assert data.content.trace == {"commit": "abc1234", "cards": []}
+    f = data.content.foundation
+    assert set(f) >= {"ratchets", "proofs", "audit", "ledger", "choices", "lines"}
+    lines = len((root / "tools" / "calibration_bands.json").read_text().splitlines())
+    assert f["lines"] == {"tools/calibration_bands.json": lines}

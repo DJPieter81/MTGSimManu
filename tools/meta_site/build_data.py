@@ -7,7 +7,11 @@ Inputs (all read, none hand-copied):
   * decks.modern_meta             meta shares (passed in for tests)
   * tools/calibration_bands.json  field and matchup bands
   * replays/*.html                replay gallery
-  * tools/meta_site/content/      hand-curated narrative, kept as data
+  * tools/meta_site/content/      hand-curated narrative, kept as data, and
+                                  trace.json (tools/meta_site/trace.py)
+  * tools/*_baseline.json, engine/, docs/design/rules-foundation-sweep-
+    tracker.md                    the guard rails' figures
+                                  (tools/meta_site/foundation.py)
 
 Every derived number is computed here, once:
   * flat_wr      = mean of the deck's cell win rates;
@@ -157,13 +161,21 @@ def codebase_counts(root: Path) -> Dict[str, int]:
     return out
 
 
+def layer_paths(architecture: dict) -> List[str]:
+    """The repository paths the architecture layers list."""
+    return [f["path"] for layer in architecture.get("layers") or []
+            for f in layer.get("files") or [] if f.get("path")]
+
+
 def load_content(root: Path) -> ContentFile:
+    from tools.meta_site.foundation import foundation
     base = root / "tools" / "meta_site" / "content"
     parts = {}
-    for key in ("architecture", "timeline", "roadmap", "project"):
+    for key in ("architecture", "timeline", "roadmap", "project", "trace"):
         f = base / f"{key}.json"
         parts[key] = json.loads(f.read_text()) if f.exists() else {}
     parts["project"] = dict(parts["project"], codebase=codebase_counts(root))
+    parts["foundation"] = foundation(root, layer_paths(parts["architecture"]))
     return ContentFile(**parts)
 
 

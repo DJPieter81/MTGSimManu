@@ -104,11 +104,17 @@ class Calibration(_Model):
 
 
 class ContentFile(_Model):
-    """Hand-curated narrative, kept as data under tools/meta_site/content/."""
+    """Hand-curated narrative, kept as data under tools/meta_site/content/,
+    plus two generated parts: `trace` (content/trace.json, written by
+    tools/meta_site/trace.py from the card database) and `foundation` (the
+    guard rails' current figures, read from the tree by
+    tools/meta_site/foundation.py at build time)."""
     architecture: dict = Field(default_factory=dict)
     timeline: dict = Field(default_factory=dict)
     roadmap: dict = Field(default_factory=dict)
     project: dict = Field(default_factory=dict)
+    trace: dict = Field(default_factory=dict)
+    foundation: dict = Field(default_factory=dict)
 
 
 class Replay(_Model):
