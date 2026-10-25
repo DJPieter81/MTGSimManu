@@ -11630,7 +11630,7 @@ Drains, life, counters, amass, investigate and aimed damage did nothing. Trail o
 
 **Pins:** digest byte-identical (27 games); anchor 29, unchanged; ratchets clean; harness, spec equivalence and census unchanged. **Chunks:** 5506 + 2803 passed at `86d4ad8`, from a pinned worktree.
 
-**Measured:** with unit XL by the `xl-post` arm (pre = `mtr-post`).
+**Measured:** with unit XL by the `xl-post` arm (pre = `mtr-post`; see unit XL). Of the 40 cells that change, one is outside the Leyline Binding decks: Eldrazi Tron vs Pinnacle Affinity, 20 → 10. It pairs a targeting cast trigger (Ugin's) with a ward carrier (Kappa Cannoneer), this unit's class. It was not replayed, as no deck moves more than 5 pp.
 
 **Leads, not built:**
 - **An activated loyalty line** binds its targets through `trigger_targets` and meets no ward; a stack-borne activation meets it as it resolves.
@@ -11678,7 +11678,11 @@ Registered: Leyline Binding (taken), Static Prison (refused).
 - **Ratchets:** card-name registry 73 → 72, lowered in the commit; every other ratchet passes.
 - **Chunks:** 5523 + 2803 passed at `d9b8e3c`, from a pinned worktree.
 
-**Measured:** with unit WT by the `xl-post` arm (pre = `mtr-post`).
+**Measured:** with unit WT by the `xl-post` arm (pre = `mtr-post`, same seeds, n=20 Bo3, all 25 shards, run on `7f13215`).
+- **No deck moves more than 1.9 pp:** 4c Omnath −1.9 and Domain Zoo −0.5, as Leyline Binding's exile now ends when the Binding leaves. 39 of the 40 cells that change are in a Binding deck's row or column; the 40th is unit WT's.
+- **Bands:** 7 decks out of band, total miss 50.2 → 49.7 pp (Domain Zoo 11.8 → 11.2 above its band).
+- **Audit:** 0 violations in 522 findings.
+- **Census:** unchanged; the 7 registered rows remain. Static Prison's step row is unit UP's.
 
 **Leads, not built:**
 - **Static Prison's enter host** waits on an executor for "you get {E}{E}" (PLAYER_COUNTERS). The legacy entry path grants the energy, so taking the host means retiring that grant.
@@ -11686,3 +11690,119 @@ Registered: Leyline Binding (taken), Static Prison (refused).
 - **The hand-exile class** (Kitesail Freebooter's "until", Tidehollow Sculler's leaves-the-battlefield return, CR 603.6c) is the legacy resolver's, returned on death only.
 - **A full enter trigger body** (the attack and cast carriers' body under the enter head) would switch 950 faces off their legacy resolvers; a unit of its own.
 - **The AI** does not value removing a permanent that holds an exiled card.
+
+## Unit EN: a player gets the counters an instruction gives them (CR 122.1, 122.1f, 107.14; 2026-10-25)
+
+**Source:** unit XL's lead. Static Prison's enter trigger exiles a permanent and gives "{E}{E}". No family ran the energy, so the carrier refused the host and the legacy entry path gave the energy.
+
+**Rule:** "When this creature enters, you get {E}{E}{E}." As the trigger resolves, its controller gets three energy counters (CR 107.14, 122.1). "At the beginning of your upkeep, you get {E}" gives them at that step, not on entry. "Each player gets a poison counter" gives one to each player (CR 122.1f).
+
+**The defect:** no executor gave a player counters.
+- The legacy entry path gave the first "you get {E}" in a card's text as the permanent entered, whatever ability printed it: an activated ability, an upkeep trigger, or one mode of a modal trigger.
+- A cast-trigger regex read Cyclops Superconductor's prowess as a cast trigger, and its enter energy as that trigger's: three energy per noncreature spell.
+- Nothing gave poison.
+
+**Class:** 114 typed player-counter instructions in the pool (94 energy, 20 poison). Registered:
+- Static Prison's enter trigger (exile and energy, with unit XL).
+- Guide of Souls' watcher ("whenever another creature you control enters") keeps its legacy pass.
+
+**Steps:**
+- **Owner:** `PermanentEffects.give_player_counters`. Energy goes through the energy owner, poison through `PlayerState.add_poison`.
+- **Executor:** `effect_executors.player_counters_supported` / `execute_player_counters`. For one kind a player carries, it gives the printed count (times "for each") to every acting player the dispatcher binds.
+- **Views:** the trigger body, the step carrier and the combat-damage carrier admit the instruction; the tokens-and-counters family already listed it.
+- **Retired:** the entry path's `energy_production` grant and the cast-trigger energy regex; the effect-parser ratchet (b) falls 91 → 89. The attack regex stays: it skips attackers the attack carrier takes, and still serves two hosts the carrier refuses.
+- **Auditor `122.1/player_counters`:** restated from the raw counter field, tested both ways with the owner patched away.
+
+**Tests:** 9, in `tests/test_a_player_gets_the_counters_an_instruction_gives.py`; 7 fail at `d9b8e3c`. They cover:
+- an enter trigger; a step trigger, at its step and not on entry;
+- an activated ability's counters, not given on entry;
+- a cast trigger that gives none;
+- poison for each player named;
+- an attack trigger's, once;
+- Static Prison's exile and energy, once;
+- the auditor both ways.
+
+Unit XL's refusal test now carries Hostage Taker.
+
+**Pins:**
+- **Digest:** 3 of 27 games change. Static Prison now exiles a permanent and gives its energy once: Boros Energy vs Affinity s50000, and vs Domain Zoo s58000 g2 and g3. In g3, exiling Ragavan on T1 flips the winner (Domain Zoo → Boros Energy, 6 → 9 turns); the other two keep their winners and turns. Replayed to the first divergence and accepted; the first-main-phase payment is unit UP's.
+- **Anchor:** 29, unchanged.
+- **Harness:** 2315 pairs; the 64 new are intended (the legacy pass gave no counters, or gave them on entry).
+- **Gate parity:** 5376/2251/3125 → 5439/2315/3124. The legacy fallback falls by one, and parser (f) is lowered with it.
+- **Spec equivalence and census:** unchanged.
+- **No-op fixture:** loses Static Prison's enter host (floor 204 → 205).
+- **Chunks:** 5532 + 2803 passed at `b78895b`, from a pinned worktree.
+
+**Measured:** with unit UP by the `en-up-post` arm (pre = `xl-post`).
+
+**Leads, not built:**
+- **Glassblower's and Woodweaver's Puzzleknot** got their enter energy from the retired entry grant, which read it as the text's first "you get {E}". Their enter triggers' other instructions (scry; gain life) keep them out of the enter families. They wait on the full enter trigger body (unit XL's lead).
+- **Aetherwind Basker and Lightning Runner** keep the attack regex. The attack carrier refuses their hosts: Basker's two-event head ("enters or attacks"), and Runner's optional "pay eight {E}" with an additional combat phase.
+- **Energy has no term in `position_value`.** The AI reads energy only where a payment spends it.
+
+## Unit UP: an instruction with an "unless" cost happens only if that cost is not paid (CR 118.12, 107.14, 701.21a; 2026-10-25)
+
+**Source:** the census row `603.2/step_trigger_unresolved` for Static Prison (Boros Energy x1).
+
+**Rule:** "At the beginning of your first main phase, sacrifice this enchantment unless you pay {E}" means "you may pay {E}; if you don't, sacrifice this enchantment" (CR 118.12).
+- As the trigger resolves, its controller is offered the cost; paid, the sacrifice does not happen.
+- A cost its payer cannot pay is not paid: paying {E} removes an energy counter, so it needs one (CR 107.14).
+- "Sacrifice ~" moves the ability's source, while it is still the object the ability came from, to its owner's graveyard (CR 701.21a, 400.7). What it exiled until it left then returns (CR 610.3, unit XL).
+
+**The defect:**
+- The condition grammar refused an energy "unless" cost: the cost snapshot held mana and life, never energy.
+- No condition evaluator offered an "unless" cost.
+- No executor sacrificed an ability's own source, so the step carrier refused every "sacrifice ~" host, and the legacy step pass did nothing. Static Prison, Ball Lightning and the rest stayed on the battlefield for nothing.
+
+**Class:** 50 step triggers print "sacrifice ~": 36 plain, 11 with "unless you pay <cost>", 3 under another condition. The step carrier now takes 29:
+- the 11 "unless" hosts (9 mana costs, 2 energy);
+- 18 plain ones.
+
+The other 21 wait on an instruction no family runs or on a condition ("if you can't", "otherwise"). Registered: Static Prison (Boros Energy x1).
+
+**Steps:**
+- **Typed:** `ActivationCost.energy`, the {E} a cost removes (CR 107.14). The condition grammar types "unless you pay {E}" as that cost (`_energy_cost`).
+- **Payment owner:** `optional_costs.offer_unless_cost` offers the cost to its payer through `decide_optional_cost`, as ward does.
+  - Affordability is the engine's gate: energy is paid only from as many energy counters, mana only while the payer can produce it.
+  - `unless_cost_payable` names the costs it charges: energy, or plain mana, alone.
+- **Evaluator:** `effect_executors.evaluate_unless`: the instruction happens unless its payer paid. Only a printed "you" pays. An unbound payer ("unless they pay", 10 pool conditions) names another player, so its host stays refused.
+- **Executor:** `sacrifice_self` / `_sacrifice_self` performs "sacrifice ~" through the sacrifice owner, and does nothing when the source is no longer that object. It runs in the step family.
+- **AI:** declining an "unless" cost is no "do nothing" (`OptionalCost.skip_to_snap`), so `decide_optional_cost` compares paying with declining. `ai.unless_value` projects both in the one currency:
+  - paying spends the cost;
+  - declining performs the guarded instruction. For "sacrifice ~" that is the board without the source and with what it exiled back (`ZoneManager.linked_to`), by the pop-and-reinsert technique of `permanent_threat`.
+- **Auditor `118.12/unless_paid`:** restated from the payer's raw energy field: a payment reported taken removed exactly that many energy counters. Tested both ways, with `spend_energy` patched away.
+
+**Tests:** 9, in `tests/test_an_instruction_with_an_unless_cost_happens_only_if_it_is_not_paid.py`; 7 fail at `b78895b`. They cover:
+- a paid cost stops the instruction; an unpaid one lets it happen;
+- a cost its payer cannot pay is not offered;
+- a mana cost, the same way (Drifter il-Dal);
+- what the sacrificed source exiled returns;
+- the AI pays to keep a creature exiled;
+- a cost another player pays is never offered to the controller;
+- the auditor both ways.
+
+The other two that pass at the parent are the silent audit and the payer refusal. The refusal failed against this unit's first cut, which offered Isolation Cell's controller the {2} its opponent pays. The condition grammar's pool test moves Static Prison's "unless you pay {e}" from the refused phrases to the witnesses.
+
+**Pins:**
+- **Digest:** 3 of 27 games change, the same three as unit EN's, all with the same winners and turns. Replayed to the first divergence and accepted:
+  - Boros Energy vs Affinity s50000: T3 and T4 pay {E} to keep Mishra's Bauble exiled. At T5 no energy is left, so Static Prison is sacrificed and the Bauble returns as a new object (Weapons Manufacturing triggers).
+  - vs Domain Zoo s58000 g3: T2 and T3 pay {E} to keep Ragavan exiled.
+  - g2: at T5 the AI declines with 2 energy, and Leyline of the Guildpact returns. Paying and declining project equal: the currency has no term for a static enchantment (a lead below).
+- **Anchor:** 29, unchanged.
+- **Harness:** 2344 pairs; the 29 new are intended. The legacy step pass offered no cost and sacrificed nothing.
+- **Gate parity:** 5439/2315/3124 → 5468/2344/3124 (legacy fallback unchanged).
+- **Spec equivalence:** closure and baseline locked in. Beside the 29 step hosts, Rush of Inspiration's "discard a card at random unless you pay {E}{E}" now types whole: `has_discard_effect` agrees, and the loot view covers a card legacy never typed (derived coverage).
+- **No-op fixture:** loses Static Prison's step host (floor 205 → 206).
+- **Census:** pool typed share 74.0 → 74.1%, deck cards 77.5 → 77.6%; 4 more pool "unless" conditions typed, 1 on a deck card. Locked in.
+- **Ratchets:** `ai/unless_value.py` enters the magic-number ratchet at 0; every ratchet passes.
+- **Chunks:** 5541 + 2803 passed at `db5c104`, from a pinned worktree. The first run at the unamended commit failed one pin, `test_the_dispatcher_tables_hold_exactly_the_landed_families`, which now names the UNLESS evaluator.
+
+**Measured:** with unit EN by the `en-up-post` arm (pre = `xl-post`).
+
+**Leads, not built:**
+- **A static enchantment has no term in `position_value`, and neither does energy.** An "unless" payment that keeps one exiled projects equal to declining, and the tie declines (Leyline of the Guildpact, above). The board snapshot also leaves out a returned planeswalker's loyalty pool, which `permanent_threat` credits by hand.
+- **The decline projection reads only "sacrifice ~".** Any other guarded instruction projects the board as it is, so the AI would decline; none is taken today.
+- **Enter triggers' "sacrifice ~ unless you pay {1}"** (Archway Commons, Gateway Plaza, Rupture Spire, Transguild Promenade): the enter families run no self-sacrifice.
+- **"Unless they pay" and "unless that player pays"** (Isolation Cell, Blood Clock, Chancellor of the Annex): the grammar leaves the payer unbound. Binding it to the player the trigger names is a grammar unit.
+- **Other "unless" instructions in the step family:** Electrozoa's self-tap has no executor, and the damage executor refuses Force of Nature's damage to its own controller.
+- **A counted cost** (Fettergeist's "{1} for each other creature you control") and granted upkeep costs (Kataki, War's Wage; Magus of the Tabernacle) stay untyped.
