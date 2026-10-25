@@ -1912,7 +1912,7 @@ def execute_sacrifice(ctx: Resolution, s: EffectSpec,
             legal.remove(pick)
         choices.append((player, picks))
     chosen = dict(choices)
-    before = {p: len(edict_victims(ctx.game, p, s.filter)) for p in actors}
+    before = _edict_before(ctx, s, actors)
     for player in actors:                        # then one simultaneous move
         for perm in chosen[player]:
             _sacrifice(ctx, perm)
@@ -1922,35 +1922,51 @@ def execute_sacrifice(ctx: Resolution, s: EffectSpec,
                     for p, v in chosen.items() if v})
 
 
+def _edict_matches(perm: Any, f: CardFilter) -> bool:
+    """The audit's restatement of an edict's description from the raw
+    printed types of the face that is up (CR 712.8: a transformed permanent
+    has only its back face's) and the token status."""
+    types = set(f.types or ())
+    t = perm.template
+    printed = (t.back_face_types if getattr(perm, "is_transformed", False)
+               and t.back_face_types else t.card_types)
+    return ((not types or any(x.value in types for x in printed))
+            and (f.token is None or bool(perm.is_token) == f.token))
+
+
+def _edict_before(ctx: Resolution, s: EffectSpec,
+                  actors: Tuple[int, ...]) -> dict:
+    """Observation only: per named player, the instance ids of the
+    permanents the edict could take as it resolves (`_edict_matches`);
+    empty while the rules audit is off."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return {}
+    return {p: frozenset(perm.instance_id
+                         for perm in ctx.game.players[p].battlefield
+                         if _edict_matches(perm, s.filter))
+            for p in actors}
+
+
 def _audit_edict(ctx: Resolution, s: EffectSpec, actors: Tuple[int, ...],
                  before: dict) -> None:
-    """CR 701.21a, restated from the battlefield's raw printed types: each
-    player the edict named controls N fewer permanents it matches, or
-    none. Observation only."""
+    """CR 701.21a, restated from the battlefield's raw printed types: of the
+    permanents each named player controlled that the edict could take, N
+    are gone -- every one, with fewer. A permanent that entered during the
+    resolution (the token a dying creature's trigger made) is none of
+    them. Observation only."""
     from . import rules_audit
     if not rules_audit.enabled():
         return
-    f = s.filter
-    types = set(f.types or ())
-
-    def printed(p):
-        # the printed types of the face that is up (CR 712.8): a
-        # transformed permanent has only its back face's
-        t = p.template
-        return (t.back_face_types if getattr(p, "is_transformed", False)
-                and t.back_face_types else t.card_types)
-
-    def count(player):
-        return sum(1 for p in ctx.game.players[player].battlefield
-                   if (not types or any(t.value in types
-                                        for t in printed(p)))
-                   and (f.token is None or bool(p.is_token) == f.token))
     for player in actors:
-        want = max(0, before[player] - s.amount.n)
-        rules_audit.check("701.21a/edict", count(player) <= want,
-                          f"P{player + 1} controls {count(player)} matching "
-                          f"permanents after an edict, more than {want}",
-                          game=ctx.game)
+        could = before.get(player, frozenset())
+        left = sum(1 for perm in ctx.game.players[player].battlefield
+                   if perm.instance_id in could)
+        want = max(0, len(could) - s.amount.n)
+        rules_audit.check("701.21a/edict", left <= want,
+                          f"P{player + 1} still controls {left} of the "
+                          f"{len(could)} permanents an edict could take, "
+                          f"more than {want}", game=ctx.game)
 
 
 execute_sacrifice.supports = _sacrifice_supported

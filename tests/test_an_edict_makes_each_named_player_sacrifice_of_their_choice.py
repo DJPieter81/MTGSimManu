@@ -202,3 +202,15 @@ def test_the_audit_reads_the_types_of_the_face_that_is_up(card_db, audit):
     _cast(game, card_db, "Cruel Edict")
     assert bears.zone == "graveyard" and ajani.zone == "battlefield"
     assert "701.21a/edict" not in [f["rule"] for f in audit.drain()]
+
+
+def test_the_audit_counts_only_the_permanents_the_edict_could_take(card_db,
+                                                                 audit):
+    """CR 701.21a: the edict takes N of the matching permanents its player
+    controls as it resolves. A creature that enters during that resolution
+    -- the token a dying creature's trigger makes -- is none of them."""
+    game = _game()
+    traveler = _put(game, card_db, "Doomed Traveler", "battlefield", 1)
+    _cast(game, card_db, "Cruel Edict")
+    assert traveler.zone == "graveyard"
+    assert "701.21a/edict" not in [f["rule"] for f in audit.drain()]
