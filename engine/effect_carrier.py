@@ -265,8 +265,9 @@ def put_on_stack(game: Any, source: Any, controller: int,
     stack -- a modal one's chosen modes (`choose_trigger_modes`), each a
     host of its own -- with each one's targets (`trigger_targets`):
     ``[(host, chosen)]`` in printed order. Empty when the ability is
-    removed: a required target has no legal choice, or no mode is
-    chosen."""
+    removed -- a required target has no legal choice, or no mode is
+    chosen -- or countered by the ward of a permanent it targets
+    (`ward_counters`, CR 702.21a)."""
     hosts = (choose_trigger_modes(game, source, controller, host)
              if getattr(host, "modes", None) else (host,))
     out = []
@@ -275,7 +276,43 @@ def put_on_stack(game: Any, source: Any, controller: int,
         if chosen is None:
             return []
         out.append((h, chosen))
+    if ward_counters(game, source, controller, out):
+        return []
     return out
+
+
+def _targeted_ids(parts: Sequence[Any]) -> list:
+    """The instance ids of the permanents ``[(host, chosen)]`` targets."""
+    return [v.instance_id for _, chosen in parts for slot in chosen
+            for v in slot if isinstance(v, er.Handle)]
+
+
+def _ward_gate(game: Any, source: Any, controller: int,
+               ids: Sequence[int]) -> tuple:
+    from .optional_costs import ward_gate
+    return ward_gate(game, source, controller, ids,
+                     what=f"{getattr(source, 'name', '?')}'s triggered "
+                          f"ability")
+
+
+def ward_counters(game: Any, source: Any, controller: int,
+                  parts: Sequence[Any]) -> bool:
+    """CR 702.21a: is a triggered ability, with the targets it took as it
+    was put on the stack (``[(host, chosen)]``, CR 603.3d), countered by
+    the ward of an opposing permanent it targets whose cost its controller
+    does not pay? Asked of the one ward gate (`optional_costs.ward_gate`),
+    as a spell's targets are; read by every carrier (`put_on_stack`) and
+    by a parent's reflexive or delayed ability (`effect_resolver.
+    resolve_sub_ability`). Auditor `702.21a/ward_paid`."""
+    ids = _targeted_ids(parts)
+    if not ids:
+        return False
+    survives, paid = _ward_gate(game, source, controller, ids)
+    if survives:
+        from .spell_resolution import ResolutionManager
+        ResolutionManager._audit_ward_paid(game, source, controller, ids,
+                                           paid)
+    return not survives
 
 
 def mode_family(template: Any, index: int,

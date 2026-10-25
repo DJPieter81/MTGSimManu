@@ -685,10 +685,11 @@ def resolve_sub_ability(game: Any, sub: SubAbility, snap: Snapshot) -> bool:
         return False
     chosen: Chosen = tuple(() for _ in host.targets)
     if host.targets:
-        from .effect_carrier import trigger_targets
+        from .effect_carrier import trigger_targets, ward_counters
         source = game.get_card_by_id(snap.source.instance_id)
         picked = trigger_targets(game, source, snap.controller, host)
-        if picked is None:
+        if picked is None or ward_counters(game, source, snap.controller,
+                                           ((host, picked),)):
             return False
         chosen = picked
     ctx = Resolution(game=game, source=snap.source, controller=snap.controller,

@@ -108,14 +108,19 @@ def pick_trigger_targets(game: Any, player_idx: int, source: Any, spec: Any,
             and permanents and not players:
         # A removal of a target permanent aims at the opposing permanent
         # whose removal swings its controller's position most
-        # (`ai.permanent_threat`); "up to" a count takes none rather than
+        # (`ai.permanent_threat`), never one whose ward would counter the
+        # ability (`ai.ward_targeting.ward_rules_out_target`; the trigger
+        # commits no more mana); "up to" a count takes none rather than
         # one of the caster's own, and a required one the caster's least.
         from ai.permanent_threat import permanent_threat
+        from ai.ward_targeting import ward_rules_out_target
 
         def threat(c):
             return permanent_threat(c, game.players[c.controller], game)
         n = max(1, int(getattr(req, "count_max", 1) or 1))
-        opposing = [c for c in permanents if c.controller != player_idx]
+        opposing = [c for c in permanents if c.controller != player_idx
+                    and not ward_rules_out_target(game, player_idx, source,
+                                                  c, mana_committed=0)]
         if opposing:
             return sorted(opposing, key=threat, reverse=True)[:n]
         need = int(getattr(req, "count_min", 0) or 0)
