@@ -11993,7 +11993,7 @@ Unit OG's two Vivien, Arkbow Ranger tests caught this unit's first cut. That cut
 - **Face-down observers:** "whenever a face-down permanent you control enters" (Threats Around Every Corner) and "whenever you turn a permanent face up" (Growing Dread).
 - **Manifest dread elsewhere:** in a dies trigger (Bashful Beastie, Innocuous Rat), with no dies carrier for it. "Manifest dread, then attach ~ to that creature" (4 Equipment), where the attach is unmodelled.
 - **Amass's "it becomes a [subtype] in addition to its other types"** for an Army of another subtype (noted in the amass owner).
-- **Display:** the AI's block-reasoning line still prints a face-down attacker by its empty name ("blocks  (2/2)"); route it through `shown_name`.
+- **Display:** the AI's block-reasoning line still prints a face-down attacker by its empty name ("blocks  (2/2)"); route it through `shown_name`. (Done: see "Display fix" after unit SB.)
 - **Quantity evaluators** for cards in a graveyard by type and for cards in hand (Invade the City, Commence the Endgame, The Mouth of Sauron). Until they exist, those amass counts are refused.
 
 ## Census rows recorded as gaps: Guide of Souls, Phelia, Ocelot Pride, Vengevine (2026-10-31)
@@ -12006,3 +12006,100 @@ Each registered census row still open after unit MF was sized by its blocking cl
 | `603.2/attack_trigger_unresolved`, Phelia, Exuberant Shepherd | Jeskai Blink x4, 4c Omnath x2, Azorius Blink x3 | "if it entered under your control", a condition on the returned object's entry (CR 603.7, 608.2c) | 2 (with Hallowed Respite) | The delayed "return at the beginning of the next end step" itself (CR 603.7). |
 | `603.2/step_trigger_unresolved`, Ocelot Pride | Boros Energy x4, Azorius Blink x4 | "for each token you control that entered the battlefield this turn, create a token that's a copy of it" under the city's blessing (CR 702.131, 707.2) | 1 | Token copies (CR 707.2) and the city's blessing (CR 702.131) as their own units. |
 | `603.2/cast_trigger_unresolved`, Vengevine | Hollow One x4 | "if it's the second creature spell you cast this turn", an ordinal of the spells cast (CR 603.4) | 1 | A self-return from the graveyard to the battlefield (112 pool cards print one). |
+
+## Unit SB: state-based actions are checked when a player would receive priority, never while a spell or ability resolves (CR 704.3, 704.4, 117.3b, 104.3c; 2026-10-31)
+
+**Source:** the order of the log itself. In seeded games, a creature that Galvanic Discharge damages died before the spell's damage line, and before the spell finished resolving. The draw fan-out's own comment records the rule it broke: it checked after each draw trigger, part-way through the draw.
+
+**Rule:**
+- Whenever a player would receive priority, the game checks the conditions state-based actions name and performs them all at once, repeating until none applies (CR 704.3).
+- State-based actions "pay no attention to what happens during the resolution of a spell or ability" (CR 704.4). A player who falls to 0 and gains the life back in the same resolution is still in the game when the check comes.
+- Once a spell or ability has resolved, the active player receives priority (CR 117.3b), so each resolution ends with the check.
+- A player who must draw more cards than their library holds draws the rest and loses the next time a player would receive priority (CR 104.3c, 704.5b), not part-way through the draw.
+
+**The defect:**
+- Five checks performed state-based actions while something was resolving:
+  - after the energy damage clause (`clause_resolver`) and `oracle_resolver.resolve_any_target_damage`;
+  - after the two dies drains in `permanent_effects`;
+  - after each draw trigger (`zone_transfer`).
+- Two more paths ended the game directly: the Archon of Cruelty enter handler, and the draw from an empty library.
+- The consequences:
+  - A player at 3 who resolved "draw two cards, then you gain 4 life" under Sheoldred lost at -1. Under the rules they end at 3 and play on.
+  - A draw stopped at the first card that put its player at 0.
+  - A creature dealt lethal damage died before its spell finished resolving.
+- A stack resolution made no check of its own; only the runner's stack loop checked after it. A Bolted 2/2 resolved by any other caller stayed on the battlefield, and so did a second copy of a legend (one test fixture kept two Ajanis under one player).
+- The live pass never performed 704.5b. The dead `SBAManager` loop did, from a flag nothing set.
+
+**Class:**
+- Every state-based action crossed with every resolution. The actions: 704.5a life, 704.5b the empty-library draw, 704.5c poison, 704.5f-i creatures, 704.5j legends, 704.5p walkers. The resolutions: a stack object, an ability resolved inline, a trigger a carrier resolves.
+- 5,884 pool cards draw, deal damage or make a player lose life as they resolve.
+- The owner is `GameState.check_state_based_actions`.
+
+**Steps:**
+- **The deferral:**
+  - `sba_manager.resolving(game)` counts the resolutions in progress, and `resolution_in_progress` reads the count.
+  - `check_state_based_actions` returns at once while one is in progress, so an ability resolved inside a spell leaves the check to the spell.
+  - `ResolutionManager.resolve_stack` resolves the top object inside `resolving`, then checks. That check moves there from the runner's stack loop, so every caller gets it.
+  - `effect_resolver.resolve_ability` resolves inside `resolving`.
+- **Deleted:** the five mid-resolution checks and the Archon handler's direct game end. The sacrifice-ability resolver's direct game end becomes the check after that ability resolves.
+- **Priority points:**
+  - Added:
+    - as each step begins (`GameRunner._step_begins`), after the step's turn-based actions and its triggers, which covers the draw step's draw and the draw triggers;
+    - once attackers are declared (`CombatManager.declare_attackers`, CR 508.2), which covers what the attack triggers did;
+    - after each sacrifice ability.
+  - Kept:
+    - after first-strike and regular combat damage;
+    - after each cast, step and attack trigger the carriers resolve;
+    - after each main-phase action and each loyalty activation.
+- **704.5b:**
+  - The draw records the attempt (`PlayerState.drew_from_empty_library`, through `GameState._flag_draw_from_empty_library`).
+  - `SBAManager.perform_empty_library_check` performs the loss. The live pass and the dead loop both call it.
+- **Auditors:**
+  - `704.4/during_resolution`, in `_check_sba_once`: a pass runs only at resolution depth 0. It reads the depth itself, not the deferral. Tested both ways, with the deferral patched off.
+  - `704.5b/empty_library`, in the fixpoint audit: no player who drew from an empty library is still in a game that goes on. Tested both ways, with the performer patched to a no-op.
+  - `104.3c/empty_library_loss` is restated: the draw records the attempt.
+
+**Tests:**
+- 12 in `tests/test_state_based_actions_are_checked_only_when_a_player_would_receive_priority.py`. 11 fail at `fe50fcd`; the 704.5b auditor's silent case passes there, since the old draw ended the game at once. They cover:
+  - life regained before a resolution ends keeps its player in the game;
+  - a resolution draws every card after its player falls to 0;
+  - a check requested during a resolution, or a resolution within one, waits for the outermost;
+  - an empty-library draw loses at the next check;
+  - the checks when a stack resolution ends, as a step begins and once attackers are declared;
+  - the spell finishes resolving before the creature it damaged dies;
+  - both auditors, both ways.
+- Rephrased for the rule:
+  - In `tests/test_per_draw_triggers_fire_per_card.py`, the four timing tests now take the loss at the next check. "Draws stop once the drawing player has lost" becomes "a draw makes every card after the drawing player falls to zero", which fails at `fe50fcd`.
+  - The two empty-library tests in `tests/test_rules_audit.py` assert the recorded attempt, then the loss at the check.
+- Two fixtures corrected, each an illegal state the missing check had hidden:
+  - The combat auditor's planeswalker in `tests/test_rules_audit.py` never had its loyalty counters, so the check at attack declaration put it into the graveyard. It now enters with its printed loyalty.
+  - The batch-of-deaths test in `tests/test_an_enter_trigger_creates_the_token_its_creator_prints.py` had two Ajanis under one player. It now has one observer and a second Cat. Both corrected files also pass at `fe50fcd`.
+
+**Pins:**
+- **Digest:** 3 of 27 games change, each with the same winner, turns and number of lines; only lines move. Diffed line by line against the pre-unit code:
+  - Instant Reanimator vs Boros Ponza s55000 and Living End vs Jeskai Blink s54000: Galvanic Discharge deals 2 and moves to the graveyard, then the creature dies (before: dies, then deals 2).
+  - Ruby Storm vs Dimir Midrange s50500: the flashback Valakut Awakening is exiled as it finishes resolving, then its player loses for the draw from an empty library (before: the loss came first).
+  - Re-recorded (`535b10e9`).
+- **Anchor:** 29, unchanged.
+- **Harness:** unchanged. 2597 pairs: 421 proven identical, 2176 intended. No pair joins or leaves the new path, so the record is unchanged.
+- **Spec equivalence:** unchanged (UNEXPLAINED 18058). **Census:** unchanged.
+- **Ratchets:** every ratchet passes; no baseline moves.
+- **Chunks:** 5554 + 2834 passed at `935c226`, from a pinned worktree.
+  - Chunk A's three grammar CPU-ceiling tests (the leaf budget, the L2–L4 pass and the structure pass) failed in the chunk and again alone on a quiet machine.
+  - They fail the same way at the pre-unit code `b03cac4` (the structure pass took 4.82 s against a 4.0 s ceiling). So this container is slower than the ceilings assume; SB touches no grammar code.
+  - CI runs them.
+
+**Measured:** requested as the `sb-post` arm (pre = `mf-post`); recorded when it lands.
+
+**Leads, not built:**
+- **CR 104.4a:** when both players would lose at once (both at 0 life, or both having drawn from an empty library), the game is a draw. The pass makes the first player it finds lose.
+- **Inline triggers:** a triggered ability still resolves as its event happens, part-way through the resolution that caused it (a draw trigger between two draws), not on the stack once the resolution ends (CR 603.3). The check now waits for the right moment, but a later instruction of the same resolution still sees the trigger's effect early.
+- **Combat damage triggers** fire between one attacker's damage and the next (CR 510.2 deals it all at once). No check runs between them now, but a trigger's own effect lands before the rest of the damage.
+- **The sacrifice-ability resolver** writes the opponent's life directly, not through the damage owner.
+- **No check after blockers are declared:** no block trigger is modelled. When one is, `declare_blockers` takes the check `declare_attackers` has.
+
+## Display fix: the AI's block-reasoning line shows a face-down creature by its status (2026-10-31)
+
+Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature by its name, which is empty for a face-down permanent, so the line read "blocks  (2/2)". It now reads `face_down.shown_name`, as the zone, combat and replay lines do. This is display only: no rule reads it.
+- **Test:** `test_the_block_reasoning_shows_a_face_down_attacker_by_its_status`, in the MF file, red before the fix.
+- **Digest:** 1 of 27 games changes (Creatures Toolbox vs Grixis Reanimator s56000): only its four block lines with a face-down creature, which now name it by its status. Re-recorded at `515e760` (`9030f057`).
