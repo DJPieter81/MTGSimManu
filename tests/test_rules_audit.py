@@ -116,12 +116,13 @@ def test_unhandled_fold_records_nothing_with_the_flag_off(monkeypatch):
 
 
 def test_empty_library_draw_audit_sees_a_draw_that_did_not_flag_the_loss(audit, monkeypatch):
-    # CR 104.3c/704.5c: a draw attempted from an empty library must flag the
-    # drawing player to lose. Recreate the defect — the branch returns without
-    # flagging the loss — and the auditor must say so.
+    # CR 104.3c/704.5b: a draw attempted from an empty library must be
+    # recorded, so the player loses the next time a player would receive
+    # priority. Recreate the defect -- the branch returns without
+    # recording the attempt -- and the auditor must say so.
     game = GameState(rng=random.Random(0))
     game.players[0].library.clear()
-    monkeypatch.setattr(GameState, "_lose_from_empty_library",
+    monkeypatch.setattr(GameState, "_flag_draw_from_empty_library",
                         lambda self, idx: None)
     game.draw_cards(0, 1)
     assert "104.3c/empty_library_loss" in _rules(audit.drain())
@@ -131,6 +132,8 @@ def test_empty_library_draw_is_silent_when_the_loss_is_flagged(audit):
     game = GameState(rng=random.Random(0))
     game.players[0].library.clear()
     game.draw_cards(0, 1)
+    assert game.players[0].drew_from_empty_library
+    game.check_state_based_actions()
     assert game.game_over and game.winner == 1
     assert "104.3c/empty_library_loss" not in _rules(audit.drain())
 
@@ -231,6 +234,7 @@ def _planeswalker(game, controller):
     pw = CardInstance(template=tmpl, owner=controller, controller=controller,
                       instance_id=game.next_instance_id(), zone="battlefield")
     pw._game_state = game
+    pw.enter_battlefield()          # CR 306.5b: its printed loyalty
     game.players[controller].battlefield.append(pw)
     return pw
 

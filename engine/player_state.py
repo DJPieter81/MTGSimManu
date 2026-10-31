@@ -37,6 +37,9 @@ class PlayerState:
     # Counters
     energy_counters: int = 0
     poison_counters: int = 0
+    # CR 704.5b: attempted to draw from an empty library since state-based
+    # actions were last checked (the check performs the loss, CR 104.3c).
+    drew_from_empty_library: bool = False
     # Tracking
     spells_cast_this_turn: int = 0
     # What each spell cast this turn was as it was cast (CR 601.2): its card

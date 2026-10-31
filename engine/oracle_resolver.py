@@ -135,7 +135,6 @@ def resolve_any_target_damage(game: "GameState", source: "CardInstance",
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"{source.name} deals {amount} damage to the opponent "
                         f"(life: {opponent.life})")
-    game.check_state_based_actions()
 
 
 def resolve_damage_to_chosen_target(

@@ -504,8 +504,12 @@ def resolve_ability(game: Any, source: Handle, controller: int,
     if not _intervening_if_holds(ctx, ability):
         return False
     specs = ability.specs + tuple(s for i in modes for s in ability.modes[i].specs)
-    _sequence(ctx, specs)
-    _drain_reflexive(ctx)
+    # CR 704.4: state-based actions wait while it resolves; its carrier
+    # (or the resolution it is part of) checks them once it has ended.
+    from .sba_manager import resolving
+    with resolving(game):
+        _sequence(ctx, specs)
+        _drain_reflexive(ctx)
     return any(ctx.performed.values())
 
 

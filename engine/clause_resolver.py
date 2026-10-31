@@ -417,7 +417,6 @@ def _a_energy_damage(ctx):
         # permanent has now (CR 120.3).
         from engine.damage import deal_damage
         deal_damage(card, chosen, total)
-        game.check_state_based_actions()
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"{card.name} deals {total} to {chosen.name} "

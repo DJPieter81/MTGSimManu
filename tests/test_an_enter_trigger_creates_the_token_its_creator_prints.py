@@ -139,13 +139,16 @@ def test_an_opponents_creature_of_the_subtype_does_not_trigger_it(card_db):
 
 
 def test_a_batch_of_deaths_transforms_the_observer_once(card_db):
+    # The batch: the observer's own token and another Cat. (One observer:
+    # it is legendary, so a second copy under the same player would leave
+    # by the legend rule, CR 704.5j.)
     game, ajani, cat = _ajani_with_token(card_db)
-    second = _cast(game, card_db, AJANI)
-    for c in [cat] + [t for t in _tokens(game) if t is not cat]:
+    lions = _add(game, card_db, "Savannah Lions", 0)
+    for c in (cat, lions):
         game._creature_dies(c)
     game.resolve_stack()
     assert ajani.is_transformed and ajani.zone == "battlefield"
-    assert second.is_transformed
+    assert ajani.loyalty_counters == ajani.template.back_face_loyalty
 
 
 # ── The auditor (CR 603.2) ────────────────────────────────────────────

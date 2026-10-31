@@ -118,20 +118,17 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
     """
     from .effect_carrier import dispatch_draw_triggers
 
-    fired = dispatch_draw_triggers(game, controller)
+    dispatch_draw_triggers(game, controller)
 
-    # CR 704.3 — state-based actions are checked as soon as a player
-    # would receive priority, which is immediately after each of these
-    # triggers resolves. Without this pass a player driven to 0 or less
-    # life mid-draw (a draw-N into an on-draw damage source) keeps
-    # acting, and life gained later in the same turn "un-kills" them —
-    # the failure behind
+    # CR 704.3, 704.4 -- a trigger's life loss is not checked here, part-
+    # way through the draw: state-based actions wait for the next time a
+    # player would receive priority -- the end of the resolution that drew
+    # (`ResolutionManager.resolve_stack`, the carriers) or the step whose
+    # turn-based draw it was (`GameRunner._step_begins`). That check comes
+    # before anyone acts again, so life gained later in the turn cannot
+    # "un-kill" the player (the failure behind
     # docs/diagnostics/2026-08-27_dimir_overperformance_root_cause.md's
-    # draw-7 evidence. Only run the pass when a trigger actually
-    # performed something, so the common no-on-draw-permanent draw stays
-    # free.
-    if fired:
-        game.check_state_based_actions()
+    # draw-7 evidence).
 
 
 def _fire_etb_triggers(game: "GameState", card: "CardInstance",

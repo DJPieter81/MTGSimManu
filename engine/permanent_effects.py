@@ -1027,7 +1027,6 @@ class PermanentEffects:
                     game.log.append(
                         f"T{game.display_turn} P{p_idx+1}: {perm.name} — "
                         f"{creature.name} died → each opponent loses {spec['amount']} life")
-                    game.check_state_based_actions()
                 elif kind == "gain":
                     PermanentEffects.gain_life(game, p_idx, spec["gain"])
                     if spec["draw"]:
@@ -1037,7 +1036,6 @@ class PermanentEffects:
                     if spec["lose_life"]:
                         from .damage import lose_life
                         lose_life(game, p_idx, spec["lose_life"])
-                        game.check_state_based_actions()
                 elif kind == "transform_self":
                     # "You may exile <this>, then return it to the
                     # battlefield transformed": a new object (CR 400.7)

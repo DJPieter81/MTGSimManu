@@ -1,5 +1,6 @@
 """Per-draw triggers: one trigger per card drawn, and their damage is
-checked by state-based actions when it happens.
+checked by state-based actions the next time a player would receive
+priority.
 
 Two mechanics, both dispatched by `engine/zone_transfer.py`'s
 `TransferKind.DRAW` fan-out:
@@ -20,9 +21,11 @@ Two mechanics, both dispatched by `engine/zone_transfer.py`'s
      the seven triggers took the drawing player from 2 to -5 life and
      nothing checked state-based actions, so that player kept taking
      actions and a lifelink attack later in the same turn restored them
-     to 2. Damage/life loss applied by a per-draw trigger must be
-     checked immediately: a player at 0 or less loses THEN, and life
-     gained afterwards cannot save them.
+     to 2. The loss is performed at the next state-based-action check:
+     when the resolution that drew ends, or as the step whose draw it was
+     gives priority (CR 704.3) -- never part-way through the draw (CR
+     704.4: the draw makes every card). A player at 0 or less loses then,
+     and life gained afterwards cannot save them.
 
 Class size: every on-draw source (the "deals N damage"/"loses N life"
 per-draw family — Orcish Bowmasters, Underworld Dreams, Sheoldred, Ob
@@ -121,19 +124,20 @@ class TestPerDrawTriggerFiresOncePerCard:
 
 class TestPerDrawTriggerDamageIsCheckedByStateBasedActions:
 
-    def test_player_reduced_to_zero_by_per_draw_triggers_loses(
+    def test_player_reduced_to_zero_by_per_draw_triggers_loses_at_the_next_check(
             self, card_db):
-        """CR 704.5a, checked when the damage happens (CR 704.3) — not
-        deferred to some later window."""
+        """CR 704.5a, performed the next time a player would receive
+        priority (CR 704.3) -- not deferred past it."""
         game = _setup(card_db)
         game.players[1].life = 3
 
         game.draw_cards(1, 5)
+        game.check_state_based_actions()
 
         assert game.players[1].life <= 0
         assert game.game_over, (
             "player was taken to 0 or less by per-draw triggers and the "
-            "game did not end")
+            "game did not end at the next check")
         assert game.winner == 0
 
     def test_lethal_per_draw_damage_is_not_undone_by_later_life_gain(
@@ -147,7 +151,8 @@ class TestPerDrawTriggerDamageIsCheckedByStateBasedActions:
         _add(game, card_db, LIFELINKER, 1, "battlefield")
 
         game.draw_cards(1, 5)
-        assert game.game_over, "loss was not registered during the draw"
+        game.check_state_based_actions()
+        assert game.game_over, "loss was not registered at the check"
         winner = game.winner
 
         game.gain_life(1, 7, "lifelink")
@@ -156,17 +161,18 @@ class TestPerDrawTriggerDamageIsCheckedByStateBasedActions:
             "a player who had already lost was revived by later life "
             "gain")
 
-    def test_draws_stop_once_the_drawing_player_has_lost(self, card_db):
-        """No further turn-based or effect draws happen after the game
-        has ended mid-draw."""
+    def test_a_draw_makes_every_card_after_the_drawing_player_falls_to_zero(
+            self, card_db):
+        """CR 704.4: no state-based action is performed part-way through
+        the draw; every card is drawn, then the check finds the loss."""
         game = _setup(card_db)
         game.players[1].life = 2
 
         drawn = game.draw_cards(1, 6)
 
-        assert game.game_over
-        assert len(drawn) < 6, (
-            f"kept drawing after the player lost: {len(drawn)} cards")
+        assert len(drawn) == 6
+        game.check_state_based_actions()
+        assert game.game_over and game.winner == 0
 
     def test_survivable_per_draw_damage_does_not_end_the_game(self, card_db):
         """Guard against an over-eager check: a player who stays above 0
@@ -175,6 +181,7 @@ class TestPerDrawTriggerDamageIsCheckedByStateBasedActions:
         game.players[1].life = 6
 
         game.draw_cards(1, 4)
+        game.check_state_based_actions()
 
         assert game.players[1].life == 2
         assert not game.game_over

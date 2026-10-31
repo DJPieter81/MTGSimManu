@@ -388,6 +388,20 @@ class ResolutionManager:
 
     @staticmethod
     def resolve_stack(game: "GameState"):
+        """Resolve the top item on the stack (CR 608.2), then check
+        state-based actions: once it has resolved, a player would receive
+        priority (CR 117.3b, 704.3). While it resolves they wait (CR
+        704.4, `sba_manager.resolving`); a resolution within another one
+        leaves the check to the outermost."""
+        from .sba_manager import resolving
+        if game.stack.is_empty:
+            return
+        with resolving(game):
+            ResolutionManager._resolve_top(game)
+        game.check_state_based_actions()
+
+    @staticmethod
+    def _resolve_top(game: "GameState"):
         """Resolve the top item on the stack."""
         if game.stack.is_empty:
             return

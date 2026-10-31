@@ -166,6 +166,10 @@ class CombatManager:
                 f"T{game.display_turn} P{active_player+1}: Attack with "
                 f"{', '.join(shown_name(a) for a in attackers)}"
             )
+        # CR 508.2, 704.3: the active player then receives priority, so
+        # state-based actions are checked -- what the attack triggers did
+        # included -- before any blocker is declared.
+        game.check_state_based_actions()
 
     def declare_blockers(self, game: "GameState",
                          blocks: Dict[int, List[int]]):

@@ -296,13 +296,14 @@ class GameState:
             self.active_player = self.rng.randint(0, 1)
         self.priority_player = self.active_player
 
-    def _lose_from_empty_library(self, player_idx: int) -> None:
-        """Flag the loss when a player must draw from an empty library
-        (CR 104.3c / 704.5c). Owns the mutation so the draw-audit invariant
-        can recompute the flag state independently."""
-        self.game_over = True
-        self.winner = 1 - player_idx
-        self.log.append(f"P{player_idx+1} loses: empty library")
+    def _flag_draw_from_empty_library(self, player_idx: int) -> None:
+        """Record that a player attempted to draw from an empty library
+        (CR 704.5b). They lose the next time a player would receive
+        priority (CR 104.3c), when the state-based-action check performs
+        it (`SBAManager.perform_empty_library_check`) -- never part-way
+        through the resolution that drew. Owns the mutation so the
+        draw-audit invariant can recompute the flag state independently."""
+        self.players[player_idx].drew_from_empty_library = True
 
     def end_the_turn(self, controller: int) -> None:
         """CR 723.1: end the turn. Every object on the stack is exiled
@@ -385,8 +386,9 @@ class GameState:
 
     def _draw_one(self, player_idx: int, draw_cap, drawn: list) -> bool:
         """One draw (CR 121.2). False when no further draw happens: a draw
-        limit stops it (CR 101.2), the library is empty (CR 704.5b), or the
-        game ended in its triggers."""
+        limit stops it (CR 101.2), the library is empty (CR 704.5b: the
+        attempt is recorded for the next check), or the game ended in its
+        triggers."""
         from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
         if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
@@ -394,14 +396,15 @@ class GameState:
             # (it is not a draw from an empty library).
             return False
         if not player.library:
-            self._lose_from_empty_library(player_idx)
-            # Audit (observation-only, CR 104.3c/704.5c): a draw from an
-            # empty library must flag the drawing player to lose. Recompute
-            # the flag state independently of the helper above.
+            self._flag_draw_from_empty_library(player_idx)
+            # Audit (observation-only, CR 104.3c/704.5b): a draw from an
+            # empty library must record the attempt, so the next check
+            # performs the loss. Read the record independently of the
+            # helper above.
             from .rules_audit import check as _audit_check
             _audit_check(
                 "104.3c/empty_library_loss",
-                self.game_over and self.winner == 1 - player_idx,
+                getattr(player, "drew_from_empty_library", False),
                 f"P{player_idx+1} drew from an empty library", game=self)
             return False
         card = player.library.pop(0)
@@ -415,9 +418,11 @@ class GameState:
         # call places the card in hand and runs the DRAW fan-out.
         transfer(self, card, src_zone="library", dst_zone="hand",
                  kind=TransferKind.DRAW, controller=player_idx)
-        # A per-draw trigger's damage/life loss ended the game (CR
-        # 704.5a, checked inside the DRAW fan-out): the remaining draws
-        # of this effect never happen.
+        # The game ended in this draw's triggers (an effect that wins or
+        # loses the game outright): the remaining draws never happen. A
+        # trigger's life loss does not end it here -- state-based actions
+        # wait for the next time a player would receive priority (CR
+        # 704.3, 704.4).
         return not self.game_over
 
     def _audit_draw_replaced(self, player_idx: int, asked: int,
@@ -894,7 +899,16 @@ class GameState:
         creature alive). A single pass only catches that on the NEXT
         external check_state_based_actions() call; the fixpoint loop
         catches it within this one.
+
+        Checked only when a player would receive priority (CR 704.3):
+        while a spell or ability is resolving (`sba_manager.resolving`)
+        the check waits -- state-based actions "pay no attention to what
+        happens during the resolution" (CR 704.4) -- and the resolution
+        makes it once it has ended (`ResolutionManager.resolve_stack`).
         """
+        from .sba_manager import resolution_in_progress
+        if resolution_in_progress(self):
+            return False
         actions_taken = False
         iterations = 0
         # Re-entrancy depth: a death funnel or trigger inside a pass may call
@@ -959,6 +973,23 @@ class GameState:
             for i, p in enumerate(self.players):
                 _audit_check("704.5a/zero_life", p.life > 0,
                              f"P{i+1} at {p.life} life with the game still on", game=self)
+                _audit_check("704.5b/empty_library",
+                             not getattr(p, "drew_from_empty_library", False),
+                             f"P{i+1} drew from an empty library with the game still on",
+                             game=self)
+
+    def _audit_checked_outside_resolution(self) -> None:
+        """Rules audit (CR 704.3, 704.4): a state-based-action pass runs
+        only when a player would receive priority -- never while a spell or
+        ability is resolving. Reads the resolution depth itself, not the
+        check's deferral. Observes only; a no-op with the audit off."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        depth = getattr(self, '_resolution_depth', 0)
+        _audit_check("704.4/during_resolution", depth == 0,
+                     f"state-based actions performed at resolution depth {depth}",
+                     game=self)
 
     def _check_sba_once(self) -> bool:
         """Single CR 704.3 pass. Rules with a single shared
@@ -971,6 +1002,7 @@ class GameState:
         docs/proposals/resolver_sba_unification.md §6.
         """
         actions_taken = False
+        self._audit_checked_outside_resolution()
 
         # Continuous effects (0b) must be fresh before checking P/T-
         # dependent SBAs (lethal damage, toughness) below — a
@@ -985,6 +1017,14 @@ class GameState:
                 self.winner = 1 - i
                 self.log.append(f"P{i+1} loses: life total {player.life}")
                 actions_taken = True
+
+        if self.game_over:
+            return actions_taken
+
+        # An attempted draw from an empty library (SBA 704.5b, CR 104.3c)
+        # -- single implementation in SBAManager.
+        if SBAManager.perform_empty_library_check(self):
+            actions_taken = True
 
         if self.game_over:
             return actions_taken

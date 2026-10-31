@@ -18,7 +18,8 @@ Key SBAs implemented:
   704.5p  - Planeswalker with 0 loyalty goes to graveyard
 """
 from __future__ import annotations
-from typing import List, Optional, TYPE_CHECKING
+from contextlib import contextmanager
+from typing import Iterator, List, Optional, TYPE_CHECKING
 
 from .constants import POISON_COUNTER_LETHAL, SBA_MAX_ITERATIONS
 
@@ -28,11 +29,53 @@ if TYPE_CHECKING:
     from .zone_manager import ZoneManager
 
 
+@contextmanager
+def resolving(game) -> Iterator[None]:
+    """A spell or ability is resolving (CR 608.2): no player receives
+    priority until it has finished, so state-based actions wait for it --
+    they "pay no attention to what happens during the resolution of a
+    spell or ability" (CR 704.4) and are checked the next time a player
+    would receive priority (CR 704.3). Counts the depth on `game`: an
+    ability resolved within a resolution (a trigger performed while its
+    spell resolves) defers its check to the outermost."""
+    if game is None:
+        yield
+        return
+    game._resolution_depth = getattr(game, '_resolution_depth', 0) + 1
+    try:
+        yield
+    finally:
+        game._resolution_depth -= 1
+
+
+def resolution_in_progress(game) -> bool:
+    """Is a spell or ability resolving now (`resolving`)?"""
+    return getattr(game, '_resolution_depth', 0) > 0
+
+
 class SBAManager:
     """Manages state-based actions per Comprehensive Rules 704."""
 
     def __init__(self, zone_manager: "ZoneManager"):
         self.zone_manager = zone_manager
+
+    @staticmethod
+    def perform_empty_library_check(game: "GameState") -> bool:
+        """SBA 704.5b -- a player who attempted to draw from a library
+        with no cards in it since the last check loses (CR 104.3c: the
+        next time a player would receive priority). The draw records the
+        attempt (`PlayerState.drew_from_empty_library`); this performs the
+        loss and clears the record. Returns True if a player lost."""
+        performed = False
+        for i, p in enumerate(game.players):
+            if getattr(p, "drew_from_empty_library", False) \
+                    and not game.game_over:
+                game.game_over = True
+                game.winner = 1 - i
+                game.log.append(f"P{i+1} loses: empty library")
+                p.drew_from_empty_library = False
+                performed = True
+        return performed
 
     @staticmethod
     def perform_token_cleanup(game: "GameState") -> bool:
@@ -97,16 +140,8 @@ class SBAManager:
             return performed
 
         # 704.5b: Player who attempted to draw from empty library loses
-        for p in game.players:
-            if getattr(p, '_drew_from_empty', False) and not game.game_over:
-                game.game_over = True
-                game.winner = 1 - p.player_idx
-                game.log.append(
-                    f"T{game.display_turn}: P{p.player_idx+1} loses "
-                    f"(drew from empty library, SBA 704.5b)"
-                )
-                p._drew_from_empty = False
-                performed = True
+        if SBAManager.perform_empty_library_check(game):
+            performed = True
 
         if game.game_over:
             return performed

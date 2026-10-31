@@ -1398,11 +1398,6 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Archon of Cruelty: draw 1, gain 3 life (now {game.players[controller].life})")
 
-    # Check if opponent is dead
-    if opp.life <= 0:
-        game.game_over = True
-        game.winner = controller
-
 
 # ═══════════════════════════════════════════════════════════════════
 # Amulet Titan package

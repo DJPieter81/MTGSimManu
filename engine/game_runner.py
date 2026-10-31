@@ -1297,7 +1297,8 @@ class GameRunner:
         decider.last_decision = None
 
     def _resolve_stack_loop(self, game: GameState):
-        """Resolve the stack, checking SBAs after each resolution.
+        """Resolve the stack; each resolution ends with its state-based-
+        action check (`ResolutionManager.resolve_stack`, CR 704.3).
 
         CR 117.3b-c, 117.4: after a spell is cast and after any object
         resolves, players receive priority again; the top object resolves
@@ -1319,7 +1320,6 @@ class GameRunner:
                 windows += 1
                 continue
             game.resolve_stack()
-            game.check_state_based_actions()
             resolves += 1
             if game.game_over:
                 return
@@ -1416,6 +1416,10 @@ class GameRunner:
         subscribers; the step carrier, unit BT)."""
         from engine.turn_clock import Clock, ClockEvent, emit
         emit(game, ClockEvent(Clock.STEP_BEGINS, active, step=step.value))
+        # CR 704.3: then the active player would receive priority, so
+        # state-based actions are checked -- the step's turn-based actions
+        # (the draw step's draw and its triggers) and its triggers included.
+        game.check_state_based_actions()
 
     def _combat_trick_window(self, game: GameState, active_ai: AIPlayer,
                              opponent_ai: AIPlayer, combat_mgr,
@@ -2689,8 +2693,14 @@ class GameRunner:
                 game.zone_mgr.move_card_to_graveyard(game, perm, cause="sacrifice")
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Activate {perm.name} (sacrifice)")
-                self._resolve_sac_effect(game, active, perm, effect_text,
-                                         charge=charge)
+                # CR 704.3, 704.4: the ability resolves, then a player
+                # would receive priority and state-based actions are
+                # checked.
+                from .sba_manager import resolving
+                with resolving(game):
+                    self._resolve_sac_effect(game, active, perm, effect_text,
+                                             charge=charge)
+                game.check_state_based_actions()
                 if game.game_over:
                     return
 
@@ -2808,9 +2818,6 @@ class GameRunner:
         elif re.search(r'(\d+) damage', effect_text):
             dmg = int(re.search(r'(\d+) damage', effect_text).group(1))
             opp.life -= dmg
-            if opp.life <= 0:
-                game.game_over = True
-                game.winner = controller
         elif 'return' in effect_text and 'land' in effect_text:
             # No land-return effect in the current pool deals damage
             # as part of returning the lands (Aftermath Analyst: "Return
