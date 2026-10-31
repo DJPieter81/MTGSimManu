@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from .cards import CardInstance
 
 from .cards import Keyword, CardType, AbilityType
+from .face_down import shown_name
 
 
 @dataclass
@@ -163,7 +164,7 @@ class CombatManager:
         if attackers:
             game.log.append(
                 f"T{game.display_turn} P{active_player+1}: Attack with "
-                f"{', '.join(a.name for a in attackers)}"
+                f"{', '.join(shown_name(a) for a in attackers)}"
             )
 
     def declare_blockers(self, game: "GameState",
@@ -699,7 +700,7 @@ class CombatManager:
                     player_damage = remaining_damage
                     game.log.append(
                         f"T{game.display_turn} P{self._active_player+1}: "
-                        f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                        f"  {shown_name(attacker)} ({attacker.power}/{attacker.toughness})"
                         f" → {remaining_damage} dmg to player (trample)"
                     )
 
@@ -712,7 +713,7 @@ class CombatManager:
                     self._dealt_ids.add(attacker.instance_id)
                     game.log.append(
                         f"T{game.display_turn} P{self._active_player+1}: "
-                        f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                        f"  {shown_name(attacker)} ({attacker.power}/{attacker.toughness})"
                         f" → {attacker_power} dmg to {_pw.name}")
                     # "deals combat damage to a player or planeswalker"
                     # (CR 510.2): the carrier reads the typed head.
@@ -729,7 +730,7 @@ class CombatManager:
                 player_damage = attacker_power
                 game.log.append(
                     f"T{game.display_turn} P{self._active_player+1}: "
-                    f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                    f"  {shown_name(attacker)} ({attacker.power}/{attacker.toughness})"
                     f" → {attacker_power} dmg to player"
                 )
 

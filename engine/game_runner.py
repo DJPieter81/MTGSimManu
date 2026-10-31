@@ -855,8 +855,9 @@ class GameRunner:
                     _vlog(f'║ Lands: {len(p.lands)}  |  Opp lands: {len(o.lands)}')
                     _vlog(f'║ Library: {len(p.library)}  |  Graveyard: {len(p.graveyard)}')
                     # Board creatures
+                    from engine.face_down import shown_name
                     for pidx, pobj, label in [(active, p, p_name), (1-active, o, o_name)]:
-                        creatures = [f'{c.name} ({c.power}/{c.toughness})'
+                        creatures = [f'{shown_name(c)} ({c.power}/{c.toughness})'
                                      + (' [tapped]' if c.tapped else '')
                                      for c in pobj.creatures]
                         nonc = [c.name for c in pobj.battlefield
@@ -1003,10 +1004,11 @@ class GameRunner:
                     game.current_phase = Phase.DECLARE_ATTACKERS
                     attackers = ai.decide_attackers(game)
                     if attackers:
-                        atk_names = [a.name for a in attackers]
+                        from engine.face_down import shown_name
+                        atk_names = [shown_name(a) for a in attackers]
                         _vlog(f'  [Declare Attackers] P{active+1} attacks with: {", ".join(atk_names)}')
                         atk_details = [
-                            {"name": a.name,
+                            {"name": shown_name(a),
                              "p": a.power if a.power is not None else 0,
                              "t": a.toughness if a.toughness is not None else 0}
                             for a in attackers

@@ -104,3 +104,53 @@ def test_a_definition_nothing_evaluates_is_not_run_as_zero(card_db):
     from engine import effect_resolver as er
     host = card_db.get_card("Fungal Sprouting").effects.spell(0)
     assert not er.can_execute(host, "tokens_counters")
+
+
+# ── A keyword action's count is bound the same way ────────────────────
+# "Amass Zombies X, where X is ..." typed its X as the cost's X: on a card
+# with no {X} it amassed 0 on the dispatcher (Invade the City, The Mouth of
+# Sauron, Commence the Endgame; 25 pool keyword actions count X).
+
+def _keyword_count(definition: str):
+    from engine.effect_grammar import parse_text_effects
+    host = parse_text_effects("Amass Zombies X" + definition + ".").spell(0)
+    (s,) = host.specs
+    return host, s
+
+
+def test_a_keyword_actions_count_x_is_typed_by_its_definition():
+    from engine.effect_spec import AmountKind, QuantityKind, Verb
+    _host, s = _keyword_count(", where X is the number of creatures you "
+                              "control")
+    assert s.verb is Verb.KEYWORD_ACTION
+    assert s.payload.amount.kind is AmountKind.X_DEFINED
+    assert s.payload.amount.inner.quantity.kind is QuantityKind.COUNT
+
+
+def test_a_keyword_actions_count_x_nothing_binds_is_refused():
+    from engine.effect_spec import Verb
+    _host, s = _keyword_count("")
+    assert s.verb is Verb.UNMODELLED
+
+
+def test_the_defined_keyword_count_is_amassed(card_db):
+    from engine import effect_resolver as er
+    game = _game(card_db, ["Grizzly Bears"] * 3)
+    host, _s = _keyword_count(", where X is the number of creatures you "
+                              "control")
+    source = game.players[0].battlefield[0]
+    assert er.resolve_ability(game, er.handle_of(source), 0, host, (),
+                              family="tokens_counters",
+                              source_object=source)
+    (army,) = [c for c in game.players[0].battlefield
+               if "Army" in (c.effective_subtypes or ())]
+    assert army.plus_counters == 3
+
+
+def test_a_keyword_count_nothing_evaluates_is_not_run_as_zero(card_db):
+    """"Amass Zombies X, where X is the number of instant and sorcery cards
+    in your graveyard": no evaluator owns that quantity, so the host keeps
+    its legacy path rather than amassing 0."""
+    from engine import effect_resolver as er
+    host = card_db.get_card("Invade the City").effects.spell(0)
+    assert not er.can_execute(host, "tokens_counters")

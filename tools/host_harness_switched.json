@@ -4140,6 +4140,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Hauntwoods Shrieker",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Hollow Dogs",
     "TRIGGERED:0:0"
    ],
@@ -5708,6 +5716,14 @@
   {
    "pair": [
     "create_token",
+    "Bleeding Edge",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
+  },
+  {
+   "pair": [
+    "create_token",
     "Borough Backup",
     "SPELL:0:0"
    ],
@@ -5808,6 +5824,14 @@
     "SPELL:0:1"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, keywords, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Deceive the Messenger",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
   },
   {
    "pair": [
@@ -6172,6 +6196,14 @@
   {
    "pair": [
     "create_token",
+    "Orcish Medicine",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
+  },
+  {
+   "pair": [
+    "create_token",
     "Queen's Commission",
     "SPELL:0:0"
    ],
@@ -6240,6 +6272,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Relentless Advance",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
   },
   {
    "pair": [
@@ -6408,6 +6448,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "create_token",
+    "Swarming of Moria",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, it creates its Treasure token and its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy spell resolver made only a 0/0 'army' token with no subtype and no counter, read from the reminder text, and no Treasure"
   },
   {
    "pair": [
@@ -6756,6 +6804,14 @@
   {
    "pair": [
     "dispatched",
+    "Bleeding Edge",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Bombard",
     "SPELL:0:0"
    ],
@@ -6776,6 +6832,14 @@
     "SPELL:0:1"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Break Down the Door",
+    "MODE:0:2:mode2"
+   ],
+   "reason": "unit MF: the chosen mode is performed: its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy mode resolver did nothing"
   },
   {
    "pair": [
@@ -7136,6 +7200,14 @@
     "SPELL:0:1"
    ],
    "reason": "A regrowth spell returns its target card from the controller's graveyard to hand through the card-flow MOVE executor (the zone funnel), checked on resolution (CR 608.2b); legacy resolved nothing for this text."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Deceive the Messenger",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
   },
   {
    "pair": [
@@ -8188,6 +8260,14 @@
   {
    "pair": [
     "dispatched",
+    "Manifest Dread",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy spell resolver did nothing"
+  },
+  {
+   "pair": [
+    "dispatched",
     "March of the Drowned",
     "MODE:0:0:mode0"
    ],
@@ -8456,6 +8536,14 @@
     "MODE:0:1:mode1"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Orcish Medicine",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
   },
   {
    "pair": [
@@ -8840,6 +8928,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Relentless Advance",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army, beside the spell's other instructions; the legacy spell resolver made a 0/0 'army' token with no subtype and no counter, read from the reminder text, or on a board where it granted a keyword, none"
   },
   {
    "pair": [
@@ -9576,6 +9672,14 @@
     "SPELL:0:2"
    ],
    "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Swarming of Moria",
+    "SPELL:0:0"
+   ],
+   "reason": "unit MF: as the spell resolves, it creates its Treasure token and its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy spell resolver made only a 0/0 'army' token with no subtype and no counter, read from the reminder text, and no Treasure"
   },
   {
    "pair": [
@@ -10572,6 +10676,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Aven Eternal",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Aviation Pioneer",
     "TRIGGERED:0:0"
    ],
@@ -11508,6 +11620,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Dreadhorde Twins",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Dreadhound",
     "TRIGGERED:0:0"
    ],
@@ -11544,6 +11664,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Dunland Crebain",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -11784,6 +11912,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Eternal Skylord",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -12228,6 +12364,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Gleaming Overseer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Glimmerlight",
     "TRIGGERED:0:0"
    ],
@@ -12272,6 +12416,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit TU: as the trigger resolves, the search finds, in its searcher's library, the cards its description admits, chosen by the searcher (CR 701.19a-c), the instruction after it puts them where it says -- onto the battlefield tapped or untapped as printed, through the land-entry owner for a land, into the hand, into the graveyard -- the library is shuffled (CR 701.20a) and the search is counted for its watchers; the legacy resolver of this trigger performed no search"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Goblin-town Flunkies",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -12328,6 +12480,14 @@
     "TRIGGERED:0:3"
    ],
    "reason": "unit ED-T: the legacy enter pass performed nothing for this edict; the enter carrier makes each player it names sacrifice the permanents it describes, each of their own choice (CR 701.21a, 101.4)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Gothmog, Morgul Lieutenant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -12400,6 +12560,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit DW: the same draws through the draw owner; the log line reads '<source> -> draw N (cards)' in place of the legacy carrier's own wording"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Growing Dread",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -12764,6 +12932,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Invading Manticore",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Invasion Reinforcements",
     "TRIGGERED:0:1"
    ],
@@ -13020,6 +13196,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Lazotep Reaver",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Legion's Landing // Adanto, the First Fort",
     "TRIGGERED:0:0"
    ],
@@ -13200,6 +13384,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "March from the Black Gate",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -13392,6 +13584,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Mindless Conscription",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -15324,6 +15524,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Threats Around Every Corner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Thriving Grubs",
     "TRIGGERED:0:0"
    ],
@@ -15668,6 +15876,14 @@
   {
    "pair": [
     "etb:dispatch",
+    "Unsettling Twins",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy resolver of this trigger did nothing"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
     "Unstable Amulet",
     "TRIGGERED:0:0"
    ],
@@ -15760,6 +15976,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit ET: the enter trigger creates the token its creator prints, from the typed spec through the token owner (CR 111.3, 603.6a); the legacy enter resolver created none"
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Vizier of the Scorpion",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -16320,6 +16544,14 @@
     "LOYALTY:0:2"
    ],
    "reason": "unit UG: the line's colour qualifier is the requirement's colour bound, no longer grammar residue, so the loyalty carrier destroys the target permanent it chose; the legacy planeswalker manager left the line unclassified and performed nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Abhorrent Oculus",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller manifests dread: they look at the top two cards of their library, put the one they choose onto the battlefield face down as a 2/2 creature with no name, mana cost, colour, subtypes or text, and the other into their graveyard (CR 701.62a, 701.40a, 708.2a); the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [
@@ -17168,6 +17400,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Warg Rider",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit MF: as the trigger resolves, its controller amasses (CR 701.47a): an Army creature token with the printed subtype if they control no Army, then the printed number of +1/+1 counters on their Army; the legacy resolver of this trigger did nothing"
   },
   {
    "pair": [

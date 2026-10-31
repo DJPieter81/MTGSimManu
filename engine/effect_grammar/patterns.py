@@ -77,8 +77,8 @@ from engine.effect_model import DurationKind, ModKind, Selector, SelectorKind
 from engine.effect_spec import replace as _copy_with
 from engine.effect_spec import (ACTOR_ONLY_VERBS, Amount, AmountKind,
                                 CardFilter, Chooser, Condition, ConditionKind,
-                                EffectSpec, HostKind, Ref, RefKind, Stage,
-                                TokenSpec, Unmodelled, Verb)
+                                EffectSpec, HostKind, KeywordAction, Ref,
+                                RefKind, Stage, TokenSpec, Unmodelled, Verb)
 from engine.target_solver import TargetRequirement
 
 __all__ = ["LEAF", "DETAIL_CODES", "ROWS", "CLAUSE_CACHE_SIZE",
@@ -546,7 +546,13 @@ def _bound_x(m: _M, a: Optional[Amount]) -> Optional[Amount]:
 
 
 def _payload_x_bound(m: _M, value: Any) -> Any:
-    """A token's printed "X/X" bound the same way (`_bound_x`)."""
+    """A token's printed "X/X", and a keyword action's count ("amass
+    Zombies X, where X is ...", CR 107.3), bound the same way
+    (`_bound_x`)."""
+    if isinstance(value, KeywordAction):
+        amount = _bound_x(m, value.amount)
+        return value if amount is value.amount else _copy_with(
+            value, amount=amount)
     if not isinstance(value, TokenSpec):
         return value
     power, toughness = _bound_x(m, value.power), _bound_x(m, value.toughness)

@@ -193,8 +193,8 @@ def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
     (`_deliver`). A staying card is taken only to fill a target the effect
     requires (`count_min`). For an exile of graveyard cards: the cards
     whose removal is worth most to their owners (`ai.graveyard_removal.
-    pick_removals`). Any other destination keeps the engine's default
-    pick."""
+    pick_removals`). For manifest dread, the card it manifests (below).
+    Any other destination keeps the engine's default pick."""
     from engine.callbacks import default_card_pick
     from engine.effect_spec import Verb
     target = getattr(spec, "target", None)
@@ -204,7 +204,17 @@ def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
         return pick_removals(game, ctx.controller, list(pool), n,
                              target.count_min)
     from engine.effect_executors import (land_from_hand, library_search,
-                                         reveal_supported)
+                                         manifest_dread, reveal_supported)
+    if manifest_dread(spec):
+        # Manifest dread (unit MF): the face-down 2/2 is the same body
+        # whichever card it is (CR 708.2a), so a card that serves its
+        # player's plan from the graveyard (`discard_advisor.
+        # serves_plan_from_graveyard`) goes there and another is
+        # manifested; with no such difference, the engine's default pick.
+        from ai.discard_advisor import serves_plan_from_graveyard
+        rest = [c for c in pool
+                if not serves_plan_from_graveyard(game, ctx.controller, c)]
+        return default_card_pick(rest or list(pool), n)
     if reveal_supported(spec):
         # A card brought from outside the game into the hand (unit OG):
         # the hand-delivery choice, as a tutor's (`_deliver`).

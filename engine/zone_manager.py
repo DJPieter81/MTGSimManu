@@ -43,6 +43,7 @@ class ZoneManager:
         controller_override: Optional[int] = None,
         transformed: bool = False,
         dying: bool = False,
+        face_down: bool = False,
     ) -> bool:
         """Move a card from one zone to another.
 
@@ -61,6 +62,10 @@ class ZoneManager:
             dying: The death owner (`PermanentEffects._creature_dies`) is
                 performing a creature's death; any other battlefield ->
                 graveyard move of a creature is handed to it (CR 700.4).
+            face_down: Put the card onto the battlefield face down, as a 2/2
+                creature with no other characteristic (CR 701.40a, 708.2a;
+                `engine.face_down`). It is the card itself again once it
+                leaves (CR 708.9).
 
         Returns:
             True if the move was performed, False if prevented.
@@ -167,18 +172,29 @@ class ZoneManager:
                 card.controller = controller_override
             if transformed:
                 card.is_transformed = True     # back face up (CR 712)
+            if face_down:
+                # CR 708.2a: face down it shows the face-down
+                # characteristics, before it enters, so no ability of its
+                # card sees it enter.
+                from .face_down import face_down_template
+                card._front_template = card.template
+                card.template = face_down_template(card)
+                card.face_down = True
             card.enter_battlefield()
             card._game_state = game
             self._audit_entry_loyalty(game, card)
             self._audit_new_object(game, card)
+            if face_down:
+                self._audit_face_down(game, card)
         else:
             self._audit_front_face(game, card)
 
-        # Log the move
+        # Log the move: a face-down permanent has no name (CR 708.2a).
         if cause:
+            from .face_down import shown_name
             game.log.append(
-                f"T{game.display_turn}: {card.name} moved "
-                f"{from_zone} -> {actual_to} ({cause})"
+                f"T{game.display_turn}: {shown_name(card)} "
+                f"moved {from_zone} -> {actual_to} ({cause})"
             )
 
         if leaving is not None:
@@ -552,6 +568,32 @@ class ZoneManager:
                      f"{card.name} arrived in {card.zone} showing its back "
                      f"face", game=game)
 
+    @staticmethod
+    def _audit_face_down(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 708.2a), restated from the permanent's raw
+        characteristics: a permanent put onto the battlefield face down has
+        no name, is a 2/2, has the card type creature alone, and has no
+        subtype, supertype, colour, mana value or text. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        from .cards import CardType
+        t = card.template
+        shown = [what for what, has in (
+            ("a name", bool(t.name)),
+            ("a power and toughness other than 2/2",
+             (t.power, t.toughness) != (2, 2)),
+            ("a card type other than creature",
+             set(t.card_types) != {CardType.CREATURE}),
+            ("a subtype or supertype", bool(t.subtypes or t.supertypes)),
+            ("a colour", bool(card.colors)),
+            ("a mana value", bool(t.cmc)),
+            ("rules text", bool(t.oracle_text)),
+        ) if has]
+        _audit_check("708.2a/face_down", not shown,
+                     f"a face-down permanent shows {', '.join(shown)}",
+                     game=game)
+
     def _blink_zone_transition(
         self,
         game: "GameState",
@@ -721,6 +763,9 @@ class ZoneManager:
         if front is not None:
             card.template = front
             card._front_template = None
+        # A face-down permanent is the card itself once it leaves (CR
+        # 708.9): its own template is the one just put back.
+        card.face_down = False
 
         # Clear game state reference
         card._game_state = None

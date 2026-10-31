@@ -506,8 +506,8 @@
   "has_recurring_trigger": {
    "AGREE": 17533,
    "LEGACY_RECURRING_TRIGGER_SCOPE": 5,
-   "UNEXPLAINED": 4173,
-   "UNMODELLED_CLAUSE": 1027
+   "UNEXPLAINED": 4172,
+   "UNMODELLED_CLAUSE": 1028
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -762,9 +762,9 @@
   }
  },
  "gate_parity": {
-  "legacy_fallback": 3087,
-  "new_path": 2567,
-  "pairs": 5654
+  "legacy_fallback": 3081,
+  "new_path": 2597,
+  "pairs": 5678
  },
  "templates": 22738,
  "totals": {
@@ -785,7 +785,7 @@
   "MASKED_GROWTH": 69,
   "REMINDER_TEXT": 71,
   "SEMANTIC_FIX": 38,
-  "UNEXPLAINED": 18059,
-  "UNMODELLED_CLAUSE": 9299
+  "UNEXPLAINED": 18058,
+  "UNMODELLED_CLAUSE": 9300
  }
 }

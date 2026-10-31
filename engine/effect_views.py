@@ -336,9 +336,14 @@ _CARD_FLOW_VERBS = frozenset({Verb.DRAW, Verb.DISCARD, Verb.LOOK,
                               Verb.REVEAL, Verb.MOVE, Verb.SEARCH,
                               Verb.SHUFFLE, Verb.MILL, Verb.SCRY,
                               Verb.SURVEIL, Verb.END_TURN})
+# A keyword action is the family's too: its executor (`execute_keyword_
+# action`, family tokens_counters) performs amass and manifest dread (CR
+# 701.47a, 701.62a; unit MF), and refuses -- so `can_execute` refuses --
+# every other one.
 _TOKEN_COUNTER_VERBS = frozenset({Verb.CREATE_TOKEN, Verb.PUT_COUNTERS,
                                   Verb.REMOVE_COUNTERS, Verb.PLAYER_COUNTERS,
-                                  Verb.DOUBLE_COUNTERS, Verb.MOVE_COUNTERS})
+                                  Verb.DOUBLE_COUNTERS, Verb.MOVE_COUNTERS,
+                                  Verb.KEYWORD_ACTION})
 _PUMP_VERBS = frozenset({Verb.CONTINUOUS, Verb.TAP, Verb.UNTAP})
 _STACK_MANA_VERBS = frozenset({Verb.COUNTER, Verb.ADD_MANA, Verb.PAY,
                                Verb.END_TURN})
@@ -756,12 +761,13 @@ def strict_trigger(h: AbilityEffects) -> bool:
 # dispatch_step_triggers`): the verbs it resolves -- each an executor
 # another family already runs -- and the slot zones it picks a trigger's
 # targets in ("exile up to one target card from a graveyard" picks in a
-# graveyard, unit GX).
+# graveyard, unit GX). A keyword action is one `execute_keyword_action`
+# performs (amass, manifest dread -- unit MF).
 _STEP_TRIGGER_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.EXILE, Verb.MILL,
     Verb.SURVEIL, Verb.PLAYER_COUNTERS, Verb.SACRIFICE, Verb.SEARCH,
-    Verb.MOVE, Verb.SHUFFLE})
+    Verb.MOVE, Verb.SHUFFLE, Verb.KEYWORD_ACTION})
 _STEP_TARGET_ZONES = _TRIGGER_TARGET_ZONES | {"graveyard"}
 
 

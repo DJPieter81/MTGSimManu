@@ -24,6 +24,7 @@
   "engine/effect_resolver.py": 0,
   "engine/effect_spec.py": 0,
   "engine/effect_views.py": 0,
+  "engine/face_down.py": 0,
   "engine/game_budget.py": 0,
   "engine/game_runner.py": 11,
   "engine/game_state.py": 0,

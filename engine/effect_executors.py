@@ -125,7 +125,8 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.MILL, Verb.SURVEIL,
                                             Verb.PLAYER_COUNTERS,
                                             Verb.SACRIFICE, Verb.SEARCH,
-                                            Verb.MOVE, Verb.SHUFFLE}),
+                                            Verb.MOVE, Verb.SHUFFLE,
+                                            Verb.KEYWORD_ACTION}),
             FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
 
@@ -1786,15 +1787,86 @@ def _amass_supported(s: EffectSpec) -> bool:
 
 def execute_keyword_action(ctx: Resolution, s: EffectSpec,
                            actors: Tuple[int, ...]) -> Outcome:
-    n = conditions.amount_value(ctx.game, ctx.controller, s.payload.amount,
-                                ctx.x_value)
-    if n <= 0:
-        return Outcome(False, {})
+    if manifest_dread(s):
+        return _manifest_dread(ctx, s)
+    # CR 701.47a: amassing 0 still creates the Army its player does not
+    # control -- a 0/0, which state-based actions put into the graveyard.
+    n = max(0, conditions.amount_value(ctx.game, ctx.controller,
+                                       s.payload.amount, ctx.x_value))
     army = ctx.game.amass(ctx.controller, n, s.payload.subtype)
+    _audit_amassed(ctx.game, ctx.controller)
     return Outcome(True, {ctx.controller: (handle_of(army),)})
 
 
-execute_keyword_action.supports = _amass_supported
+def _audit_amassed(game: Any, controller: int) -> None:
+    """Rules audit (CR 701.47a), restated from the battlefield: once an
+    amass resolves, its player controls an Army creature -- the one they
+    had, or the token it created. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    ok = any(c.effective_is_creature and "Army" in (c.effective_subtypes
+                                                    or ())
+             for c in game.players[controller].battlefield)
+    rules_audit.check("701.47a/amass", ok,
+                      f"P{controller + 1} amassed and controls no Army "
+                      f"creature", game=game)
+
+
+# ── KEYWORD_ACTION: manifest dread (unit MF) ─────────────────────────
+
+def manifest_dread(s: Any) -> bool:
+    """"Manifest dread" (CR 701.62a), by the ability's controller: the
+    keyword action alone, as the grammar types it (its expansion is the CR
+    definition, which `_manifest_dread` performs)."""
+    p = s.payload
+    if s.verb is not Verb.KEYWORD_ACTION or not isinstance(p, KeywordAction) \
+            or p.name != "manifest dread" or p.amount is not None \
+            or p.subtype:
+        return False
+    if s.flags or s.optional or s.alternatives or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.duration is not None or s.amount is not None \
+            or s.chooser is not Chooser.CONTROLLER:
+        return False
+    return (s.subject is None and s.ref is None and s.other is None
+            and s.target is None and s.target_slot is None
+            and (s.actor is None or _acts_as_controller(s.actor)))
+
+
+def _manifest_dread(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """CR 701.62a: the controller looks at the top two cards of their
+    library, manifests one of them -- puts it onto the battlefield face down
+    as a 2/2 creature through the zone funnel (CR 701.40a, 708.2a) -- and
+    puts the other into their graveyard; with one card left, it is that
+    card. Which one is manifested is the controller's choice
+    (`callbacks.choose_cards`, A35)."""
+    from .callbacks import default_card_pick
+    game, p = ctx.game, ctx.controller
+    top = list(game.players[p].library[:2])
+    if not top:
+        return Outcome(False, {})
+    pick = top[0]
+    if len(top) > 1:
+        chosen = [c for c in (game.callbacks.choose_cards(ctx, s, top, 1)
+                              or ()) if any(c is t for t in top)]
+        pick = chosen[0] if chosen else default_card_pick(top, 1)[0]
+    cause = f"{getattr(_source_object(ctx), 'name', '') or 'an ability'}: " \
+            f"manifest dread"
+    if not game.zone_mgr.move_card(game, pick, "library", "battlefield",
+                                   cause=cause, controller_override=p,
+                                   face_down=True):
+        return Outcome(False, {})
+    game._handle_permanent_etb(pick, p)
+    for other in top:
+        if other is not pick and other.zone == "library":
+            game.zone_mgr.move_card(game, other, "library", "graveyard",
+                                    cause=cause)
+    return Outcome(True, {p: (handle_of(pick),)})
+
+
+execute_keyword_action.supports = (lambda s: _amass_supported(s)
+                                   or manifest_dread(s))
 
 
 # ── CONTINUOUS characteristic changes on a chosen object (layers 4, 6,

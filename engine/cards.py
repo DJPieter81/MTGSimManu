@@ -1886,7 +1886,10 @@ class CardInstance:
     # attribute read via getattr(..., False) at 9 call sites.
     is_transformed: bool = False
     # Tracking
-    turned_face_up: bool = True
+    # CR 708: on the battlefield face down, showing the face-down template
+    # (`engine.face_down`); the card's own template waits in
+    # `_front_template` until it leaves (CR 708.9).
+    face_down: bool = False
     entered_battlefield_this_turn: bool = False
     attacked_this_turn: bool = False
     # CR 509.1b turn-scoped evasion: set True by a "it can't be blocked

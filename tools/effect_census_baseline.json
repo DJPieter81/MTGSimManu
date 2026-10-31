@@ -104,11 +104,11 @@
    "REPLACEMENT": 0.0,
    "SPELL": 0.7473,
    "STATIC": 0.6313,
-   "TRIGGERED": 0.799,
+   "TRIGGERED": 0.7989,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
-   "AMOUNT": 680,
+   "AMOUNT": 681,
    "CLAUSE": 1693,
    "CONDITION": 1137,
    "DELAY": 16,
@@ -179,9 +179,9 @@
     "typed": 3395
    },
    "TRIGGERED": {
-    "share": 0.799,
+    "share": 0.7989,
     "specs": 15290,
-    "typed": 12216
+    "typed": 12215
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -1230,9 +1230,9 @@
     2
    ]
   ],
-  "typed": 32865,
-  "unmodelled": 11516,
-  "unmodelled_row_count": 1946,
+  "typed": 32864,
+  "unmodelled": 11517,
+  "unmodelled_row_count": 1947,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1596,5 +1596,5 @@
    ]
   ]
  },
- "session": "2026-10-25"
+ "session": "2026-10-31"
 }

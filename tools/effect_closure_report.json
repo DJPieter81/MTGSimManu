@@ -6,14 +6,14 @@
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E4",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Emperor of Bones",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
     "step": "E4",
-    "strict": false
+    "strict": true
    }
   ],
   "executable": 0,
@@ -26,7 +26,7 @@
   "steps": {
    "E4": 21
   },
-  "strict": 0,
+  "strict": 21,
   "sub_kinds": {},
   "verb_sets": {
    "KEYWORD_ACTION": 21
@@ -613,21 +613,21 @@
     "strict": true
    }
   ],
-  "executable": 134,
+  "executable": 135,
   "family": "attack_trigger",
   "hosts": {
    "mainboard": 6,
-   "pool": 128,
+   "pool": 129,
    "sideboard": 0
   },
   "steps": {
    "E1": 26,
    "E2": 7,
    "E3": 40,
-   "E4": 28,
+   "E4": 29,
    "E5": 33
   },
-  "strict": 134,
+  "strict": 135,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 31,
@@ -821,7 +821,7 @@
     "strict": false
    }
   ],
-  "executable": 109,
+  "executable": 108,
   "family": "card_flow",
   "hosts": {
    "mainboard": 10,
@@ -1083,7 +1083,7 @@
     "strict": false
    }
   ],
-  "executable": 184,
+  "executable": 182,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1096,7 +1096,7 @@
    "E6": 9,
    "none": 89
   },
-  "strict": 202,
+  "strict": 214,
   "sub_kinds": {
    "DELAYED": 12,
    "REFLEXIVE": 2
@@ -1342,21 +1342,21 @@
     "strict": true
    }
   ],
-  "executable": 565,
+  "executable": 572,
   "family": "damage",
   "hosts": {
    "mainboard": 22,
-   "pool": 540,
+   "pool": 547,
    "sideboard": 3
   },
   "steps": {
    "E1": 154,
    "E2": 81,
    "E3": 175,
-   "E4": 127,
-   "E5": 28
+   "E4": 131,
+   "E5": 31
   },
-  "strict": 565,
+  "strict": 572,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 14,
@@ -1623,31 +1623,31 @@
     "strict": true
    }
   ],
-  "executable": 738,
+  "executable": 753,
   "family": "card_flow",
   "hosts": {
    "mainboard": 26,
-   "pool": 712,
+   "pool": 727,
    "sideboard": 0
   },
   "steps": {
    "E2": 109,
    "E3": 274,
-   "E4": 340,
+   "E4": 355,
    "E5": 10,
    "E6": 5
   },
-  "strict": 738,
+  "strict": 753,
   "sub_kinds": {},
   "verb_sets": {
    "CREATE_TOKEN": 269,
    "DRAW": 109,
    "EXILE": 55,
+   "KEYWORD_ACTION": 15,
    "MILL": 37,
    "MOVE": 34,
    "MOVE,SEARCH,SHUFFLE": 77,
    "PLAYER_COUNTERS": 55,
-   "PUT_COUNTERS": 13,
    "SACRIFICE": 14,
    "SURVEIL": 47
   }
@@ -2422,6 +2422,13 @@
  "step:dispatch": {
   "deck_hosts": [
    {
+    "card": "Abhorrent Oculus",
+    "host": "TRIGGERED:0:2",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Emperor of Bones",
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
@@ -2443,20 +2450,20 @@
     "strict": true
    }
   ],
-  "executable": 125,
+  "executable": 127,
   "family": "step_trigger",
   "hosts": {
-   "mainboard": 3,
-   "pool": 122,
+   "mainboard": 4,
+   "pool": 123,
    "sideboard": 0
   },
   "steps": {
    "E1": 24,
    "E2": 32,
    "E3": 29,
-   "E4": 40
+   "E4": 42
   },
-  "strict": 125,
+  "strict": 127,
   "sub_kinds": {},
   "verb_sets": {
    "CREATE_TOKEN": 30,
@@ -2506,12 +2513,12 @@
   "family": "pump_restrict",
   "hosts": {
    "mainboard": 4,
-   "pool": 389,
+   "pool": 388,
    "sideboard": 0
   },
   "steps": {
    "E4": 3,
-   "E5": 306,
+   "E5": 305,
    "none": 84
   },
   "strict": 180,

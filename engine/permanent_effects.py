@@ -922,6 +922,9 @@ class PermanentEffects:
         if Keyword.MODULAR in creature.keywords and creature.plus_counters > 0:
             _modular_counters = creature.plus_counters
 
+        # A face-down creature dies with the abilities it had face down,
+        # none (CR 603.10a, 708.9); the move makes it the card itself.
+        was_face_down = creature.face_down
         # Route zone mutation through the funnel: single owner of battlefield→graveyard
         # list mutation, zone attribute, and leaving-battlefield cleanup.
         game.zone_mgr.move_card(game, creature, "battlefield", "graveyard",
@@ -953,8 +956,9 @@ class PermanentEffects:
         # fallback pattern at card_effects.py:69); only fall back to
         # the generic oracle-derived path when no DIES-specific
         # handler is registered.
-        if not EFFECT_REGISTRY.execute(creature.template.name, EffectTiming.DIES,
-                                       game, creature, controller):
+        if not was_face_down and not EFFECT_REGISTRY.execute(
+                creature.template.name, EffectTiming.DIES, game, creature,
+                controller):
             from .oracle_resolver import resolve_dies_trigger
             resolve_dies_trigger(game, creature, controller)
 
