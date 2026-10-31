@@ -11976,13 +11976,24 @@ Unit OG's two Vivien, Arkbow Ranger tests caught this unit's first cut. That cut
 - **Chunks:** 5557 + 2822 passed at `b03cac4`, from a pinned worktree. In the first chunk-A run, three grammar CPU-ceiling tests failed (the L2–L4 pool pass took 8.06 s against a 6.8 s ceiling) while the site rebuild and a browser check ran beside it. Re-run alone on a quiet machine, those three files pass (7 passed).
 - **Rebuilt after a restart:** a container restart deleted this unit's first commit before it was pushed, with every pin above green. It was rebuilt from the session record. Its seeded digest is byte-identical to the one recorded and replayed then (`6d409c47`).
 
-**Measured:** by the `mf-post` arm (pre = `tu-post`), pending.
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = `tu-post` (`4765873`, code `884c585`), post = `mf-post` (`2d56013`, code `b03cac4`).
+- 42 of 600 cells changed, every one with Grixis Reanimator (21 in its row, 21 in its column), the deck that plays Abhorrent Oculus. It gains 147 matches net over its 960.
+- Grixis Reanimator 45.5 → 60.8 (+15.3), inside its [30, 70] band. Every other deck moves 1.2 pp or less, the other side of the same matches.
+- **Replayed, as the protocol asks when a step moves a deck more than 10 pp:**
+  - The largest cell, Azorius Blink vs Grixis Reanimator (60 → 20), replays exactly in both worktrees (Azorius Blink wins 12 → 4 of 20).
+  - In the first match that flips (seed 52500, Azorius Blink 2–0 → Grixis Reanimator 2–0), the play is rules-correct. Oculus manifests only in Azorius Blink's upkeeps. Teferi, Time Raveler bounces it, and Grixis recasts it by exiling six graveyard cards. Solitude exiles it. The face-down 2/2s attack and block as vanilla 2/2s, and they win the game.
+  - Accepted.
+- Bands: 7 decks out in both arms; total miss 50.6 → 51.0 pp.
+- 0 aborts; audit violations 0; findings 454 → 425. Abhorrent Oculus's census row is gone; the 4 registered rows left are the recorded gaps.
+- Every one of the 600 cells agrees with its shard's progress line.
+- Convergence is not met on this arm, since Grixis Reanimator moves more than 5 pp. The next arm is measured against this one.
 
 **Leads, not built:**
 - **Turning a face-down permanent face up** (CR 701.40b, 702.37e, 116.2b) is not modelled, so a manifested creature card is never turned up. The AI's manifest pick has no term for it either.
 - **Face-down observers:** "whenever a face-down permanent you control enters" (Threats Around Every Corner) and "whenever you turn a permanent face up" (Growing Dread).
 - **Manifest dread elsewhere:** in a dies trigger (Bashful Beastie, Innocuous Rat), with no dies carrier for it. "Manifest dread, then attach ~ to that creature" (4 Equipment), where the attach is unmodelled.
 - **Amass's "it becomes a [subtype] in addition to its other types"** for an Army of another subtype (noted in the amass owner).
+- **Display:** the AI's block-reasoning line still prints a face-down attacker by its empty name ("blocks  (2/2)"); route it through `shown_name`.
 - **Quantity evaluators** for cards in a graveyard by type and for cards in hand (Invade the City, Commence the Endgame, The Mouth of Sauron). Until they exist, those amass counts are refused.
 
 ## Census rows recorded as gaps: Guide of Souls, Phelia, Ocelot Pride, Vengevine (2026-10-31)
