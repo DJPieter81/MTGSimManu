@@ -1,14 +1,14 @@
 {
  "items": [
   {
-   "title": "The census rows still open",
+   "title": "State-based actions only at priority",
    "state": "next",
-   "body": "Registered cards whose triggers no carrier takes yet: an optional payment whose reflexive trigger is the effect (Guide of Souls), a delayed return at the next end step (Phelia), the city's blessing and token copies (Ocelot Pride), a cast trigger that works from the graveyard (Vengevine), manifest dread (Abhorrent Oculus). Each is sized first, built at ten or more pool cards, and otherwise recorded as a gap."
+   "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
   },
   {
-   "title": "State-based actions only at priority",
+   "title": "The census gaps and their leads",
    "state": "planned",
-   "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
+   "body": "Four registered cards keep their legacy paths, each recorded as a gap under ten pool cards: Guide of Souls (counters of two kinds in one instruction), Phelia (a condition on the returned card's entry), Ocelot Pride (token copies under the city's blessing) and Vengevine (the second creature spell cast this turn). Their leads are the next classes: a payment executor, delayed returns, token copies and a self-return from the graveyard."
   },
   {
    "title": "Dimir Midrange, root cause first",

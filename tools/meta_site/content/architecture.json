@@ -64,6 +64,10 @@
    "why": "One host, two carriers: the enter and the attack carrier both take it. The search finds what its description admits, the searcher chooses (the AI by its one land valuation), and the land-entry owner puts the lands onto the battlefield tapped."
   },
   {
+   "card": "Abhorrent Oculus",
+   "why": "A beginning-of-step trigger whose keyword action puts a card onto the battlefield face down: a 2/2 with no name, colour or text, which is the card itself again once it leaves (CR 701.62a, 708.2a, 708.9). The step carrier takes it now that the keyword executor performs manifest dread."
+  },
+  {
    "card": "Static Prison",
    "why": "An exile that lasts until the enchantment leaves (CR 610.3), energy given as player counters (CR 122.1), and a beginning-of-step sacrifice that its controller avoids by paying an \"unless\" cost (CR 118.12)."
   },

@@ -1,5 +1,5 @@
 {
- "commit": "74837c6",
+ "commit": "b03cac4",
  "cards": [
   {
    "card": "Primeval Titan",
@@ -137,6 +137,95 @@
     }
    ],
    "why": "One host, two carriers: the enter and the attack carrier both take it. The search finds what its description admits, the searcher chooses (the AI by its one land valuation), and the land-entry owner puts the lands onto the battlefield tapped."
+  },
+  {
+   "card": "Abhorrent Oculus",
+   "oracle": "As an additional cost to cast this spell, exile six cards from your graveyard.\nFlying\nAt the beginning of each opponent's upkeep, manifest dread. (Look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)",
+   "hosts": [
+    {
+     "kind": "ADDITIONAL_COST",
+     "index": 0,
+     "text": "as an additional cost to cast ~, exile six cards from your graveyard.",
+     "head": null,
+     "keywords": [],
+     "specs": [],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": []
+     }
+    },
+    {
+     "kind": "KEYWORD",
+     "index": 1,
+     "text": "flying",
+     "head": null,
+     "keywords": [
+      "flying"
+     ],
+     "specs": [],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": []
+     }
+    },
+    {
+     "kind": "TRIGGERED",
+     "index": 2,
+     "text": "at the beginning of each opponent's upkeep, manifest dread.",
+     "head": {
+      "raw": "at the beginning of each opponent's upkeep",
+      "events": [
+       "BEGINNING_OF"
+      ],
+      "typed": [
+       "step_event"
+      ],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "KEYWORD_ACTION",
+       "raw": "manifest dread",
+       "fields": [
+        [
+         "creates",
+         "keyword action: manifest dread"
+        ]
+       ],
+       "executor": {
+        "name": "execute_keyword_action",
+        "supports": true
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "step",
+        "family": "step_trigger"
+       }
+      ]
+     }
+    }
+   ],
+   "why": "A beginning-of-step trigger whose keyword action puts a card onto the battlefield face down: a 2/2 with no name, colour or text, which is the card itself again once it leaves (CR 701.62a, 708.2a, 708.9). The step carrier takes it now that the keyword executor performs manifest dread."
   },
   {
    "card": "Static Prison",
@@ -685,7 +774,7 @@
    "edict": 1,
    "removal": 4,
    "cast_trigger": 17,
-   "step_trigger": 14,
+   "step_trigger": 15,
    "attack_trigger": 17,
    "enter_exile": 17
   },

@@ -3,11 +3,11 @@
   {
    "status": "fixed",
    "label": "Built",
-   "title": "Rules text resolves from its typed form, carrier by carrier (2026-10-08 → 10-25)",
+   "title": "Rules text resolves from its typed form, carrier by carrier (2026-10-08 → 10-31)",
    "summary": "A hundred units moved card behaviour off name-keyed handlers and per-shape parsers onto the typed grammar. The first families were damage, card flow, tokens and counters, edicts and removal. Then came every trigger event: entering, attacking, casting, the beginning of a step, drawing and combat damage, followed by loyalty and activated abilities. Each unit is one Comprehensive Rules sentence, fixed for every card it covers, with a failing test first, an auditor invariant, a harness proof of every behaviour change and a same-seed best-of-three arm.",
    "details": [
-    "Name-keyed effect handlers: 86 on 2026-10-08, 70 on 2026-10-25. The registry may only shrink.",
-    "Latest measured arm (en-up-post, n=20 best-of-three over 25 decks): no deck moved more than 1.1 pp, and the auditor recorded 0 violations in 493 findings.",
+    "Name-keyed effect handlers: 86 on 2026-10-08, 70 on 2026-10-31. The registry may only shrink.",
+    "Latest measured arm (tu-post, n=20 best-of-three over 25 decks): no deck moved more than 4.1 pp (Amulet Titan, from Primeval Titan's search), and the auditor recorded 0 violations in 454 findings.",
     "Location: engine/effect_carrier.py, engine/effect_views.py, engine/effect_resolver.py, engine/effect_executors.py. Record: docs/design/rules-foundation-sweep-tracker.md"
    ]
   },

@@ -70715,7 +70715,7 @@
  ],
  "provenance": {
   "generated": "2026-10-04T07:19:33.840657",
-  "commit": "74837c6",
+  "commit": "b03cac4",
   "format": "bo3",
   "n_per_pair": 60,
   "total_matches": 18000,
@@ -71166,6 +71166,10 @@
      "why": "One host, two carriers: the enter and the attack carrier both take it. The search finds what its description admits, the searcher chooses (the AI by its one land valuation), and the land-entry owner puts the lands onto the battlefield tapped."
     },
     {
+     "card": "Abhorrent Oculus",
+     "why": "A beginning-of-step trigger whose keyword action puts a card onto the battlefield face down: a 2/2 with no name, colour or text, which is the card itself again once it leaves (CR 701.62a, 708.2a, 708.9). The step carrier takes it now that the keyword executor performs manifest dread."
+    },
+    {
      "card": "Static Prison",
      "why": "An exile that lasts until the enchantment leaves (CR 610.3), energy given as player counters (CR 122.1), and a beginning-of-step sacrifice that its controller avoids by paying an \"unless\" cost (CR 118.12)."
     },
@@ -71527,11 +71531,11 @@
     {
      "status": "fixed",
      "label": "Built",
-     "title": "Rules text resolves from its typed form, carrier by carrier (2026-10-08 → 10-25)",
+     "title": "Rules text resolves from its typed form, carrier by carrier (2026-10-08 → 10-31)",
      "summary": "A hundred units moved card behaviour off name-keyed handlers and per-shape parsers onto the typed grammar. The first families were damage, card flow, tokens and counters, edicts and removal. Then came every trigger event: entering, attacking, casting, the beginning of a step, drawing and combat damage, followed by loyalty and activated abilities. Each unit is one Comprehensive Rules sentence, fixed for every card it covers, with a failing test first, an auditor invariant, a harness proof of every behaviour change and a same-seed best-of-three arm.",
      "details": [
-      "Name-keyed effect handlers: 86 on 2026-10-08, 70 on 2026-10-25. The registry may only shrink.",
-      "Latest measured arm (en-up-post, n=20 best-of-three over 25 decks): no deck moved more than 1.1 pp, and the auditor recorded 0 violations in 493 findings.",
+      "Name-keyed effect handlers: 86 on 2026-10-08, 70 on 2026-10-31. The registry may only shrink.",
+      "Latest measured arm (tu-post, n=20 best-of-three over 25 decks): no deck moved more than 4.1 pp (Amulet Titan, from Primeval Titan's search), and the auditor recorded 0 violations in 454 findings.",
       "Location: engine/effect_carrier.py, engine/effect_views.py, engine/effect_resolver.py, engine/effect_executors.py. Record: docs/design/rules-foundation-sweep-tracker.md"
      ]
     },
@@ -71832,14 +71836,14 @@
   "roadmap": {
    "items": [
     {
-     "title": "The census rows still open",
+     "title": "State-based actions only at priority",
      "state": "next",
-     "body": "Registered cards whose triggers no carrier takes yet: an optional payment whose reflexive trigger is the effect (Guide of Souls), a delayed return at the next end step (Phelia), the city's blessing and token copies (Ocelot Pride), a cast trigger that works from the graveyard (Vengevine), manifest dread (Abhorrent Oculus). Each is sized first, built at ten or more pool cards, and otherwise recorded as a gap."
+     "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
     },
     {
-     "title": "State-based actions only at priority",
+     "title": "The census gaps and their leads",
      "state": "planned",
-     "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
+     "body": "Four registered cards keep their legacy paths, each recorded as a gap under ten pool cards: Guide of Souls (counters of two kinds in one instruction), Phelia (a condition on the returned card's entry), Ocelot Pride (token copies under the city's blessing) and Vengevine (the second creature spell cast this turn). Their leads are the next classes: a payment executor, delayed returns, token copies and a self-return from the graveyard."
     },
     {
      "title": "Dimir Midrange, root cause first",
@@ -71874,15 +71878,15 @@
     "body": "38 Legacy decks at about 2.5 ms per game with per-deck strategy functions. The two projects share the clock evaluator, Bayesian hand inference, the strategic logger and declarative gameplans."
    },
    "codebase": {
-    "engine_modules": 72,
-    "engine_lines": 69871,
+    "engine_modules": 73,
+    "engine_lines": 70059,
     "ai_modules": 88,
-    "ai_lines": 47614,
-    "test_files": 811
+    "ai_lines": 47624,
+    "test_files": 812
    }
   },
   "trace": {
-   "commit": "74837c6",
+   "commit": "b03cac4",
    "cards": [
     {
      "card": "Primeval Titan",
@@ -72020,6 +72024,95 @@
       }
      ],
      "why": "One host, two carriers: the enter and the attack carrier both take it. The search finds what its description admits, the searcher chooses (the AI by its one land valuation), and the land-entry owner puts the lands onto the battlefield tapped."
+    },
+    {
+     "card": "Abhorrent Oculus",
+     "oracle": "As an additional cost to cast this spell, exile six cards from your graveyard.\nFlying\nAt the beginning of each opponent's upkeep, manifest dread. (Look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)",
+     "hosts": [
+      {
+       "kind": "ADDITIONAL_COST",
+       "index": 0,
+       "text": "as an additional cost to cast ~, exile six cards from your graveyard.",
+       "head": null,
+       "keywords": [],
+       "specs": [],
+       "modes": [],
+       "choose": [
+        0,
+        0
+       ],
+       "route": {
+        "taken": [],
+        "carriers": []
+       }
+      },
+      {
+       "kind": "KEYWORD",
+       "index": 1,
+       "text": "flying",
+       "head": null,
+       "keywords": [
+        "flying"
+       ],
+       "specs": [],
+       "modes": [],
+       "choose": [
+        0,
+        0
+       ],
+       "route": {
+        "taken": [],
+        "carriers": []
+       }
+      },
+      {
+       "kind": "TRIGGERED",
+       "index": 2,
+       "text": "at the beginning of each opponent's upkeep, manifest dread.",
+       "head": {
+        "raw": "at the beginning of each opponent's upkeep",
+        "events": [
+         "BEGINNING_OF"
+        ],
+        "typed": [
+         "step_event"
+        ],
+        "intervening_if": false
+       },
+       "keywords": [],
+       "specs": [
+        {
+         "seq": 0,
+         "verb": "KEYWORD_ACTION",
+         "raw": "manifest dread",
+         "fields": [
+          [
+           "creates",
+           "keyword action: manifest dread"
+          ]
+         ],
+         "executor": {
+          "name": "execute_keyword_action",
+          "supports": true
+         }
+        }
+       ],
+       "modes": [],
+       "choose": [
+        0,
+        0
+       ],
+       "route": {
+        "taken": [
+         {
+          "carrier": "step",
+          "family": "step_trigger"
+         }
+        ]
+       }
+      }
+     ],
+     "why": "A beginning-of-step trigger whose keyword action puts a card onto the battlefield face down: a 2/2 with no name, colour or text, which is the card itself again once it leaves (CR 701.62a, 708.2a, 708.9). The step carrier takes it now that the keyword executor performs manifest dread."
     },
     {
      "card": "Static Prison",
@@ -72568,7 +72661,7 @@
      "edict": 1,
      "removal": 4,
      "cast_trigger": 17,
-     "step_trigger": 14,
+     "step_trigger": 15,
      "attack_trigger": 17,
      "enter_exile": 17
     },
@@ -72692,7 +72785,7 @@
    "proofs": {
     "harness": {
      "identical": 421,
-     "intended": 2146,
+     "intended": 2176,
      "boards": [
       "empty",
       "opponent_creatures",
@@ -72707,20 +72800,20 @@
      ]
     },
     "gate_parity": {
-     "pairs": 5654,
-     "new_path": 2567,
-     "legacy_fallback": 3087
+     "pairs": 5678,
+     "new_path": 2597,
+     "legacy_fallback": 3081
     },
     "equivalence": {
      "fields": 147,
      "agree": 2813963,
-     "unexplained": 18059,
+     "unexplained": 18058,
      "semantic_fix": 38
     },
     "census": {
      "cards": 22738,
      "specs": 44381,
-     "typed": 32865,
+     "typed": 32864,
      "typed_share": 0.7405,
      "deck_typed_share": 0.7759,
      "by_host_kind": {
@@ -72734,7 +72827,7 @@
       "REPLACEMENT": 0.0,
       "SPELL": 0.7473,
       "STATIC": 0.6313,
-      "TRIGGERED": 0.799,
+      "TRIGGERED": 0.7989,
       "UNKNOWN": 0.0
      },
      "deck_cards": 358
@@ -72837,6 +72930,7 @@
      "701.19/found_exiled",
      "701.19/search_found",
      "701.21a/edict",
+     "701.47a/amass",
      "701.8a/destroyed",
      "701.8a/destroyed_each",
      "701.9a/discarded",
@@ -72851,6 +72945,7 @@
      "704.5f/lethal_damage",
      "704.5f/zero_toughness",
      "707.10c/copy_targets",
+     "708.2a/face_down",
      "712.8/face_colours",
      "712.8a/front_face_off_battlefield",
      "723.1/cast_after_turn_end"
@@ -72898,7 +72993,7 @@
      {
       "chapter": "7",
       "name": "Additional rules",
-      "count": 27
+      "count": 29
      }
     ]
    },
@@ -73829,6 +73924,19 @@
      ],
      "date": "2026-10-25",
      "ai": false
+    },
+    {
+     "code": "MF",
+     "rule": "manifest dread puts one of its player's top two cards onto the battlefield face down as a 2/2 creature and the other into their graveyard",
+     "cr": [
+      "701.62a",
+      "701.40a",
+      "708.2a",
+      "708.9",
+      "603.10a"
+     ],
+     "date": "2026-10-31",
+     "ai": false
     }
    ],
    "choices": [
@@ -74027,24 +74135,24 @@
     "engine/effect_grammar/normalize.py": 819,
     "engine/effect_grammar/structure.py": 1324,
     "engine/effect_grammar/clauses.py": 989,
-    "engine/effect_grammar/patterns.py": 1098,
+    "engine/effect_grammar/patterns.py": 1104,
     "engine/effect_grammar/lexicon.py": 740,
     "engine/effect_grammar/link.py": 1621,
     "engine/effect_spec.py": 1441,
     "engine/effect_carrier.py": 1879,
-    "engine/effect_views.py": 3425,
+    "engine/effect_views.py": 3431,
     "engine/effect_resolver.py": 797,
-    "engine/effect_executors.py": 2989,
+    "engine/effect_executors.py": 3061,
     "engine/effect_conditions.py": 620,
     "engine/clause_resolver.py": 1050,
     "engine/card_effects.py": 2524,
     "engine/game_state.py": 1175,
     "engine/target_solver.py": 1583,
     "engine/damage.py": 347,
-    "engine/zone_manager.py": 726,
+    "engine/zone_manager.py": 771,
     "engine/land_manager.py": 614,
     "engine/continuous_effects.py": 1404,
-    "engine/combat_manager.py": 812,
+    "engine/combat_manager.py": 813,
     "engine/sba_manager.py": 256,
     "engine/turn_clock.py": 172,
     "engine/rules_query.py": 451,
@@ -74056,7 +74164,7 @@
     "ai/turn_planner.py": 1317,
     "ai/bhi.py": 830,
     "ai/gameplan.py": 1125,
-    "ai/resolution_choices.py": 241,
+    "ai/resolution_choices.py": 251,
     "ai/modal.py": 320,
     "ai/damage_targets.py": 264,
     "ai/permanent_threat.py": 411,
