@@ -11889,7 +11889,12 @@ Unit OG's two Vivien, Arkbow Ranger tests caught this unit's first cut. That cut
   - the closure pin names the two tutor-activation handlers;
   - the ramp finisher's attack test declares attackers and resolves the stack, instead of calling the retired trigger-time search.
 
-**Measured:** by the `tu-post` arm (pre = `en-up-post`), pending.
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = `en-up-post`, post = `tu-post` (`4765873`, code `884c585`).
+- 69 of 600 cells changed, every one with Amulet Titan (40) or Boros Energy (29), the decks whose name-keyed handlers this unit retired.
+- Amulet Titan 46.4 → 50.4 (+4.1): Primeval Titan's lands now come by the AI's land valuation, and its attack search is performed. Boros Energy 76.7 → 77.1 (+0.4). Every other deck within ±0.7.
+- Field bands unchanged: 7 decks out of band, total miss 50.3 → 50.6 pp. Amulet Titan is inside its band in both arms.
+- 0 aborts; audit violations 0; findings 493 → 454. Primeval Titan's census row is gone.
+- Every one of the 600 cells agrees with its shard's progress line (`AUDIT` totals 454 findings, 0 violations), copied from the job logs twice and identical both times.
 
 **Leads, not built:**
 - **The AI's land valuation has no term for a land that grants haste or deals damage.** The retired handler ranked those first. `CardTemplate.grants_haste_activation` now has no runtime reader.
@@ -11899,3 +11904,94 @@ Unit OG's two Vivien, Arkbow Ranger tests caught this unit's first cut. That cut
 - **A search another player makes** ("each opponent may search", "its controller searches") stays with unit LA's basic-land executor or refused.
 - **Spells an earlier legacy handler claims** stay on it (Nature's Rhythm, through the X-creature tutor).
 - **Elvish Reclaimer's activation** (Amulet Titan) is now performed when the AI's activation menu picks it. The `tu-post` arm measures what the AI makes of it.
+
+## Unit MF: manifest dread puts one of its player's top two cards onto the battlefield face down as a 2/2 creature and the other into their graveyard (CR 701.62a, 701.40a, 708.2a, 708.9, 603.10a; 2026-10-31)
+
+**Source:** the census row `603.2/step_trigger_unresolved` for Abhorrent Oculus (Grixis Reanimator x4): "At the beginning of each opponent's upkeep, manifest dread."
+
+**Rule:**
+- To manifest dread, a player looks at the top two cards of their library, manifests one of them and puts the other into their graveyard (CR 701.62a). With one card left, they manifest that card.
+- A manifested card is put onto the battlefield face down as a 2/2 creature (CR 701.40a). A face-down permanent has no characteristics but those: no name, mana cost, colour, subtypes, supertypes or text (CR 708.2a). It has none of its card's abilities: no keyword, no enter or dies trigger.
+- Once it leaves the battlefield it is the card itself again (CR 708.9). An ability that looks back at it as it left sees the face-down permanent, which had none (CR 603.10a).
+- To amass N, a player who controls no Army creature creates a 0/0 Army token, whatever N is, then puts N +1/+1 counters on an Army (CR 701.47a). An amass of 0 makes a token that dies to state-based actions.
+- A keyword action's count X is the X its card binds: its ", where X is" definition, else the {X} of its mana cost. An X nothing binds is refused (CR 107.3, 107.3a). This is unit WX's rule for token counts, now applied to keyword actions.
+
+**The defect:**
+- The grammar typed "manifest dread" as a keyword action, but no executor performed it and the engine had no face-down permanent. The step carrier refused Abhorrent Oculus, and the legacy step pass did nothing. Hauntwoods Shrieker's attack trigger was the same.
+- The keyword executor (family tokens and counters) performs amass, but only the trigger bodies took a keyword action. The step carrier, the enter carrier and the spell family took none. So 18 amass cards and 4 manifest dread cards did nothing on the typed path. The legacy spell path made a 0/0 "army Token" read from the reminder text, with no subtype and no counter.
+- A keyword action's X was typed as the cost's X however the text defined it (16 pool hosts). On a card with no {X}, X read 0, and the amass executor then performed nothing, where CR 701.47a still creates the Army.
+- `CardInstance.turned_face_up` was a field nothing read.
+
+**Class:**
+- 25 pool cards manifest dread. Registered: Abhorrent Oculus (Grixis Reanimator x4).
+- The face-down family (manifest, cloak, morph, disguise) prints on 142 pool cards. This unit builds the face-down permanent they share, but not turning one face up.
+- 25 pool keyword actions count X.
+
+**Steps:**
+- **Face-down permanents (`engine/face_down.py`):**
+  - One face-down template: a 2/2 creature with nothing else (CR 708.2a).
+  - The zone funnel puts a card onto the battlefield face down (`move_card(face_down=True)`). The card keeps its own template in `_front_template`, as a modal double-faced land played as its back face does, and shows the face-down one before it enters, so no ability of its card sees it enter.
+  - `CardInstance.face_down` replaces the dead `turned_face_up`. `_cleanup_leaving_battlefield` puts the card's template back as it leaves (CR 708.9).
+  - The dies observer performs no dies ability for a face-down creature (CR 603.10a). Other permanents' "whenever a creature dies" abilities still see it die.
+- **Executor:** `execute_keyword_action` performs manifest dread (`manifest_dread`, `_manifest_dread`).
+  - It looks at the top two cards; the controller chooses through `callbacks.choose_cards`.
+  - The pick goes through the zone funnel face down, with its enter observers; the other card goes into the graveyard.
+- **Amass:** an amass of 0 is performed (CR 701.47a).
+- **Carriers:**
+  - The step family takes KEYWORD_ACTION.
+  - The tokens-and-counters strict view admits a keyword action, so the enter carrier, the spell family and the mode family take one. The executor refuses every keyword action but amass and manifest dread, so `can_execute` does too.
+- **Grammar:** `_payload_x_bound` binds a keyword action's count as it binds a token's X/X (`_bound_x`).
+  - 16 counts now carry their definition, 7 keep the cost's {X}, and Incinerator of the Guilty's "collect evidence X", whose X nothing binds, is refused.
+  - A definition no evaluator owns (Invade the City's "the number of instant and sorcery cards in your graveyard") leaves the host on its legacy path rather than amassing 0.
+- **AI:** `ai.resolution_choices.pick_cards`. A face-down 2/2 is the same body whichever card it is, so a card that serves its player's plan from the graveyard (`serves_plan_from_graveyard`) goes there and another is manifested. Otherwise the engine's default pick.
+- **Display:** a face-down permanent's name is empty for every rule. Logs, combat lines and replay boards show it as "face-down 2/2" (`face_down.shown_name`), never as its card's name.
+- **Auditors:**
+  - `708.2a/face_down`, at the zone funnel: a permanent put onto the battlefield face down shows no name, is a 2/2, has only the creature type, and has no subtype, supertype, colour, mana value or text. Tested both ways, with the face-down template patched to the card's own.
+  - `701.47a/amass`, at the executor: once an amass resolves, its player controls an Army creature. Tested both ways, with the amass owner patched to make none.
+
+**Tests:**
+- 19 in `tests/test_manifest_dread_puts_one_card_face_down_and_the_other_into_the_graveyard.py`, of which 18 fail at `ed7525f` (the face-down auditor's silent case passes there vacuously). They cover:
+  - one card face down and the other in the graveyard; with one card left, that card;
+  - the face-down permanent: a nameless colourless 2/2, with no keyword and no enter ability;
+  - once it leaves, the card itself; dying face down, no dies ability;
+  - the AI's pick; the log and the combat lines show the status and never the card;
+  - the enter carrier and the spell family perform manifest dread and amass;
+  - an amass of 0 makes the Army, which then dies;
+  - the registered member resolves from its typed host;
+  - both auditors, both ways.
+- 4 in `tests/test_an_x_is_the_value_its_card_binds.py`, all failing at `ed7525f`: a keyword action's X is typed by its definition; an X nothing binds is refused; the defined count is amassed; a definition no evaluator owns is not run as 0.
+
+**Pins:**
+- **Digest:** 1 of 27 games changes, with the same winner: Creatures Toolbox vs Grixis Reanimator s56000. Replayed to the first divergence and accepted. In Creatures Toolbox's upkeep, Abhorrent Oculus manifests a card face down and puts Fatal Push into the graveyard, where before it did nothing. Grixis Reanimator wins on turn 7 instead of 8, with face-down 2/2s attacking beside Oculus. Re-recorded (`6d409c47`), with the combat lines showing them as "face-down 2/2".
+- **Anchor:** 29, unchanged.
+- **Harness:** 2597 pairs (421 proven identical, 2176 intended). The 30 new pairs are intended:
+  - 13 amass and 5 manifest dread triggers (enter, step, attack), whose legacy resolver did nothing;
+  - Manifest Dread and Break Down the Door's third mode, which the legacy spell path did nothing for;
+  - 8 amass spell pairs, where the legacy spell path made a 0/0 "army" token with no subtype and no counter, and Swarming of Moria's 2, which also lacked its Treasure.
+- **Gate parity:** 5654/2567/3087 → 5678/2597/3081.
+- **No-op fixture:** Abhorrent Oculus's step host now changes state. The no-op set falls 68 → 67 and the state-changing floor rises 207 → 208.
+- **Spec equivalence:** UNEXPLAINED 18059 → 18058 (`has_recurring_trigger`); the closure and gate parity are locked in.
+- **Census:** one more refusal (stage AMOUNT 680 → 681, Incinerator of the Guilty's "collect evidence X"); the TRIGGERED typed share is 79.90% → 79.89%. Locked in.
+- **Ratchets:** the zone-mutation baseline lists `engine/face_down.py` at 0; effect-parser (f) 3087 → 3081; every ratchet passes.
+- **Chunks:** 5557 + 2822 passed at `b03cac4`, from a pinned worktree. In the first chunk-A run, three grammar CPU-ceiling tests failed (the L2–L4 pool pass took 8.06 s against a 6.8 s ceiling) while the site rebuild and a browser check ran beside it. Re-run alone on a quiet machine, those three files pass (7 passed).
+- **Rebuilt after a restart:** a container restart deleted this unit's first commit before it was pushed, with every pin above green. It was rebuilt from the session record. Its seeded digest is byte-identical to the one recorded and replayed then (`6d409c47`).
+
+**Measured:** by the `mf-post` arm (pre = `tu-post`), pending.
+
+**Leads, not built:**
+- **Turning a face-down permanent face up** (CR 701.40b, 702.37e, 116.2b) is not modelled, so a manifested creature card is never turned up. The AI's manifest pick has no term for it either.
+- **Face-down observers:** "whenever a face-down permanent you control enters" (Threats Around Every Corner) and "whenever you turn a permanent face up" (Growing Dread).
+- **Manifest dread elsewhere:** in a dies trigger (Bashful Beastie, Innocuous Rat), with no dies carrier for it. "Manifest dread, then attach ~ to that creature" (4 Equipment), where the attach is unmodelled.
+- **Amass's "it becomes a [subtype] in addition to its other types"** for an Army of another subtype (noted in the amass owner).
+- **Quantity evaluators** for cards in a graveyard by type and for cards in hand (Invade the City, Commence the Endgame, The Mouth of Sauron). Until they exist, those amass counts are refused.
+
+## Census rows recorded as gaps: Guide of Souls, Phelia, Ocelot Pride, Vengevine (2026-10-31)
+
+Each registered census row still open after unit MF was sized by its blocking clause (`tools/class_census.py` over the pool's oracle text). Each is under the class-size rule, and no honest widening reaches 10 executable cards, so none is built. The rows stay in the audit census, by name.
+
+| Row | Registered | Blocking clause (CR) | Pool cards | Leads |
+|---|---|---|---|---|
+| `603.2/attack_trigger_unresolved`, Guide of Souls | Boros Energy x4, Azorius Blink x4 | "put two +1/+1 counters and a flying counter on target attacking creature", counters of two kinds in one instruction, on the reflexive trigger after "you may pay {E}{E}{E}" (CR 122.1, 603.12) | 7. The widened family is 10, of which 7 are typed and 2 unmodelled. | A PAY executor (298 pool cards print a triggered PAY; 8 hosts become executable with it alone); "it becomes an Angel in addition to its other types" on "it" (27 cards). |
+| `603.2/attack_trigger_unresolved`, Phelia, Exuberant Shepherd | Jeskai Blink x4, 4c Omnath x2, Azorius Blink x3 | "if it entered under your control", a condition on the returned object's entry (CR 603.7, 608.2c) | 2 (with Hallowed Respite) | The delayed "return at the beginning of the next end step" itself (CR 603.7). |
+| `603.2/step_trigger_unresolved`, Ocelot Pride | Boros Energy x4, Azorius Blink x4 | "for each token you control that entered the battlefield this turn, create a token that's a copy of it" under the city's blessing (CR 702.131, 707.2) | 1 | Token copies (CR 707.2) and the city's blessing (CR 702.131) as their own units. |
+| `603.2/cast_trigger_unresolved`, Vengevine | Hollow One x4 | "if it's the second creature spell you cast this turn", an ordinal of the spells cast (CR 603.4) | 1 | A self-return from the graveyard to the battlefield (112 pool cards print one). |
