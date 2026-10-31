@@ -1,28 +1,26 @@
-"""Modal attack trigger — loot vs graveyard-hate is the missing oracle pair.
+"""Modal attack trigger: a rummage, or exile up to one card from a graveyard.
 
 Some Modern cards print a modal attack trigger of the form:
 
-    Whenever this creature attacks, choose one —
-    • Discard a card. If you do, draw a card.
-    • Exile up to one target card from a graveyard.
+    Whenever this creature attacks, choose one --
+    * Discard a card. If you do, draw a card.
+    * Exile up to one target card from a graveyard.
 
-The engine's `EffectTiming.ATTACK` registry path must implement both
-modes when a card with that oracle is registered. The first card in
-this category is Territorial Kavu (Domain Zoo, 4-of mainboard), but
-the test names the **rule** (modal-attack-trigger choosing between
-loot and graveyard hate), not the card, so future cards with the
-same template are covered by the same suite.
+The attack carrier takes the modal host (unit MTR): its controller chooses
+the mode as the trigger is put on the stack (CR 603.3c), the AI by
+`ai.modal.select_trigger_modes`, and the executors perform it. The first
+card in this category is Territorial Kavu (Domain Zoo, 4-of mainboard); the
+tests name the rule, not the card. Its name-keyed attack handler, which
+chose the mode in the engine, is retired.
 
-Mode-selection rule under test:
+Mode-selection rule under test (the AI's):
 
-  - Loot mode fires when controller has at least one non-land card
-    in hand AND opponent has no high-CMC graveyard target. Equivalent
-    of "discard the worst card, draw one".
-  - Graveyard-exile mode fires when opponent's graveyard contains at
-    least one non-token card with CMC ≥ 1 AND the loot would be
-    hollow (controller's hand has no non-land discard candidate, or
-    the GY target is more valuable than a single card swap).
-  - Both modes dead → trigger is a no-op (logs only).
+  - The graveyard-exile mode is chosen when an opposing graveyard holds a
+    card worth denying its owner (`ai.graveyard_removal.worth_aiming_at`:
+    a keystone of their plan, or a card still a resource to them there).
+  - Otherwise the rummage is chosen: discard the card the discard owner
+    ranks least needed, then draw one.
+  - Both modes dead -> the trigger changes nothing.
 """
 from __future__ import annotations
 
@@ -94,14 +92,21 @@ def _add_to_graveyard(game, card_db, name, controller):
     return card
 
 
-def _fire_attack_trigger(game, attacker, controller):
-    """Fire the registered attack trigger directly via EFFECT_REGISTRY,
-    matching the call site in `engine/triggers.py`."""
-    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
-    EFFECT_REGISTRY.execute(
-        attacker.template.name, EffectTiming.ATTACK,
-        game, attacker, controller, targets=None, item=None,
-    )
+def _fire_attack_trigger(game, card_db, attacker, controller):
+    """Declare `attacker` as its controller's only attacker, the AI making
+    the trigger's choices, so the attack carrier puts the trigger on the
+    stack and resolves it."""
+    from engine.combat_manager import CombatManager
+    from engine.game_runner import AICallbacks
+    from engine.game_state import Phase
+    game.callbacks = AICallbacks()
+    # Domain: two basic land types, so the attacker survives as a 2/2
+    # once state-based actions are checked after the trigger resolves.
+    for land in ("Mountain", "Forest"):
+        _add_to_battlefield(game, card_db, land, controller)
+    game.active_player = game.priority_player = controller
+    game.current_phase = Phase.DECLARE_ATTACKERS
+    CombatManager().declare_attackers(game, [attacker], controller)
 
 
 # ──────────────────────────────────────────────────────────────────
@@ -139,7 +144,7 @@ class TestModalAttackTriggerLootMode:
         # not the chosen mode.
         assert game.players[1].graveyard == []
 
-        _fire_attack_trigger(game, attacker, 0)
+        _fire_attack_trigger(game, card_db, attacker, 0)
 
         # Loot mode invariant: net hand size unchanged (-1 +1), and
         # exactly one card moved into graveyard.
@@ -151,41 +156,28 @@ class TestModalAttackTriggerLootMode:
 
 
 class TestModalAttackTriggerGraveyardMode:
-    def test_graveyard_mode_fires_when_loot_is_hollow(self, card_db):
-        """Rule: when the controller has nothing useful to discard
-        (only lands in hand) AND opponent's graveyard has a non-trivial
-        target, the trigger picks the graveyard-exile mode.
+    def test_graveyard_mode_fires_for_a_card_worth_denying(self, card_db):
+        """Rule: when an opposing graveyard holds a card still a resource
+        to its owner there -- a flashback spell -- the trigger exiles it
+        rather than rummaging.
         """
         game = GameState(rng=random.Random(42))
 
         attacker = _add_to_battlefield(game, card_db, KAVU_NAME, 0)
+        _add_to_hand(game, card_db, "Lightning Bolt", 0)
+        _add_to_library(game, card_db, "Mountain", 0)
 
-        # Loot is hollow: empty hand on controller side.
-        # (No need to add lands; empty is a strict superset of "nothing
-        # useful to discard".)
-        assert game.players[0].hand == []
-
-        # Opponent's graveyard has a juicy target — Murktide Regent
-        # is a 5+ CMC reanimation/delve enabler; exiling it strips a
-        # known threat / fuel.
-        target_in_gy = _add_to_graveyard(game, card_db, "Murktide Regent", 1)
-        # And a couple of lower-value cards to verify selection.
+        target_in_gy = _add_to_graveyard(game, card_db, "Faithless Looting", 1)
         _add_to_graveyard(game, card_db, "Mountain", 1)
 
-        gy_size_before = len(game.players[1].graveyard)
+        hand_before = [c.name for c in game.players[0].hand]
 
-        _fire_attack_trigger(game, attacker, 0)
+        _fire_attack_trigger(game, card_db, attacker, 0)
 
-        # Graveyard mode invariant: at least one card was exiled from
-        # opponent's graveyard, and the high-CMC card is preferred.
-        assert len(game.players[1].graveyard) < gy_size_before, (
-            "graveyard mode missing: trigger must exile at least one card "
-            "from opponent's graveyard when loot mode is hollow")
-        assert target_in_gy not in game.players[1].graveyard, (
-            "graveyard mode chose the wrong target: high-CMC card should "
-            "be preferred over basic land")
         assert target_in_gy.zone == "exile", (
-            "graveyard mode missing: exiled card's zone must be 'exile'")
+            "graveyard mode missing: the card worth denying must be exiled")
+        assert [c.name for c in game.players[0].hand] == hand_before, (
+            "the rummage must not also be performed: the header says one")
 
 
 class TestModalAttackTriggerNoOp:
@@ -202,7 +194,7 @@ class TestModalAttackTriggerNoOp:
         assert game.players[1].graveyard == []
 
         # Must not raise.
-        _fire_attack_trigger(game, attacker, 0)
+        _fire_attack_trigger(game, card_db, attacker, 0)
 
         # No state changes that violate the dead-mode invariant.
         assert game.players[0].graveyard == []

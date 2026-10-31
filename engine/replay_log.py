@@ -332,11 +332,12 @@ def snapshot_board(game, pidx: int) -> Dict[str, Any]:
     """
     if game is None or pidx not in (0, 1):
         return {}
+    from .face_down import shown_name
     p = game.players[pidx]
     creatures = []
     for c in p.creatures:
         creatures.append({
-            "name": c.name,
+            "name": shown_name(c),
             "p": c.power if c.power is not None else 0,
             "t": c.toughness if c.toughness is not None else 0,
             "tapped": bool(getattr(c, "tapped", False)),

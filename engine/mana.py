@@ -61,6 +61,11 @@ class ManaCost:
     # their behaviour — the payment/feasibility solvers read `hybrid`
     # explicitly.
     hybrid: List[Tuple[str, ...]] = field(default_factory=list)
+    # {X} pips in this cost (CR 107.3a): X is chosen as the spell is cast
+    # and is 0 everywhere but on the stack (CR 202.3e), so it adds nothing
+    # to `cmc`. Read by the effect grammar: an {X} in the mana cost binds
+    # the X its text prints. Populated by `parse_mana_cost_mtgjson`.
+    x_count: int = 0
 
     @staticmethod
     def hybrid_pip_value(pip: Tuple[str, ...]) -> int:

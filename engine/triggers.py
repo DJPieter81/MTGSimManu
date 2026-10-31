@@ -179,54 +179,36 @@ class TriggerManager:
         # and every future card with the same oracle trigger shape.
         #
         # The dispatch is type-driven: it matches the entering permanent's card
-        # types against the required type in the watcher's oracle text — no
-        # card names are compared.  The "nontoken" qualifier gates on whether
-        # the entering card is a token (card.is_token).  Token creation
-        # delegates to game.create_token so TOKEN_DEFS / parse_token_spec
-        # determine the actual token shape.
+        # types against the type the watcher's typed field names
+        # (`CardTemplate.enter_watch_token`, parsed at load from the ONE
+        # ability holding the watch clause) — no card names, no runtime
+        # oracle parse.  The "nontoken" qualifier gates on whether the
+        # entering card is a token (card.is_token).  Token creation delegates
+        # to game.create_token, which builds the token from that ability.
         is_entering_token = getattr(card, 'is_token', False)
         # entering_types already computed above for enters_type_counter
-        _NUM_TO_INT = {"a": 1, "an": 1, "one": 1, "two": 2,
-                       "three": 3, "four": 4}
         for watcher in list(player.battlefield):
             if watcher.instance_id == card.instance_id:
                 continue  # self-watching handled separately above
-            w_oracle = (watcher.template.oracle_text or '').lower()
-            if 'whenever' not in w_oracle or 'enters' not in w_oracle:
+            spec = watcher.template.enter_watch_token
+            if not spec:
                 continue
-            if 'create' not in w_oracle or 'token' not in w_oracle:
-                continue
-            # Match "whenever a[n] [nontoken] <type> you control enters"
-            # _re is always bound at function scope (import re as _re, line ~80)
-            m_watcher = _re.search(
-                r'whenever an? (nontoken\s+)?(\w+) you control enters',
-                w_oracle,
-            )
-            if not m_watcher:
-                continue
-            nontoken_only = bool(m_watcher.group(1))
-            req_type = m_watcher.group(2)
             # Filter: nontoken condition
-            if nontoken_only and is_entering_token:
+            if spec['nontoken_only'] and is_entering_token:
                 continue
             # Filter: permanent type condition
+            req_type = spec['permanent_type']
             if req_type not in entering_types:
                 continue
-            # Count tokens to create
-            count_m = _re.search(
-                r'create (a|an|one|two|three|four|\d+)\b', w_oracle)
-            count = 1
-            if count_m:
-                tok = count_m.group(1)
-                count = int(tok) if tok.isdigit() else _NUM_TO_INT.get(tok, 1)
-            # Determine token type: prefer artifact creature tokens when the
-            # watcher oracle mentions "artifact token" so the token counts
-            # toward Improvise and metalcraft; otherwise default to creature.
-            token_type = "drone" if "artifact token" in w_oracle else "creature"
+            count = spec['count']
+            # Prefer artifact creature tokens when the ability names an
+            # "artifact token", so the token counts toward Improvise and
+            # metalcraft; otherwise default to creature.
+            token_type = "drone" if spec['artifact_token'] else "creature"
             # Fire trigger (respects Panharmonicon-style trigger doublers)
             for _ in range(trigger_multiplier):
                 game.create_token(controller, token_type, count=count,
-                                  source_oracle=watcher.template.oracle_text)
+                                  source_oracle=spec['ability'])
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{watcher.name} trigger → create {count} token(s) "
@@ -269,15 +251,21 @@ class TriggerManager:
                 f"{card.name} → draws {trig.count} card(s)")
 
     @staticmethod
-    def trigger_attack(game: "GameState", attacker: CardInstance, controller: int):
-        """Trigger attack abilities."""
+    def trigger_attack(game: "GameState", attacker: CardInstance, controller: int,
+                       taken: frozenset = frozenset()):
+        """Trigger attack abilities. An attacker whose card the attack
+        carrier takes (`taken`, `effect_carrier.attack_taken`, unit AK) has
+        its printed attack abilities performed there once every attacker is
+        declared (CR 508.1m); the passes here that read its printed text
+        skip it, and its keyword abilities (annihilator, mobilize) stay."""
+        printed = attacker.instance_id not in taken
         # Energy on attack: only fire when the "get {E}" clause is actually in
         # the attack sentence. Guide of Souls has "get {E}" in its "whenever
         # another creature enters" clause and a SEPARATE "whenever you attack,
         # you may PAY {E}{E}{E}" clause — the old loose regex matched the
         # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and attacker.template.has_attack_trigger:
+        if printed and '{e}' in oracle and attacker.template.has_attack_trigger:
             for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
                 # Find this sentence's bounds
                 sentence_start = max(
@@ -340,20 +328,16 @@ class TriggerManager:
                 game.log.append(f"T{game.display_turn}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
-        # Complex attack-trigger land search (oracle: "search...two land cards")
-        if attacker.template.has_attack_trigger and getattr(attacker.template, 'has_dual_land_search', False):
-            from .card_effects import _primeval_titan_search
-            _primeval_titan_search(game, controller)
-
         # Generic oracle-text-based attack triggers (handles ALL cards)
         # Phlage, Ocelot Pride, battle cry, etc. all resolved from oracle text
         from .oracle_resolver import resolve_attack_trigger
-        resolve_attack_trigger(game, attacker, controller)
+        resolve_attack_trigger(game, attacker, controller, printed=printed)
 
         # Card-specific ATTACK handlers (e.g. Phelia blink-on-attack)
-        EFFECT_REGISTRY.execute(
-            attacker.template.name, EffectTiming.ATTACK, game, attacker, controller
-        )
+        if printed:
+            EFFECT_REGISTRY.execute(
+                attacker.template.name, EffectTiming.ATTACK, game, attacker,
+                controller)
 
         # Generic attack triggers from ability objects
         for ability in attacker.template.abilities:

@@ -69,6 +69,10 @@ MODEL_PRICING_USD_PER_MTOKEN: dict[str, dict[str, float]] = {
     "anthropic:claude-opus-4-7":             {"in": 5.0,   "out": 25.0},
     "anthropic:claude-opus-4-7-1m":          {"in": 5.0,   "out": 25.0},
     "anthropic:claude-opus-4-8":             {"in": 5.0,   "out": 25.0},
+    # TypeSafe AI's Jev (System One decision model, early access
+    # 2026-09-15): $0.042 per million input tokens, output free — it
+    # returns typed answers, not generated text.
+    "typesafe:jev-latest":                   {"in": 0.042, "out": 0.0},
     # Free local / test models — kept at 0.0 so TestModel-driven
     # smoke runs don't pollute the cost totals.
     "test":                                  {"in": 0.0,   "out": 0.0},

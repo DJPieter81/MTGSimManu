@@ -124,10 +124,14 @@ class TestSuspendMechanic:
         game.current_phase = Phase.UPKEEP
         game.tick_suspend_upkeep(0)
 
-        # Counter decremented; last removed → spell resolves (cast for free)
-        # After resolution, Rift Bolt should be in graveyard, not exile.
+        # Counter decremented; last removed → the spell is cast for free and
+        # waits on the stack while players hold priority (CR 117.3c).
         assert inst.suspend_counters == 0
         assert inst.suspended is False
+        assert inst.zone == "stack"
+        while not game.stack.is_empty:
+            game.resolve_stack()
+        # After resolution, Rift Bolt should be in graveyard, not exile.
         assert inst.zone == "graveyard", (
             f"Rift Bolt should resolve to graveyard, zone={inst.zone}")
         # Deals 3 to a target. No explicit target was picked; the engine

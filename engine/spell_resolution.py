@@ -29,20 +29,189 @@ from typing import TYPE_CHECKING, List
 from .cards import CardType, Keyword, Supertype, Ability, AbilityType
 from .card_effects import EFFECT_REGISTRY, EffectTiming
 from .stack import StackItem, StackItemType
+from . import rules_query as _rules_query
 
 if TYPE_CHECKING:
     from .cards import CardInstance
     from .game_state import GameState
 
 
+# The colours of mana sunburst counts (CR 702.44a, 105.1): colourless mana
+# is no colour.
+_MANA_COLOURS = frozenset("WUBRG")
+
+
+def _enter_with_sunburst(game: "GameState", card: "CardInstance",
+                         item: StackItem) -> None:
+    """Sunburst (CR 702.44a): a permanent entering from the stack gets a
+    counter for each colour of mana spent to cast it -- +1/+1 counters if
+    it enters as a creature, charge counters otherwise. The colours are the
+    ones its cast recorded (`StackItem.colors_spent`)."""
+    colours = len(set(item.colors_spent or ()) & _MANA_COLOURS)
+    if card.effective_is_creature:
+        kind = "+1/+1"
+        if colours:
+            card.add_plus_counters(colours, game)
+    else:
+        kind = "charge"
+        if colours:
+            card.other_counters["charge"] = (
+                card.other_counters.get("charge", 0) + colours)
+    game.log.append(f"T{game.display_turn} P{item.controller+1}: "
+                    f"{card.name} enters with {colours} {kind} counter(s) "
+                    f"(sunburst)")
+
+
+def uncounterable_restated(game: "GameState", controller: int, card) -> bool:
+    """CR 101.2, restated for the auditors from the raw parsed effects, not
+    from `rules_query.spell_can_be_countered`: the spell's own STATIC stack
+    host flagged `uncounterable`, or a battlefield permanent's printed
+    static "<description> can't be countered" whose description (zone
+    stack; any of its types, none of its excluded types; "you control")
+    names the spell. Observes only."""
+    from .effect_model import DurationKind, Modification, ModKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    faces = getattr(getattr(card.template, "effects", None), "faces", None)
+    if faces and any(h.kind is HostKind.STATIC and h.from_zone == "stack"
+                     and "uncounterable" in h.flags for h in faces[0]):
+        return True
+    types = {ct.value for ct in card.template.card_types}
+    for p in game.players:
+        for perm in p.battlefield:
+            pf = getattr(getattr(perm.template, "effects", None), "faces", None)
+            if not pf:
+                continue
+            face = pf[1] if getattr(perm, "is_transformed", False) \
+                and len(pf) > 1 else pf[0]
+            for h in face:
+                if h.kind is not HostKind.STATIC or h.from_zone != "battlefield":
+                    continue
+                for s in iter_specs(h.specs):
+                    m = s.payload
+                    if s.verb is not Verb.CONTINUOUS or s.residue \
+                            or not isinstance(m, Modification) \
+                            or m.kind is not ModKind.PROHIBIT \
+                            or m.action != "be_countered" or s.condition \
+                            or s.subject is None:
+                        continue
+                    f = dict(getattr(s.subject, "filter", None) or ())
+                    if set(f) - {"zone", "types", "not_types", "controller"} \
+                            or f.get("zone") != "stack" \
+                            or f.get("controller") not in (None, "you") \
+                            or (s.duration is not None and s.duration.kind
+                                is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+                        continue
+                    if f.get("controller") == "you" and perm.controller != controller:
+                        continue
+                    if f.get("types") and not types & set(f["types"]):
+                        continue
+                    if f.get("not_types") and types & set(f["not_types"]):
+                        continue
+                    return True
+    return False
+
+
+def _audit_uncounterable(game: "GameState", stack_item, card) -> None:
+    """Rules audit (CR 101.2): a spell moved off the stack as countered is
+    one that can be countered (`uncounterable_restated`). Observes only."""
+    from .rules_audit import check, enabled
+    if not enabled():
+        return
+    check("101.2/uncounterable",
+          not uncounterable_restated(game, stack_item.controller, card),
+          f"{card.name} countered though it can't be countered", game=game)
+
+
+def _audit_sunburst(game: "GameState", card: "CardInstance",
+                    item: StackItem) -> None:
+    """CR 702.44a, restated from the stack item's raw record of the mana
+    spent: a sunburst permanent that entered from the stack carries at
+    least one counter of its kind (+1/+1 as a creature, charge otherwise)
+    per colour spent to cast it. Observation only."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    spent = {c for c in (item.colors_spent or ()) if c in "WUBRG"}
+    creature = CardType.CREATURE in card.effective_card_types
+    have = card.plus_counters if creature \
+        else card.other_counters.get("charge", 0)
+    _audit_check("702.44a/sunburst", have >= len(spent),
+                 f"{card.name} entered with {have} counter(s) for "
+                 f"{len(spent)} colour(s) spent", game=game)
+
+
 class ResolutionManager:
     """Stack resolution + permanent ETB + spell-effect dispatch."""
 
     @staticmethod
-    def _move_resolved_spell_off_stack(game: "GameState", card: "CardInstance"):
+    def _own_destination(card: "CardInstance"):
+        """Where an instant or sorcery's own text puts it as it resolves
+        (CR 608.2n): (zone, position, nth) of an unconditional move of the
+        spell itself in its spell host -- "shuffle ~ into its owner's
+        library", "put ~ on the bottom of its owner's library", "return ~
+        to its owner's hand", "exile ~". None when it prints none (a
+        conditional or optional move stays with its handler): the
+        graveyard."""
+        from .effect_spec import RefKind, Verb
+        effects = getattr(card.template, 'effects', None)
+        host = effects.spell(0) if effects is not None else None
+        if host is None:
+            return None
+        for s in host.specs:
+            if (s.condition is not None or s.optional or s.alternatives
+                    or s.ref is None or s.ref.kind is not RefKind.SELF):
+                continue
+            if s.verb is Verb.EXILE:
+                return ("exile", None, None)
+            d = s.dest
+            if s.verb is Verb.MOVE and d is not None and \
+                    d.zone in ("library", "hand"):
+                return (d.zone, d.position, d.nth)
+        return None
+
+    @staticmethod
+    def _audit_resolved_destination(game: "GameState",
+                                    card: "CardInstance") -> None:
+        """CR 608.2n, restated from the spell's raw typed specs: a resolved
+        instant or sorcery whose text moves it ends in that zone, and one
+        whose text does not ends in the graveyard. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        from .effect_spec import RefKind, Verb
+        host = card.template.effects.spell(0)
+        printed = "graveyard"
+        for s in (host.specs if host is not None else ()):
+            if s.condition is None and not s.optional \
+                    and s.ref is not None and s.ref.kind is RefKind.SELF:
+                if s.verb is Verb.EXILE:
+                    printed = "exile"
+                    break
+                if s.verb is Verb.MOVE and s.dest is not None \
+                        and s.dest.zone in ("library", "hand"):
+                    printed = s.dest.zone
+                    break
+        # A static "would be put into a graveyard, exile it instead" (CR
+        # 614.6) puts a graveyard-bound spell into exile: the zone funnel's
+        # one matcher says whether one covers it.
+        replaced = (printed == "graveyard" and card.zone == "exile"
+                    and game.zone_mgr.graveyard_exile_source(
+                        game, card, "stack") is not None)
+        rules_audit.check(
+            "608.2n/resolved_spell_destination",
+            card.zone == printed or replaced,
+            f"{card.name} resolved into {card.zone}, its text puts it in "
+            f"{printed}", game=game)
+
+    @staticmethod
+    def _move_resolved_spell_off_stack(game: "GameState", card: "CardInstance",
+                                       resolved: bool = False):
         """Move an instant/sorcery off the stack to its correct zone,
         applying the alternate-cast zone-replacement effects (CR
         702.33a flashback, CR 702.86 rebound, CR 707.10a spell copy).
+        `resolved`: the spell resolved, so its own instruction to move
+        itself applies (CR 608.2n); a countered or fizzled spell performs
+        no instruction and goes to the graveyard.
 
         These replacements are tied to HOW the spell was cast, not to
         how it left the stack — they apply identically whether the
@@ -60,6 +229,11 @@ class ResolutionManager:
                 game, card, "exile", cause="flashback resolution (CR 702.33a)"
             )
             card.has_flashback = False  # no longer has flashback
+            card.flashback_granted_turn = None
+        elif getattr(card, '_cast_with_harmonize', False):
+            # Harmonize: exile instead of anywhere else (CR 702.180a)
+            game.zone_mgr.move_card_from_stack(
+                game, card, "exile", cause="harmonize (CR 702.180a)")
         elif (hasattr(card, '_rebound_controller')
               and getattr(card, '_cast_from_zone', 'hand') == 'hand'):
             # Rebound: exile instead of graveyard, cast for free next
@@ -82,9 +256,59 @@ class ResolutionManager:
                 game, card, "expired_copy", cause="spell copy ceases (CR 707.10a)"
             )
         else:
-            game.zone_mgr.move_card_from_stack(
-                game, card, "graveyard", cause="resolution"
-            )
+            own = (ResolutionManager._own_destination(card)
+                   if resolved else None)
+            if own is None:
+                game.zone_mgr.move_card_from_stack(
+                    game, card, "graveyard", cause="resolution"
+                )
+            else:
+                zone, position, nth = own
+                game.zone_mgr.move_card_from_stack(
+                    game, card, zone,
+                    cause="its own instruction (CR 608.2n)")
+                if card.zone == "library":
+                    ResolutionManager._place_in_library(game, card,
+                                                        position, nth)
+            if resolved:
+                ResolutionManager._audit_resolved_destination(game, card)
+        ResolutionManager._audit_harmonized_exiled(game, card)
+
+    @staticmethod
+    def _audit_harmonized_exiled(game: "GameState", card: "CardInstance"):
+        """Rules audit (CR 702.180a), restated from the raw facts -- a card
+        with a printed harmonize cost, cast from a graveyard, with no
+        flashback or escape to have been cast with instead -- not from the
+        routing flag: as it leaves the stack it is exiled. Observes only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        t = card.template
+        from .cast_manager import printed_flashback
+        if (getattr(card, '_cast_from_zone', None) != "graveyard"
+                or t.harmonize_cost is None or t.escape_cost is not None
+                or printed_flashback(t)):
+            return
+        rules_audit.check(
+            "702.180a/exiled", card.zone == "exile",
+            f"{card.name}, cast from a graveyard by harmonize, left the stack "
+            f"for {card.zone}", game=game)
+
+    @staticmethod
+    def _place_in_library(game: "GameState", card: "CardInstance",
+                          position, nth) -> None:
+        """The library position a spell's own instruction names: shuffled
+        in, on the top or bottom, or Nth from the top (index 0 is the
+        top; the stack exit appended the card at the bottom)."""
+        library = game.players[card.owner].library
+        if position == "shuffle":
+            game.rng.shuffle(library)
+        elif position == "top":
+            library.remove(card)
+            library.insert(0, card)
+        elif position == "nth" and nth:
+            library.remove(card)
+            library.insert(min(len(library), int(nth) - 1), card)
 
     @staticmethod
     def _move_countered_stack_item(game: "GameState", stack_item: "StackItem",
@@ -101,6 +325,7 @@ class ResolutionManager:
         ability items is unchanged here — out of scope for this fix.)
         """
         if stack_item.item_type == StackItemType.SPELL:
+            _audit_uncounterable(game, stack_item, countered_card)
             ResolutionManager._move_resolved_spell_off_stack(game, countered_card)
         else:
             # Countered activated/triggered ability: the source is a permanent
@@ -113,26 +338,70 @@ class ResolutionManager:
     @staticmethod
     def _audit_resolution_targets(game: "GameState", item: "StackItem",
                                   card: "CardInstance") -> None:
-        """Rules audit (CR 608.2b): every chosen target still on the
-        battlefield is one this source may target (hexproof 702.11d,
-        protection 702.16b). Observes only; a no-op with the audit off."""
+        """Rules audit (CR 608.2b, 400.7, 702.11b, 702.16b): a spell or
+        ability that goes on to resolve still has a legal target -- a
+        player, or a card target still in the zone it was chosen in, the
+        same object there, and one the source may target. Restated from
+        the raw snapshot fields, not through the fizzle check. Observes
+        only; a no-op with the audit off."""
         from .rules_audit import enabled as _audit_on, check as _audit_check
         if not _audit_on() or not getattr(item, 'targets', None):
             return
         from .target_solver import can_be_targeted
-        for tid in item.targets:
-            if not isinstance(tid, int):
-                continue
+
+        def _legal(tid) -> bool:
+            if not isinstance(tid, int) or tid < 0:
+                return True
+            zone = item.target_zones.get(tid)
+            if zone is None:
+                return True
             tgt = game.get_card_by_id(tid)
-            if tgt is None or tgt.zone != "battlefield":
-                continue
-            _audit_check("608.2b/resolve_target",
-                         can_be_targeted(tgt, card, item.controller),
-                         f"{card.name} resolves against {tgt.name}, which it may not target",
-                         game=game)
+            if tgt is None or tgt.zone != zone:
+                return False
+            entry = item.target_entry_seqs.get(tid)
+            if entry is not None and tgt.battlefield_entry_seq != entry:
+                return False
+            return can_be_targeted(tgt, card, item.controller)
+
+        _audit_check("608.2b/resolve_target",
+                     any(_legal(tid) for tid in item.targets),
+                     f"{card.name} resolves with every target illegal",
+                     game=game)
+
+    @staticmethod
+    def _audit_priority_before_resolution(game: "GameState", item) -> None:
+        """Rules audit (CR 117.3b-c, 117.4), restated from the item's own
+        record and the bound seats: a spell resolves only after the player
+        who doesn't control it held priority while it was the top object.
+        A game with no AI bound to that seat asks no one and is not
+        restated. Observes only."""
+        from .rules_audit import check, enabled
+        from .stack import StackItemType
+        if not enabled() or item.item_type is not StackItemType.SPELL:
+            return
+        player_ai = getattr(game.callbacks, "player_ai", None)
+        if player_ai is None or player_ai(1 - item.controller) is None:
+            return
+        check("117.4/priority_before_resolution", item.priority_offered,
+              f"{item.source.name} resolved without P{2 - item.controller} "
+              f"holding priority over it", game=game)
 
     @staticmethod
     def resolve_stack(game: "GameState"):
+        """Resolve the top item on the stack (CR 608.2), then check
+        state-based actions: once it has resolved, a player would receive
+        priority (CR 117.3b, 704.3). While it resolves they wait (CR
+        704.4, `sba_manager.resolving`); a resolution within another one
+        leaves the check to the outermost."""
+        from .sba_manager import resolving
+        if game.stack.is_empty:
+            return
+        with resolving(game):
+            ResolutionManager._resolve_top(game)
+        game.check_state_based_actions()
+
+    @staticmethod
+    def _resolve_top(game: "GameState"):
         """Resolve the top item on the stack."""
         if game.stack.is_empty:
             return
@@ -140,6 +409,7 @@ class ResolutionManager:
         item = game.stack.pop()
         card = item.source
         template = card.template
+        ResolutionManager._audit_priority_before_resolution(game, item)
 
         # CR 702.21a — Ward: "Whenever this permanent becomes the
         # target of a spell or ability an opponent controls, counter
@@ -170,32 +440,23 @@ class ResolutionManager:
             t in _pt_ward for t in (CardType.CREATURE, CardType.ARTIFACT,
                                     CardType.ENCHANTMENT, CardType.PLANESWALKER))
         _is_aura_ward = getattr(card.template, 'aura_enchant_restriction', None) is not None
+        # A spell that can't be countered is not countered by ward either
+        # (CR 101.2, 702.21a): its controller pays nothing.
         _ward_can_counter = not (item.item_type == StackItemType.SPELL
-                                 and _is_permanent_spell_ward and not _is_aura_ward)
-        for _tid in (list(item.targets) if _ward_can_counter else []):
-            if not isinstance(_tid, int) or _tid < 0:
-                continue  # face/player target — permanents only have ward
-            _target = game.get_card_by_id(_tid)
-            if _target is None or _target.zone != "battlefield":
-                continue
-            _ward_amount = getattr(_target.template, 'ward_cost', 0) or 0
-            if _ward_amount <= 0:
-                continue
-            if _target.controller == item.controller:
-                continue  # CR 702.21a: only vs an OPPONENT's spell/ability
-            from .optional_costs import offer_ward_tax
-            _paid = offer_ward_tax(game, _target, card, item.controller)
-            if _paid:
-                game.log.append(
-                    f"T{game.display_turn}: {card.name}'s controller "
-                    f"pays {_ward_amount} — not countered by "
-                    f"{_target.name}'s ward")
-            else:
-                ResolutionManager._move_countered_stack_item(game, item, card)
-                game.log.append(
-                    f"T{game.display_turn}: {card.name} is countered "
-                    f"by {_target.name}'s ward")
-                return
+                                 and _is_permanent_spell_ward and not _is_aura_ward) \
+            and _rules_query.can_be_countered(game, item)
+        from . import optional_costs as _oc
+        _survives, _ward_paid_ids = (
+            _oc.ward_gate(game, card, item.controller, item.targets)
+            if _ward_can_counter else (True, set()))
+        if not _survives:
+            ResolutionManager._move_countered_stack_item(game, item, card)
+            return
+        # Rules audit (CR 702.21a): a spell or ability still resolving
+        # paid the ward cost of every opposing permanent it targets.
+        if _ward_can_counter:
+            ResolutionManager._audit_ward_paid(
+                game, card, item.controller, item.targets, _ward_paid_ids)
 
         # CR 608.2b: re-check target legality on resolution. A spell
         # whose targets are ALL illegal doesn't resolve — it fizzles
@@ -210,20 +471,26 @@ class ResolutionManager:
         # its target (recorded on this item and exiled by the trigger)
         # must not fizzle the permanent. Only instants, sorceries, and
         # Auras fizzle on all-illegal targets.
-        # Rules audit (CR 608.2b / 702.11d / 702.16b): a target still on
-        # the battlefield must be one this source may target. A target
-        # that left the battlefield is a legitimate fizzle; a hexproof or
-        # protected one still sitting there was chosen illegally.
-        ResolutionManager._audit_resolution_targets(game, item, card)
+        # Activated and triggered abilities check their targets exactly as
+        # spells do (CR 608.2b): every target illegal, the ability does
+        # not resolve -- it is removed from the stack with no effect.
         _pt = getattr(card.template, 'card_types', None) or []
         _is_permanent_spell = any(
             t in _pt for t in (CardType.CREATURE, CardType.ARTIFACT,
                                CardType.ENCHANTMENT, CardType.PLANESWALKER))
         _is_aura = getattr(card.template, 'aura_enchant_restriction', None) is not None
         _fizzle_eligible = not (_is_permanent_spell and not _is_aura)
-        if (item.item_type == StackItemType.SPELL and item.targets
-                and _fizzle_eligible
-                and ResolutionManager._spell_fizzles(game, item)):
+        _is_ability = item.item_type in (StackItemType.ACTIVATED_ABILITY,
+                                         StackItemType.TRIGGERED_ABILITY)
+        _targets_checked = bool(item.targets) and (
+            _is_ability or (item.item_type == StackItemType.SPELL
+                            and _fizzle_eligible))
+        if _targets_checked and ResolutionManager._spell_fizzles(game, item):
+            if _is_ability:
+                game.log.append(
+                    f"T{game.display_turn}: {card.name}'s ability fizzles "
+                    f"(all targets illegal, CR 608.2b)")
+                return
             game.log.append(
                 f"T{game.display_turn}: {card.name} fizzles "
                 f"(all targets illegal, CR 608.2b)")
@@ -235,6 +502,10 @@ class ResolutionManager:
             # stay in sync and route through the zone funnel.
             ResolutionManager._move_resolved_spell_off_stack(game, card)
             return
+        # Rules audit (CR 608.2b / 400.7 / 702.11b / 702.16b): what goes on
+        # to resolve still has a legal target.
+        if _targets_checked:
+            ResolutionManager._audit_resolution_targets(game, item, card)
 
         # Only log "Resolve" for spells — not for triggered/activated abilities
         if item.item_type == StackItemType.SPELL:
@@ -259,24 +530,17 @@ class ResolutionManager:
                 # Storm: copy the spell for each prior spell this turn
                 if Keyword.STORM in template.keywords:
                     game._handle_storm(item)
-                # Cascade: exile from top until lower CMC, cast free
-                if Keyword.CASCADE in template.keywords:
-                    game._handle_cascade(item)
-                ResolutionManager._move_resolved_spell_off_stack(game, card)
+                # Cascade is a cast trigger: it went on the stack above this
+                # spell as it was cast and has resolved already (CR 702.85a;
+                # CastManager.put_cast_triggers).
+                ResolutionManager._move_resolved_spell_off_stack(
+                    game, card, resolved=True)
             else:
                 # Permanent enters battlefield
                 card.controller = item.controller
-                # Cascade is a cast trigger (CR 702.85a): the trigger and
-                # the free spell it casts resolve while the cascade SOURCE
-                # is still on the stack — so a cascaded mass-effect (board
-                # wipe, mass reanimation, mass bounce) must not see or
-                # affect the source. Resolve cascade BEFORE the source
-                # physically enters; the source enters last. Invisible for
-                # instant/sorcery sources (they hit the graveyard), so only
-                # a permanent source — entered first, then swept by its own
-                # cascaded spell — exposed the bug.
-                if Keyword.CASCADE in template.keywords:
-                    game._handle_cascade(item)
+                # Cascade is a cast trigger (CR 702.85a): it and the spell it
+                # cast went on the stack above this one and resolved first,
+                # so a cascaded mass effect never saw this permanent.
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
                 # Place counters for X-cost permanents. "Enters with X
@@ -284,9 +548,6 @@ class ResolutionManager:
                 # 614.1c), so the engine places them here for every such
                 # permanent; a dedicated ETB handler runs afterwards and may
                 # READ or SPEND the counters but never places them again.
-                # The one exception is the charge-counter branch: a
-                # sunburst permanent's charge count is the colours spent,
-                # not X, and its handler computes that itself.
                 if item.x_value > 0 and template.x_cost_data:
                     has_dedicated_etb = EFFECT_REGISTRY.has_handler(
                         template.name, EffectTiming.ETB)
@@ -309,6 +570,9 @@ class ResolutionManager:
                                      f"{card.name} cast for X={item.x_value} carries "
                                      f"{card.plus_counters} +1/+1 counter(s) on entry",
                                      game=game)
+                if Keyword.SUNBURST in template.keywords:
+                    _enter_with_sunburst(game, card, item)
+                    _audit_sunburst(game, card, item)
                 game._handle_permanent_etb(card, item.controller, item=item)
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):
@@ -339,8 +603,9 @@ class ResolutionManager:
 
     @staticmethod
     def _spell_fizzles(game: "GameState", item: StackItem) -> bool:
-        """CR 608.2b — true when EVERY target chosen at cast time is
-        now illegal, in which case the spell doesn't resolve.
+        """CR 608.2b — true when EVERY target chosen for the spell or
+        activated ability is now illegal, in which case it doesn't
+        resolve.
 
         Target-entry shapes handled (see ai/ev_player._choose_targets
         and ai/response.py for the producers):
@@ -349,33 +614,65 @@ class ResolutionManager:
           remain legal targets while the game is live — the game-over
           path never reaches resolution — so these always count as
           valid.
-        * positive int: instance_id of a card. Legal iff the card
-          still exists AND still occupies the zone it was in when
-          targeted (cast-time snapshot in ``StackItem.target_zones``
-          — battlefield for removal, stack for counterspells,
-          graveyard for reanimation). Changing zone makes the target
-          illegal (CR 608.2b).
+        * positive int: instance_id of a card. Legal iff it is still
+          the object that was targeted and may still be targeted
+          (`_card_target_still_legal`, against the snapshot taken when
+          it was chosen: ``StackItem.target_zones`` /
+          ``target_entry_seqs``).
         * anything else (direct object ref, player index without a
           snapshot, items built outside CastManager e.g. in tests):
           cannot be proven illegal — counts as valid, so the spell
           resolves. Fizzling is only ever asserted on positive
-          evidence that a target left its zone.
+          evidence.
         """
         for tid in item.targets:
             if not isinstance(tid, int) or tid < 0:
                 return False  # player target / object ref — valid
-            cast_zone = item.target_zones.get(tid)
-            if cast_zone is None:
-                return False  # no snapshot — can't prove illegal
-            target = game.get_card_by_id(tid)
-            if target is not None and target.zone == cast_zone:
-                # CR 702.16b: a target that is (or became) protected
-                # from the spell's colour is illegal on resolution too.
-                from .target_solver import _blocked_by_protection
-                if _blocked_by_protection(target, item.source):
-                    continue
-                return False  # still where it was targeted — valid
-        return True  # every target verifiably left its cast-time zone
+            if ResolutionManager._card_target_still_legal(game, item, tid):
+                return False
+        return True  # every target verifiably illegal now
+
+    @staticmethod
+    def _card_target_still_legal(game: "GameState", item: StackItem,
+                                 tid: int) -> bool:
+        """CR 608.2b for one card target: it is still the object that was
+        targeted -- in its snapshot zone and, on the battlefield, the same
+        entry (CR 400.7: a permanent that left and returned is a new
+        object) -- and the source may still target it (hexproof 702.11b,
+        protection 702.16b; `target_solver.can_be_targeted`). A target with
+        no snapshot cannot be proven illegal and counts as legal."""
+        cast_zone = item.target_zones.get(tid)
+        if cast_zone is None:
+            return True  # no snapshot — can't prove illegal
+        target = game.get_card_by_id(tid)
+        if target is None or target.zone != cast_zone:
+            return False
+        entry = item.target_entry_seqs.get(tid)
+        if entry is not None and target.battlefield_entry_seq != entry:
+            return False
+        from .target_solver import can_be_targeted
+        return can_be_targeted(target, item.source, item.controller)
+
+    @staticmethod
+    def _audit_ward_paid(game, source, controller, target_ids, paid_ids,
+                         countered: bool = False) -> None:
+        """Rules audit (CR 702.21a): a spell or ability that goes on to
+        resolve paid the ward of every opposing permanent it targets.
+        Restated from the raw typed fields (both cost parts), not through
+        the gate's own predicate."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or countered:
+            return
+        for _tid in list(target_ids or ()):
+            _t = (game.get_card_by_id(_tid)
+                  if isinstance(_tid, int) and _tid >= 0 else None)
+            if _t is None or _t.zone != "battlefield" or _t.controller == controller:
+                continue
+            _owes = ((getattr(_t.template, 'ward_cost', 0) or 0) > 0
+                     or (getattr(_t.template, 'ward_life_cost', 0) or 0) > 0)
+            _audit_check("702.21a/ward_paid", not _owes or _tid in paid_ids,
+                         f"{source.name} resolves through {_t.name}'s unpaid ward",
+                         game=game)
 
     @staticmethod
     def _handle_permanent_etb(game: "GameState", card: CardInstance, controller: int,
@@ -397,10 +694,6 @@ class ResolutionManager:
         if getattr(template, 'aura_enchant_restriction', None):
             from .permanent_effects import PermanentEffects
             PermanentEffects.attach_aura(game, card, controller)
-
-        # Planeswalker: set loyalty counters from template (oracle-derived)
-        if CardType.PLANESWALKER in template.card_types:
-            card.loyalty_counters = template.loyalty or 0
 
         # Modular (CR 702.43): enters with N +1/+1 counters.
         # Keyed on Keyword.MODULAR in template.keywords (populated at DB load via
@@ -447,12 +740,10 @@ class ResolutionManager:
                 game.continuous_effects.register(effect)
             game.continuous_effects.recalculate(game)
 
-        # Energy production on ETB (from oracle-derived template property)
-        if template.energy_production > 0:
-            game.players[controller].add_energy(template.energy_production)
-            game.log.append(f"T{game.display_turn} P{controller+1}: "
-                            f"{template.name} produces {template.energy_production} energy "
-                            f"(total: {game.players[controller].energy_counters})")
+        # Energy a permanent's text gives is given by the ability that
+        # prints it, as that ability resolves (unit EN, CR 122.1): an enter
+        # trigger's through the enter carrier, never as the permanent enters
+        # whatever ability printed it.
 
         # Torpor Orb: suppress creature ETB abilities
         torpor_active = any(
@@ -520,11 +811,26 @@ class ResolutionManager:
             if not card.is_transformed:
                 has_specific_handler = EFFECT_REGISTRY.has_handler(
                     template.name, EffectTiming.ETB)
-                EFFECT_REGISTRY.execute(
-                    template.name, EffectTiming.ETB, game, card, controller,
-                    targets=(item.targets if item else None),
-                    item=item,
-                )
+                # CR 702.21a: the targeted ETB trigger is an ability an
+                # opponent's ward can counter. Its targets ride on this
+                # (permanent) spell's item, which the spell-level ward
+                # check skips — so the trigger meets ward here.
+                _etb_targets = (item.targets if item else None) or []
+                _etb_survives, _etb_paid = True, set()
+                if has_specific_handler and _etb_targets:
+                    from . import optional_costs as _oc
+                    _etb_survives, _etb_paid = _oc.ward_gate(
+                        game, card, controller, _etb_targets,
+                        what=f"{template.name}'s ETB ability")
+                    ResolutionManager._audit_ward_paid(
+                        game, card, controller, _etb_targets, _etb_paid,
+                        countered=not _etb_survives)
+                if _etb_survives:
+                    EFFECT_REGISTRY.execute(
+                        template.name, EffectTiming.ETB, game, card, controller,
+                        targets=(item.targets if item else None),
+                        item=item,
+                    )
 
                 # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
                 if not has_specific_handler:
@@ -584,10 +890,13 @@ class ResolutionManager:
         # like legal targets. The old per-player exile/return/fire-ETB loop
         # fired P0's ETBs while P1's originals were still on the battlefield.
 
-        # Phase 1: exile every creature on both battlefields.
+        # Phase 1: exile every creature on both battlefields -- a creature on
+        # the face it shows (CR 712.8e): a back face that is no creature
+        # stays.
         for p_idx in range(2):
             player = game.players[p_idx]
-            for creature in [c for c in player.battlefield if c.template.is_creature]:
+            for creature in [c for c in player.battlefield
+                             if c.effective_is_creature]:
                 game.zone_mgr.move_card(
                     game, creature, "battlefield", "exile", cause="living end")
 
@@ -664,6 +973,27 @@ class ResolutionManager:
 
 
     @staticmethod
+    def _audit_ritual_from_rules_text(game: "GameState", card) -> None:
+        """CR 207.2, restated from the spell's typed instructions (the
+        effect grammar types rules text, never reminder text): a spell that
+        resolves as a ritual has an instruction that adds mana -- typed, or
+        one the grammar left untyped whose own text adds it. Observation
+        only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        from .effect_spec import Verb, iter_specs
+        adds = any(s.verb is Verb.ADD_MANA
+                   or (s.verb is Verb.UNMODELLED
+                       and re.search(r"\badd\b", s.raw or ""))
+                   for h in card.template.effects.walk(include_sub=False)
+                   for s in iter_specs(h.specs))
+        rules_audit.check(
+            "207.2/ritual_from_rules_text", adds,
+            f"{card.name} resolved as a ritual its rules text does not print",
+            game=game)
+
+    @staticmethod
     def _execute_spell_effects(game: "GameState", item: StackItem):
         """Execute the effects of an instant/sorcery spell."""
         card = item.source
@@ -674,6 +1004,7 @@ class ResolutionManager:
         # Rituals: add mana to pool (oracle-derived from template)
         ritual_data = card.template.ritual_mana
         if ritual_data:
+            ResolutionManager._audit_ritual_from_rules_text(game, card)
             color, amount = ritual_data
             if color == "any":
                 game.players[controller].mana_pool.add("R", 2)
@@ -698,43 +1029,29 @@ class ResolutionManager:
                                     f"  Spliced {spliced_tmpl.name} adds {sa} {sc} mana")
             return
 
-        # ── Modal "Choose one/two —" spells ──
-        # Resolve exactly the chosen mode(s), not every mode. Scope:
-        # multi-mode, non-counterspell instants/sorceries with no
-        # counter mode (the counterspell path and single-parsed-mode
-        # charms already resolve their one mode correctly and are left
-        # untouched). Each chosen mode resolves off its REAL clause via
-        # resolve_spell_from_oracle(oracle_override=...), so a mode's
-        # type / mana-value restriction survives (the synthesized
-        # per-mode ability description drops it).
-        tmpl = card.template
-        modes = getattr(tmpl, 'modes', None) or []
-        # Gate on the PARSED MODES: a modal spell with more printed modes
-        # than it may choose resolves exactly the chosen ones, each off its
-        # own clause with its own typed removal bound (`mode['removal']`,
-        # parsed once at DB load).  This used to gate on the number of
-        # synthesized abilities instead, which excluded any modal card that
-        # synthesized a single ability (Kozilek's Command, the charms) —
-        # those then resolved ONE mode through the legacy path with the
-        # mode's "mana value X or less" bound dropped (Command at X=0 exiled
-        # a mana-value-1 creature) and the second chosen mode never
-        # resolved at all (2026-09-08).
-        if (getattr(tmpl, 'is_modal', False)
-                and len(modes) > getattr(tmpl, 'modal_choose_count', 1)
-                and not getattr(tmpl, 'is_counterspell', False)
-                and (tmpl.is_instant or tmpl.is_sorcery)
-                and not any('counter target' in m.get('text', '').lower()
-                            for m in modes)):
-            from ai.modal import select_modal_modes
-            from .oracle_resolver import resolve_spell_from_oracle
-            chosen = select_modal_modes(game, card, controller, item.targets,
-                                        x_value=item.x_value)
-            for idx in chosen:
-                clause = modes[idx].get('text', '')
-                resolve_spell_from_oracle(game, card, controller, item.targets,
-                                          x_value=item.x_value,
-                                          oracle_override=clause,
-                                          removal_data=modes[idx].get('removal'))
+        # ── Modal spells (CR 700.2) ──
+        # A spell whose controller chose its modes performs exactly those,
+        # in printed order, each off its own clause with its own typed
+        # shapes (`CardTemplate.modes[i]`; the synthesized per-mode ability
+        # description drops a mode's type and mana-value bounds). The modes
+        # were chosen as the spell was cast (CR 601.2b, `modal_spell.
+        # choose_modes`); an item no cast recorded a choice for is chosen
+        # for now, by the same owner.
+        from . import modal_spell
+        if modal_spell.in_scope(card.template):
+            chosen = item.modes_chosen
+            if chosen is None:
+                chosen = modal_spell.choose_modes(
+                    game, card, controller, item.targets, item.x_value)
+            players = item.mode_players
+            if players is None:
+                players = modal_spell.choose_mode_players(
+                    game, card, controller, chosen, item.x_value)
+            modal_spell.audit_chosen(game, card, chosen, item.targets,
+                                     players)
+            modal_spell.perform_chosen(game, card, controller, item.targets,
+                                       chosen, x_value=item.x_value,
+                                       mode_players=players)
             return
 
         # Dispatch to card effect registry
@@ -917,28 +1234,33 @@ class ResolutionManager:
                 # structured `counter_target_kind` field, for the same
                 # substring-collision reason as above.
                 target_kind = getattr(card.template, 'counter_target_kind', '')
-                target_template = None
-                target_stack_index = None
+                # "Counter target spell": a spell item, never a triggered
+                # ability that shares its card (a cast trigger above it).
+                target_item = None
                 if item.targets:
                     for tid in item.targets:
-                        for i, si in enumerate(game.stack.items):
-                            if si.source.instance_id == tid:
-                                target_template = si.source.template
-                                target_stack_index = i
-                                break
-                        if target_template is not None:
+                        target_item = game.stack.spell_item(tid)
+                        if target_item is not None:
                             break
-                elif not game.stack.is_empty:
-                    target_template = game.stack.top.source.template
-                    target_stack_index = len(game.stack.items) - 1
+                else:
+                    target_item = game.stack.top_spell
+                target_template = (target_item.source.template
+                                   if target_item is not None else None)
 
                 # Noncreature-only counters can't hit creatures
                 if target_template and target_kind == 'noncreature_spell' and target_template.is_creature:
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (can't counter creature)")
                 elif target_template and target_kind == 'instant_or_sorcery_spell' and not (target_template.is_instant or target_template.is_sorcery):
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (wrong target type)")
-                elif target_stack_index is not None:
-                    stack_item = game.stack.items[target_stack_index]
+                elif target_item is not None and \
+                        not _rules_query.can_be_countered(game, target_item):
+                    # CR 101.2: "can't be countered" beats the counter; a
+                    # tax is not even offered.
+                    game.log.append(
+                        f"T{game.display_turn}: {target_item.source.name} "
+                        f"can't be countered")
+                elif target_item is not None:
+                    stack_item = target_item
                     countered_card = stack_item.source
                     # CR 601.2b: the tax is 0 (a HARD counter) when the
                     # counter's printed upgrade condition holds for its
@@ -973,7 +1295,7 @@ class ResolutionManager:
                             f"controller pays {tax_amount} — not countered "
                             f"by {card.name}")
                     else:
-                        game.stack.items.pop(target_stack_index)
+                        game.stack.remove(stack_item)
                         ResolutionManager._move_countered_stack_item(
                             game, stack_item, countered_card)
                         game.log.append(

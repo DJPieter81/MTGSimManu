@@ -29,6 +29,17 @@ def test_status_is_derived_from_the_engines_own_vocabulary(card_db):
     assert rows["ferocious"]["deck_cards"] >= 1, "Stubborn Denial is registered"
 
 
+def test_a_characteristic_mtgjson_encodes_is_modelled_by_its_field(card_db):
+    """Devoid's only rule is "this object is colorless" (CR 702.114a), and
+    MTGJSON encodes it in the card's colours; every colour rule reads
+    `colors` (the colour-identity ratchet pins that), so the word is
+    modelled -- and the auditor's census no longer records it."""
+    from engine.rules_audit_census import _modelled
+    rows = _rows(card_db)
+    assert rows["devoid"]["status"] == "characteristic (colors)"
+    assert _modelled("devoid", card_db.get_card("Basking Broodscale"))
+
+
 def test_registered_deck_usage_counts_copies_across_mainboard_and_sideboard(card_db):
     rows = _rows(card_db)
     # Domain Zoo alone runs four Stubborn Denial; the count is copies, not cards.

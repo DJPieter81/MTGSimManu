@@ -177,7 +177,7 @@ def burn_damage(template: "CardTemplate", game=None, controller=None) -> int:
     amount = data.get('amount')
     if amount:
         if game is not None and controller is not None:
-            from engine.oracle_resolver import effective_direct_damage
+            from engine.effect_conditions import effective_direct_damage
             return effective_direct_damage(game, controller, template)
         return int(amount)
     from decks.card_knowledge_loader import get_burn_damage

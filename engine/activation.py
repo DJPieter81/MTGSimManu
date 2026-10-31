@@ -53,6 +53,7 @@ class ActivationManager:
         ActivationEffectKind.EXILE_FROM_GRAVEYARD,
         ActivationEffectKind.PUT_COUNTER_SELF,
         ActivationEffectKind.PUT_COUNTER_TARGET,
+        ActivationEffectKind.PUT_COUNTER_TEAM,
         ActivationEffectKind.ADAPT,
     })
 
@@ -96,6 +97,13 @@ class ActivationManager:
         if not ability.from_battlefield or perm.zone != "battlefield":
             return False
 
+        # 8b. CR 101.2 / 602.5: a rule effect prohibits this player from
+        # activating this permanent's abilities ("your opponents can't ...
+        # activate abilities of artifacts, creatures, or enchantments").
+        from . import rules_query
+        if rules_query.activation_prohibited(game, player_idx, perm):
+            return False
+
         # 9. A free, repeatable ability has no resource that depletes, so
         # nothing terminates the loop. Cost exhaustion is the real bound.
         # Sacrifice-self is inherently self-limiting (the source leaves), a
@@ -109,16 +117,24 @@ class ActivationManager:
         # 9b. An effect kind the resolver cannot execute must be refused
         # BEFORE any cost is charged — paying a cost for a recorded-unhandled
         # no-op is strictly worse than refusing. ANIMATE_SELF_UEOT is owned by
-        # the land-animation path and must not be double-executed here.
+        # the land-animation path and must not be double-executed here. An
+        # UNCLASSIFIED ability resolves when the dispatcher takes its typed
+        # host (`effect_carrier.activation_family`, unit A).
         if ability.effect_kind not in ActivationManager.RESOLVABLE_EFFECT_KINDS:
-            return False
+            from .cards import ActivationEffectKind as _AEK
+            from .effect_carrier import activation_family
+            if ability.effect_kind is not _AEK.UNCLASSIFIED or \
+                    activation_family(ability, perm.template.effects.activated(
+                        ability.index)) is None:
+                return False
 
         # 9b-pc. A put-counter line whose shape did not parse is schema
         # incoherence — the resolver reads `kind`/`amount` off
         # `put_counter_data` and has nothing to dispatch on without it.
         is_put_counter = ability.effect_kind in (
             ActivationEffectKind.PUT_COUNTER_SELF,
-            ActivationEffectKind.PUT_COUNTER_TARGET)
+            ActivationEffectKind.PUT_COUNTER_TARGET,
+            ActivationEffectKind.PUT_COUNTER_TEAM)
         if is_put_counter and ability.put_counter_data is None:
             return False
 
@@ -260,11 +276,21 @@ class ActivationManager:
                     or getattr(perm, 'is_animated', False)):
                 return False
 
-        # 15. CR 601.2c — a required target must have a legal choice.
+        # 15. CR 601.2c — a required target must have a legal choice. An
+        # UNCLASSIFIED ability the dispatcher takes declares the targets of
+        # its typed host (CR 602.2b).
+        from .target_solver import (binds_whatever_is_chosen,
+                                    has_legal_target_for_spell)
         if ability.targets_required and ability.target_requirements:
-            from .target_solver import has_legal_target_for_spell
             if not has_legal_target_for_spell(
                     game, player_idx, ability.target_requirements):
+                return False
+        elif ability.effect_kind is ActivationEffectKind.UNCLASSIFIED:
+            host = perm.template.effects.activated(ability.index)
+            required = [r for r in (host.targets if host is not None else ())
+                        if binds_whatever_is_chosen(r)]
+            if required and not has_legal_target_for_spell(
+                    game, player_idx, required, source=perm):
                 return False
 
         return True
@@ -468,6 +494,10 @@ class ActivationManager:
         """
         cost = ability.cost
         data = ability.put_counter_data or {}
+        if data.get('other'):
+            # "each OTHER creature": the source is excluded from its own
+            # effect, so the counter it spent is never handed back.
+            return False
         other_finite = (cost.mana.cmc > 0 or cost.tap_self or cost.life > 0
                         or cost.sacrifice_self or cost.exile_self
                         or cost.sacrifice_type is not None
@@ -516,22 +546,105 @@ class ActivationManager:
 
     @staticmethod
     def graveyard_exile_payment(game: "GameState", player_idx: int,
-                                count: int) -> List["CardInstance"]:
+                                count: int, source=None,
+                                exclude=None) -> List["CardInstance"]:
         """The cards an exile-from-your-graveyard cost takes (CR 601.2h).
 
-        Pure enumeration in ZONE ORDER, zero preference — the graveyard is
-        an ordered pile and the head of it is what the payer takes. This is
-        deliberately not a valuation: the cost names no type, so every card
-        in the pile pays it equally as far as the RULES are concerned, and
-        ranking them by what the controller would rather keep is a
-        strategic choice. Tranche 3 gave the sacrifice cost such a choice
-        (`callbacks.choose_sacrifice`) because its legal set is genuinely
-        heterogeneous; a seam here would be the same shape and can be added
-        the same way. Until it is, this is the single definition of WHICH
-        cards pay, so a future valuation layer reads it rather than
-        guessing and projection cannot disagree with payment.
+        WHICH cards pay is the payer's choice (`callbacks.choose_cost_exile`,
+        the same seam a sacrifice cost's victim uses): `count` distinct cards
+        of their graveyard, `exclude` aside (an escape's "other cards"). The
+        cost names no type, so every card in the pile pays it equally as far
+        as the RULES are concerned; ranking them by what the payer would
+        rather keep is strategy. An answer that is not `count` distinct cards
+        of the pile is not a payment the cost allows, and the engine's
+        default (`callbacks.default_cost_exile`: the head of the pile, in
+        zone order) stands. The single definition of which cards pay, so
+        projection cannot disagree with payment.
         """
-        return list(game.players[player_idx].graveyard)[:max(0, count)]
+        from .callbacks import default_cost_exile
+        count = max(0, count)
+        if count == 0:
+            return []
+        pool = [c for c in game.players[player_idx].graveyard
+                if c is not exclude]
+        picked = game.callbacks.choose_cost_exile(game, player_idx, source,
+                                                  list(pool), count)
+        ids = {id(c) for c in pool}
+        if (picked is None or len(picked) != count
+                or len({id(c) for c in picked}) != count
+                or any(id(c) not in ids for c in picked)):
+            return default_cost_exile(pool, count)
+        return list(picked)
+
+    @staticmethod
+    def cost_victim(game: "GameState", player_idx: int, source,
+                    cost) -> Optional["CardInstance"]:
+        """The permanent a sacrifice cost item takes (CR 601.2h): the
+        payer's choice among the legal victims (`callbacks.choose_sacrifice`).
+        None when there is none, or when the payer makes no legal choice --
+        an unpaid cost. Chosen before anything is paid, so a refusal leaves
+        nothing half-paid."""
+        legal = ActivationManager.legal_sacrifice_victims(
+            game, player_idx, source, cost)
+        if not legal:
+            return None
+        victim = game.callbacks.choose_sacrifice(game, player_idx, legal)
+        return victim if any(victim is c for c in legal) else None
+
+    @staticmethod
+    def pay_resource_costs(game: "GameState", player_idx: int, cost,
+                           victim, cause: str, life_note: str) -> None:
+        """Pay the cost items drawn from the payer's own resources, each
+        through its owner (CR 601.2h, 602.2b): life (CR 119.4: paying life
+        is losing that much life), a discard (the discard funnel, the
+        payer's own choice), an exile from their graveyard (the payer's
+        choice of cards) and a sacrifice (the victim `cost_victim` chose
+        before anything was paid). An activation and a spell's additional
+        cost are both paid here; payability was ruled on before."""
+        if cost.life > 0:
+            from .damage import lose_life
+            lose_life(game, player_idx, cost.life)
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: pays "
+                f"{cost.life} life ({life_note})")
+        if cost.discard_cards > 0:
+            # Through the same funnel forced discards use
+            # (callbacks.choose_discard + zone_mgr), so discard-linked
+            # triggers keep firing. self_discard=True: paying the cost was
+            # the player's own choice (CR 601.2h).
+            game._force_discard(player_idx, cost.discard_cards,
+                                self_discard=True)
+        if cost.exile_from_graveyard_cards > 0:
+            # The cards leave the graveyard as the cost is paid, through the
+            # zone funnel, so leaves-the-graveyard replacements and
+            # triggers see the move.
+            for gy_card in ActivationManager.graveyard_exile_payment(
+                    game, player_idx, cost.exile_from_graveyard_cards):
+                game.zone_mgr.move_card_to_exile(game, gy_card, cause=cause)
+        if victim is not None:
+            # The victim is sacrificed as part of the COST, through the
+            # zone funnel.
+            game.zone_mgr.move_card_to_graveyard(game, victim, cause=cause)
+
+    @staticmethod
+    def _audit_activation_targets(game: "GameState", player_idx: int,
+                                  perm: "CardInstance",
+                                  targets: Optional[List[int]]) -> None:
+        """CR 602.2b / 601.2c, restated at activation (the counterpart of
+        `601.2c/cast_target`): every permanent declared as a target of an
+        activated ability is one its source may target. Observation only."""
+        from . import rules_audit
+        if not targets or not rules_audit.enabled():
+            return
+        from .target_solver import can_be_targeted
+        for tid in targets:
+            tgt = game.get_card_by_id(tid) if isinstance(tid, int) else None
+            if tgt is not None and tgt.zone == "battlefield":
+                rules_audit.check(
+                    "602.2b/activation_target",
+                    can_be_targeted(tgt, perm, player_idx),
+                    f"{perm.name} activated at {tgt.name}, which it may "
+                    f"not target", game=game)
 
     @staticmethod
     def activate(game: "GameState", player_idx: int, perm: "CardInstance",
@@ -548,11 +661,8 @@ class ActivationManager:
             # activate() is reached without a prior can_activate.
             victim = None
             if ability.cost.sacrifice_type is not None:
-                legal = ActivationManager.legal_sacrifice_victims(
+                victim = ActivationManager.cost_victim(
                     game, player_idx, perm, ability.cost)
-                if legal:
-                    victim = game.callbacks.choose_sacrifice(
-                        game, player_idx, legal)
                 if victim is None:
                     return False
             if (ability.cost.discard_cards > 0
@@ -603,11 +713,6 @@ class ActivationManager:
                     exclude_instance_id=perm.instance_id)
                 if not paid:
                     return False
-            if ability.cost.life > 0:
-                game.players[player_idx].life -= ability.cost.life
-                game.log.append(
-                    f"T{game.display_turn} P{player_idx+1}: pays "
-                    f"{ability.cost.life} life ({perm.name} activation)")
             if ability.cost.tap_self:
                 perm.tap()
             # Counters, through the instance's own counter fields — the same
@@ -636,15 +741,13 @@ class ActivationManager:
             game._activations_this_game = (
                 getattr(game, '_activations_this_game', 0) + 1)
 
-            # `target_zones` must be populated exactly as the cast path does,
-            # or the CR 608.2b fizzle check reads a missing snapshot and is
-            # silently inert.
-            target_zones = {}
-            for tid in (targets or []):
-                found = game.find_card_by_id(tid) if hasattr(
-                    game, 'find_card_by_id') else None
-                if found is not None:
-                    target_zones[tid] = found.zone
+            # The targets' snapshot is the one the cast path records
+            # (`stack.snapshot_targets`), so the CR 608.2b / 400.7
+            # re-check on resolution reads the same thing for an ability.
+            from .stack import snapshot_targets
+            target_zones, target_entry_seqs = snapshot_targets(game, targets)
+            ActivationManager._audit_activation_targets(game, player_idx,
+                                                        perm, targets)
 
             # `ability=None` is MANDATORY: StackItem.ability is typed as the
             # legacy Ability dataclass and resolution tests `item.ability.effect`
@@ -655,29 +758,15 @@ class ActivationManager:
             # sacrifice_self below: every step that could refuse has already
             # run, so nothing follows the consumption that could leave the
             # cost half-paid.
-            if ability.cost.discard_cards > 0:
-                # Through the same funnel forced discards use
-                # (callbacks.choose_discard + zone_mgr), so discard-linked
-                # triggers keep firing. self_discard=True: activating the
-                # ability was the player's own choice (CR 601.2h).
-                game._force_discard(player_idx, ability.cost.discard_cards,
-                                    self_discard=True)
-            if ability.cost.exile_from_graveyard_cards > 0:
-                # CR 602.2b — the cards leave the graveyard at ACTIVATION
-                # time, through the zone funnel, so leaves-the-graveyard
-                # replacements and triggers see the move.
-                for gy_card in ActivationManager.graveyard_exile_payment(
-                        game, player_idx,
-                        ability.cost.exile_from_graveyard_cards):
-                    game.zone_mgr.move_card_to_exile(
-                        game, gy_card,
-                        cause=f"activation cost ({perm.name})")
-            if victim is not None:
-                # CR 602.2b: the victim is sacrificed as part of the COST —
-                # it leaves at activation time, through the zone funnel.
-                game.zone_mgr.move_card_to_graveyard(
-                    game, victim, cause=f"activation cost ({perm.name})")
+            ActivationManager.pay_resource_costs(
+                game, player_idx, ability.cost, victim,
+                cause=f"activation cost ({perm.name})",
+                life_note=f"{perm.name} activation")
 
+            # CR 608.2h: what the source last had on the battlefield, kept
+            # for an effect that reads it after its cost removes it.
+            source_lki = (perm.last_known() if ability.cost.sacrifice_self
+                          or ability.cost.exile_self else None)
             if ability.cost.sacrifice_self:
                 # CR 602.2b: the sacrifice is part of the COST — the source
                 # leaves the battlefield at activation time; the ability on
@@ -701,9 +790,11 @@ class ActivationManager:
                 targets=list(targets or []),
                 effect=functools.partial(resolve_activated_ability,
                                          ability=ability,
-                                         x_value=chosen_x),
+                                         x_value=chosen_x,
+                                         source_lki=source_lki),
                 ability=None,
                 target_zones=target_zones,
+                target_entry_seqs=target_entry_seqs,
                 x_value=chosen_x,
             ))
             game.log.append(

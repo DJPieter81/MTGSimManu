@@ -41,18 +41,14 @@ class TestMatchupBalance:
     """Verify no deck is completely broken over multiple games."""
 
     def test_zoo_vs_dimir_balanced(self, game_runner):
-        """Zoo vs Dimir should be competitive (neither deck wins 100%)."""
+        """Zoo vs Dimir should be competitive (neither deck wins 100%).
+        Each game seeds the runner's own RNG too (`run_seeded_game`): the
+        engine draws from it, so a count read with only the global seed set
+        varied with whatever ran before."""
         wins = {0: 0, 1: 0}
         for i in range(20):
-            random.seed(10000 + i * 100)
-            d1 = MODERN_DECKS["Domain Zoo"]
-            d2 = MODERN_DECKS["Dimir Midrange"]
-            result = game_runner.run_game(
-                "Domain Zoo", d1["mainboard"],
-                "Dimir Midrange", d2["mainboard"],
-                deck1_sideboard=d1.get("sideboard", {}),
-                deck2_sideboard=d2.get("sideboard", {}),
-            )
+            result = run_seeded_game(game_runner, "Domain Zoo",
+                                     "Dimir Midrange", seed=10000 + i * 100)
             if result.winner is not None:
                 wins[result.winner] += 1
         # Neither deck should win more than 90% of games

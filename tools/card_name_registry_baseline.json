@@ -1,4 +1,8 @@
 {
-  "total": 87,
-  "description": "card-name-keyed registry entries (EFFECT_REGISTRY.register) \u2014 the surface tools/check_abstraction.py is blind to. May only shrink: growth is a regression (build the mechanic class instead), and a reduction must lower this number in the same commit."
+  "total": 70,
+  "description": "card-name-keyed registry entries (EFFECT_REGISTRY.register) \u2014 the surface tools/check_abstraction.py is blind to. May only shrink: growth is a regression (build the mechanic class instead), and a reduction must lower this number in the same commit.",
+  "og_note": "2026-10-15 (unit OG): 75 -> 74. Wish's name-keyed handler is retired: it chose the card in the engine with card names and literals, fell back to the library and put the card into the hand for good. Wish resolves from its typed host -- a one-play permission over its controller's sideboard (effect_executors.outside_permit, CR 400.11a).",
+  "mtr_note": "2026-10-25 (unit MTR): 74 -> 73. Territorial Kavu's name-keyed attack handler is retired: it chose the mode in the engine with literals and moved the exiled card around the zone funnel. The attack carrier takes the modal host; its controller chooses the mode (effect_carrier.choose_trigger_modes, CR 603.3c) and the executors perform it.",
+  "xl_note": "2026-10-25 (unit XL): 73 -> 72. Leyline Binding's name-keyed enter handler is retired: it exiled the permanent for good, with no return. The enter carrier's linked-exile family takes the typed host; the zone funnel exiles the target until the enchantment leaves the battlefield and returns it then (ZoneManager.exile_until_leaves, CR 610.3).",
+  "tu_note": "2026-10-25 (unit TU): 72 -> 70. Primeval Titan's and Ranger-Captain of Eos's name-keyed enter handlers are retired: each chose the cards a search found inside the engine (fixed land priorities; an 'energy' tag), and Ranger-Captain's moved the card around the zone funnel and never counted the search. The enter carrier (and, for Titan, the attack carrier) performs the typed search; the searcher chooses through callbacks.choose_cards (effect_executors.execute_library_search, CR 701.19a)."
 }

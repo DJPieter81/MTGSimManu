@@ -57,6 +57,7 @@ from ai.llm_schemas import (
     HandlerGapReport,
     OracleTagClassification,
     SynthesizedGameplan,
+    oracle_tag_decision_model,
 )
 
 
@@ -73,6 +74,29 @@ _OUTPUT_TYPES: dict[str, type] = {
     # Phase 1 refactor — at-decision-time scoring weights, cached.
     "decision_scorer":     DecisionScoringWeights,
 }
+
+
+# Providers whose models answer only typed decisions (booleans and closed
+# choices) and refuse any free-text output field.  A task listed in
+# `_DECISION_OUTPUT_TYPES` is asked in its decision shape on these models.
+DECISION_MODEL_PROVIDERS: tuple[str, ...] = ("typesafe:",)
+
+_DECISION_OUTPUT_TYPES = {
+    "classify_oracle": oracle_tag_decision_model,
+}
+
+
+def is_decision_model(model: str) -> bool:
+    """True when `model` names a decision-only model."""
+    return model.startswith(DECISION_MODEL_PROVIDERS)
+
+
+def output_type_for(task: str, model: str) -> type:
+    """The task's output schema for `model`: its decision shape on a
+    decision model when the task has one, else the task's schema."""
+    if is_decision_model(model) and task in _DECISION_OUTPUT_TYPES:
+        return _DECISION_OUTPUT_TYPES[task]()
+    return _OUTPUT_TYPES[task]
 
 
 def _format_fewshot(examples: list[dict]) -> str:
@@ -129,7 +153,7 @@ def _build_raw_agent(
 
     return Agent(
         chosen_model,
-        output_type=_OUTPUT_TYPES[task],
+        output_type=output_type_for(task, chosen_model),
         system_prompt=system_prompt,
         defer_model_check=True,
     )

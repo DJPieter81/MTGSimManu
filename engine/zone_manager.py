@@ -26,7 +26,10 @@ class ZoneManager:
     """Handles all card movement between zones."""
 
     def __init__(self):
-        pass
+        # CR 610.3: the cards exiled until a source leaves the battlefield,
+        # keyed by that source's object -- (instance id, battlefield entry),
+        # CR 400.7 -- each with the zone it returns to and its source's name.
+        self._until_leaves: dict = {}
 
     # ── Public API ──────────────────────────────────────────────────
 
@@ -38,6 +41,9 @@ class ZoneManager:
         to_zone: str,
         cause: str = "",
         controller_override: Optional[int] = None,
+        transformed: bool = False,
+        dying: bool = False,
+        face_down: bool = False,
     ) -> bool:
         """Move a card from one zone to another.
 
@@ -50,6 +56,16 @@ class ZoneManager:
             to_zone: The destination zone.
             cause: Human-readable reason for the move (for logging).
             controller_override: If set, change the card's controller on ETB.
+            transformed: Put a double-faced card onto the battlefield with
+                its back face up ("return it to the battlefield
+                transformed", CR 712).
+            dying: The death owner (`PermanentEffects._creature_dies`) is
+                performing a creature's death; any other battlefield ->
+                graveyard move of a creature is handed to it (CR 700.4).
+            face_down: Put the card onto the battlefield face down, as a 2/2
+                creature with no other characteristic (CR 701.40a, 708.2a;
+                `engine.face_down`). It is the card itself again once it
+                leaves (CR 708.9).
 
         Returns:
             True if the move was performed, False if prevented.
@@ -76,11 +92,46 @@ class ZoneManager:
             source_owner, from_zone = located
             source_list = self._get_zone_list(game, source_owner, from_zone)
 
+        # ── A creature dies, whatever moves it (CR 700.4) ───────────
+        # "Dies" means put into a graveyard from the battlefield: a
+        # sacrifice paid as a cost or demanded by an effect is a death like
+        # any other, so the death owner performs the move and its effects
+        # (undying, persist, modular, the death count, dies triggers,
+        # observers).
+        if not dying and self._dies(card, from_zone, to_zone):
+            game._creature_dies(card, cause=cause)
+            return True
+        was_creature = self._creature_on_battlefield(card, from_zone)
+        # The object leaving the battlefield, read before it leaves: what
+        # it exiled until it left returns once it has (CR 610.3).
+        leaving = ((card.instance_id, card.battlefield_entry_seq)
+                   if from_zone == "battlefield" else None)
+
+        # ── Graveyard-to-exile replacement (CR 614.1a, 614.6) ───────
+        # Decided before the card leaves its zone: a replacement that
+        # modifies how a permanent leaves the battlefield applies from
+        # the game state before the event (CR 614.12, 603.10), so a
+        # destroyed Rest in Peace exiles itself.
         actual_to = to_zone
+        replaced_by = None
+        if to_zone == "graveyard":
+            replaced_by = self.graveyard_exile_source(game, card, from_zone)
+            if replaced_by is not None:
+                actual_to = "exile"
 
         # ── Remove from source zone ────────────────────────────────
         if card in source_list:
             source_list.remove(card)
+        if from_zone == "exile":
+            # CR 400.7: a card leaving exile is a new object; an effect
+            # that named the exiled object (a permission to play it, a
+            # return when its exiler leaves) no longer names it.
+            game.continuous_effects.forget_object(card.instance_id)
+            self._forget_linked(card)
+        # CR 400.7: a card that changes zones is a new object; a flashback
+        # granted to the old one does not follow it.
+        from .cast_manager import end_flashback_grant
+        end_flashback_grant(card)
 
         # ── Clean up state when leaving battlefield ─────────────────
         if from_zone == "battlefield":
@@ -103,44 +154,133 @@ class ZoneManager:
             game.players[owner].cards_discarded_or_cycled_this_turn += 1
 
         # ── Add to destination zone ─────────────────────────────────
+        # A permanent sits on its controller's battlefield (CR 108.4): one
+        # put onto the battlefield under a player's control goes there.
         card.zone = actual_to
-        dest_list = self._get_zone_list(game, owner, actual_to)
+        dest_owner = (controller_override if actual_to == "battlefield"
+                      and controller_override is not None else owner)
+        dest_list = self._get_zone_list(game, dest_owner, actual_to)
         dest_list.append(card)
 
-        # ── Replacement-effect resolution path (CR 614) ─────────────
-        # "If a card would be put into a graveyard, exile it instead"
-        # (Rest in Peace / Leyline of the Void / Anafenza family) is a
-        # continuous REPLACEMENT the engine does not model — the card
-        # reaches the graveyard here regardless. When such a static is on
-        # the battlefield as a card enters a graveyard, the replacement
-        # that should have fired silently did nothing; record the
-        # unmodeled static (typed-field gate, no oracle re-parse) so a new
-        # card in this family turns the guardrail red. Behaviour is
-        # unchanged — this only observes the miss.
-        if actual_to == "graveyard":
-            for _p in game.players:
-                for _perm in _p.battlefield:
-                    if getattr(_perm.template,
-                               "exiles_cards_bound_for_graveyard", False):
-                        from .effect_diagnostics import record_unhandled_effect
-                        record_unhandled_effect(_perm.template.name,
-                                                "replacement")
+        self._after_graveyard_bound_move(game, card, actual_to, replaced_by)
+        if was_creature and actual_to == "graveyard":
+            self._audit_death(game, card, dying)
 
         # ── Handle entering battlefield ─────────────────────────────
         if actual_to == "battlefield":
             if controller_override is not None:
                 card.controller = controller_override
+            if transformed:
+                card.is_transformed = True     # back face up (CR 712)
+            if face_down:
+                # CR 708.2a: face down it shows the face-down
+                # characteristics, before it enters, so no ability of its
+                # card sees it enter.
+                from .face_down import face_down_template
+                card._front_template = card.template
+                card.template = face_down_template(card)
+                card.face_down = True
             card.enter_battlefield()
             card._game_state = game
+            self._audit_entry_loyalty(game, card)
+            self._audit_new_object(game, card)
+            if face_down:
+                self._audit_face_down(game, card)
+        else:
+            self._audit_front_face(game, card)
 
-        # Log the move
+        # Log the move: a face-down permanent has no name (CR 708.2a).
         if cause:
+            from .face_down import shown_name
             game.log.append(
-                f"T{game.display_turn}: {card.name} moved "
-                f"{from_zone} -> {actual_to} ({cause})"
+                f"T{game.display_turn}: {shown_name(card)} "
+                f"moved {from_zone} -> {actual_to} ({cause})"
             )
 
+        if leaving is not None:
+            self._source_left(game, leaving)
         return True
+
+    # ── "Until ~ leaves the battlefield" (CR 610.3) ─────────────────
+
+    def exile_until_leaves(self, game: "GameState", card: "CardInstance",
+                           source: "CardInstance", cause: str = "") -> bool:
+        """CR 610.3: exile `card` until `source` leaves the battlefield --
+        the one-shot exile, and the link from which the second one-shot
+        effect, the return to the zone `card` left, is made once the
+        object `source` is now (its battlefield entry, CR 400.7) leaves
+        (`_return_linked`). CR 610.3a: a source no longer on the
+        battlefield moves nothing. Returns whether `card` was exiled."""
+        if source is None or source.zone != "battlefield":
+            return False
+        key = (source.instance_id, source.battlefield_entry_seq)
+        from_zone = card.zone
+        if not self.move_card(game, card, from_zone, "exile", cause=cause):
+            return False
+        if card.zone == "exile" and source.zone == "battlefield" \
+                and source.battlefield_entry_seq == key[1]:
+            self._until_leaves.setdefault(key, []).append(
+                (card, from_zone, source.name))
+        return True
+
+    def linked_to(self, source: "CardInstance") -> list:
+        """The cards `source` -- the object it is now -- has exiled until it
+        leaves the battlefield, each with the zone it returns to:
+        ``[(card, zone)]``. A read for the AI's projections; the return is
+        `_return_linked`'s."""
+        key = (source.instance_id, source.battlefield_entry_seq)
+        return [(card, zone) for card, zone, _ in self._until_leaves.get(key, ())
+                if card.zone == "exile" and not getattr(card, "is_token", False)]
+
+    def _forget_linked(self, card: "CardInstance") -> None:
+        """CR 400.7: a card that leaves exile is a new object that no
+        return names."""
+        for key, linked in list(self._until_leaves.items()):
+            kept = [e for e in linked if e[0] is not card]
+            if not kept:
+                del self._until_leaves[key]
+            elif len(kept) != len(linked):
+                self._until_leaves[key] = kept
+
+    def _source_left(self, game: "GameState", key: tuple) -> None:
+        """The object `key` names has left the battlefield: what it exiled
+        until then returns (CR 610.3). Auditor `610.3/linked_return`."""
+        from .rules_audit import enabled as _audit_on
+        linked = tuple(self._until_leaves.get(key, ())) if _audit_on() else ()
+        self._return_linked(game, key)
+        if linked:
+            self._audit_linked_return(game, linked)
+
+    def _return_linked(self, game: "GameState", key: tuple) -> None:
+        """CR 610.3, 610.3c: each card the departed source `key` exiled
+        until it left, still in exile as the same object (`_forget_linked`,
+        CR 400.7), returns to the zone it left -- to the battlefield under
+        its owner's control, a new object whose enter triggers trigger as
+        any entry's (CR 603.6a). A token that left the battlefield has
+        ceased to exist and does not return (CR 111.8)."""
+        for card, zone, source_name in self._until_leaves.pop(key, ()):
+            if card.zone != "exile" or getattr(card, "is_token", False):
+                continue
+            cause = f"{source_name} left the battlefield"
+            if zone != "battlefield":
+                self.move_card(game, card, "exile", zone, cause=cause)
+            elif self.move_card(game, card, "exile", "battlefield",
+                                cause=cause, controller_override=card.owner):
+                game._handle_permanent_etb(card, card.owner)
+
+    @staticmethod
+    def _audit_linked_return(game: "GameState", linked: tuple) -> None:
+        """Rules audit (CR 610.3), restated from the cards' zones: once its
+        source has left the battlefield, no card it exiled until then that
+        was still in exile -- a card, not a token (CR 111.8) -- is left
+        there. Observes only."""
+        from .rules_audit import check as _audit_check
+        left = [card.name for card, _, _ in linked
+                if card.zone == "exile" and not getattr(card, "is_token",
+                                                        False)]
+        _audit_check("610.3/linked_return", not left,
+                     f"{linked[0][2]} left the battlefield; {left} stayed "
+                     f"in exile", game=game)
 
     def move_card_to_graveyard(
         self, game: "GameState", card: "CardInstance", cause: str = ""
@@ -212,10 +352,16 @@ class ZoneManager:
             return True
 
         actual_to = to_zone
+        replaced_by = None
+        if to_zone == "graveyard":
+            replaced_by = self.graveyard_exile_source(game, card, "stack")
+            if replaced_by is not None:
+                actual_to = "exile"
 
         card.zone = actual_to
         dest_list = self._get_zone_list(game, owner, actual_to)
         dest_list.append(card)
+        self._after_graveyard_bound_move(game, card, actual_to, replaced_by)
 
         if cause:
             game.log.append(
@@ -223,6 +369,230 @@ class ZoneManager:
                 f"stack -> {actual_to} ({cause})"
             )
         return True
+
+    # ── Graveyard-to-exile replacement (CR 614.1a, 614.6, 700.4) ────
+
+    def graveyard_exile_source(
+        self, game: "GameState", card: "CardInstance", from_zone: str,
+    ) -> Optional["CardInstance"]:
+        """The battlefield permanent whose static graveyard-to-exile
+        replacement covers `card` as it would be put into its owner's
+        graveyard from `from_zone`, or None. The one matcher: both funnel
+        exits and the death owner ask it.
+
+        A rule (`CardTemplate.graveyard_exile_replacements`) covers an
+        object by event scope (from anywhere; from the battlefield; a
+        creature dying), by whose graveyard receives it (CR 404.2: its
+        owner's), by colour, card type, token-ness and, for a death, by
+        who controls the creature. A transformed permanent has only its
+        back face's abilities (CR 712.8e)."""
+        for player in game.players:
+            for perm in player.battlefield:
+                t = perm.template
+                rules = getattr(t, "graveyard_exile_replacements", None)
+                if not rules or perm.zone != "battlefield":
+                    continue
+                if getattr(perm, "is_transformed", False) and t.back_face_oracle:
+                    continue
+                for rule in rules:
+                    if self._rule_covers(rule, card, from_zone,
+                                         perm.controller):
+                        return perm
+        return None
+
+    @staticmethod
+    def _rule_covers(rule: dict, card: "CardInstance", from_zone: str,
+                     ctrl: int) -> bool:
+        on_battlefield = from_zone == "battlefield"
+        types = (card.effective_card_types if on_battlefield
+                 else card.template.card_types)
+        type_names = {ct.value for ct in types}
+        scope = rule["scope"]
+        if scope == "dies" and not (on_battlefield
+                                    and "creature" in type_names):
+            return False
+        if scope == "battlefield" and not on_battlefield:
+            return False
+        is_token = getattr(card, "is_token", False)
+        if is_token and not rule["tokens"]:
+            return False
+        if rule["nontoken"] and is_token:
+            return False
+        whose = rule["whose"]
+        if whose == "opponents" and card.owner == ctrl:
+            return False
+        if whose == "you" and card.owner != ctrl:
+            return False
+        by = rule["controlled_by"]
+        if by == "opponents" and card.controller == ctrl:
+            return False
+        if by == "you" and card.controller != ctrl:
+            return False
+        if rule["colors"] is not None and not (
+                {c.value for c in card.colors} & rule["colors"]):
+            return False
+        if rule["types"] is not None and not (type_names & rule["types"]):
+            return False
+        return True
+
+    def _after_graveyard_bound_move(self, game: "GameState",
+                                    card: "CardInstance", actual_to: str,
+                                    replaced_by) -> None:
+        """Log a replaced move; record a graveyard-to-exile static the
+        engine refused to type (an unusual variant: "with a void counter
+        on it", "and you gain 2 life") that saw a card arrive; and audit
+        the arrival (CR 614.6)."""
+        if replaced_by is not None:
+            game.log.append(
+                f"T{game.display_turn}: {card.name} is exiled instead of "
+                f"going to a graveyard ({replaced_by.name}, CR 614.6)")
+            return
+        if actual_to != "graveyard":
+            return
+        for _p in game.players:
+            for _perm in _p.battlefield:
+                if (getattr(_perm.template,
+                            "exiles_cards_bound_for_graveyard", False)
+                        and not getattr(_perm.template,
+                                        "graveyard_exile_replacements", None)):
+                    from .effect_diagnostics import record_unhandled_effect
+                    record_unhandled_effect(_perm.template.name, "replacement")
+        self._audit_graveyard_arrival(game, card)
+
+    @staticmethod
+    def _audit_graveyard_arrival(game: "GameState",
+                                 card: "CardInstance") -> None:
+        """Rules audit (CR 614.6): no card reaches a graveyard while a
+        static "if a card [or token] would be put into a / an opponent's
+        graveyard from anywhere, exile it instead" covers it. Restated
+        from the raw typed rules with no colour, type or controller
+        filter, not through the matcher. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        token = getattr(card, "is_token", False)
+
+        def _covers(rule, ctrl) -> bool:
+            if (rule["scope"] != "anywhere" or rule["colors"]
+                    or rule["types"] or rule["controlled_by"]
+                    or rule["nontoken"] or (token and not rule["tokens"])):
+                return False
+            return {"any": True, "opponents": card.owner != ctrl,
+                    "you": card.owner == ctrl}[rule["whose"]]
+
+        source = next((perm for p in game.players for perm in p.battlefield
+                       if any(_covers(r, perm.controller) for r in
+                              getattr(perm.template,
+                                      "graveyard_exile_replacements", None)
+                              or ())), None)
+        _audit_check("614.6/graveyard_exile_replacement", source is None,
+                     f"{card.name} reached a graveyard while "
+                     f"{getattr(source, 'name', '')} exiles it instead",
+                     game=game)
+
+    @staticmethod
+    def _dies(card: "CardInstance", from_zone: str, to_zone: str) -> bool:
+        """CR 700.4: is this move a creature dying -- a creature put into
+        a graveyard from the battlefield?"""
+        return (from_zone == "battlefield" and to_zone == "graveyard"
+                and (card.effective_is_creature
+                     or getattr(card, "is_animated", False)))
+
+    @staticmethod
+    def _creature_on_battlefield(card: "CardInstance", from_zone: str) -> bool:
+        """Restated from the raw face fields for the audit: the object is
+        a creature on the face it shows, or an animated land."""
+        if from_zone != "battlefield":
+            return False
+        t = card.template
+        back = bool(getattr(card, "is_transformed", False) and t.back_face_types)
+        types = t.back_face_types if back else t.card_types
+        return (any(getattr(ct, "name", "") == "CREATURE" for ct in types)
+                or bool(getattr(card, "is_animated", False)))
+
+    @staticmethod
+    def _audit_death(game: "GameState", card: "CardInstance",
+                     dying: bool) -> None:
+        """Rules audit (CR 700.4): a creature that reached a graveyard from
+        the battlefield died -- the death owner moved it. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("700.4/dies", dying,
+                     f"{card.name} reached a graveyard from the battlefield "
+                     f"without dying", game=game)
+
+    @staticmethod
+    def _audit_new_object(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 400.7, 611.2c): an object entering the
+        battlefield is a new object that no earlier type-adding effect
+        names -- it carries no added type or subtype. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("400.7/new_object_added_types",
+                     not (getattr(card, "cem_types_added", None)
+                          or getattr(card, "cem_subtypes_added", None)),
+                     f"{card.name} entered carrying added types from an "
+                     f"earlier object", game=game)
+
+    @staticmethod
+    def _audit_entry_loyalty(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 306.5b): a planeswalker enters with the loyalty
+        printed on the face it shows -- its back face when it entered
+        transformed. Restated from the raw face fields. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        t = card.template
+        back = bool(card.is_transformed and t.back_face_types)
+        types = t.back_face_types if back else t.card_types
+        if not any(getattr(ct, "name", "") == "PLANESWALKER" for ct in types):
+            return
+        printed = (t.back_face_loyalty if back else t.loyalty) or 0
+        _audit_check("306.5b/entry_loyalty", card.loyalty_counters == printed,
+                     f"{card.name} entered with {card.loyalty_counters} loyalty "
+                     f"(printed {printed})", game=game)
+
+    @staticmethod
+    def _audit_front_face(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 712.8a): a double-faced card that arrives in a
+        zone other than the battlefield has only its front face. Observes
+        only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("712.8a/front_face_off_battlefield",
+                     not getattr(card, "is_transformed", False)
+                     and getattr(card, "_front_template", None) is None,
+                     f"{card.name} arrived in {card.zone} showing its back "
+                     f"face", game=game)
+
+    @staticmethod
+    def _audit_face_down(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 708.2a), restated from the permanent's raw
+        characteristics: a permanent put onto the battlefield face down has
+        no name, is a 2/2, has the card type creature alone, and has no
+        subtype, supertype, colour, mana value or text. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        from .cards import CardType
+        t = card.template
+        shown = [what for what, has in (
+            ("a name", bool(t.name)),
+            ("a power and toughness other than 2/2",
+             (t.power, t.toughness) != (2, 2)),
+            ("a card type other than creature",
+             set(t.card_types) != {CardType.CREATURE}),
+            ("a subtype or supertype", bool(t.subtypes or t.supertypes)),
+            ("a colour", bool(card.colors)),
+            ("a mana value", bool(t.cmc)),
+            ("rules text", bool(t.oracle_text)),
+        ) if has]
+        _audit_check("708.2a/face_down", not shown,
+                     f"a face-down permanent shows {', '.join(shown)}",
+                     game=game)
 
     def _blink_zone_transition(
         self,
@@ -254,6 +624,7 @@ class ZoneManager:
           implementation).
         """
         from_controller = card.controller
+        leaving = (card.instance_id, card.battlefield_entry_seq)
 
         # ── Leave battlefield ───────────────────────────────────────
         if card in game.players[from_controller].battlefield:
@@ -269,21 +640,26 @@ class ZoneManager:
         card.zone = "battlefield"
         game.players[to_controller].battlefield.append(card)
 
+        # The object that left is not the one that entered (CR 400.7):
+        # what it exiled until it left returns (CR 610.3).
+        self._source_left(game, leaving)
+
     # ── Internal Helpers ────────────────────────────────────────────
 
     def _get_zone_list(
         self, game: "GameState", player_idx: int, zone_name: str
     ) -> List["CardInstance"]:
-        """Get the list representing a player's zone."""
-        player = game.players[player_idx]
-        zone_map = {
-            "library": player.library,
-            "hand": player.hand,
-            "battlefield": player.battlefield,
-            "graveyard": player.graveyard,
-            "exile": player.exile,
-        }
-        return zone_map.get(zone_name, [])
+        """Get the list representing a player's zone. Only the zone named
+        is read."""
+        if zone_name not in self._ZONE_LISTS:
+            return []
+        return getattr(game.players[player_idx], zone_name)
+
+    # Outside the game is not a zone (CR 400.11); the cards a player owns
+    # outside it are its sideboard (CR 400.11a), from where an effect brings
+    # one into the game (CR 400.11b).
+    _ZONE_LISTS = frozenset(("library", "hand", "battlefield", "graveyard",
+                             "exile", "sideboard"))
 
     def _find_card_zone(
         self, game: "GameState", card: "CardInstance"
@@ -358,6 +734,38 @@ class ZoneManager:
         card.minus_counters = 0
         card.loyalty_counters = 0
         card.other_counters.clear()
+
+        # Off the battlefield a double-faced card has only its front face
+        # (CR 712.8a); a later entry shows the face that entry names.
+        card.is_transformed = False
+
+        # Every characteristic a continuous effect gave the permanent named
+        # the object that left (CR 400.7, 611.3a): the layer writes them on
+        # battlefield objects only, so nothing else clears them -- power and
+        # toughness changes, keywords, a colour or land type set, land types
+        # and types added.
+        card.cem_power_mod = 0
+        card.cem_toughness_mod = 0
+        card.cem_keywords = set()
+        card.cem_colors_set = None
+        card.cem_land_type_set = None
+        card.cem_land_types_added = set()
+        card.cem_types_added = set()
+        card.cem_subtypes_added = set()
+        card.cem_types_set = None
+        card.cem_subtypes_set = None
+        card.cem_types_removed = set()
+        card.cem_base_pt = None
+
+        # A modal double-faced card played as its back face is its front
+        # face again off the battlefield (CR 712.8a).
+        front = getattr(card, "_front_template", None)
+        if front is not None:
+            card.template = front
+            card._front_template = None
+        # A face-down permanent is the card itself once it leaves (CR
+        # 708.9): its own template is the one just put back.
+        card.face_down = False
 
         # Clear game state reference
         card._game_state = None

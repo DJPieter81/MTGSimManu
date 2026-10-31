@@ -1,0 +1,24 @@
+{
+ "items": [
+  {
+   "title": "The census gaps and their leads",
+   "state": "planned",
+   "body": "Four registered cards keep their legacy paths, each recorded as a gap under ten pool cards: Guide of Souls (counters of two kinds in one instruction), Phelia (a condition on the returned card's entry), Ocelot Pride (token copies under the city's blessing) and Vengevine (the second creature spell cast this turn). Their leads are the next classes: a payment executor, delayed returns, token copies and a self-return from the graveyard."
+  },
+  {
+   "title": "Dimir Midrange, root cause first",
+   "state": "next",
+   "body": "Best-of-three replays against Boros Energy and Azorius Control (WST v2) name the AI subsystem where expected value diverges from correct play. The finding is written up in docs/ before any code."
+  },
+  {
+   "title": "The legacy path keeps shrinking",
+   "state": "planned",
+   "body": "Every unit moves hosts from the legacy fallback to the typed path. Gate parity's fallback count and the name-keyed registry may only fall, so the shrink cannot be quietly undone."
+  },
+  {
+   "title": "Marvel Super Heroes in the card database",
+   "state": "blocked",
+   "body": "The set is still missing. The refresh needs an environment that can reach mtgjson.com."
+  }
+ ]
+}
