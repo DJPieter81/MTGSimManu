@@ -12089,7 +12089,17 @@ Each registered census row still open after unit MF was sized by its blocking cl
   - They fail the same way at the pre-unit code `b03cac4` (the structure pass took 4.82 s against a 4.0 s ceiling). So this container is slower than the ceilings assume; SB touches no grammar code.
   - CI runs them.
 
-**Measured:** requested as the `sb-post` arm (pre = `mf-post`); recorded when it lands.
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows. Pre = `mf-post` (`2d56013`, code `b03cac4`); post = `sb-post` (`00e5b68`, code `515e760`).
+- 7 of 600 cells change, each by one match of 20. Every deck moves 0.2 pp or less: Boros Energy, Grixis Reanimator and Instant Reanimator +0.2, 4c Omnath -0.2.
+- **Replayed, one changed cell:** Instant Reanimator vs Amulet Titan (55 → 60) reproduces exactly in both worktrees, 11 → 12 match wins. The one flipped match is seed 55000, game 3:
+  - Griselbrand's "pay 7 life, draw 7" left Instant Reanimator's library empty, and Psychic Frog's combat-damage trigger, resolved inline between attackers, then tried to draw.
+  - Before, that draw ended the game part-way through combat damage, so Amulet Titan won although the same attack put it at -10.
+  - Now the attempt is recorded and the check after combat damage finds Amulet Titan at -10, so Instant Reanimator wins.
+  - Under the rules, the Frog's trigger goes on the stack only after that check, so it never resolves (CR 510.2, 704.3, 603.3). Accepted.
+- Bands: 7 decks out in both arms; total miss 51.0 → 51.4 pp. Boros Energy is 76.8 → 77.0 against its [50, 70].
+- 0 aborts; audit violations 0; findings 425 → 433. The registered census rows are the same four recorded gaps (Guide of Souls, Phelia, Ocelot Pride, Vengevine), with counts that move with the games.
+- Every one of the 600 cells agrees with its shard's progress line.
+- **Convergence is met on this arm:** see "Convergence" below.
 
 **Leads, not built:**
 - **CR 104.4a:** when both players would lose at once (both at 0 life, or both having drawn from an empty library), the game is a draw. The pass makes the first player it finds lose.
@@ -12103,3 +12113,37 @@ Each registered census row still open after unit MF was sized by its blocking cl
 Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature by its name, which is empty for a face-down permanent, so the line read "blocks  (2/2)". It now reads `face_down.shown_name`, as the zone, combat and replay lines do. This is display only: no rule reads it.
 - **Test:** `test_the_block_reasoning_shows_a_face_down_attacker_by_its_status`, in the MF file, red before the fix.
 - **Digest:** 1 of 27 games changes (Creatures Toolbox vs Grixis Reanimator s56000): only its four block lines with a face-down creature, which now name it by its status. Re-recorded at `515e760` (`9030f057`).
+
+## Convergence: the sweep's stop condition holds on the `sb-post` arm (2026-10-31)
+
+**The condition:** on the latest measured arm, every one of these holds at once:
+- 0 audit violations;
+- no deck moves more than 5 pp from the previous arm;
+- every registered census row is either taken or recorded as a gap;
+- every ratchet is at or below its baseline;
+- CI is green.
+
+**On `sb-post`** (request `00e5b68`, code `515e760`, pre = `mf-post`):
+
+| Criterion | Value |
+|---|---|
+| Audit violations | 0, in 433 findings |
+| Largest deck move | 0.2 pp (Boros Energy, Grixis Reanimator and Instant Reanimator +0.2; 4c Omnath -0.2) |
+| Registered census rows | 4, each recorded in the gaps table above: Guide of Souls, Phelia, Exuberant Shepherd, Ocelot Pride, Vengevine |
+| Ratchets | every `tools/check_*.py` at or below its baseline; no baseline moved in unit SB |
+| CI | Abstraction Contract green on `00e5b68`, the full suite included |
+
+**The previous arm, `mf-post`, did not converge:** Grixis Reanimator moved +15.3 when Abhorrent Oculus began to manifest dread. That move was replayed and accepted as rules-correct play, and `sb-post` is stable against it.
+
+**Not part of the condition, recorded for the next sweep:**
+- **Bands:** 7 decks sit outside their calibration bands, total miss 51.4 pp. In order of miss:
+  - Ruby Storm 12.2 against [40, 55];
+  - Domain Zoo 74.4 against [50, 65];
+  - Boros Energy 77.0 against [50, 70];
+  - Affinity, Creatures Toolbox, Azorius Control and Hollow One, each within 2.5 pp of their bands.
+  The audits rank these as AI decision quality, not rules defects.
+- **Queued AI work:** the Dimir Midrange root cause (its Bo3 against Boros Energy, 15–20%, and against Azorius Control (WST v2), 20–35%). It names the subsystem in `docs/` before any code, as the loop-break rule asks. Dimir itself is inside its band (48.1).
+- **Rules leads not built:** listed under each unit. The largest are:
+  - the inline trigger model, in which triggers resolve as their events happen rather than on the stack (CR 603.3), noted under unit SB;
+  - turning face-down permanents face up, under unit MF;
+  - the four census gaps.
