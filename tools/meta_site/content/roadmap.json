@@ -1,18 +1,13 @@
 {
  "items": [
   {
-   "title": "State-based actions only at priority",
-   "state": "next",
-   "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
-  },
-  {
    "title": "The census gaps and their leads",
    "state": "planned",
    "body": "Four registered cards keep their legacy paths, each recorded as a gap under ten pool cards: Guide of Souls (counters of two kinds in one instruction), Phelia (a condition on the returned card's entry), Ocelot Pride (token copies under the city's blessing) and Vengevine (the second creature spell cast this turn). Their leads are the next classes: a payment executor, delayed returns, token copies and a self-return from the graveyard."
   },
   {
    "title": "Dimir Midrange, root cause first",
-   "state": "planned",
+   "state": "next",
    "body": "Best-of-three replays against Boros Energy and Azorius Control (WST v2) name the AI subsystem where expected value diverges from correct play. The finding is written up in docs/ before any code."
   },
   {

@@ -3,11 +3,22 @@
   {
    "status": "fixed",
    "label": "Built",
+   "title": "State-based actions wait for priority (2026-10-31)",
+   "summary": "State-based actions are checked when a player would receive priority, never while a spell or ability is resolving (CR 704.3, 704.4). Five checks had run part-way through a resolution, so a player who fell to 0 and gained the life back in the same resolution lost, a draw stopped at the first card that put its player at 0, and a creature died before the spell that damaged it had finished. A draw from an empty library now loses at the next check (CR 104.3c), not mid-draw.",
+   "details": [
+    "A resolution counts itself in progress and the check waits for the outermost one; each stack resolution ends with its own check, as each step begins and once attackers are declared.",
+    "Measured (sb-post against mf-post): every deck within 0.2 pp. The one replayed flip is a deck-out that no longer ended the game part-way through combat damage, which had put the opponent at -10.",
+    "Location: engine/sba_manager.py, engine/game_state.py, engine/spell_resolution.py. Record: docs/design/rules-foundation-sweep-tracker.md (unit SB)"
+   ]
+  },
+  {
+   "status": "fixed",
+   "label": "Built",
    "title": "Rules text resolves from its typed form, carrier by carrier (2026-10-08 → 10-31)",
    "summary": "A hundred units moved card behaviour off name-keyed handlers and per-shape parsers onto the typed grammar. The first families were damage, card flow, tokens and counters, edicts and removal. Then came every trigger event: entering, attacking, casting, the beginning of a step, drawing and combat damage, followed by loyalty and activated abilities. Each unit is one Comprehensive Rules sentence, fixed for every card it covers, with a failing test first, an auditor invariant, a harness proof of every behaviour change and a same-seed best-of-three arm.",
    "details": [
     "Name-keyed effect handlers: 86 on 2026-10-08, 70 on 2026-10-31. The registry may only shrink.",
-    "Latest measured arm (tu-post, n=20 best-of-three over 25 decks): no deck moved more than 4.1 pp (Amulet Titan, from Primeval Titan's search), and the auditor recorded 0 violations in 454 findings.",
+    "Latest measured arm (sb-post, n=20 best-of-three over 25 decks): the sweep converges. No deck moved more than 0.2 pp from the arm before it, the auditor recorded 0 violations in 433 findings, the four registered census rows are recorded gaps, every ratchet is at baseline and CI is green.",
     "Location: engine/effect_carrier.py, engine/effect_views.py, engine/effect_resolver.py, engine/effect_executors.py. Record: docs/design/rules-foundation-sweep-tracker.md"
    ]
   },

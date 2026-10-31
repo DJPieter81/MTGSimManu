@@ -70715,7 +70715,7 @@
  ],
  "provenance": {
   "generated": "2026-10-04T07:19:33.840657",
-  "commit": "b03cac4",
+  "commit": "8726c47",
   "format": "bo3",
   "n_per_pair": 60,
   "total_matches": 18000,
@@ -71531,11 +71531,22 @@
     {
      "status": "fixed",
      "label": "Built",
+     "title": "State-based actions wait for priority (2026-10-31)",
+     "summary": "State-based actions are checked when a player would receive priority, never while a spell or ability is resolving (CR 704.3, 704.4). Five checks had run part-way through a resolution, so a player who fell to 0 and gained the life back in the same resolution lost, a draw stopped at the first card that put its player at 0, and a creature died before the spell that damaged it had finished. A draw from an empty library now loses at the next check (CR 104.3c), not mid-draw.",
+     "details": [
+      "A resolution counts itself in progress and the check waits for the outermost one; each stack resolution ends with its own check, as each step begins and once attackers are declared.",
+      "Measured (sb-post against mf-post): every deck within 0.2 pp. The one replayed flip is a deck-out that no longer ended the game part-way through combat damage, which had put the opponent at -10.",
+      "Location: engine/sba_manager.py, engine/game_state.py, engine/spell_resolution.py. Record: docs/design/rules-foundation-sweep-tracker.md (unit SB)"
+     ]
+    },
+    {
+     "status": "fixed",
+     "label": "Built",
      "title": "Rules text resolves from its typed form, carrier by carrier (2026-10-08 → 10-31)",
      "summary": "A hundred units moved card behaviour off name-keyed handlers and per-shape parsers onto the typed grammar. The first families were damage, card flow, tokens and counters, edicts and removal. Then came every trigger event: entering, attacking, casting, the beginning of a step, drawing and combat damage, followed by loyalty and activated abilities. Each unit is one Comprehensive Rules sentence, fixed for every card it covers, with a failing test first, an auditor invariant, a harness proof of every behaviour change and a same-seed best-of-three arm.",
      "details": [
       "Name-keyed effect handlers: 86 on 2026-10-08, 70 on 2026-10-31. The registry may only shrink.",
-      "Latest measured arm (tu-post, n=20 best-of-three over 25 decks): no deck moved more than 4.1 pp (Amulet Titan, from Primeval Titan's search), and the auditor recorded 0 violations in 454 findings.",
+      "Latest measured arm (sb-post, n=20 best-of-three over 25 decks): the sweep converges. No deck moved more than 0.2 pp from the arm before it, the auditor recorded 0 violations in 433 findings, the four registered census rows are recorded gaps, every ratchet is at baseline and CI is green.",
       "Location: engine/effect_carrier.py, engine/effect_views.py, engine/effect_resolver.py, engine/effect_executors.py. Record: docs/design/rules-foundation-sweep-tracker.md"
      ]
     },
@@ -71836,18 +71847,13 @@
   "roadmap": {
    "items": [
     {
-     "title": "State-based actions only at priority",
-     "state": "next",
-     "body": "State-based actions are checked when a player would receive priority, never in the middle of a resolution (CR 704.3). Every seeded game and anchor game that changes is replayed before the change is accepted."
-    },
-    {
      "title": "The census gaps and their leads",
      "state": "planned",
      "body": "Four registered cards keep their legacy paths, each recorded as a gap under ten pool cards: Guide of Souls (counters of two kinds in one instruction), Phelia (a condition on the returned card's entry), Ocelot Pride (token copies under the city's blessing) and Vengevine (the second creature spell cast this turn). Their leads are the next classes: a payment executor, delayed returns, token copies and a self-return from the graveyard."
     },
     {
      "title": "Dimir Midrange, root cause first",
-     "state": "planned",
+     "state": "next",
      "body": "Best-of-three replays against Boros Energy and Azorius Control (WST v2) name the AI subsystem where expected value diverges from correct play. The finding is written up in docs/ before any code."
     },
     {
@@ -71879,14 +71885,14 @@
    },
    "codebase": {
     "engine_modules": 73,
-    "engine_lines": 70059,
+    "engine_lines": 70154,
     "ai_modules": 88,
-    "ai_lines": 47624,
-    "test_files": 812
+    "ai_lines": 47627,
+    "test_files": 813
    }
   },
   "trace": {
-   "commit": "b03cac4",
+   "commit": "8726c47",
    "cards": [
     {
      "card": "Primeval Titan",
@@ -72941,7 +72947,9 @@
      "702.85a/cascade_hit_cast",
      "702.85a/cascade_triggers_on_cast",
      "704.3/fixpoint_cap",
+     "704.4/during_resolution",
      "704.5a/zero_life",
+     "704.5b/empty_library",
      "704.5f/lethal_damage",
      "704.5f/zero_toughness",
      "707.10c/copy_targets",
@@ -72993,7 +73001,7 @@
      {
       "chapter": "7",
       "name": "Additional rules",
-      "count": 29
+      "count": 31
      }
     ]
    },
@@ -73937,6 +73945,18 @@
      ],
      "date": "2026-10-31",
      "ai": false
+    },
+    {
+     "code": "SB",
+     "rule": "state-based actions are checked when a player would receive priority, never while a spell or ability resolves",
+     "cr": [
+      "704.3",
+      "704.4",
+      "117.3b",
+      "104.3c"
+     ],
+     "date": "2026-10-31",
+     "ai": false
     }
    ],
    "choices": [
@@ -74141,24 +74161,24 @@
     "engine/effect_spec.py": 1441,
     "engine/effect_carrier.py": 1879,
     "engine/effect_views.py": 3431,
-    "engine/effect_resolver.py": 797,
+    "engine/effect_resolver.py": 801,
     "engine/effect_executors.py": 3061,
     "engine/effect_conditions.py": 620,
-    "engine/clause_resolver.py": 1050,
-    "engine/card_effects.py": 2524,
-    "engine/game_state.py": 1175,
+    "engine/clause_resolver.py": 1049,
+    "engine/card_effects.py": 2519,
+    "engine/game_state.py": 1215,
     "engine/target_solver.py": 1583,
     "engine/damage.py": 347,
     "engine/zone_manager.py": 771,
     "engine/land_manager.py": 614,
     "engine/continuous_effects.py": 1404,
-    "engine/combat_manager.py": 813,
-    "engine/sba_manager.py": 256,
+    "engine/combat_manager.py": 817,
+    "engine/sba_manager.py": 291,
     "engine/turn_clock.py": 172,
     "engine/rules_query.py": 451,
     "engine/optional_costs.py": 462,
     "engine/rules_audit.py": 114,
-    "ai/ev_player.py": 5446,
+    "ai/ev_player.py": 5449,
     "ai/ev_evaluator.py": 3872,
     "ai/clock.py": 1050,
     "ai/turn_planner.py": 1317,
