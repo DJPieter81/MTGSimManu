@@ -210,6 +210,24 @@ def test_a_log_shows_a_face_down_permanent_by_its_status_never_its_cards_name(
     assert not [line for line in game.log if "Grizzly Bears" in line]
 
 
+def test_the_block_reasoning_shows_a_face_down_attacker_by_its_status(
+        card_db):
+    # The AI's block-assignment line, which the replay pipeline parses.
+    from ai.ev_player import EVPlayer
+    from engine.face_down import FACE_DOWN_LABEL
+    game, (bears, _bolt) = _manifest(
+        card_db, ["Grizzly Bears", "Lightning Bolt"], "Grizzly Bears")
+    blocker = _put(game, card_db, "Grizzly Bears", "battlefield", idx=1)
+    ai = EVPlayer(player_idx=1, deck_name="Dimir Midrange",
+                  rng=random.Random(0))
+    ai._log_block_assignments(
+        game, {bears.instance_id: [blocker.instance_id]},
+        {bears.instance_id: bears}, {blocker.instance_id: blocker},
+        bears.power, blocker.power, "BLOCK")
+    (line,) = [entry for entry in game.log if "[BLOCK]" in entry]
+    assert f"blocks {FACE_DOWN_LABEL} (2/2)" in line, line
+
+
 # ── Every carrier whose family runs a keyword action performs it ───────
 # The keyword executor (family tokens_counters) performs amass and
 # manifest dread; the enter carrier and the spell family took no host with
