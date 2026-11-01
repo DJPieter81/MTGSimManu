@@ -783,6 +783,14 @@
         60
       ],
       "provenance": "User meta review 2026-07-09 (Tier-1 sweep): 4.9% July meta share = Tier 1 by representation; replaces the default [30-70]. Sim 33.1 is now honestly below band \u2014 an admitted under-performer, not 'in band by default'."
+    },
+    {
+      "deck": "Rakdos Aggro",
+      "expected_wr": [
+        30,
+        70
+      ],
+      "provenance": "New deck (mtgtop8 15%, 2026-11-01): the default field band until a band is set by meta judgment."
     }
   ],
   "default_field_band": {

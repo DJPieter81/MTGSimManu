@@ -72,6 +72,9 @@ MATCHUPS: list[tuple[str, str, int]] = [
     # Hollow One (Aug 2026, unblocked by refresh_card_db.yml).
     ("Hollow One",            "Eldrazi Ramp",            53500),
     ("Broodscale Bloodchief", "Hollow One",              53500),
+    # Nov 2026 meta refresh — Rakdos Aggro, against the next two shares.
+    ("Rakdos Aggro",          "Broodscale Bloodchief",   54000),
+    ("Affinity",              "Rakdos Aggro",            54000),
 ]
 
 

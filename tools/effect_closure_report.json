@@ -205,7 +205,7 @@
    {
     "card": "Nihil Spellbomb",
     "host": "ACTIVATED:0:0",
-    "part": "sideboard",
+    "part": "mainboard",
     "step": "E2",
     "strict": true
    },
@@ -227,9 +227,9 @@
   "executable": 0,
   "family": "removal",
   "hosts": {
-   "mainboard": 2,
+   "mainboard": 3,
    "pool": 26,
-   "sideboard": 2
+   "sideboard": 1
   },
   "steps": {
    "E2": 23,
@@ -1329,7 +1329,7 @@
    {
     "card": "Unholy Heat",
     "host": "SPELL:0:0",
-    "part": "sideboard",
+    "part": "mainboard",
     "step": "E1",
     "strict": true
    },
@@ -1351,9 +1351,9 @@
   "executable": 572,
   "family": "damage",
   "hosts": {
-   "mainboard": 19,
+   "mainboard": 20,
    "pool": 548,
-   "sideboard": 5
+   "sideboard": 4
   },
   "steps": {
    "E1": 154,
@@ -1472,6 +1472,13 @@
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
     "step": "E6",
+    "strict": true
+   },
+   {
+    "card": "Dark Matter Manipulator",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
     "strict": true
    },
    {
@@ -1625,8 +1632,8 @@
   "executable": 753,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 25,
-   "pool": 728,
+   "mainboard": 26,
+   "pool": 727,
    "sideboard": 0
   },
   "steps": {
@@ -1707,6 +1714,13 @@
  "etb:etb_targeted_removal_data": {
   "deck_hosts": [
    {
+    "card": "Ingot Chewer",
+    "host": "TRIGGERED:0:0",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
     "card": "Witch Enchanter // Witch-Blessed Meadow",
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
@@ -1718,8 +1732,8 @@
   "family": "removal",
   "hosts": {
    "mainboard": 1,
-   "pool": 33,
-   "sideboard": 0
+   "pool": 32,
+   "sideboard": 1
   },
   "steps": {
    "E2": 34
@@ -2132,6 +2146,13 @@
     "strict": true
    },
    {
+    "card": "Ob Nixilis, the Adversary",
+    "host": "LOYALTY:0:3",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": false
+   },
+   {
     "card": "Ral, Monsoon Mage // Ral, Leyline Prodigy",
     "host": "LOYALTY:1:2",
     "part": "mainboard",
@@ -2150,8 +2171,8 @@
   "family": "damage",
   "hosts": {
    "mainboard": 3,
-   "pool": 111,
-   "sideboard": 2
+   "pool": 110,
+   "sideboard": 3
   },
   "steps": {
    "E1": 41,
@@ -2336,14 +2357,21 @@
     "part": "mainboard",
     "step": "E4",
     "strict": true
+   },
+   {
+    "card": "Liliana of the Veil",
+    "host": "LOYALTY:0:1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
    }
   ],
   "executable": 20,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 1,
-   "pool": 19,
-   "sideboard": 0
+   "pool": 18,
+   "sideboard": 1
   },
   "steps": {
    "E2": 6,

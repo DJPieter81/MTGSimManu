@@ -1,8 +1,8 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.2698,
-  "deck_removal_typed_share": 0.869,
+  "deck_removal_ready_share": 0.2685,
+  "deck_removal_typed_share": 0.8599,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
    "target.scope:not_you": 1,
@@ -17,18 +17,18 @@
    "target.union:sorcery": 1,
    "target.unparsed": 5
   },
-  "deck_typed_share": 0.7628,
+  "deck_typed_share": 0.7568,
   "deck_unmodelled_by_stage": {
-   "AMOUNT": 7,
-   "CLAUSE": 24,
-   "CONDITION": 19,
+   "AMOUNT": 8,
+   "CLAUSE": 25,
+   "CONDITION": 20,
    "DURATION": 3,
-   "FILTER": 26,
+   "FILTER": 29,
    "ITERATION": 2,
-   "NO_LEMMA": 18,
-   "RECOGNIZED_UNSUPPORTED": 8,
+   "NO_LEMMA": 21,
+   "RECOGNIZED_UNSUPPORTED": 9,
    "REFERENCE": 16,
-   "REPLACEMENT": 65,
+   "REPLACEMENT": 66,
    "STRUCTURE": 5,
    "TARGET": 18,
    "TRIGGER_EMBEDDED": 2
@@ -219,9 +219,9 @@
      "typed": 14
     },
     "LOYALTY": {
-     "share": 0.7969,
-     "specs": 64,
-     "typed": 51
+     "share": 0.7808,
+     "specs": 73,
+     "typed": 57
     },
     "MANA_ABILITY": {
      "share": 0.9412,
@@ -235,23 +235,23 @@
     },
     "REPLACEMENT": {
      "share": 0.0,
-     "specs": 64,
+     "specs": 65,
      "typed": 0
     },
     "SPELL": {
-     "share": 0.9086,
-     "specs": 175,
+     "share": 0.8983,
+     "specs": 177,
      "typed": 159
     },
     "STATIC": {
-     "share": 0.4235,
-     "specs": 85,
+     "share": 0.4045,
+     "specs": 89,
      "typed": 36
     },
     "TRIGGERED": {
-     "share": 0.8779,
-     "specs": 213,
-     "typed": 187
+     "share": 0.8773,
+     "specs": 220,
+     "typed": 193
     },
     "UNKNOWN": {
      "share": 0.0,
@@ -259,18 +259,18 @@
      "typed": 0
     }
    },
-   "cards": 366,
+   "cards": 376,
    "removal_gate": {
-    "clauses": 252,
+    "clauses": 257,
     "gate": 0.85,
     "met": false,
-    "ready": 68,
-    "ready_share": 0.2698,
-    "typed": 219,
-    "typed_share": 0.869
+    "ready": 69,
+    "ready_share": 0.2685,
+    "typed": 221,
+    "typed_share": 0.8599
    },
-   "specs": 898,
-   "typed": 685
+   "specs": 921,
+   "typed": 697
   },
   "keyword_lines": [
    [

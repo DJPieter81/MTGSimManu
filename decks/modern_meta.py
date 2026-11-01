@@ -62,8 +62,11 @@ METAGAME_SHARES = {
     # Blink -> Azorius Blink; "Reanimator" (2%) is Instant Reanimator by
     # overlap (43/60) and adds to its own 2%. Registered decks absent from
     # the top 20 carry a 0.5% residual; the two WST lists stay at 0.
+    # Rakdos Aggro (15%) has no registered match (at most 16/60) and is
+    # registered as its own deck.
     # Unregistered top-20 buckets: Red Deck Wins 2%, Mono Black Aggro 1%,
     # Landless 1%, Allosaurus Combo 1%. Raw percentages.
+    "Rakdos Aggro": 15.0,
     "Broodscale Bloodchief": 14.0,
     "Affinity": 7.0,
     "Azorius Control": 7.0,
@@ -1438,6 +1441,50 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Thraben Charm": 2,
             "Vexing Bauble": 2,
             "Wear // Tear": 2,
+        },
+    },
+    "Rakdos Aggro": {
+        # Nov 2026 addition (base: mtgtop8.com Modern event=93016 deck=906614,
+        # bucket "Rakdos Aggro" 15.0% -- the largest share, unregistered until
+        # now; retrieved 2026-11-01 via tools/fetch_tier1_decklists.py;
+        # data/tier1_decklists/2026-11-01/). A graveyard-fuelled aggro deck:
+        # Nethergoyf, Moonshadow and Dark Matter Manipulator grow with the
+        # graveyard; Detective's Phoenix returns from it; Fear of Missing Out
+        # adds a combat under delirium.
+        "mainboard": {
+            "Blood Crypt": 3,
+            "Bloodstained Mire": 4,
+            "Marsh Flats": 3,
+            "Mountain": 1,
+            "Raucous Theater": 2,
+            "Swamp": 2,
+            "Verdant Catacombs": 1,
+            "Wooded Foothills": 1,
+            "Dark Matter Manipulator": 4,
+            "Detective's Phoenix": 4,
+            "Fear of Missing Out": 4,
+            "Moonshadow": 4,
+            "Nethergoyf": 4,
+            "Street Wraith": 4,
+            "Troll of Khazad-dûm": 2,
+            "Fatal Push": 1,
+            "Lightning Bolt": 4,
+            "Thoughtseize": 4,
+            "Unholy Heat": 2,
+            "Blood Moon": 1,
+            "Mishra's Bauble": 4,
+            "Nihil Spellbomb": 1,
+        },
+        "sideboard": {
+            "End of the Hunt": 2,
+            "Grafdigger's Cage": 2,
+            "Ingot Chewer": 1,
+            "Liliana of the Veil": 1,
+            "Meltdown": 3,
+            "Nihil Spellbomb": 1,
+            "Ob Nixilis, the Adversary": 1,
+            "Obsidian Charmaw": 3,
+            "Strategic Betrayal": 1,
         },
     },
 }

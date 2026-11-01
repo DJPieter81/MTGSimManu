@@ -136,6 +136,7 @@ DECK_ALIASES = {
     "azorius": "Azorius Control",
     "uw": "Azorius Control",
     "wst": "Azorius Control",
+    "rakdos": "Rakdos Aggro",
 }
 
 

@@ -17,7 +17,7 @@ summary: >
 # Mechanic coverage census
 
 Generated 2026-11-01 by `python tools/keyword_coverage.py` over the card DB and
-the 25 registered lists (MB + SB). Regenerate after a DB refresh or a
+the 26 registered lists (MB + SB). Regenerate after a DB refresh or a
 new mechanic lands; do not edit by hand.
 
 Status is derived from the code's declared vocabulary only: a `Keyword` enum
@@ -37,6 +37,7 @@ exists to drive.
 | ninjutsu | none | 1 | 1 | 32 | Kaito, Bane of Nightmares |
 | overload | none | 1 | 1 | 23 | Break the Ice |
 | meld | none | 1 | 1 | 14 | Hanweir Battlements // Hanweir, the Writhing Township |
+| casualty | none | 1 | 1 | 13 | Ob Nixilis, the Adversary |
 | daybound | none | 0 | 0 | 70 |  |
 | changeling | none | 0 | 0 | 67 |  |
 | shroud | none | 0 | 0 | 62 |  |
@@ -66,7 +67,6 @@ exists to drive.
 | riot | none | 0 | 0 | 15 |  |
 | fabricate | none | 0 | 0 | 15 |  |
 | emerge | none | 0 | 0 | 14 |  |
-| casualty | none | 0 | 0 | 13 |  |
 | blitz | none | 0 | 0 | 13 |  |
 | eternalize | none | 0 | 0 | 13 |  |
 | outlast | none | 0 | 0 | 12 |  |
@@ -79,20 +79,20 @@ exists to drive.
 | connive | none | 0 | 0 | 4 |  |
 | partner | none | 0 | 0 | 2 |  |
 | squad | none | 0 | 0 | 1 |  |
-| flying | enum | 171 | 33 | 3273 | Abhorrent Oculus, Archon of Cruelty, Atraxa, Grand Unifier |
+| flying | enum | 178 | 33 | 3273 | Abhorrent Oculus, Archon of Cruelty, Atraxa, Grand Unifier |
 | flash | enum | 111 | 10 | 547 | Doorkeeper Thrull, Endurance, Leyline Binding |
-| haste | enum | 66 | 17 | 1154 | Arena of Glory, Ba Sing Se, Badgermole Cub |
+| haste | enum | 70 | 17 | 1154 | Arena of Glory, Ba Sing Se, Badgermole Cub |
 | lifelink | enum | 66 | 10 | 564 | Atraxa, Grand Unifier, Enter the Avatar State, Griselbrand |
-| evoke | enum | 56 | 4 | 32 | Endurance, Solitude, Subtlety |
-| surveil | typed field (has_surveil) | 44 | 13 | 248 | Commercial District, Dragon's Rage Channeler, Elegant Parlor |
+| evoke | enum | 57 | 5 | 32 | Endurance, Ingot Chewer, Solitude |
+| surveil | typed field (has_surveil) | 46 | 13 | 248 | Commercial District, Dragon's Rage Channeler, Elegant Parlor |
 | trample | enum | 33 | 12 | 1141 | Cityscape Leveler, Cori-Steel Cutter, Craterhoof Behemoth |
 | warp | typed field (warp_cost) | 33 | 3 | 35 | Haliya, Guided by Light, Pinnacle Emissary, Quantum Riddler |
+| cycling | typed field (cycling_cost_data) | 32 | 9 | 210 | Hollow One, Indatha Triome, Marauding Mako |
 | flashback | typed field (flashback_cost) | 32 | 8 | 163 | Faithful Mending, Faithless Looting, Lava Dart |
 | vigilance | enum | 29 | 9 | 841 | Atraxa, Grand Unifier, Boromir, Warden of the Tower, Celestial Colonnade |
-| cycling | typed field (cycling_cost_data) | 28 | 9 | 210 | Hollow One, Indatha Triome, Marauding Mako |
 | reach | enum | 21 | 7 | 500 | Arboreal Grazer, Endurance, Generous Ent |
 | first strike | enum | 19 | 6 | 533 | Enter the Avatar State, Ocelot Pride, Scion of Draco |
-| revolt | typed field (removal_mv_condition) | 17 | 1 | 18 | Fatal Push |
+| revolt | typed field (removal_mv_condition) | 18 | 1 | 18 | Fatal Push |
 | kicker | typed field (kicker_cost) | 16 | 2 | 167 | Orim's Chant, Sowing Mycospawn |
 | prowess | enum | 16 | 4 | 99 | Cori-Steel Cutter, Monastery Swiftspear, Pompous Battlemage // Improvised Act |
 | hexproof | enum | 15 | 8 | 274 | Enter the Avatar State, Kaito, Bane of Nightmares, Leyline of Sanctity |
@@ -100,6 +100,7 @@ exists to drive.
 | equip | typed field (equip_cost) | 14 | 6 | 528 | Blade of the Bloodchief, Cori-Steel Cutter, Cranial Plating |
 | protection from | typed field (protection_from_colors) | 14 | 2 | 176 | Emrakul, the Promised End, Sanctifier en-Vec |
 | devoid | characteristic (colors) | 14 | 3 | 127 | Basking Broodscale, Sowing Mycospawn, Thief of Existence |
+| delirium | typed field (has_delirium) | 14 | 4 | 73 | Dragon's Rage Channeler, Fear of Missing Out, Shifting Woodland |
 | ward | typed field (ward_cost) | 13 | 4 | 234 | Colossal Skyturtle, Kappa Cannoneer, Lavaspur Boots |
 | indestructible | enum | 12 | 7 | 386 | Boromir, Warden of the Tower, Darksteel Citadel, Shadowspear |
 | splice | typed field (splice_cost) | 12 | 2 | 29 | Desperate Ritual, Goryo's Vengeance |
@@ -107,20 +108,19 @@ exists to drive.
 | scry | typed field (has_scry) | 11 | 1 | 392 | Preordain |
 | landfall | typed field (has_landfall) | 9 | 2 | 170 | Icetill Explorer, Omnath, Locus of Creation |
 | deathtouch | enum | 8 | 1 | 444 | Atraxa, Grand Unifier |
-| delirium | typed field (has_delirium) | 8 | 3 | 73 | Dragon's Rage Channeler, Shifting Woodland, Unholy Heat |
 | cascade | enum | 8 | 2 | 20 | Shardless Agent, Violent Outburst |
+| menace | enum | 7 | 2 | 441 | Moonshadow, Sire of Seven Deaths |
 | affinity for | typed field (has_artifact_synergy) | 6 | 2 | 68 | Emry, Lurker of the Loch, Thought Monitor |
+| escape | typed field (escape_cost) | 6 | 3 | 24 | Cling to Dust, Nethergoyf, Ox of Agonas |
 | amass | handler (every registered card) | 5 | 1 | 63 | Orcish Bowmasters |
 | madness | typed field (madness_cost) | 4 | 1 | 50 | Blazing Rootwalla |
 | storm | enum | 4 | 3 | 31 | Empty the Warrens, Flusterstorm, Grapeshot |
 | ascend | handler (every registered card) | 4 | 1 | 24 | Ocelot Pride |
 | harmonize | typed field (harmonize_cost) | 4 | 1 | 11 | Nature's Rhythm |
 | flurry | typed field (ordinal_cast_trigger) | 4 | 1 | 10 | Cori-Steel Cutter |
-| menace | enum | 3 | 1 | 441 | Sire of Seven Deaths |
 | suspend | enum | 3 | 1 | 63 | Living End |
 | mobilize | typed field (has_mobilize) | 3 | 1 | 12 | Voice of Victory |
 | double strike | enum | 2 | 1 | 236 | Practiced Offense |
-| escape | typed field (escape_cost) | 2 | 2 | 24 | Cling to Dust, Ox of Agonas |
 | undying | enum | 2 | 1 | 23 | Undying Evil |
 | unearth | enum | 1 | 1 | 50 | Cityscape Leveler |
 | delve | typed field (has_delve) | 1 | 1 | 23 | Murktide Regent |
@@ -132,4 +132,4 @@ exists to drive.
 | spectacle | typed field (spectacle_cost) | 0 | 0 | 20 |  |
 | annihilator | enum | 0 | 0 | 15 |  |
 
-**49 words with no model**, ranked by registered-deck usage: metalcraft (11), impending (4), ferocious (3), crew (1), ninjutsu (1), overload (1), meld (1), daybound (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0), start your engines (0).
+**49 words with no model**, ranked by registered-deck usage: metalcraft (11), impending (4), ferocious (3), crew (1), ninjutsu (1), overload (1), meld (1), casualty (1), daybound (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0).
