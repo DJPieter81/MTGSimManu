@@ -211,7 +211,7 @@ git commit -m "chore: refresh ModernAtomic for new sets"
 git push origin main
 ```
 
-**New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026), **Marvel Super Heroes (Jun 26 2026) — STILL MISSING from the DB**: the 2026-07-05 refresh attempt failed because mtgjson.com is blocked by the session egress proxy (CONNECT 403 policy denial); re-run `update_modern_atomic.py` from an environment that can reach mtgjson.com.
+**New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026), Marvel Super Heroes (Jun 26 2026), The Hobbit (Aug 14 2026), Reality Fracture (Oct 2 2026) — all in the DB as of the MTGJSON 5.3.0+20261031 refresh (2026-11-01; mtgjson.com is reachable from the session again). Next: Star Trek (Nov 13 2026).
 
 **Import a new deck:**
 ```bash

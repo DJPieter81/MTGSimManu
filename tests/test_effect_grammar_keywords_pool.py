@@ -212,7 +212,8 @@ NON_702_KEYWORDS = frozenset({
     # CR 701 keyword actions.
     "adapt", "airbend", "amass", "assemble", "behold", "blight", "bolster",
     "clash", "cloak", "collect evidence", "connive", "detain", "discover",
-    "double", "earthbend", "endure", "exert", "explore", "fateseal",
+    "double", "earthbend", "empower jace", "endure", "exert", "explore",
+    "fateseal",
     "fight", "forage", "goad", "heal", "incubate", "investigate", "learn",
     "manifest", "manifest dread", "meld", "mill", "monstrosity", "populate",
     "prepared", "proliferate", "recruit", "regenerate", "scry", "support", "surveil",
