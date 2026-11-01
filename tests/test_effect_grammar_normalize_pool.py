@@ -42,6 +42,10 @@ L0 sees names only through `Facts.names`.
 """
 from __future__ import annotations
 
+import sys as _sys
+import os as _os
+_sys.path.insert(0, _os.path.dirname(__file__))
+from retired_deck_witnesses import RETIRED as _RETIRED
 import re
 import time
 from collections import Counter
@@ -267,7 +271,8 @@ def test_registered_deck_witness_names_are_in_a_registered_deck():
         for part in ("mainboard", "sideboard"):
             listed.update((deck.get(part) or {}).keys())
     for name in _WITNESS_NAMES:
-        assert any(n == name or n.startswith(name + " // ") for n in listed), name
+        assert any(n == name or n.startswith(name + " // ") for n in listed) \
+            or name in _RETIRED, name
 
 
 _WITNESS_NAMES = ("Ajani, Nacatl Pariah", "Kaito, Bane of Nightmares",

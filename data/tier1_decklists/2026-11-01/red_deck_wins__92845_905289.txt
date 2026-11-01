@@ -1,0 +1,35 @@
+// Red Deck Wins — mtgtop8 event=92845 deck=905289
+2 Arid Mesa
+3 Barbarian Ring
+2 Bloodstained Mire
+1 Elegant Parlor
+3 Inspiring Vantage
+3 Mountain
+2 Sacred Foundry
+3 Sunbaked Canyon
+1 Wooded Foothills
+2 Eidolon of the Great Revel
+4 Goblin Guide
+4 Monastery Swiftspear
+4 Boltwave
+4 Boros Charm
+1 Forked Bolt
+4 Lava Spike
+4 Lightning Bolt
+4 Lightning Helix
+4 Rift Bolt
+2 Searing Blaze
+4 Skewer the Critics
+
+Sideboard
+2 Damping Sphere
+1 Deflecting Palm
+1 Obsidian Charmaw
+1 Orim's Chant
+1 Path to Exile
+1 Rest in Peace
+2 Roiling Vortex
+1 Searing Blood
+2 Smash to Smithereens
+2 Surgical Extraction
+1 Wear / Tear

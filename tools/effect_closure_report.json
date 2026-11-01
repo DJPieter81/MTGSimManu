@@ -70,9 +70,9 @@
     "strict": true
    },
    {
-    "card": "The Filigree Sylex",
-    "host": "ACTIVATED:0:2",
-    "part": "sideboard",
+    "card": "Pyrite Spellbomb",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
     "step": "E1",
     "strict": true
    },
@@ -87,9 +87,9 @@
   "executable": 98,
   "family": "damage",
   "hosts": {
-   "mainboard": 2,
+   "mainboard": 3,
    "pool": 94,
-   "sideboard": 2
+   "sideboard": 1
   },
   "steps": {
    "E1": 98
@@ -138,6 +138,13 @@
     "strict": true
    },
    {
+    "card": "Pyrite Spellbomb",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
     "card": "Silent Clearing",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
@@ -169,8 +176,8 @@
   "executable": 272,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 9,
-   "pool": 264,
+   "mainboard": 10,
+   "pool": 263,
    "sideboard": 0
   },
   "steps": {
@@ -194,13 +201,6 @@
     "part": "sideboard",
     "step": null,
     "strict": false
-   },
-   {
-    "card": "Keen-Eyed Curator",
-    "host": "ACTIVATED:0:1",
-    "part": "sideboard",
-    "step": "E2",
-    "strict": true
    },
    {
     "card": "Nihil Spellbomb",
@@ -228,8 +228,8 @@
   "family": "removal",
   "hosts": {
    "mainboard": 2,
-   "pool": 25,
-   "sideboard": 3
+   "pool": 26,
+   "sideboard": 2
   },
   "steps": {
    "E2": 23,
@@ -297,6 +297,13 @@
  "activated_effects:PUT_COUNTER_SELF": {
   "deck_hosts": [
    {
+    "card": "Arcbound Ravager",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Psychic Frog",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
@@ -314,8 +321,8 @@
   "executable": 0,
   "family": "tokens_counters",
   "hosts": {
-   "mainboard": 1,
-   "pool": 101,
+   "mainboard": 2,
+   "pool": 100,
    "sideboard": 1
   },
   "steps": {
@@ -328,21 +335,13 @@
   }
  },
  "activated_effects:PUT_COUNTER_TARGET": {
-  "deck_hosts": [
-   {
-    "card": "Oblivion Stone",
-    "host": "ACTIVATED:0:0",
-    "part": "sideboard",
-    "step": "E4",
-    "strict": true
-   }
-  ],
+  "deck_hosts": [],
   "executable": 0,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 0,
-   "pool": 45,
-   "sideboard": 1
+   "pool": 46,
+   "sideboard": 0
   },
   "steps": {
    "E4": 46
@@ -457,13 +456,6 @@
     "strict": true
    },
    {
-    "card": "Elvish Reclaimer",
-    "host": "ACTIVATED:0:1",
-    "part": "sideboard",
-    "step": "E3",
-    "strict": true
-   },
-   {
     "card": "Engineered Explosives",
     "host": "ACTIVATED:0:1",
     "part": "mainboard",
@@ -499,14 +491,14 @@
     "strict": true
    },
    {
-    "card": "Sakura-Tribe Scout",
-    "host": "ACTIVATED:0:0",
-    "part": "mainboard",
+    "card": "Marwyn, the Preserver",
+    "host": "ACTIVATED:0:1",
+    "part": "sideboard",
     "step": "E2",
     "strict": true
    },
    {
-    "card": "The Filigree Sylex",
+    "card": "The Echoverse Fulcrum",
     "host": "ACTIVATED:0:1",
     "part": "sideboard",
     "step": "E2",
@@ -516,8 +508,8 @@
   "executable": 268,
   "family": "removal",
   "hosts": {
-   "mainboard": 8,
-   "pool": 257,
+   "mainboard": 7,
+   "pool": 258,
    "sideboard": 3
   },
   "steps": {
@@ -592,6 +584,13 @@
     "strict": true
    },
    {
+    "card": "Skysovereign, Consul Flagship",
+    "host": "TRIGGERED:0:1",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
     "card": "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -617,8 +616,8 @@
   "family": "attack_trigger",
   "hosts": {
    "mainboard": 6,
-   "pool": 129,
-   "sideboard": 0
+   "pool": 128,
+   "sideboard": 1
   },
   "steps": {
    "E1": 26,
@@ -704,10 +703,10 @@
  "bounce": {
   "deck_hosts": [
    {
-    "card": "Into the Flood Maw",
-    "host": "SPELL:0:1",
-    "part": "sideboard",
-    "step": "E2",
+    "card": "Boomerang Basics",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
     "strict": false
    },
    {
@@ -721,9 +720,9 @@
   "executable": 0,
   "family": "removal",
   "hosts": {
-   "mainboard": 1,
+   "mainboard": 2,
    "pool": 171,
-   "sideboard": 1
+   "sideboard": 0
   },
   "steps": {
    "E2": 77,
@@ -750,6 +749,13 @@
  },
  "card_flow": {
   "deck_hosts": [
+   {
+    "card": "Boomerang Basics",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
    {
     "card": "Burning Inquiry",
     "host": "SPELL:0:0",
@@ -788,7 +794,7 @@
    {
     "card": "Kaito, Bane of Nightmares",
     "host": "LOYALTY:0:3",
-    "part": "mainboard",
+    "part": "sideboard",
     "step": "E3",
     "strict": true
    },
@@ -819,14 +825,21 @@
     "part": "mainboard",
     "step": "E3",
     "strict": false
+   },
+   {
+    "card": "Twinned Vision",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
    }
   ],
   "executable": 108,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 10,
-   "pool": 803,
-   "sideboard": 0
+   "mainboard": 11,
+   "pool": 801,
+   "sideboard": 1
   },
   "steps": {
    "E1": 2,
@@ -886,13 +899,6 @@
     "strict": true
    },
    {
-    "card": "Slickshot Show-Off",
-    "host": "TRIGGERED:0:1",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": true
-   },
-   {
     "card": "Ugin, Eye of the Storms",
     "host": "TRIGGERED:0:1",
     "part": "mainboard",
@@ -903,8 +909,8 @@
   "executable": 95,
   "family": "cast_trigger",
   "hosts": {
-   "mainboard": 6,
-   "pool": 89,
+   "mainboard": 5,
+   "pool": 90,
    "sideboard": 0
   },
   "steps": {
@@ -1069,6 +1075,13 @@
     "strict": false
    },
    {
+    "card": "The Wandering Emperor",
+    "host": "LOYALTY:0:3",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
     "card": "Warping Wail",
     "host": "MODE:0:2:mode2",
     "part": "mainboard",
@@ -1087,8 +1100,8 @@
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
-   "pool": 417,
-   "sideboard": 2
+   "pool": 416,
+   "sideboard": 3
   },
   "steps": {
    "E4": 274,
@@ -1119,14 +1132,14 @@
    {
     "card": "Galvanic Blast",
     "host": "SPELL:0:0",
-    "part": "mainboard",
+    "part": "sideboard",
     "step": "E1",
     "strict": true
    },
    {
     "card": "Grapeshot",
     "host": "SPELL:0:0",
-    "part": "mainboard",
+    "part": "sideboard",
     "step": "E1",
     "strict": true
    },
@@ -1148,9 +1161,9 @@
   "executable": 35,
   "family": "damage",
   "hosts": {
-   "mainboard": 4,
+   "mainboard": 2,
    "pool": 34,
-   "sideboard": 0
+   "sideboard": 2
   },
   "steps": {
    "E1": 35,
@@ -1167,21 +1180,7 @@
  "dispatched": {
   "deck_hosts": [
    {
-    "card": "Abrade",
-    "host": "MODE:0:0:mode0",
-    "part": "sideboard",
-    "step": "E1",
-    "strict": true
-   },
-   {
     "card": "Cling to Dust",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": true
-   },
-   {
-    "card": "Consider",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
@@ -1204,14 +1203,14 @@
    {
     "card": "Galvanic Blast",
     "host": "SPELL:0:0",
-    "part": "mainboard",
+    "part": "sideboard",
     "step": "E1",
     "strict": true
    },
    {
     "card": "Grapeshot",
     "host": "SPELL:0:0",
-    "part": "mainboard",
+    "part": "sideboard",
     "step": "E1",
     "strict": true
    },
@@ -1259,6 +1258,13 @@
    },
    {
     "card": "Nature's Rhythm",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Otherworldly Gaze",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E3",
@@ -1323,7 +1329,7 @@
    {
     "card": "Unholy Heat",
     "host": "SPELL:0:0",
-    "part": "mainboard",
+    "part": "sideboard",
     "step": "E1",
     "strict": true
    },
@@ -1345,9 +1351,9 @@
   "executable": 572,
   "family": "damage",
   "hosts": {
-   "mainboard": 22,
-   "pool": 547,
-   "sideboard": 3
+   "mainboard": 19,
+   "pool": 548,
+   "sideboard": 5
   },
   "steps": {
    "E1": 154,
@@ -1440,13 +1446,6 @@
  },
  "etb:dispatch": {
   "deck_hosts": [
-   {
-    "card": "Aftermath Analyst",
-    "host": "TRIGGERED:0:0",
-    "part": "mainboard",
-    "step": "E3",
-    "strict": true
-   },
    {
     "card": "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
     "host": "TRIGGERED:0:0",
@@ -1588,7 +1587,7 @@
     "strict": true
    },
    {
-    "card": "Static Prison",
+    "card": "Stormchaser's Talent",
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
     "step": "E4",
@@ -1626,8 +1625,8 @@
   "executable": 753,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 26,
-   "pool": 727,
+   "mainboard": 25,
+   "pool": 728,
    "sideboard": 0
   },
   "steps": {
@@ -1874,27 +1873,13 @@
     "part": "mainboard",
     "step": null,
     "strict": false
-   },
-   {
-    "card": "Consult the Star Charts",
-    "host": "SPELL:0:1",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
-   },
-   {
-    "card": "Consult the Star Charts",
-    "host": "SPELL:0:1:kicked",
-    "part": "mainboard",
-    "step": null,
-    "strict": false
    }
   ],
   "executable": 0,
   "family": "card_flow",
   "hosts": {
-   "mainboard": 3,
-   "pool": 30,
+   "mainboard": 1,
+   "pool": 32,
    "sideboard": 0
   },
   "steps": {
@@ -2009,28 +1994,13 @@
   }
  },
  "object_restriction": {
-  "deck_hosts": [
-   {
-    "card": "Untimely Malfunction",
-    "host": "MODE:0:2:mode2",
-    "part": "sideboard",
-    "step": "E5",
-    "strict": true
-   },
-   {
-    "card": "Untimely Malfunction",
-    "host": "SPELL:0:0",
-    "part": "sideboard",
-    "step": null,
-    "strict": false
-   }
-  ],
+  "deck_hosts": [],
   "executable": 0,
   "family": "pump_restrict",
   "hosts": {
    "mainboard": 0,
-   "pool": 17,
-   "sideboard": 2
+   "pool": 19,
+   "sideboard": 0
   },
   "steps": {
    "E5": 17,
@@ -2086,6 +2056,13 @@
     "strict": false
    },
    {
+    "card": "Thief of Existence",
+    "host": "TRIGGERED:0:1",
+    "part": "sideboard",
+    "step": null,
+    "strict": false
+   },
+   {
     "card": "Ugin, Eye of the Storms",
     "host": "TRIGGERED:0:0",
     "part": "mainboard",
@@ -2104,8 +2081,8 @@
   "family": "removal",
   "hosts": {
    "mainboard": 6,
-   "pool": 65,
-   "sideboard": 1
+   "pool": 64,
+   "sideboard": 2
   },
   "steps": {
    "E1": 2,
@@ -2202,12 +2179,20 @@
   }
  },
  "planeswalker_manager:DRAW_AND_UNTAP_LANDS": {
-  "deck_hosts": [],
+  "deck_hosts": [
+   {
+    "card": "Teferi, Hero of Dominaria",
+    "host": "LOYALTY:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   }
+  ],
   "executable": 0,
   "family": "pump_restrict",
   "hosts": {
-   "mainboard": 0,
-   "pool": 3,
+   "mainboard": 1,
+   "pool": 2,
    "sideboard": 0
   },
   "steps": {
@@ -2225,12 +2210,20 @@
   }
  },
  "planeswalker_manager:EMBLEM_EXILE_PERMANENT": {
-  "deck_hosts": [],
+  "deck_hosts": [
+   {
+    "card": "Teferi, Hero of Dominaria",
+    "host": "LOYALTY:0:2",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
   "executable": 0,
   "family": "removal",
   "hosts": {
-   "mainboard": 0,
-   "pool": 4,
+   "mainboard": 1,
+   "pool": 3,
    "sideboard": 0
   },
   "steps": {
@@ -2310,12 +2303,20 @@
   }
  },
  "planeswalker_manager:TUCK_TARGET_INTO_LIBRARY": {
-  "deck_hosts": [],
+  "deck_hosts": [
+   {
+    "card": "Teferi, Hero of Dominaria",
+    "host": "LOYALTY:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
   "executable": 0,
   "family": "removal",
   "hosts": {
-   "mainboard": 0,
-   "pool": 2,
+   "mainboard": 1,
+   "pool": 1,
    "sideboard": 0
   },
   "steps": {
@@ -2441,20 +2442,13 @@
     "part": "mainboard",
     "step": "E3",
     "strict": true
-   },
-   {
-    "card": "Static Prison",
-    "host": "TRIGGERED:0:1",
-    "part": "mainboard",
-    "step": "E2",
-    "strict": true
    }
   ],
   "executable": 127,
   "family": "step_trigger",
   "hosts": {
-   "mainboard": 4,
-   "pool": 123,
+   "mainboard": 3,
+   "pool": 124,
    "sideboard": 0
   },
   "steps": {
@@ -2481,39 +2475,18 @@
  "targeted_pump": {
   "deck_hosts": [
    {
-    "card": "Assault Strobe",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": true
-   },
-   {
-    "card": "Mutagenic Growth",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": true
-   },
-   {
     "card": "Undying Evil",
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E5",
     "strict": true
-   },
-   {
-    "card": "Violent Urge",
-    "host": "SPELL:0:0",
-    "part": "mainboard",
-    "step": "E5",
-    "strict": false
    }
   ],
   "executable": 0,
   "family": "pump_restrict",
   "hosts": {
-   "mainboard": 4,
-   "pool": 388,
+   "mainboard": 1,
+   "pool": 391,
    "sideboard": 0
   },
   "steps": {
@@ -2539,8 +2512,8 @@
  "targeted_removal": {
   "deck_hosts": [
    {
-    "card": "Abrade",
-    "host": "MODE:0:1:mode1",
+    "card": "Abrupt Decay",
+    "host": "SPELL:0:1",
     "part": "sideboard",
     "step": "E2",
     "strict": true
@@ -2574,13 +2547,6 @@
     "strict": true
    },
    {
-    "card": "Untimely Malfunction",
-    "host": "MODE:0:0:mode0",
-    "part": "sideboard",
-    "step": "E2",
-    "strict": true
-   },
-   {
     "card": "Wear // Tear",
     "host": "SPELL:0:0",
     "part": "sideboard",
@@ -2592,8 +2558,8 @@
   "family": "removal",
   "hosts": {
    "mainboard": 3,
-   "pool": 222,
-   "sideboard": 4
+   "pool": 223,
+   "sideboard": 3
   },
   "steps": {
    "E2": 225,

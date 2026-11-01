@@ -2,7 +2,7 @@
 title: Mechanic coverage census — keyword words in the pool vs the engine's model
 status: active
 priority: secondary
-session: 2026-10-11
+session: 2026-11-01
 tags:
   - rules-audit
   - coverage
@@ -16,7 +16,7 @@ summary: >
 
 # Mechanic coverage census
 
-Generated 2026-10-11 by `python tools/keyword_coverage.py` over the card DB and
+Generated 2026-11-01 by `python tools/keyword_coverage.py` over the card DB and
 the 25 registered lists (MB + SB). Regenerate after a DB refresh or a
 new mechanic lands; do not edit by hand.
 
@@ -30,13 +30,13 @@ exists to drive.
 
 | word | status | registered-deck copies | registered cards | pool cards | examples |
 |---|---|---:|---:|---:|---|
-| metalcraft | none | 10 | 2 | 32 | Galvanic Blast, Mox Opal |
-| ferocious | none | 4 | 1 | 26 | Stubborn Denial |
-| ninjutsu | none | 2 | 1 | 32 | Kaito, Bane of Nightmares |
-| gift | none | 1 | 1 | 25 | Into the Flood Maw |
-| overload | none | 1 | 1 | 23 | Vandalblast |
+| metalcraft | none | 11 | 2 | 32 | Galvanic Blast, Mox Opal |
+| impending | none | 4 | 1 | 5 | Overlord of the Balemurk |
+| ferocious | none | 3 | 1 | 26 | Stubborn Denial |
+| crew | none | 1 | 1 | 147 | Skysovereign, Consul Flagship |
+| ninjutsu | none | 1 | 1 | 32 | Kaito, Bane of Nightmares |
+| overload | none | 1 | 1 | 23 | Break the Ice |
 | meld | none | 1 | 1 | 14 | Hanweir Battlements // Hanweir, the Writhing Township |
-| crew | none | 0 | 0 | 147 |  |
 | daybound | none | 0 | 0 | 70 |  |
 | changeling | none | 0 | 0 | 67 |  |
 | shroud | none | 0 | 0 | 62 |  |
@@ -52,6 +52,7 @@ exists to drive.
 | mutate | none | 0 | 0 | 31 |  |
 | saddle | none | 0 | 0 | 30 |  |
 | threshold | none | 0 | 0 | 28 |  |
+| gift | none | 0 | 0 | 25 |  |
 | bloodthirst | none | 0 | 0 | 22 |  |
 | bargain | none | 0 | 0 | 22 |  |
 | backup | none | 0 | 0 | 20 |  |
@@ -74,62 +75,61 @@ exists to drive.
 | afterlife | none | 0 | 0 | 11 |  |
 | training | none | 0 | 0 | 10 |  |
 | afflict | none | 0 | 0 | 10 |  |
-| impending | none | 0 | 0 | 5 |  |
 | explore | none | 0 | 0 | 5 |  |
 | connive | none | 0 | 0 | 4 |  |
 | partner | none | 0 | 0 | 2 |  |
 | squad | none | 0 | 0 | 1 |  |
-| flying | enum | 181 | 33 | 3273 | Abhorrent Oculus, Archon of Cruelty, Atraxa, Grand Unifier |
-| flash | enum | 111 | 12 | 547 | Containment Priest, Disruptor Flute, Doorkeeper Thrull |
-| lifelink | enum | 72 | 10 | 564 | Atraxa, Grand Unifier, Enter the Avatar State, Griselbrand |
-| haste | enum | 65 | 17 | 1154 | Arena of Glory, Badgermole Cub, Cori-Steel Cutter |
+| flying | enum | 171 | 33 | 3273 | Abhorrent Oculus, Archon of Cruelty, Atraxa, Grand Unifier |
+| flash | enum | 111 | 10 | 547 | Doorkeeper Thrull, Endurance, Leyline Binding |
+| haste | enum | 66 | 17 | 1154 | Arena of Glory, Ba Sing Se, Badgermole Cub |
+| lifelink | enum | 66 | 10 | 564 | Atraxa, Grand Unifier, Enter the Avatar State, Griselbrand |
 | evoke | enum | 56 | 4 | 32 | Endurance, Solitude, Subtlety |
-| surveil | typed field (has_surveil) | 45 | 13 | 248 | Commercial District, Consider, Dragon's Rage Channeler |
-| trample | enum | 35 | 13 | 1141 | Cityscape Leveler, Cori-Steel Cutter, Craterhoof Behemoth |
-| warp | typed field (warp_cost) | 35 | 4 | 35 | Haliya, Guided by Light, Pinnacle Emissary, Quantum Riddler |
-| flashback | typed field (flashback_cost) | 33 | 7 | 163 | Faithful Mending, Faithless Looting, Lava Dart |
-| vigilance | enum | 27 | 6 | 841 | Atraxa, Grand Unifier, Elesh Norn, Mother of Machines, Kaheera, the Orphanguard |
-| cycling | typed field (cycling_cost_data) | 26 | 7 | 210 | Hollow One, Indatha Triome, Marauding Mako |
-| first strike | enum | 23 | 6 | 533 | Enter the Avatar State, Ocelot Pride, Scion of Draco |
-| reach | enum | 23 | 6 | 500 | Arboreal Grazer, Endurance, Generous Ent |
-| kicker | typed field (kicker_cost) | 23 | 3 | 167 | Consult the Star Charts, Orim's Chant, Sowing Mycospawn |
-| revolt | typed field (removal_mv_condition) | 22 | 1 | 18 | Fatal Push |
-| protection from | typed field (protection_from_colors) | 18 | 2 | 176 | Emrakul, the Promised End, Sanctifier en-Vec |
+| surveil | typed field (has_surveil) | 44 | 13 | 248 | Commercial District, Dragon's Rage Channeler, Elegant Parlor |
+| trample | enum | 33 | 12 | 1141 | Cityscape Leveler, Cori-Steel Cutter, Craterhoof Behemoth |
+| warp | typed field (warp_cost) | 33 | 3 | 35 | Haliya, Guided by Light, Pinnacle Emissary, Quantum Riddler |
+| flashback | typed field (flashback_cost) | 32 | 8 | 163 | Faithful Mending, Faithless Looting, Lava Dart |
+| vigilance | enum | 29 | 9 | 841 | Atraxa, Grand Unifier, Boromir, Warden of the Tower, Celestial Colonnade |
+| cycling | typed field (cycling_cost_data) | 28 | 9 | 210 | Hollow One, Indatha Triome, Marauding Mako |
+| reach | enum | 21 | 7 | 500 | Arboreal Grazer, Endurance, Generous Ent |
+| first strike | enum | 19 | 6 | 533 | Enter the Avatar State, Ocelot Pride, Scion of Draco |
+| revolt | typed field (removal_mv_condition) | 17 | 1 | 18 | Fatal Push |
+| kicker | typed field (kicker_cost) | 16 | 2 | 167 | Orim's Chant, Sowing Mycospawn |
+| prowess | enum | 16 | 4 | 99 | Cori-Steel Cutter, Monastery Swiftspear, Pompous Battlemage // Improvised Act |
+| hexproof | enum | 15 | 8 | 274 | Enter the Avatar State, Kaito, Bane of Nightmares, Leyline of Sanctity |
+| improvise | enum | 15 | 2 | 20 | Kappa Cannoneer, Metallic Rebuke |
 | equip | typed field (equip_cost) | 14 | 6 | 528 | Blade of the Bloodchief, Cori-Steel Cutter, Cranial Plating |
-| hexproof | enum | 14 | 6 | 274 | Enter the Avatar State, Kaito, Bane of Nightmares, Leyline of Sanctity |
-| ward | typed field (ward_cost) | 14 | 4 | 234 | Colossal Skyturtle, Kappa Cannoneer, Lavaspur Boots |
-| improvise | enum | 14 | 2 | 20 | Kappa Cannoneer, Metallic Rebuke |
-| devoid | characteristic (colors) | 12 | 2 | 127 | Basking Broodscale, Sowing Mycospawn |
+| protection from | typed field (protection_from_colors) | 14 | 2 | 176 | Emrakul, the Promised End, Sanctifier en-Vec |
+| devoid | characteristic (colors) | 14 | 3 | 127 | Basking Broodscale, Sowing Mycospawn, Thief of Existence |
+| ward | typed field (ward_cost) | 13 | 4 | 234 | Colossal Skyturtle, Kappa Cannoneer, Lavaspur Boots |
+| indestructible | enum | 12 | 7 | 386 | Boromir, Warden of the Tower, Darksteel Citadel, Shadowspear |
 | splice | typed field (splice_cost) | 12 | 2 | 29 | Desperate Ritual, Goryo's Vengeance |
 | dash | typed field (dash_cost) | 12 | 1 | 22 | Ragavan, Nimble Pilferer |
-| landfall | typed field (has_landfall) | 11 | 3 | 170 | Icetill Explorer, Omnath, Locus of Creation, Tireless Tracker |
-| delirium | typed field (has_delirium) | 11 | 4 | 73 | Dragon's Rage Channeler, Shifting Woodland, Unholy Heat |
-| indestructible | enum | 9 | 5 | 386 | Darksteel Citadel, Shadowspear, Silverbluff Bridge |
+| scry | typed field (has_scry) | 11 | 1 | 392 | Preordain |
+| landfall | typed field (has_landfall) | 9 | 2 | 170 | Icetill Explorer, Omnath, Locus of Creation |
 | deathtouch | enum | 8 | 1 | 444 | Atraxa, Grand Unifier |
-| prowess | enum | 8 | 2 | 99 | Cori-Steel Cutter, Monastery Swiftspear |
-| ascend | handler (every registered card) | 8 | 1 | 24 | Ocelot Pride |
+| delirium | typed field (has_delirium) | 8 | 3 | 73 | Dragon's Rage Channeler, Shifting Woodland, Unholy Heat |
 | cascade | enum | 8 | 2 | 20 | Shardless Agent, Violent Outburst |
-| affinity for | typed field (has_artifact_synergy) | 7 | 2 | 68 | Emry, Lurker of the Loch, Thought Monitor |
-| double strike | enum | 6 | 3 | 236 | Assault Strobe, Practiced Offense, Violent Urge |
-| suspend | enum | 5 | 2 | 63 | Inevitable Betrayal, Living End |
-| storm | enum | 5 | 3 | 31 | Empty the Warrens, Flusterstorm, Grapeshot |
-| menace | enum | 4 | 1 | 441 | Sire of Seven Deaths |
-| scry | typed field (has_scry) | 4 | 1 | 392 | Preordain |
+| affinity for | typed field (has_artifact_synergy) | 6 | 2 | 68 | Emry, Lurker of the Loch, Thought Monitor |
+| amass | handler (every registered card) | 5 | 1 | 63 | Orcish Bowmasters |
 | madness | typed field (madness_cost) | 4 | 1 | 50 | Blazing Rootwalla |
-| plot | typed field (plot_cost) | 4 | 1 | 32 | Slickshot Show-Off |
-| mobilize | typed field (has_mobilize) | 4 | 1 | 12 | Voice of Victory |
+| storm | enum | 4 | 3 | 31 | Empty the Warrens, Flusterstorm, Grapeshot |
+| ascend | handler (every registered card) | 4 | 1 | 24 | Ocelot Pride |
 | harmonize | typed field (harmonize_cost) | 4 | 1 | 11 | Nature's Rhythm |
 | flurry | typed field (ordinal_cast_trigger) | 4 | 1 | 10 | Cori-Steel Cutter |
-| delve | typed field (has_delve) | 3 | 1 | 23 | Murktide Regent |
-| amass | handler (every registered card) | 2 | 1 | 63 | Orcish Bowmasters |
+| menace | enum | 3 | 1 | 441 | Sire of Seven Deaths |
+| suspend | enum | 3 | 1 | 63 | Living End |
+| mobilize | typed field (has_mobilize) | 3 | 1 | 12 | Voice of Victory |
+| double strike | enum | 2 | 1 | 236 | Practiced Offense |
 | escape | typed field (escape_cost) | 2 | 2 | 24 | Cling to Dust, Ox of Agonas |
 | undying | enum | 2 | 1 | 23 | Undying Evil |
 | unearth | enum | 1 | 1 | 50 | Cityscape Leveler |
+| delve | typed field (has_delve) | 1 | 1 | 23 | Murktide Regent |
 | defender | enum | 0 | 0 | 288 |  |
 | convoke | enum | 0 | 0 | 100 |  |
+| plot | typed field (plot_cost) | 0 | 0 | 32 |  |
 | persist | enum | 0 | 0 | 29 |  |
 | spectacle | typed field (spectacle_cost) | 0 | 0 | 20 |  |
 | spectacle | typed field (spectacle_cost) | 0 | 0 | 20 |  |
 | annihilator | enum | 0 | 0 | 15 |  |
 
-**49 words with no model**, ranked by registered-deck usage: metalcraft (10), ferocious (4), ninjutsu (2), gift (1), overload (1), meld (1), crew (0), daybound (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0), start your engines (0).
+**49 words with no model**, ranked by registered-deck usage: metalcraft (11), impending (4), ferocious (3), crew (1), ninjutsu (1), overload (1), meld (1), daybound (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0), start your engines (0).

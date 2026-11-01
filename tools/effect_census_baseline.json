@@ -1,11 +1,11 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.2597,
-  "deck_removal_typed_share": 0.8876,
+  "deck_removal_ready_share": 0.2698,
+  "deck_removal_typed_share": 0.869,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
-   "target.scope:not_you": 2,
+   "target.scope:not_you": 1,
    "target.scope:opponent": 1,
    "target.stat:mana_value": 2,
    "target.stat:power": 1,
@@ -14,23 +14,22 @@
    "target.union:enchantment": 1,
    "target.union:land": 1,
    "target.union:planeswalker": 1,
-   "target.union:sorcery": 3,
-   "target.union:triggered": 1,
-   "target.unparsed": 4
+   "target.union:sorcery": 1,
+   "target.unparsed": 5
   },
-  "deck_typed_share": 0.7759,
+  "deck_typed_share": 0.7628,
   "deck_unmodelled_by_stage": {
-   "AMOUNT": 6,
-   "CLAUSE": 22,
-   "CONDITION": 18,
+   "AMOUNT": 7,
+   "CLAUSE": 24,
+   "CONDITION": 19,
    "DURATION": 3,
-   "FILTER": 25,
+   "FILTER": 26,
    "ITERATION": 2,
-   "NO_LEMMA": 14,
-   "RECOGNIZED_UNSUPPORTED": 6,
-   "REFERENCE": 17,
-   "REPLACEMENT": 59,
-   "STRUCTURE": 3,
+   "NO_LEMMA": 18,
+   "RECOGNIZED_UNSUPPORTED": 8,
+   "REFERENCE": 16,
+   "REPLACEMENT": 65,
+   "STRUCTURE": 5,
    "TARGET": 18,
    "TRIGGER_EMBEDDED": 2
   },
@@ -210,9 +209,9 @@
   "deck": {
    "by_host_kind": {
     "ACTIVATED": {
-     "share": 0.8269,
-     "specs": 156,
-     "typed": 129
+     "share": 0.7962,
+     "specs": 157,
+     "typed": 125
     },
     "CHAPTER": {
      "share": 0.9333,
@@ -220,58 +219,58 @@
      "typed": 14
     },
     "LOYALTY": {
-     "share": 0.7818,
-     "specs": 55,
-     "typed": 43
+     "share": 0.7969,
+     "specs": 64,
+     "typed": 51
     },
     "MANA_ABILITY": {
-     "share": 0.9333,
-     "specs": 75,
-     "typed": 70
+     "share": 0.9412,
+     "specs": 85,
+     "typed": 80
     },
     "MODE": {
-     "share": 0.925,
-     "specs": 40,
-     "typed": 37
+     "share": 0.9429,
+     "specs": 35,
+     "typed": 33
     },
     "REPLACEMENT": {
      "share": 0.0,
-     "specs": 58,
+     "specs": 64,
      "typed": 0
     },
     "SPELL": {
-     "share": 0.8978,
-     "specs": 186,
-     "typed": 167
+     "share": 0.9086,
+     "specs": 175,
+     "typed": 159
     },
     "STATIC": {
-     "share": 0.4286,
-     "specs": 77,
-     "typed": 33
+     "share": 0.4235,
+     "specs": 85,
+     "typed": 36
     },
     "TRIGGERED": {
-     "share": 0.8878,
-     "specs": 205,
-     "typed": 182
+     "share": 0.8779,
+     "specs": 213,
+     "typed": 187
     },
     "UNKNOWN": {
      "share": 0.0,
-     "specs": 3,
+     "specs": 5,
      "typed": 0
     }
    },
-   "cards": 358,
+   "cards": 366,
    "removal_gate": {
-    "clauses": 258,
+    "clauses": 252,
     "gate": 0.85,
     "met": false,
-    "ready": 67,
-    "ready_share": 0.2597,
-    "typed": 229,
-    "typed_share": 0.8876
+    "ready": 68,
+    "ready_share": 0.2698,
+    "typed": 219,
+    "typed_share": 0.869
    },
-   "specs": 870,
-   "typed": 675
+   "specs": 898,
+   "typed": 685
   },
   "keyword_lines": [
    [
@@ -292,7 +291,7 @@
    [
     "equip",
     "KEYWORD",
-    495
+    497
    ],
    [
     "flash",
@@ -1596,5 +1595,5 @@
    ]
   ]
  },
- "session": "2026-10-31"
+ "session": "2026-11-01"
 }

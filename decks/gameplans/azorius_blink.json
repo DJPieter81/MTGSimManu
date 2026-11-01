@@ -7,16 +7,18 @@
       "description": "Deploy creatures on curve",
       "card_roles": {
         "enablers": [
-          "Guide of Souls",
-          "Ocelot Pride",
+          "Emperor of Bones",
           "Phelia, Exuberant Shepherd"
         ],
         "payoffs": [
+          "Overlord of the Balemurk",
           "Quantum Riddler",
-          "Solitude",
-          "Starfield Shepherd"
+          "Solitude"
         ],
-        "interaction": []
+        "interaction": [
+          "Fatal Push",
+          "Pest Control"
+        ]
       }
     },
     {
@@ -24,6 +26,8 @@
       "description": "Attack aggressively, remove blockers",
       "card_roles": {
         "interaction": [
+          "Fatal Push",
+          "Pest Control",
           "Consign to Memory"
         ]
       }
@@ -34,8 +38,9 @@
     }
   ],
   "mulligan_keys": [
-    "Guide of Souls",
-    "Ocelot Pride",
+    "Emperor of Bones",
+    "Fatal Push",
+    "Pest Control",
     "Phelia, Exuberant Shepherd"
   ],
   "mulligan_min_lands": 2,
@@ -43,8 +48,5 @@
   "reactive_only": [
     "Consign to Memory"
   ],
-  "always_early": [
-    "Guide of Souls",
-    "Ocelot Pride"
-  ]
+  "always_early": []
 }

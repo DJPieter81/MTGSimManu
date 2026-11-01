@@ -95,11 +95,9 @@
   "land_priorities": {
     "Scalding Tarn": 5.0,
     "Arid Mesa": 4.0,
-    "Sunbaked Canyon": 3.0,
     "Mountain": 2.0,
     "Elegant Parlor": 3.0,
-    "Sacred Foundry": 2.0,
-    "Gemstone Caverns": 4.0
+    "Sacred Foundry": 2.0
   },
   "always_early": [
     "Ruby Medallion"

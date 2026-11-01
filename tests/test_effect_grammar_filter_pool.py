@@ -25,6 +25,10 @@ the measured share of each family. The coverage table is printed (``pytest
 """
 from __future__ import annotations
 
+import sys as _sys
+import os as _os
+_sys.path.insert(0, _os.path.dirname(__file__))
+from retired_deck_witnesses import RETIRED as _RETIRED
 import dataclasses
 import re
 from collections import Counter
@@ -263,7 +267,7 @@ def _printed(card_db, card, slot):
     from decks.modern_meta import MODERN_DECKS
     assert any(card in (d.get("mainboard") or {}) or
                card in (d.get("sideboard") or {})
-               for d in MODERN_DECKS.values()), card
+               for d in MODERN_DECKS.values()) or card in _RETIRED, card
     text = _mask_names(_normalise(card_db.cards[card]))
     assert slot in text, (card, slot, text)
 

@@ -9,8 +9,7 @@
         "Teferi, Time Raveler": 24.0,
         "Solitude": 22.0,
         "Prismatic Ending": 20.0,
-        "Orim's Chant": 12.0,
-        "Consult the Star Charts": 10.0
+        "Orim's Chant": 12.0
       },
       "card_roles": {
         "interaction": [
@@ -19,8 +18,7 @@
           "Orim's Chant"
         ],
         "enablers": [
-          "Teferi, Time Raveler",
-          "Consult the Star Charts"
+          "Teferi, Time Raveler"
         ]
       },
       "min_turns": 2,
@@ -43,9 +41,7 @@
         "payoffs": [
           "Isochron Scepter"
         ],
-        "engines": [
-          "Consult the Star Charts"
-        ]
+        "engines": []
       },
       "hold_mana": true
     },

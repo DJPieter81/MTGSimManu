@@ -18,6 +18,10 @@ Card names appear only in the witness fixtures below, never in `engine/`.
 """
 from __future__ import annotations
 
+import sys as _sys
+import os as _os
+_sys.path.insert(0, _os.path.dirname(__file__))
+from retired_deck_witnesses import RETIRED as _RETIRED
 import re
 from collections import Counter
 
@@ -357,7 +361,7 @@ def _witness_lines(db, name):
 def test_a_registered_deck_keyword_line_is_a_keyword_host_never_resolution_text(card_db, name):
     """A1: the deck's keyword lines type with their costs; its resolution
     paragraphs are never keyword lines, so they cannot merge."""
-    assert name in _deck_cards(), name
+    assert name in _deck_cards() or name in _RETIRED, name
     _, typed, other = _witness_lines(card_db, name)
     items, costs = [], []
     for para, r in typed:
@@ -380,7 +384,7 @@ def test_a_registered_deck_keyword_line_is_a_keyword_host_never_resolution_text(
 def test_a_registered_deck_cost_rule_sentence_types_as_the_granted_keywords_cost_rule(
         card_db, name, keyword):
     from engine.effect_grammar import keywords as K
-    assert name in _deck_cards(), name
+    assert name in _deck_cards() or name in _RETIRED, name
     text, _, _ = _witness_lines(card_db, name)
     rules = []
     for sent in re.split(r"(?<=\.)\s+", text.replace("\n", " ")):

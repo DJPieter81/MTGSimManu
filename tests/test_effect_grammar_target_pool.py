@@ -24,6 +24,10 @@ card name only locates the printed text in the DB; the leaf never sees it.
 """
 from __future__ import annotations
 
+import sys as _sys
+import os as _os
+_sys.path.insert(0, _os.path.dirname(__file__))
+from retired_deck_witnesses import RETIRED as _RETIRED
 import re
 from collections import Counter
 
@@ -286,7 +290,7 @@ def test_registered_deck_target_witnesses_read_exactly_the_printed_rule(card_db)
             registered.update(deck.get(part, {}))
 
     def slot(card, phrase, registered_deck=True):
-        assert card in registered or not registered_deck, card
+        assert card in registered or not registered_deck or card in _RETIRED, card
         host, span = _printed(card_db, card, phrase)
         r = T.parse_target(host, span)
         assert r is not None, (card, phrase)

@@ -42,8 +42,10 @@ def test_a_characteristic_mtgjson_encodes_is_modelled_by_its_field(card_db):
 
 def test_registered_deck_usage_counts_copies_across_mainboard_and_sideboard(card_db):
     rows = _rows(card_db)
-    # Domain Zoo alone runs four Stubborn Denial; the count is copies, not cards.
-    assert rows["ferocious"]["deck_copies"] >= 4
+    # Azorius Blink alone runs four Overlord of the Balemurk (2026-11-01
+    # lists): one card, four copies -- the count is copies, not cards.
+    assert rows["impending"]["deck_cards"] == 1
+    assert rows["impending"]["deck_copies"] >= 4
 
 
 def test_the_committed_table_matches_the_generator(card_db):

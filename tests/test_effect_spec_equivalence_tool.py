@@ -1008,17 +1008,27 @@ KNOWN_DECK_DISAGREEMENTS = {
     # the grammar refuses "target cards from graveyards" (no requirement)
     "ActivatedAbility.effect_kind[EXILE_FROM_GRAVEYARD]": {
         "Faerie Macabre 0": "d40be18e9798"},
-    # legacy reads the source only as "this creature / permanent / it"
-    "ActivatedAbility.effect_kind[PUT_COUNTER_SELF]": {
-        "The Filigree Sylex 0": "215f31289668"},
     # the grammar refuses "your choice of"; legacy also reads the
     # delirium upgrade's keyword as the base grant's
     "pump_spell_keyword": {"Practiced Offense": "609c4e0ce535"},
-    "pump_spell_keywords": {"Practiced Offense": "daf7ac434763",
-                            "Violent Urge": "14fd6d1689d2"},
+    "pump_spell_keywords": {"Practiced Offense": "daf7ac434763"},
     # legacy refuses "another target permanent"
     "ActivatedAbility.effect_kind[UNTAP_TARGET_PERMANENT]": {
         "Formidable Speaker 0": "5d5be987d596"},
+    # (2026-11-01 lists) legacy refuses "this land becomes a <P/T> ...
+    # creature ... It's still a land"; the grammar types the animation
+    "ActivatedAbility.effect_kind[ANIMATE_SELF_UEOT]": {
+        "Celestial Colonnade 1": "5d5be987d596"},
+    # (2026-11-01 lists) the grammar refuses the +1's delayed "at the
+    # beginning of the next end step, untap up to two lands" and the
+    # emblem's quoted trigger; legacy names both lines' kinds
+    "LoyaltyAbility.effect_kind[DRAW_AND_UNTAP_LANDS]": {
+        "Teferi, Hero of Dominaria (0, 'plus')": "d40be18e9798"},
+    "LoyaltyAbility.effect_kind[EMBLEM_EXILE_PERMANENT]": {
+        "Teferi, Hero of Dominaria (0, 'ult')": "d40be18e9798"},
+    # (2026-11-01 lists) legacy refuses "target land that is snow or could
+    # produce {C}"; the grammar types the land filter
+    "destroys_target_land": {"Break the Ice": "5d5be987d596"},
 }
 
 
@@ -1031,8 +1041,9 @@ KNOWN_DECK_PARTIAL_DISAGREEMENTS = {
     # the same two cards as the non-partial effect_kind pins above
     "ActivatedAbility.graveyard_exile_data": {
         "Faerie Macabre 0": "df12ee68376b"},
-    "ActivatedAbility.put_counter_data": {
-        "The Filigree Sylex 0": "34b2693457ca"},
+    # (2026-11-01 lists) legacy refuses "target land that is snow or could
+    # produce {C}"; the view types it
+    "land_destruction_data": {"Break the Ice": "25e558cbf9cb"},
     # the grammar leaves the tron condition "an X and a Y" UNMODELLED
     # (filter.np_union), so the view has no bonus yet
     "conditional_mana": {"Urza's Mine": "7524a645a815",
@@ -1053,6 +1064,8 @@ KNOWN_DECK_PARTIAL_DISAGREEMENTS = {
     "mana_units": {
         "Abstergo Entertainment": "256d7928363e",
         "Arena of Glory": "e6679def187e",
+        "Bleachbone Verge": "be4dc0df52b5",
+        "Cavern of Souls": "256d7928363e",
         "Delighted Halfling": "8c5551b0226c",
         "Eldrazi Temple": "b873a86e04aa",
         "Fiery Islet": "447f3979491a",

@@ -1,0 +1,34 @@
+// UW Control — mtgtop8 event=93032 deck=906734
+3 Arid Mesa
+1 Celestial Colonnade
+4 Flooded Strand
+1 Geier Reach Sanitarium
+1 Godless Shrine
+2 Hallowed Fountain
+2 Island
+2 Meticulous Archive
+1 Monumental Henge
+1 Otawara, Soaring City
+2 Plains
+2 Polluted Delta
+1 Thundering Falls
+4 Solitude
+4 Day's Undoing
+2 Erode
+4 Orim's Chant
+3 Preordain
+3 Prismatic Ending
+1 Razorgrass Ambush
+4 Silence
+1 Sink into Stupor
+2 Wrath of the Skies
+1 Isochron Scepter
+4 Narset, Parter of Veils
+4 Teferi, Time Raveler
+
+Sideboard
+3 Consign to Memory
+3 Mystical Dispute
+3 Sanctifier en-Vec
+4 Sanctum Prelate
+2 The Wandering Emperor
