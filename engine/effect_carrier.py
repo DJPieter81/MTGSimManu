@@ -1877,3 +1877,13 @@ def _audit_slots_placed(game: Any, host: Any, chosen: Any) -> None:
                 bad.append((sorted(types), v))
     rules_audit.check("601.2c/slot_placed", not bad,
                       f"misplaced targets {bad}", game=game)
+
+
+def entry_counters(effects, face: int = 0):
+    """The entry carrier (CR 614.1c, 122.6): the counters a permanent's own
+    text says it enters with, from the typed REPLACEMENT host of the face
+    it shows (`effect_views.entry_counters`). Read by the entry owner,
+    `CardInstance.enter_battlefield`, and by its auditor."""
+    from .effect_views import entry_counters as _view
+    return _view(effects, face)
+

@@ -2767,6 +2767,24 @@ class CardInstance:
             back = self.is_transformed and self.template.back_face_types
             self.loyalty_counters = (self.template.back_face_loyalty if back
                                      else self.template.loyalty) or 0
+        self._put_entry_counters()
+
+    def _put_entry_counters(self) -> None:
+        """CR 614.1c, 122.6: "<this> enters with N <kind> counters on it" --
+        the permanent enters with them, by whatever route (cast, put onto
+        the battlefield, returned), from the face it shows. A face-down
+        permanent has no text (CR 708.2a). +1/+1 counters go through their
+        one funnel; every other kind through `adjust_counters`."""
+        from .effect_carrier import entry_counters
+        effects = getattr(self.template, "effects", None)
+        if effects is None:
+            return
+        face = 1 if self.is_transformed and len(effects.faces) > 1 else 0
+        for kind, n in entry_counters(effects, face):
+            if kind == COUNTER_KIND_PLUS:
+                self.add_plus_counters(n)
+            else:
+                self.adjust_counters(kind, n)
 
     def __hash__(self):
         return self.instance_id

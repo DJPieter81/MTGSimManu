@@ -183,6 +183,7 @@ class ZoneManager:
             card.enter_battlefield()
             card._game_state = game
             self._audit_entry_loyalty(game, card)
+            self._audit_entry_counters(game, card)
             self._audit_new_object(game, card)
             if face_down:
                 self._audit_face_down(game, card)
@@ -553,6 +554,26 @@ class ZoneManager:
         _audit_check("306.5b/entry_loyalty", card.loyalty_counters == printed,
                      f"{card.name} entered with {card.loyalty_counters} loyalty "
                      f"(printed {printed})", game=game)
+
+    @staticmethod
+    def _audit_entry_counters(game: "GameState", card: "CardInstance") -> None:
+        """Rules audit (CR 614.1c, 122.6): a permanent whose text says it
+        enters with counters carries them as it enters -- as many as the
+        counter rules let land (`replaced_counter_amount`). Read from the
+        typed host, not from the code that places them. Observes only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        from .effect_carrier import entry_counters
+        effects = getattr(card.template, "effects", None)
+        if effects is None:
+            return
+        face = 1 if card.is_transformed and len(effects.faces) > 1 else 0
+        for kind, n in entry_counters(effects, face):
+            due = card.replaced_counter_amount(kind, n, game)
+            _audit_check("614.1c/entry_counters", card.counter_count(kind) >= due,
+                         f"{card.name} entered with {card.counter_count(kind)} "
+                         f"{kind} counter(s), printed {n}", game=game)
 
     @staticmethod
     def _audit_front_face(game: "GameState", card: "CardInstance") -> None:

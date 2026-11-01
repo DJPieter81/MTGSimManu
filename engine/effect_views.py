@@ -3429,3 +3429,41 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "LoyaltyAbility.clause": ("clause template: its own effects are the "
                               "walker's LOYALTY host slice (section 12)"),
 })
+
+
+# ── Entry counters (CR 614.1c, 122.6) ──────────────────────────────────
+
+_ENTERS_WITH = re.compile(r"~ enters with (?P<items>.+?) on it\.?$")
+
+
+def entry_counters(effects: CardEffects, face: int = 0) -> Tuple[Tuple[str, int], ...]:
+    """The counters a permanent's own text says it enters with: "~ enters
+    with N <kind> counters on it", a REPLACEMENT host of `face` (CR
+    614.1c). The host's text is the grammar's normalised text (self
+    references read `~`, reminder text stripped), and the counter phrase is
+    read by the grammar's one counter parser. Fixed counts only: an X count
+    is the X-cost path's, and a "for each" count, a choice of kinds, or a
+    keyword counter (CR 122.1b, not modelled) is refused -- the whole
+    sentence, never part of it."""
+    from .effect_grammar.keywords import canonical_keyword
+    from .effect_grammar.sub.dest import _counters
+    faces = getattr(effects, "faces", ()) or ()
+    if face >= len(faces):
+        return ()
+    out = []
+    for h in faces[face]:
+        if h.kind is not HostKind.REPLACEMENT:
+            continue
+        m = _ENTERS_WITH.match((h.text or "").strip())
+        if m is None:
+            continue
+        counters = _counters(m.group("items"))
+        if not isinstance(counters, tuple) or not counters:
+            continue
+        if any(a.kind is not AmountKind.LITERAL or a.quantity is not None
+               or not a.n or canonical_keyword(kind) is not None
+               for kind, a in counters):
+            continue
+        out.extend((kind, a.n) for kind, a in counters)
+    return tuple(out)
+

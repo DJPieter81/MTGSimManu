@@ -543,6 +543,7 @@ class ResolutionManager:
                 # so a cascaded mass effect never saw this permanent.
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
+                game.zone_mgr._audit_entry_counters(game, card)
                 # Place counters for X-cost permanents. "Enters with X
                 # counters" is the permanent's own entry effect (CR 107.3,
                 # 614.1c), so the engine places them here for every such
