@@ -338,6 +338,52 @@ class ManaPayment:
             game.mana_paid_total = getattr(game, "mana_paid_total", 0) + units
 
     @staticmethod
+    def _audit_improvise_payers(game: "GameState", player_idx: int,
+                                payers: list) -> None:
+        """CR 702.126a, 605.1a, restated from the raw permanents: an
+        artifact tapped for improvise is not one whose mana ability the
+        payment's capacity already counted (printed units, or colours the
+        payment resolves for it now), so no artifact pays twice.
+        Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        for a in payers:
+            counted = bool(a.template.mana_units
+                           or ManaPayment.effective_produces_mana(
+                               game, player_idx, a))
+            rules_audit.check("702.126a/improvise_pays_once", not counted,
+                              f"{a.name} tapped for improvise though its "
+                              f"mana was counted", game=game)
+
+    @staticmethod
+    def _audit_sources_offered(game: "GameState", player_idx: int,
+                               offered: list,
+                               exclude_instance_id: Optional[int]) -> None:
+        """CR 605.1a, 302.6, restated from the raw permanents: every
+        untapped permanent whose mana ability is live now -- printed units,
+        or the colours the payment resolves for it as it taps -- and that
+        is not a summoning-sick creature or the permanent paying for its own
+        ability is a source the payment may tap. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        ids = {c.instance_id for c in offered}
+        for perm in game.players[player_idx].battlefield:
+            if perm.tapped or perm.instance_id == exclude_instance_id \
+                    or (CardType.CREATURE in perm.template.card_types
+                        and perm.has_summoning_sickness):
+                continue
+            live = bool(perm.template.mana_units
+                        or ManaPayment.effective_produces_mana(
+                            game, player_idx, perm))
+            if live:
+                rules_audit.check("605.1a/mana_source_offered",
+                                  perm.instance_id in ids,
+                                  f"{perm.name} can tap for mana but the "
+                                  f"payment did not offer it", game=game)
+
+    @staticmethod
     def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
                                   cost: ManaCost,
                                   card_name: str = None,
@@ -444,15 +490,23 @@ class ManaPayment:
                         + player._tron_mana_bonus())
             shortfall = max(0, cost.cmc - capacity)
             if shortfall > 0:
+                # An artifact that taps for mana is already in `capacity`
+                # and pays its own (perhaps coloured) mana; improvise taps
+                # the others (CR 702.126a, 605.1a).
+                sources = {c.instance_id
+                           for c in player.untapped_mana_sources}
                 improvise_payers = [
                     a for a in player.battlefield
                     if CardType.ARTIFACT in a.template.card_types
                     and not a.template.is_land
                     and not a.tapped
+                    and a.instance_id not in sources
                 ]
                 n_tap = min(len(improvise_payers), shortfall, cost.generic)
                 if n_tap > 0:
                     from .mana import ManaCost as MC
+                    ManaPayment._audit_improvise_payers(
+                        game, player_idx, improvise_payers[:n_tap])
                     for a in improvise_payers[:n_tap]:
                         a.tapped = True
                     cost = MC(
@@ -527,26 +581,16 @@ class ManaPayment:
         ManaPayment._run_loop_shortcut(game, player_idx, cost,
                                        exclude_instance_id)
 
-        untapped = [l for l in player.lands if not l.tapped
-                    and l.instance_id != exclude_instance_id]
-
-        # Non-land mana sources: mana rocks (Talisman, Mind Stone) and mana
-        # creatures (Birds, Llanowar, Devoted Druid). A permanent whose
-        # template exposes a plain "{T}: Add" ability (produces_mana /
-        # mana_units populated for non-lands, CR 605) is tappable for mana
-        # exactly like a land. Creature mana abilities carry the tap symbol,
-        # so summoning sickness gates them (CR 302.6 / 605.3a).
-        for perm in player.battlefield:
-            if perm.tapped or perm.template.is_land:
-                continue
-            if perm.instance_id == exclude_instance_id:
-                continue  # cannot tap a permanent to pay for its own ability
-            if not (perm.template.mana_units or perm.template.produces_mana):
-                continue
-            if (CardType.CREATURE in perm.template.card_types
-                    and perm.has_summoning_sickness):
-                continue
-            untapped.append(perm)
+        # The untapped mana sources -- lands, mana rocks and mana creatures
+        # (summoning sickness gates a creature's {T}, CR 302.6), including a
+        # source whose ability is live only under a condition evaluated as
+        # it taps (metalcraft, CR 702.98) -- come from the one owner of the
+        # list, `PlayerState.untapped_mana_sources`, so what the payment
+        # taps and what every capacity estimate counts are the same set.
+        untapped = [src for src in player.untapped_mana_sources
+                    if src.instance_id != exclude_instance_id]
+        ManaPayment._audit_sources_offered(game, player_idx, untapped,
+                                           exclude_instance_id)
 
         if not untapped and not sac_sources and player.mana_pool.total() == 0:
             _ok = cost.cmc == 0

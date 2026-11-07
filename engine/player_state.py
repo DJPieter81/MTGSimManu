@@ -175,11 +175,21 @@ class PlayerState:
         rocks/dorks count exactly like lands."""
         from .cards import CardType
         out = [c for c in self.lands if not c.tapped]
+        game = None
         for c in self.battlefield:
             if c.tapped or c.template.is_land:
                 continue
             if not (c.template.mana_units or c.template.produces_mana):
-                continue
+                # A mana ability the payment evaluates when it taps (a
+                # metalcraft gate, CR 702.98) prints no static fields: ask
+                # the payment owner, so this list and the payment agree.
+                game = game or getattr(c, '_game_state', None)
+                if game is None:
+                    continue
+                from .mana_payment import ManaPayment
+                if not ManaPayment.effective_produces_mana(
+                        game, self.player_idx, c):
+                    continue
             if (CardType.CREATURE in c.template.card_types
                     and c.has_summoning_sickness):
                 continue

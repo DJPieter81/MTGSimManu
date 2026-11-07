@@ -1214,12 +1214,17 @@ class CastManager:
         # inspection.  Improvise pays GENERIC only, so the colored portion
         # of the cost is a floor the artifact taps cannot reduce.
         if Keyword.IMPROVISE in template.keywords:
+            # An artifact that taps for mana is already in `total_mana`:
+            # tapped either way, it pays one mana, never two (CR 702.126a,
+            # 605.1a).
+            sources = {c.instance_id for c in player.untapped_mana_sources}
             untapped_artifacts = sum(
                 1 for c in player.battlefield
                 if CardType.ARTIFACT in c.template.card_types
                 and not c.template.is_land
                 and not getattr(c, 'tapped', False)
                 and c is not card
+                and c.instance_id not in sources
             )
             colored_floor = template.mana_cost.non_generic_pips
             improvise_cmc = max(colored_floor,

@@ -12361,3 +12361,32 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 **Tests:** 4, all red before, including the replayed line through the engine.
 
 **Pins:** the digest is byte-identical; the anchor is unchanged. Commit `b0e1a37`.
+
+## Unit MO: a mana source the payment can tap is one source list, and an artifact pays one way, not two (CR 605.1a, 702.98, 702.126a; 2026-11-07)
+
+**Source:** Bo3 replay Affinity vs Domain Zoo, s50000, game 1, turn 8. Affinity held Fiery Islet and a Mox Opal under metalcraft (five artifacts). The AI saw 1 mana, never activated an Engineered Explosives whose 1 counter kills Ragavan, and cast a second Explosives instead.
+
+**Defect 1:** two copies of the untapped-source list existed, `PlayerState.untapped_mana_sources` and a hand-rolled copy in `ManaPayment._tap_lands_for_mana_inner`. Both kept only permanents with static mana fields. A source whose ability the payment resolves as it taps (metalcraft) was in neither, so Mox Opal never produced mana: not for the estimate, not for the payment.
+
+**Defect 2,** exposed by the fix:
+- `CastManager.can_cast` counted every untapped artifact toward improvise on top of a mana total that already held the artifacts that tap for mana.
+- The payment's improvise step could tap a mana rock and lose its coloured mana.
+- So a cast that could not be paid was attempted: five artifacts were tapped for improvise, the payment failed, and they stayed tapped (Boros Energy vs Affinity s50000, turn 3, Kappa Cannoneer).
+- This predates Mox Opal: every static-unit artifact rock (Mind Stone is the test carrier) was counted twice.
+
+**Fix:**
+- `untapped_mana_sources` asks the payment owner (`ManaPayment.effective_produces_mana`) for a source with no static fields.
+- The payment takes its source list from that one owner.
+- Improvise, in both the castability check and the payment, taps only artifacts that are not mana sources.
+
+**Auditors:** `605.1a/mana_source_offered` (every live untapped mana source is offered to the payment) and `702.126a/improvise_pays_once`, each tested both ways.
+
+**Class:** the duplicated source list is a single-owner defect. Dynamic membership is 1 pool card today (Mox Opal), but 8 deck copies across both Affinity lists. The improvise double count covers every artifact mana rock beside an improvise spell.
+
+**Tests:** 10 (6 + 4), red before except the guard cases.
+
+**Pins:**
+- Digest: 2 of 27 games change (Boros Energy vs Affinity, Pinnacle Affinity vs 4/5c Control), winners unchanged. Mox Opal now taps for blue and Kappa Cannoneer resolves on turn 4.
+- The anchor is unchanged.
+
+**Effect on the replay:** the Explosives is activated on turn 6 and kills Ragavan. Zoo still wins 2-0.
