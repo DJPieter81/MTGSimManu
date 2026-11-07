@@ -63,3 +63,13 @@ summary: "Bo3 replay root causes for Ruby Storm's outlier (12.8% vs band 40-55).
   - The mana the chain has left for the payoff.
   - No new threshold literal; test red first, with a Storm case and one other chain deck.
 
+
+## Not the lever: the pass floor (`PLAY_VALUE_FLOOR`, -5)
+- **Seen twice:**
+  - In the Storm replay above, a ritual at -0.1 is cast.
+  - In Eldrazi Tron vs Azorius Control (WST) s50000, game 1, turn 3, Azorius casts Chalice of the Void at -0.1 for X=0. That locks nothing: the engine's Chalice X picker found no X with positive net disruption, and the cast was still made.
+- **Why both fire:** the cast clears the floor, which is -5, not the value of passing (0).
+- **Why raising the floor to 0 is not the fix:** the score scale is not anchored at "pass = 0". Correct plays score negative too; cantrip bait into counter density sat at -15, and Storm then passed every turn and lost (`tests/test_storm_baits_counters_with_cantrips_at_high_counter_density.py`). The orchestration audit (`docs/diagnostics/2026-09-16_ev_orchestration_audit.md`) already lists the floor as a stand-in for a valued pass candidate.
+- **The fix belongs in the valuations that read too high:**
+  - the reachability gate here;
+  - a Chalice X whose net disruption is not positive should not be a cast at all. That X is picked in `engine/cast_manager.py`, a strategic choice in the engine (7 pool cards; below class size on its own).
