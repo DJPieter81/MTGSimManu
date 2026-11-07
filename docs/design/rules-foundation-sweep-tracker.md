@@ -12429,7 +12429,7 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - The chain starts when today's chance is at least the held one, and never on digs that reach no closer.
 - This applies at any storm count, since spells already cast are spent either way. It applies only with a later turn to chain on: the opponent's clock beyond two turns, the mid-chain gate's own condition.
 
-**Tests:** 7 new (red before, except the edges). Four older ritual-gate fixtures used libraries of blanks under a "dig admitted" premise; their libraries now hold closer routes, so they pin only the mana-funding rule.
+**Tests:** 7 new (red before, except the edges). Five older ritual-gate fixture sets used libraries of blanks under a "dig admitted" premise; their libraries now hold closer routes, so they pin only the mana-funding and penalty arithmetic. With that, both chunks pass on the code of `7392360` (5626 + 2837).
 
 **Pins:** the magic-number ratchet is unchanged. Digest: 2 of 27 games change, both Azorius Control vs Ruby Storm. Storm now holds a speculative Manamorphose and the games run longer (18 → 22, 22 → 25 turns); the winners are unchanged. The anchor is unchanged.
 

@@ -78,7 +78,9 @@ def _build_storm_scenario(card_db, *, storm, opp_life, draws_in_hand,
     Returns (game, ritual_card).  No finisher, no PiF — triggers the
     mid-chain gate at ai/ev_player.py:1182.  Includes `draws_in_hand`
     cantrip cards in hand (Reckless Impulse), and pads the library
-    with Mountains so `len(library) == library_size`.
+    with closer routes (Grapeshot) so `len(library) == library_size`: a
+    dig is certain to find one, so these tests pin only the penalty's
+    arithmetic (the reach rule: test_a_chain_is_started_on_digs_only_...).
     """
     game = GameState(rng=random.Random(0))
     # Storm side: 2 Mountains + 2 Medallions on battlefield (cost reducers).
@@ -97,7 +99,7 @@ def _build_storm_scenario(card_db, *, storm, opp_life, draws_in_hand,
 
     # Library padding — controls the miss_risk denominator.
     for _ in range(library_size):
-        _add(game, card_db, "Mountain", controller=0, zone="library")
+        _add(game, card_db, "Grapeshot", controller=0, zone="library")
 
     # Opp board: Boros pressure (so opp_clock_discrete stays > 2 normally).
     _add(game, card_db, "Guide of Souls", controller=1, zone="battlefield")
