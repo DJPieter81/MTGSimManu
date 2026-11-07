@@ -12410,4 +12410,11 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - **The `mo-post` field moves are recorded but not accepted as a measurement:** Pinnacle Affinity 55.8 → 74.9 and Affinity 44.7 → 50.2.
   - Boros Energy vs Pinnacle Affinity (75 → 20) was replayed. Pinnacle now plays Mox Opal from turn 1, Kappa Cannoneer on turn 3, and kills on turn 4. Every payment is legal; before the fix all four Mox Opals in the list produced nothing.
 
-**Measured:** `mo2-post` arm (pending).
+**Measured (units MO and MO.2):** `mo2-post` (`2e8a22e`), a same-seed full matrix at n=20 Bo3 over all 26 rows, against `sy-post`.
+- 650 cells, 0 aborts, 0 rules-audit violations. Both test chunks pass on `2e8a22e` (5619 + 2837).
+- **Affinity** 44.7 → 50.8: back in its band [50, 65].
+- **Pinnacle Affinity** 55.8 → 75.2: above its band [30, 70] by 5.2.
+  - Replayed: its largest swing (Boros Energy vs Pinnacle Affinity) is legal Mox Opal mana from turn 1 and a turn-3 Kappa Cannoneer.
+  - The band itself was set while every Mox Opal was dead, so it is a candidate for re-derivation, not a defect lead.
+- **Every other deck** moved by 2.4 or less (Azorius Control -2.4, Boros Energy -1.8).
+- **Band misses:** 9 decks, 62.0 pp in total. Ruby Storm 13.4 (26.6), Eldrazi Tron 74.5 (9.5), Domain Zoo 72.0 (7.0) and Creatures Toolbox 24.4 (5.6) are the largest.
