@@ -12418,3 +12418,21 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
   - The band itself was set while every Mox Opal was dead, so it is a candidate for re-derivation, not a defect lead.
 - **Every other deck** moved by 2.4 or less (Azorius Control -2.4, Boros Energy -1.8).
 - **Band misses:** 9 decks, 62.0 pp in total. Ruby Storm 13.4 (26.6), Eldrazi Tron 74.5 (9.5), Domain Zoo 72.0 (7.0) and Creatures Toolbox 24.4 (5.6) are the largest.
+
+## Unit RR: a chain is started on digs only when today reaches more than holding (AI; 2026-11-07)
+
+**Source:** the Storm diagnostic's third root cause (`docs/diagnostics/2026-11-07_ruby_storm_draw_tax_root_cause.md`). With no closer in hand, a ritual was admitted whenever its mana reached any dig (`combo_calc._ritual_without_closer`), however unlikely that dig was to find the closer.
+
+**Principle:** starting the chain spends the ritual for the chance the digs find a route to the closer today. Holding keeps it for next turn, when the same digs see one card more, unless the opponent's discard strips a piece first.
+- Both chances are hypergeometric over the library's routes to the closer: storm payoffs, and tutors that reach one (`outcome_ev.p_draw_in_n_turns`). The cards seen come from `draw_projection.projected_draws`.
+- The strip risk is BHI's discard belief times the documented hit rate (`ComboAssessment.strip_risk`).
+- The chain starts when today's chance is at least the held one, and never on digs that reach no closer.
+- This applies at any storm count, since spells already cast are spent either way. It applies only with a later turn to chain on: the opponent's clock beyond two turns, the mid-chain gate's own condition.
+
+**Tests:** 7 new (red before, except the edges). Four older ritual-gate fixtures used libraries of blanks under a "dig admitted" premise; their libraries now hold closer routes, so they pin only the mana-funding rule.
+
+**Pins:** the magic-number ratchet is unchanged. Digest: 2 of 27 games change, both Azorius Control vs Ruby Storm. Storm now holds a speculative Manamorphose and the games run longer (18 → 22, 22 → 25 turns); the winners are unchanged. The anchor is unchanged.
+
+**Lead found, not built:** in Ruby Storm vs Dimir Midrange s50000, game 1, turn 4, Storm held a Wish that Reckless Impulse had exiled, playable that turn only. So the gate correctly admits the chain. The chain then spent its mana on Past in Flames and a dig, and the Wish expired uncast. That is a sequencing question for the chain planner, not the gate.
+
+**Measured:** `rr-post` diagnostic arm, Ruby Storm's row only, n=20, against `mo2-post` (pending).

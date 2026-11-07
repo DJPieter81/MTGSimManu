@@ -67,8 +67,11 @@ def _chain(card_db, *, hand, storm, lands, opp_life=19, graveyard=(),
         _add(g, card_db, n, "graveyard")
     for n in sideboard:
         _add(g, card_db, n, "sideboard")
+    # Every library card is a route to the closer, so a dig is certain to
+    # find one (the reach rule is pinned by test_a_chain_is_started_on_
+    # digs_only_when_today_reaches_more_than_holding).
     for _ in range(20):
-        _add(g, card_db, "Mountain", "library")
+        _add(g, card_db, "Grapeshot", "library")
     g.players[0].deck_name = DECK
     g.players[1].deck_name = "Dimir Midrange"
     g.current_phase = Phase.MAIN1

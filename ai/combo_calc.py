@@ -64,6 +64,9 @@ class ComboAssessment:
     _role_cache: Dict[str, str] = field(default_factory=dict)
     reason: str = ""
     r_res: float = 0.0               # chain-reaction residue (mana surplus)
+    # P(the opponent strips a chain piece from hand before our next turn):
+    # BHI's discard belief times the documented hit rate (`_strip_risk`).
+    strip_risk: float = 0.0
 
 
 def _null_assessment() -> ComboAssessment:
@@ -193,6 +196,19 @@ def _compute_risk_discount(bhi, opp):
     return 1.0 - max(p_counter, effective_discard)
 
 
+def _strip_risk(bhi) -> float:
+    """P(a sorcery-speed discard strips one of our chain pieces before our
+    next turn): BHI's discard belief times `_DISCARD_HIT_RATE` -- the
+    discard branch of `_compute_risk_discount`, alone, because waiting a
+    turn exposes the hand to discard but not to a counter it would face
+    today as well."""
+    if not bhi or not getattr(bhi, '_initialized', False):
+        return 0.0
+    p_discard = (bhi.get_discard_probability()
+                 if hasattr(bhi, 'get_discard_probability') else 0.0)
+    return p_discard * _DISCARD_HIT_RATE
+
+
 # Documented hit-rate prior. Given the opp casts a discard spell
 # (Thoughtseize / Inquisition / etc.), how often does it actually
 # strip one of our critical_pieces? Empirically ~50% - the opp sees
@@ -313,6 +329,7 @@ def _assess_storm_zone(game, player_idx, goal_engine, snap, zone, target,
         has_enabler=missing['has_fuel'] or missing['reducer_deployed'],
         combo_value=combo_value,
         risk_discount=risk_discount,
+        strip_risk=_strip_risk(bhi),
         best_chain=best,
         payoff_names=payoff_names,
         _role_cache=_build_role_cache(goal_engine),
@@ -987,8 +1004,40 @@ def _cast_triggers_draw(card, game, player_idx) -> bool:
                for s in iter_specs(h.specs))
 
 
+def _closer_routes_in_library(me) -> int:
+    """The library cards that are a route to the chain's closer: a storm
+    payoff (`_is_storm_payoff`) or a tutor whose pool holds one
+    (`_tutor_has_payoff_access`)."""
+    return sum(1 for c in getattr(me, 'library', None) or ()
+               if _is_storm_payoff(c) or _tutor_has_payoff_access(c, me))
+
+
+def _digs_reach_today_beats_holding(digs, me, strip_risk) -> bool:
+    """With no chain begun, is starting one on these digs worth more than
+    holding its pieces a turn? Both are the probability of finding a route
+    to the closer (`_closer_routes_in_library`) among the cards seen
+    (hypergeometric, `outcome_ev.p_draw_in_n_turns`):
+    - today, the cards the digs draw (`draw_projection.projected_draws`;
+      one for a dig whose count it cannot read);
+    - after holding, those and the next turn's draw, if the pieces survive
+      the opponent's discard (`strip_risk`); a dig that is itself a tutor
+      reaching a closer finds it today for certain.
+    Digs that can reach no closer (probability 0 today) hold; otherwise the
+    chain starts when today's chance is at least the held one."""
+    from ai.draw_projection import projected_draws
+    from ai.outcome_ev import p_draw_in_n_turns
+    if any(_tutor_has_payoff_access(d, me) for d in digs):
+        return True
+    seen = sum(projected_draws(d, me.hand) or 1 for d in digs)
+    library = len(getattr(me, 'library', None) or ())
+    routes = _closer_routes_in_library(me)
+    today = p_draw_in_n_turns(library, routes, seen)
+    later = p_draw_in_n_turns(library, routes, seen + 1)
+    return today > 0 and today >= later * (1.0 - strip_risk)
+
+
 def _ritual_without_closer(card, me, snap, game, player_idx, storm,
-                           opp_life):
+                           opp_life, strip_risk=0.0):
     """A ritual cast with no finisher and no flashback line in reach: its
     mana empties at the end of the phase (CR 500.4, 106.4), so it is held
     (`STORM_HARD_HOLD`) unless that mana reaches a dig the AI will make
@@ -999,9 +1048,21 @@ def _ritual_without_closer(card, me, snap, game, player_idx, storm,
         missing the closer is increasingly catastrophic;
     (B) draw-miss cascade risk -- at storm >= COMBO_MIN_CHAIN_DEPTH with
         one dig left the chain is one bad top-deck from collapse.
-    One rule for the storm-0 gate and the mid-chain gate."""
+    One rule for the storm-0 gate and the mid-chain gate.
+    With a later turn to chain on (the opponent's clock beyond two turns),
+    the digs must also reach the closer today at least as likely as after
+    holding a turn (`_digs_reach_today_beats_holding`), at any storm count:
+    the spells already cast are spent either way, so the next ritual is
+    weighed on what it can still reach."""
     digs = _digs_the_ai_will_make(card, me, snap, game, player_idx, storm)
     if not digs:
+        return STORM_HARD_HOLD
+    # Holding is an option only with a later turn to chain on: the same
+    # clock condition as the mid-chain gate's.
+    later_turn = (getattr(snap, 'opp_clock_discrete', _OPP_CLOCK_NO_CLOCK)
+                  > 2 and not snap.am_dead_next)
+    if later_turn and not _digs_reach_today_beats_holding(digs, me,
+                                                         strip_risk):
         return STORM_HARD_HOLD
     storm_coverage = storm / opp_life
     escalation = 1.0 + max(0.0, storm_coverage - COMBO_HALF_LETHAL_FRACTION)
@@ -1349,7 +1410,8 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                 # ritual's mana empties at phase end (CR 500.4): held
                 # unless it reaches a dig (`_ritual_without_closer`).
                 return _ritual_without_closer(card, me, snap, game,
-                                              player_idx, storm, opp_life)
+                                              player_idx, storm, opp_life,
+                                              strip_risk=a.strip_risk)
 
         # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
         # If no reducer deployed yet but one exists in hand and is castable,

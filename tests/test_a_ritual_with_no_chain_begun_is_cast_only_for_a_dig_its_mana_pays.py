@@ -57,8 +57,11 @@ def _main_phase(card_db, *, hand, storm, lands, opp_life=20):
     for _ in range(lands):
         _add(g, card_db, "Mountain", "battlefield")
     cards = [_add(g, card_db, n, "hand") for n in hand]
+    # Every library card is a route to the closer, so a dig is certain to
+    # find one and these tests pin only whether the ritual's mana reaches
+    # it (the reach rule: test_a_chain_is_started_on_digs_only_when_...).
     for _ in range(20):
-        _add(g, card_db, "Mountain", "library")
+        _add(g, card_db, "Grapeshot", "library")
     g.players[0].deck_name = DECK
     g.players[1].deck_name = "4c Omnath"
     g.current_phase = Phase.MAIN1
