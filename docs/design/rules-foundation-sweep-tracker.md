@@ -12343,7 +12343,13 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - The anchor is unchanged.
 - Commit `ccdf022`.
 
-**Measured:** `sy-post` arm, with unit CD (pending). Both test chunks pass on `b0e1a37` (5607 + 2837).
+**Measured (units SY and CD, with the perf fix):** `sy-post` (`4295688`, code `b0e1a37`), a same-seed full matrix at n=20 Bo3 over all 26 rows, against `dt-post`.
+- 650 cells, 0 aborts, 0 rules-audit violations. Both test chunks pass on `b0e1a37` (5607 + 2837), and CI is green.
+- Only 8 cells moved, all in Ruby Storm's row or column, each by one match (5 pp).
+- Ruby Storm 14.0 → 13.6; every other deck moved by 0.2 or less.
+- The storm-copy rules are now right, but across the field they do not lift Storm. The seed-50000 replay that went from 1-2 to 2-0 was a single match, and Boros Energy vs Ruby Storm moved 85 → 90 the other way.
+- Storm's outlier stays with its open root cause (payoff reachability; see the Storm diagnostic).
+- Band misses: 7 decks, 62.0 pp in total (`dt-post` was 61.5).
 
 ## Unit CD: a spell's own damage counts toward what its copies must deal (AI; 2026-11-07)
 
