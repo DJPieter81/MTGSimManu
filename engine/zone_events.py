@@ -66,7 +66,8 @@ def is_card(card: Any) -> bool:
     """A card, as zone-change events count them: not a token and not a
     copy of a spell (CR 111.7, 707.10)."""
     return not (getattr(card, "is_token", False)
-                or getattr(card, "is_copy", False))
+                or getattr(card, "is_copy", False)
+                or getattr(card, "_is_spell_copy", False))
 
 
 def record(game: Any, card: Any, from_zone: str, from_player: int,

@@ -90,7 +90,7 @@ def test_a_storm_copy_may_have_new_targets_chosen(card_db):
     game, theirs = _game(card_db)
     memnite = theirs[3]
     game.callbacks.choose_copy_targets = \
-        lambda g, p, item, remaining: [memnite.instance_id]
+        lambda g, p, item, copies: [[memnite.instance_id]] * copies
     _grapeshot(game, card_db, prior_spells=1)
     assert game.players[1].life == 17 - 1        # the original
     assert memnite.zone == "graveyard"           # its copy
@@ -102,7 +102,7 @@ def test_a_target_the_spell_could_not_have_chosen_is_refused(card_db):
     game, theirs = _game(card_db)
     own_land = game.players[0].battlefield[0]
     game.callbacks.choose_copy_targets = \
-        lambda g, p, item, remaining: [own_land.instance_id]
+        lambda g, p, item, copies: [[own_land.instance_id]] * copies
     _grapeshot(game, card_db, prior_spells=1)
     assert game.players[1].life == 17 - 2
     assert own_land.zone == "battlefield"
@@ -143,9 +143,13 @@ def test_no_copy_is_spent_on_a_permanent_damage_does_not_destroy(card_db):
 
 
 def test_the_ai_aims_a_storm_spells_copies_at_the_board(card_db):
-    """Through the AI's own callbacks: the copies clear the attackers."""
+    """Through the AI's own callbacks: the copies clear the attackers.
+    (No permanent here changes when another dies: each copy resolves on its
+    own, with state-based actions between, so a dies trigger can make a
+    planned target a new object before its copies resolve.)"""
     from engine.game_runner import AICallbacks
-    game, theirs = _game(card_db)
+    game, theirs = _game(card_db, opposing=["Guide of Souls", "Ocelot Pride",
+                                            "Memnite", "Grizzly Bears"])
     game.players[0].deck_name = "Ruby Storm"
     game.callbacks = AICallbacks()
     _grapeshot(game, card_db, prior_spells=6)
@@ -176,7 +180,7 @@ def test_the_audit_records_a_copy_target_the_spell_could_not_have_chosen(
     game, _theirs = _game(card_db)
     own_land = game.players[0].battlefield[0]
     game.callbacks.choose_copy_targets = \
-        lambda g, p, item, remaining: [own_land.instance_id]
+        lambda g, p, item, copies: [[own_land.instance_id]] * copies
     _grapeshot(game, card_db, prior_spells=1)
     assert _findings(audit)
 
@@ -184,6 +188,6 @@ def test_the_audit_records_a_copy_target_the_spell_could_not_have_chosen(
 def test_the_audit_is_silent_on_a_legal_copy_target(card_db, audit):
     game, theirs = _game(card_db)
     game.callbacks.choose_copy_targets = \
-        lambda g, p, item, remaining: [theirs[3].instance_id]
+        lambda g, p, item, copies: [[theirs[3].instance_id]] * copies
     _grapeshot(game, card_db, prior_spells=1)
     assert not _findings(audit)

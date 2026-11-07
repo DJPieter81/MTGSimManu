@@ -223,7 +223,14 @@ class ResolutionManager:
         so that CR 614 replacement effects (e.g. Rest in Peace) can
         intercept the destination, and CR 603 zone-change triggers fire.
         """
-        if getattr(card, '_cast_with_flashback', False):
+        if getattr(card, '_is_spell_copy', False):
+            # CR 707.10a, 704.5e -- a spell COPY leaving the stack ceases
+            # to exist, however it was made; it never enters a zone
+            # (imprint copies, storm copies).
+            game.zone_mgr.move_card_from_stack(
+                game, card, "expired_copy", cause="spell copy ceases (CR 707.10a)"
+            )
+        elif getattr(card, '_cast_with_flashback', False):
             # Flashback: exile instead of going to graveyard (CR 702.33a)
             game.zone_mgr.move_card_from_stack(
                 game, card, "exile", cause="flashback resolution (CR 702.33a)"
@@ -248,13 +255,6 @@ class ResolutionManager:
             if not hasattr(game, '_rebound_cards'):
                 game._rebound_cards = []
             game._rebound_cards.append(card)
-        elif getattr(card, '_is_spell_copy', False):
-            # CR 707.10a — a resolved (or countered) spell COPY ceases
-            # to exist; it never enters the graveyard (imprint-copy
-            # artifacts, storm copies routed here, …).
-            game.zone_mgr.move_card_from_stack(
-                game, card, "expired_copy", cause="spell copy ceases (CR 707.10a)"
-            )
         else:
             own = (ResolutionManager._own_destination(card)
                    if resolved else None)
@@ -410,6 +410,16 @@ class ResolutionManager:
             return
 
         item = game.stack.pop()
+        outer = getattr(game, '_resolving_item', None)
+        game._resolving_item = item
+        try:
+            ResolutionManager._resolve_item(game, item)
+        finally:
+            game._resolving_item = outer
+
+    @staticmethod
+    def _resolve_item(game: "GameState", item: StackItem):
+        """Resolve ``item``, just taken from the top of the stack."""
         card = item.source
         template = card.template
         ResolutionManager._audit_priority_before_resolution(game, item)
@@ -530,11 +540,9 @@ class ResolutionManager:
                         resolve_spell_from_oracle(
                             game, card, item.controller, item.targets,
                             oracle_override=template.kicked_clause)
-                # Storm: copy the spell for each prior spell this turn
-                if Keyword.STORM in template.keywords:
-                    game._handle_storm(item)
-                # Cascade is a cast trigger: it went on the stack above this
-                # spell as it was cast and has resolved already (CR 702.85a;
+                # Storm and cascade are cast triggers: they went on the
+                # stack above this spell as it was cast and have resolved
+                # already, storm's copies too (CR 702.40a, 702.85a;
                 # CastManager.put_cast_triggers).
                 ResolutionManager._move_resolved_spell_off_stack(
                     game, card, resolved=True)
@@ -998,8 +1006,26 @@ class ResolutionManager:
             game=game)
 
     @staticmethod
+    def _audit_copy_resolves_on_its_own(game: "GameState", item) -> None:
+        """CR 707.10, 117.3b, 704.3, restated from the stack object: a copy
+        of a spell is a stack object of its own, so when its effect is
+        performed the object resolving is the copy itself, never another
+        spell or ability performing it. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled() \
+                or not getattr(item.source, '_is_spell_copy', False):
+            return
+        rules_audit.check(
+            "707.10/copy_resolves_on_its_own",
+            getattr(game, '_resolving_item', None) is item,
+            f"a copy of {item.source.name} performed while "
+            f"{getattr(getattr(game, '_resolving_item', None), 'description', None)!r}"
+            f" resolves", game=game)
+
+    @staticmethod
     def _execute_spell_effects(game: "GameState", item: StackItem):
         """Execute the effects of an instant/sorcery spell."""
+        ResolutionManager._audit_copy_resolves_on_its_own(game, item)
         card = item.source
         controller = item.controller
         opponent = 1 - controller

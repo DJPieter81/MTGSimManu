@@ -7,7 +7,7 @@ Owns spell-casting pre-checks and post-cast trigger fan-out:
   validation, cost reductions (domain/generic/Affinity/delve/Phyrexian),
   evoke/dash/warp/improvise alternatives, colored-mana feasibility
   via MRV greedy, and Blink target gating.
-- _handle_storm: create storm copies equal to spells-cast-this-turn-1
+- put_cast_triggers / resolve_storm: storm's cast trigger puts one copy per earlier spell this turn on the stack
   by re-executing the spell's effect for each copy.
 - put_cast_triggers / resolve_cascade: cascade's cast trigger exiles until a cheaper spell is
   found, cast it for free (or resolve Living End mass-reanimate),
@@ -2193,41 +2193,72 @@ class CastManager:
                     return
 
     @staticmethod
-    def _handle_storm(game: "GameState", item: StackItem) -> None:
-        """Create storm copies. Storm count = spells cast this turn - 1."""
-        copies = game._global_storm_count - 1
+    def resolve_storm(game: "GameState", source, controller: int,
+                      targets=None, *, spell_item: StackItem,
+                      copies: int) -> None:
+        """A storm trigger resolves (CR 702.40a): it copies the spell once
+        for each other spell cast before it this turn -- ``copies``, fixed
+        as it was cast -- and puts the copies onto the stack, all at once
+        (CR 707.10). Each is then a stack object of its own: it resolves
+        alone, with a state-based check before the next (CR 117.3b, 704.3),
+        and does not resolve when its every target is gone (CR 608.2b). The
+        spell is copied even when it has left the stack, from what it last
+        was (`spell_item`, CR 707.10). Their targets are chosen together
+        (`_spell_copies`)."""
         if copies <= 0:
             return
-
         game.log.append(f"T{game.display_turn}: Storm copies: {copies}")
-
-        for i in range(copies):
-            game._execute_spell_effects(
-                CastManager._spell_copy(game, item, copies - i))
-            if game.game_over:
-                return
+        for copy in CastManager._spell_copies(game, spell_item, copies):
+            CastManager._put_copy(game, copy)
 
     @staticmethod
-    def _spell_copy(game: "GameState", item: StackItem,
-                    remaining: int) -> StackItem:
-        """A copy of a spell on the stack (CR 707.10): its copiable values
-        and the choices made as it was cast (modes, X). It copies the
-        spell's targets, and its controller may choose new ones for it
-        (CR 707.10c), asked through `callbacks.choose_copy_targets` with
-        the copies still to be made. A choice the spell could not have
-        made (`copy_targets_legal`) is refused, and the copy keeps the
-        original's targets. Auditor `707.10c/copy_targets`."""
+    def _put_copy(game: "GameState", copy: StackItem) -> None:
+        """A copy of a spell is put onto the stack (CR 707.10). It is not
+        cast (CR 707.12): no cast trigger, nothing added to the storm
+        count."""
+        game.stack.push(copy)
+
+    @staticmethod
+    def _spell_copies(game: "GameState", item: StackItem,
+                      copies: int) -> list:
+        """``copies`` copies of the spell ``item`` (CR 707.10): each a new
+        object (`_is_spell_copy`: it ceases to exist off the stack, CR
+        704.5e) with the spell's copiable values and the choices made as it
+        was cast (modes, X). A copy copies the spell's targets, and its
+        controller may choose new ones (CR 707.10c). The copies are made
+        together, so their targets are chosen together: the controller is
+        asked once (`callbacks.choose_copy_targets`) for one entry per
+        copy. A choice the spell could not have made (`copy_targets_legal`)
+        is refused, and that copy keeps the original's targets. Auditor
+        `707.10c/copy_targets`."""
         import dataclasses
-        targets = list(item.targets)
-        if targets:
+        from .cards import CardInstance
+        from .stack import snapshot_targets
+        asked = None
+        if item.targets:
             asked = game.callbacks.choose_copy_targets(
-                game, item.controller, item, remaining)
-            if asked is not None and CastManager.copy_targets_legal(
-                    game, item, asked):
-                targets = list(asked)
-        copy = dataclasses.replace(item, targets=targets)
-        CastManager._audit_copy_targets(game, item, copy)
-        return copy
+                game, item.controller, item, copies)
+        made = []
+        for i in range(copies):
+            targets = list(item.targets)
+            choice = asked[i] if asked and i < len(asked) else None
+            if choice is not None and CastManager.copy_targets_legal(
+                    game, item, choice):
+                targets = list(choice)
+            card = CardInstance(template=item.source.template,
+                                owner=item.source.owner,
+                                controller=item.controller,
+                                instance_id=game.next_instance_id(),
+                                zone="stack")
+            card._game_state = game
+            card._is_spell_copy = True
+            zones, seqs = snapshot_targets(game, targets)
+            copy = dataclasses.replace(item, source=card, targets=targets,
+                                       target_zones=zones,
+                                       target_entry_seqs=seqs)
+            CastManager._audit_copy_targets(game, item, copy)
+            made.append(copy)
+        return made
 
     @staticmethod
     def copy_targets_legal(game: "GameState", item: StackItem,
@@ -2270,6 +2301,16 @@ class CastManager:
         -- still cascades at that value."""
         import functools
         card = stack_item.source
+        if Keyword.STORM in card.template.keywords:
+            # CR 702.40a: one copy for each other spell cast before it this
+            # turn; the count already includes this cast.
+            game.stack.push(StackItem(
+                item_type=StackItemType.TRIGGERED_ABILITY, source=card,
+                controller=stack_item.controller, ability=None,
+                description="storm",
+                effect=functools.partial(
+                    CastManager.resolve_storm, spell_item=stack_item,
+                    copies=game._global_storm_count - 1)))
         if Keyword.CASCADE not in card.template.keywords:
             return
         game.stack.push(StackItem(

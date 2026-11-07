@@ -167,12 +167,13 @@ class GameCallbacks(Protocol):
         ...
 
     def choose_copy_targets(
-        self, game: GameState, player_idx: int, item, remaining: int,
-    ) -> Optional[List[int]]:
-        """The targets for a copy of the spell `item` (CR 707.10c: its
-        controller may choose new ones), with `remaining` copies, this one
-        included, still to be made; None keeps the original's targets. The
-        engine refuses targets the spell could not have chosen."""
+        self, game: GameState, player_idx: int, item, copies: int,
+    ) -> Optional[List[Optional[List[int]]]]:
+        """The targets for `copies` copies of the spell `item`, made
+        together (CR 707.10c: their controller may choose new ones): one
+        entry per copy, None for a copy that keeps the original's targets;
+        None for all of them. The engine refuses targets the spell could
+        not have chosen."""
         ...
 
     def choose_mana_color(
@@ -425,10 +426,10 @@ class DefaultCallbacks:
         return max(eligible, key=_rank)
 
     def choose_copy_targets(
-        self, game: GameState, player_idx: int, item, remaining: int,
-    ) -> Optional[List[int]]:
-        """Default: a copy keeps the original's targets (CR 707.10c: new
-        ones are its controller's option, never required)."""
+        self, game: GameState, player_idx: int, item, copies: int,
+    ) -> Optional[List[Optional[List[int]]]]:
+        """Default: every copy keeps the original's targets (CR 707.10c:
+        new ones are its controller's option, never required)."""
         return None
 
     def choose_mana_color(

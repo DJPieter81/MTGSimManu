@@ -238,12 +238,13 @@ def plan_copy_damage(game: "GameState", controller: int, source,
 
 
 def copy_targets(game: "GameState", controller: int, item,
-                 remaining: int) -> Optional[list]:
-    """The AI's targets for a copy of the spell ``item`` (CR 707.10c), or
-    None to keep the original's. A spell whose one instruction deals N
-    damage to one target (its typed DAMAGE, one target requirement) is
-    aimed by `plan_copy_damage` over the copies still to be made, this one
-    first; any other spell keeps its targets."""
+                 copies: int) -> Optional[list]:
+    """The AI's targets for ``copies`` copies of the spell ``item``, made
+    together (CR 707.10c): one entry per copy, or None to keep the
+    original's targets for all of them. A spell whose one instruction deals
+    N damage to one target (its typed DAMAGE, one target requirement) is
+    aimed by `plan_copy_damage` over all the copies at once; any other
+    spell keeps its targets."""
     from engine.cast_manager import CastManager
     from engine.effect_conditions import amount_value
     from engine.effect_spec import Verb, iter_specs
@@ -257,8 +258,5 @@ def copy_targets(game: "GameState", controller: int, item,
             or len(reqs) != 1 or len(item.targets) != 1:
         return None
     amount = amount_value(game, controller, specs[0].amount, item.x_value)
-    plan = plan_copy_damage(game, controller, card, amount, remaining,
-                            reqs[0])
-    if not plan or plan[0] is None:
-        return None
-    return [plan[0]]
+    plan = plan_copy_damage(game, controller, card, amount, copies, reqs[0])
+    return [None if t is None else [t] for t in plan] or None

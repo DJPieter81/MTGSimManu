@@ -758,9 +758,6 @@ class GameState:
                                item: StackItem = None):
         ResolutionManager._handle_permanent_etb(self, card, controller, item=item)
 
-    def _handle_storm(self, item: StackItem):
-        CastManager._handle_storm(self, item)
-
     def _resolve_living_end(self, controller: int):
         ResolutionManager._resolve_living_end(self, controller)
 

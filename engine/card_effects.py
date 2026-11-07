@@ -503,8 +503,8 @@ def past_in_flames_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Empty the Warrens", EffectTiming.SPELL_RESOLVE,
                            description="Create 2 Goblin tokens")
 def empty_the_warrens_resolve(game, card, controller, targets=None, item=None):
-    # Base effect: create 2 Goblin tokens. Storm copies are handled
-    # by _handle_storm which calls this again for each copy.
+    # Base effect: create 2 Goblin tokens. Each storm copy is a stack
+    # object of its own that resolves through this again (CR 702.40a).
     game.create_token(controller, "goblin", count=2)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Empty the Warrens creates 2 Goblin tokens")
