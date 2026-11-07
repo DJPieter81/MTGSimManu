@@ -12302,7 +12302,7 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 ## Perf: a template's parsed effects stand until a printed field changes (2026-11-07)
 
-**Symptom:** after unit SC, the Bo3 replay of Ruby Storm vs Boros Energy (s50000) aborted game 1 as a draw at the 30 s game budget. 29 Empty the Warrens copies had put about 60 Goblin tokens on the board.
+**Symptom:** after unit SY, the Bo3 replay of Ruby Storm vs Boros Energy (s50000) aborted game 1 as a draw at the 30 s game budget. 29 Empty the Warrens copies had put about 60 Goblin tokens on the board.
 
 **Cause:** `continuous_effects.rule_effects` reads every permanent's `template.effects` on every query. Each access re-derived the full parse input (`effect_grammar.template_facts`: self names and CR 702 keywords, regex-heavy) only to confirm the memo. That was about 70% of game time in the profile.
 
@@ -12312,7 +12312,9 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Pins:** the digest is byte-identical (27 games). Commit `8dd8517`.
 
-## Unit SC: a storm copy is put on the stack and resolves on its own (CR 702.40a, 707.10, 707.12, 704.3, 608.2b; 2026-11-07)
+## Unit SY: a storm copy is put on the stack and resolves on its own (CR 702.40a, 707.10, 707.12, 704.3, 608.2b; 2026-11-07)
+
+**Builds on** unit SC (2026-10-13), which gave copies new targets and the AI's plan for K copies.
 
 **Source:** a Bo3 replay of Ruby Storm vs Boros Energy (s50000), game 2, turn 5. Grapeshot with 8 copies sent 8 damage into a 3-loyalty Ajani, and Boros survived at 9.
 
@@ -12341,4 +12343,21 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - The anchor is unchanged.
 - Commit `ccdf022`.
 
-**Measured:** `sc-post` arm (next).
+**Measured:** `sy-post` arm, with unit CD (next).
+
+## Unit CD: a spell's own damage counts toward what its copies must deal (AI; 2026-11-07)
+
+**Source:** the same Bo3 replay after unit SY, game 2, turn 5. Grapeshot was aimed at the face with 8 copies and Boros at 9. The plan saw 8 < 9 and sent 3 copies into a planeswalker; Boros survived at 3 and won the game.
+
+**Principle:** the spell itself deals its N to the target it was cast at.
+- Copies that are lethal together with the spell go to the face when the spell is aimed there.
+- A permanent the spell is aimed at needs only the copies its damage leaves short, and is no candidate at all when the spell alone destroys it.
+- The face's value for the copies is marginal over the spell's own damage.
+
+**Fix:** `ai.damage_targets.plan_copy_damage(..., spell_target=)`, read by `copy_targets`.
+
+**Class:** every spell with copies, the same class as unit SY.
+
+**Tests:** 4, all red before, including the replayed line through the engine.
+
+**Pins:** the digest is byte-identical; the anchor is unchanged. Commit `b0e1a37`.
