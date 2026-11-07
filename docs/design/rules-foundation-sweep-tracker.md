@@ -12396,3 +12396,7 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - The anchor is unchanged.
 
 **Effect on the replay:** the Explosives is activated on turn 6 and kills Ragavan. Zoo still wins 2-0.
+
+**Verified:** both test chunks pass on `68803aa` (5618 + 2837).
+
+**Measured:** `mo-post` arm (pending).
