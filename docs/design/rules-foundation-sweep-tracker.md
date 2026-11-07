@@ -12286,4 +12286,16 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Pins:** magic numbers unchanged (the new module is at baseline 0); the digest is byte-identical; the anchor's Ruby Storm vs Dimir match ends on turn 6, not 5, with the same winner.
 
-**Measured:** next arm.
+**Measured (units ST and DT together):** `dt-post` (`0ffc86d`, code `8dd7491`), a same-seed full matrix at n=20 Bo3 over all 26 rows.
+- 650 cells, 0 aborts, 0 rules-audit violations (the n=60 matrix had 6, all fixed by unit ST).
+- There is no same-n pre arm, so it is compared loosely against the n=60 matrix (whose first 20 seeds per cell are the same).
+- No deck moved more than 5 pp. Largest moves: Azorius Control (WST) +4.7, Affinity +4.6, Pinnacle Affinity -4.0, 4/5c Control +3.5, Izzet Prowess +3.2.
+- Ruby Storm: 12.8 → 14.0. The draw-tax suicide line is gone, but Storm still reaches no finisher; that is the next root cause.
+- Band misses: 7 decks, 61.5 pp in total (was 9 decks, 65.4 pp). Boros Ponza and Hollow One are back in band.
+  - Ruby Storm 14.0 (miss 26.0)
+  - Eldrazi Tron 75.9 (10.9)
+  - Domain Zoo 72.7 (7.7)
+  - Affinity 44.7 (5.3)
+  - Instant Reanimator 40.3 (4.7)
+  - Creatures Toolbox 25.4 (4.6)
+  - Boros Energy 72.3 (2.3)
