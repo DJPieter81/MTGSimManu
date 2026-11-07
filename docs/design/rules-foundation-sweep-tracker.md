@@ -12435,4 +12435,8 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Lead found, not built:** in Ruby Storm vs Dimir Midrange s50000, game 1, turn 4, Storm held a Wish that Reckless Impulse had exiled, playable that turn only. So the gate correctly admits the chain. The chain then spent its mana on Past in Flames and a dig, and the Wish expired uncast. That is a sequencing question for the chain planner, not the gate.
 
-**Measured:** `rr-post` diagnostic arm, Ruby Storm's row only, n=20, against `mo2-post` (pending).
+**Measured:** `rr-post` (`7392360`), Ruby Storm's row only at n=20 Bo3, against the same cells of `mo2-post`.
+- 25 cells, 0 aborts, 0 violations.
+- Row mean 15.2 → 16.0. Cells moved both ways by 5-20 pp: Goryo's Vengeance +20, Grixis Reanimator +15, Affinity -15, Instant Reanimator -10. That is within the noise of 20 matches per cell, so this is no measurable lift.
+- The rule stands as the correct valuation: it held the speculative rituals in the replay. Storm's win rate is bound elsewhere.
+- **The next named lead** is the chain planner's sequencing: a Wish exiled by an impulse draw, playable this turn only, went uncast while the mana went to Past in Flames and a dig.

@@ -73,3 +73,10 @@ summary: "Bo3 replay root causes for Ruby Storm's outlier (12.8% vs band 40-55).
 - **The fix belongs in the valuations that read too high:**
   - the reachability gate here;
   - a Chalice X whose net disruption is not positive should not be a cast at all. That X is picked in `engine/cast_manager.py`, a strategic choice in the engine (7 pool cards; below class size on its own).
+
+## Third root cause, built as unit RR (AI)
+- **The gate now weighs reach:** `combo_calc._digs_reach_today_beats_holding` compares the digs' chance to find a route to the closer today against the chance after holding a turn, discounted by the opponent's discard.
+- **Measured** on Storm's row (`rr-post`): 15.2 → 16.0, within noise.
+- **The replay turn behind the third root cause was in fact a live route.** A Wish exiled by Reckless Impulse was playable that turn only. The misplay there is sequencing: the chain's mana went to Past in Flames and a dig, and the Wish expired uncast.
+- **Next:** that sequencing, in the chain planner (`ai/combo_chain.py` / `_estimate_combo_chain`). The next replay should name why a castable finisher route ranks below a flashback granter with no closer of its own.
+
