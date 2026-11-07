@@ -2858,7 +2858,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         from ai.bhi import opp_static_damage_per_card_event
         _cast_tax = opp_static_damage_per_card_event(game, player_idx,
                                                      "cast")
-        _n_draws = _projected_real_draws(card)
+        _n_draws = _projected_real_draws(card, game.players[player_idx].hand)
         _draw_tax = (opp_static_damage_per_card_event(game, player_idx,
                                                       "draw")
                      if _n_draws else 0)
@@ -2940,7 +2940,7 @@ def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
     return projected
 
 
-def _projected_real_draws(card: "CardInstance") -> int:
+def _projected_real_draws(card: "CardInstance", hand=()) -> int:
     """Projected REAL draw events from resolving `card`.
 
     An impulse draw (`predicates.is_impulse_draw`: the parsed spell
@@ -2952,6 +2952,13 @@ def _projected_real_draws(card: "CardInstance") -> int:
     from ai.predicates import is_impulse_draw
     if is_impulse_draw(card.template):
         return 0
+    # The typed spell's draws (`ai.draw_projection`): a printed count, or
+    # "that many" bound to the hand an earlier instruction moves. The
+    # oracle read below is only the fallback for a shape it does not count.
+    from ai.draw_projection import projected_draws
+    typed = projected_draws(card, hand)
+    if typed is not None:
+        return typed
     oracle = (card.template.oracle_text or '').lower()
     import re as _re
     m = _re.search(r'draw\s+(\w+)\s+cards?', oracle)
@@ -3349,29 +3356,8 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     # not?  If no signal fires, the cast is deferrable and scored at the
     # small exposure cost (negative).  The pass-preference tiebreaker in
     # ev_player.py then routes no-signal casts to pass.
-    signals = _enumerate_this_turn_signals(
-        card, snap, game, player_idx, archetype)
-    if not signals:
-        exposure = _compute_exposure_cost(card, snap, game, player_idx)
-        ev_deferred = -exposure
-        if not detailed:
-            return ev_deferred
-        return ev_deferred, {
-            'current_value': evaluate_board(snap, archetype, dk),
-            'projected_value': evaluate_board(snap, archetype, dk),
-            'raw_delta': 0.0,
-            'after_response_value': evaluate_board(snap, archetype, dk),
-            'response_discount': 0.0,
-            'counter_pct': 0.0,
-            'removal_pct': 0.0,
-            'this_turn_signals': [],
-            'deferral': True,
-            'exposure_cost': exposure,
-        }
-
-    current_value = evaluate_board(snap, archetype, dk)
-
-    # Project state after casting
+    # Project state after casting -- first: a cast that kills its caster is
+    # never merely deferrable (the floor below precedes the deferral).
     projected = _project_spell(card, snap, dk, game, player_idx)
 
     # ── M1-AI: lethal-to-self floor ────────────────────────────────
@@ -3395,6 +3381,29 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             'this_turn_signals': [],
             'lethal_to_self': True,
         }
+
+
+    signals = _enumerate_this_turn_signals(
+        card, snap, game, player_idx, archetype)
+    if not signals:
+        exposure = _compute_exposure_cost(card, snap, game, player_idx)
+        ev_deferred = -exposure
+        if not detailed:
+            return ev_deferred
+        return ev_deferred, {
+            'current_value': evaluate_board(snap, archetype, dk),
+            'projected_value': evaluate_board(snap, archetype, dk),
+            'raw_delta': 0.0,
+            'after_response_value': evaluate_board(snap, archetype, dk),
+            'response_discount': 0.0,
+            'counter_pct': 0.0,
+            'removal_pct': 0.0,
+            'this_turn_signals': [],
+            'deferral': True,
+            'exposure_cost': exposure,
+        }
+
+    current_value = evaluate_board(snap, archetype, dk)
 
     projected_value = evaluate_board(projected, archetype, dk)
 
