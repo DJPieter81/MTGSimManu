@@ -59,7 +59,7 @@ summary: "Bo3 replay root causes for Ruby Storm's outlier (12.8% vs band 40-55).
   - Reachability is a boolean. It ignores how many cards the digs actually see (`ai.draw_projection` counts them), how many payoffs the library holds, and whether the mana left after the dig can still pay for the payoff.
 - **The subsystem:** `_payoff_reachable_this_turn` in `ai/ev_evaluator.py`, the chain-continuation gate.
 - **Next step:** give the gate the chain's real reach.
-  - The digs' projected draws against the library's payoff density, the same hypergeometric primitive the mulligan model uses, compared in one currency with holding the resources.
+  - The digs' projected draws against the library's payoff density, the existing hypergeometric primitives (`ai/deck_knowledge.py`, `ai/outcome_ev.py`), compared in one currency with holding the resources.
   - The mana the chain has left for the payoff.
   - No new threshold literal; test red first, with a Storm case and one other chain deck.
 
