@@ -12343,7 +12343,7 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - The anchor is unchanged.
 - Commit `ccdf022`.
 
-**Measured:** `sy-post` arm, with unit CD (next).
+**Measured:** `sy-post` arm, with unit CD (pending). Both test chunks pass on `b0e1a37` (5607 + 2837).
 
 ## Unit CD: a spell's own damage counts toward what its copies must deal (AI; 2026-11-07)
 
