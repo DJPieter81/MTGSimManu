@@ -2221,23 +2221,17 @@ class GameRunner:
 
         for saga in sagas_to_transform:
             if saga in player.battlefield:
-                player.battlefield.remove(saga)
-                if saga in player.lands:
-                    player.lands.remove(saga)
-                # Create the transformed creature (4/4 Avatar)
-                from engine.cards import Keyword
-                tokens = game.create_token(
-                    active, "avatar", power=4, toughness=4,
-                    extra_keywords={Keyword.HASTE}
-                )
-                for t in tokens:
-                    t.template.name = "Avatar Roku"
-                    t.template.tags.add("legendary")
-                saga.zone = "exile"
+                # CR 714.2b, 712, 400.7: "exile this Saga, then return it to
+                # the battlefield transformed" -- through the zone funnel, a
+                # new object with its back face up (the one owner of the
+                # shape, as the reflection branch above uses).
+                from engine.oracle_resolver import _transform_permanent
                 saga.granted_abilities.clear()  # grants end with the permanent
-                player.exile.append(saga)
                 game.log.append(f"T{game.display_turn} P{active+1}: "
-                                f"{saga.name} Ch.III: transforms into Avatar Roku (4/4)")
+                                f"{saga.name} Ch.III: exiled and returned "
+                                f"transformed")
+                _transform_permanent(game, saga, active,
+                                     returns_as_new_object=True)
 
     # Backward-compatible alias
     def _activate_griselbrand(self, game: GameState, active: int):

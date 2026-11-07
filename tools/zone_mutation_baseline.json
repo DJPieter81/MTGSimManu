@@ -26,7 +26,7 @@
   "engine/effect_views.py": 0,
   "engine/face_down.py": 0,
   "engine/game_budget.py": 0,
-  "engine/game_runner.py": 11,
+  "engine/game_runner.py": 10,
   "engine/game_state.py": 0,
   "engine/land_manager.py": 0,
   "engine/mana.py": 0,
