@@ -1043,21 +1043,6 @@ def _later_turn(snap) -> bool:
             and not snap.am_dead_next)
 
 
-def _damage_chain_short_of_lethal(a, snap, pif_coverage=0.0) -> bool:
-    """The turn's best chain ends on a damage payoff -- in hand or found by
-    a tutor (`combo_chain.classify_card`) -- that does not kill
-    (`ComboAssessment.is_ready`), nor does a flashback line
-    (`flashback_chain_viable`'s storm coverage, lethal at 1), and a later
-    turn remains: firing spends the chain's rituals for damage short of
-    lethal. A token payoff's value is the next turn's attack, which
-    `is_ready` does not measure, so it is not judged here."""
-    best = getattr(a, 'best_chain', None)
-    return (best is not None and best.payoff_name is not None
-            and best.payoff_deals_damage and not a.is_ready
-            and pif_coverage < 1
-            and _later_turn(snap))
-
-
 def _ritual_without_closer(card, me, snap, game, player_idx, storm,
                            opp_life, strip_risk=0.0):
     """A ritual cast with no finisher and no flashback line in reach: its
@@ -1433,14 +1418,6 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                                               player_idx, storm, opp_life,
                                               strip_risk=a.strip_risk)
 
-        # A finisher route in reach that cannot kill this turn: holding
-        # keeps the rituals for a turn whose chain can.
-        if _damage_chain_short_of_lethal(a, snap, flashback_chain_viable(
-                card, me, snap, after_cast_card_cmc=own_cost,
-                after_cast_ritual_net=ritual_net,
-                game=game, player_idx=player_idx)):
-            return STORM_HARD_HOLD
-
         # ── Reducer-first heuristic: rituals are worth more AFTER a reducer ──
         # If no reducer deployed yet but one exists in hand and is castable,
         # penalize casting rituals now — deploying the reducer first makes
@@ -1534,10 +1511,6 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
                 return _ritual_without_closer(card, me, snap, game,
                                               player_idx, storm, opp_life,
                                               strip_risk=a.strip_risk)
-        elif _damage_chain_short_of_lethal(a, snap, pif_viability):
-            # What is cast is spent either way; the next ritual is weighed
-            # on whether the chain can still kill this turn.
-            return STORM_HARD_HOLD
 
     # ═══ FLIP-TRANSFORM STACK BATCHING ═══
     # When a creature with a "flip a coin" on-cast trigger is on the

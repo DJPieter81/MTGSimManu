@@ -130,10 +130,7 @@ class TestWishValidatesSideboard:
             card_db,
             hand_names=["Desperate Ritual", "Wish"],
             sideboard_names=["Grapeshot"],
-            # A lethal spot: the chain through the Wish kills this turn, so
-            # recognising the route is what greenlights the ritual (short of
-            # lethal it is held: test_a_ritual_is_held_when_the_reachable_
-            # damage_chain_cannot_kill).
+            # A lethal spot: the chain through the Wish kills this turn.
             opp_life=3,
         )
         ev = _score_ritual(game, ritual)
@@ -199,9 +196,7 @@ class TestWishValidatesSideboard:
             card_db,
             hand_names=["Desperate Ritual", "Grapeshot"],
             sideboard_names=[],
-            # A lethal spot: short of lethal, with a later turn, the ritual
-            # is held (test_a_ritual_is_held_when_the_reachable_damage_
-            # chain_cannot_kill). Ritual + Grapeshot deal 2.
+            # A lethal spot: ritual + Grapeshot deal 2.
             opp_life=2,
         )
         ev = _score_ritual(game, ritual)

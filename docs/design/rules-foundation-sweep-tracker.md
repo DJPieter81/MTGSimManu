@@ -12458,7 +12458,7 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Class:** 112 pool instant and sorcery tutors (the AI's existing tutor predicate); every storm-zone ritual gate.
 
-**Tests:** 9 new (4 planner, 5 gate), red before.
+**Tests:** 9 new (4 planner, 5 gate), red before. The gate's 5 left with the revert.
 - Six older tests asserted that a reachable finisher always greenlights rituals, at 20 life with 2-7 damage in reach. They now sit in lethal spots, so they pin the recognition they were written for.
 - The Empty the Warrens case is asserted as "not hard-held": token payoffs are not judged by this rule.
 
@@ -12469,4 +12469,8 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Effect on the replay turn:** Storm casts Ruby Medallion and Twinned Vision, and keeps both rituals and Past in Flames.
 
-**Measured:** `tc-post` diagnostic arm, Ruby Storm's row only, n=20, against `rr-post` (pending). A drop below noise is cause to revert part 2.
+**Measured:** `tc-post` (`354c492`), Ruby Storm's row only at n=20. 25 cells, 0 violations. Both test chunks pass on `354c492` (5635 + 2837).
+- Row mean 16.0 (`rr-post`) → 12.8: about 1.4 standard errors, leaning negative. The largest drop was Eldrazi Ramp 40 → 5, the over-holding risk this unit flagged.
+- Under the unit's own criterion, **part 2 is reverted**. A hold on "short of lethal" with a later turn reads as too passive while the chain planner still misses other kill lines: multiple finishers, and token damage next turn.
+- One correction to the pins above: the digest had grown to 28 games, because game 3 of Azorius Control vs Ruby Storm was newly played; none was dropped. After the revert, the digest and the anchor (turn 6) are back at their pre-TC values.
+- Part 1 (the planner models tutors) stays. It changes no reference game; it is measured alone by `tc2-post` (pending).
