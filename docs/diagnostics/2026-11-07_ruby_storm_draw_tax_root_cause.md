@@ -80,3 +80,17 @@ summary: "Bo3 replay root causes for Ruby Storm's outlier (12.8% vs band 40-55).
 - **The replay turn behind the third root cause was in fact a live route.** A Wish exiled by Reckless Impulse was playable that turn only. The misplay there is sequencing: the chain's mana went to Past in Flames and a dig, and the Wish expired uncast.
 - **Next:** that sequencing, in the chain planner (`ai/combo_chain.py` / `_estimate_combo_chain`). The next replay should name why a castable finisher route ranks below a flashback granter with no closer of its own.
 
+
+## Fourth root cause (named, not built): the chain planner cannot see a tutor's kill
+Traced on Storm's turn 4 of the same replay (trace global turn 7), with the candidate list at each step.
+- **The position:** a Wish exiled by Reckless Impulse is playable this turn only.
+  - Wish scores -12.4 at every step: the tutor-as-finisher branch holds a tutor while chain fuel remains.
+  - Storm casts Desperate Ritual twice (-0.13, -0.03), Past in Flames from the graveyard (-0.04) and a flashback Reckless Impulse (+0.01). It ends at 0 mana with the Wish uncast.
+- **The chain could not kill that turn.** With 5 mana at storm 3, Wish plus Grapeshot deals about 5 damage into 17 life.
+- **Why the rituals were cast:** the ritual gate skips its hold whenever a finisher route is in reach (`_has_storm_finisher`: the exiled Wish), even when the chain cannot kill.
+- **Why it was not fixed by gating on `ComboAssessment.is_ready`:** `combo_chain.find_all_chains` never models a tutor. A Wish → Grapeshot kill would never read as ready, so that gate would hold real lethal Wish turns.
+- **The subsystem:** the chain planner (`ai/combo_chain.py`: `classify_card`, `find_all_chains`).
+- **Next unit:**
+  1. A tutor whose pool holds a payoff is that payoff in the chain, at the tutor's cost plus the payoff's, with one more storm.
+  2. Then the ritual gate holds a reachable but non-lethal finisher route when a later turn remains.
+- **Tests first:** a Storm case, plus another tutor-to-payoff chain.
