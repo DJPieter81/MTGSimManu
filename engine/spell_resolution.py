@@ -553,6 +553,10 @@ class ResolutionManager:
                 # cast went on the stack above this one and resolved first,
                 # so a cascaded mass effect never saw this permanent.
                 card.enter_battlefield()
+                # Leaving the battlefield dropped the card's game reference
+                # (`ZoneManager._cleanup_leaving_battlefield`); a permanent
+                # that enters belongs to this game again.
+                card._game_state = game
                 game.players[item.controller].battlefield.append(card)
                 game.zone_mgr._audit_entry_counters(game, card)
                 # Place counters for X-cost permanents. "Enters with X

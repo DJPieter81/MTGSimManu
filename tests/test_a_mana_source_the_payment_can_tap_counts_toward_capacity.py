@@ -102,3 +102,20 @@ def test_the_auditor_is_silent_when_every_live_source_is_offered(card_db,
                            "Skateboard"])
     game.tap_lands_for_mana(0, ManaCost(generic=2), card_name="x")
     assert not _violations(audit)
+
+
+def test_a_source_that_left_and_was_cast_again_counts(card_db):
+    """A card leaving the battlefield drops its game reference; a permanent
+    spell resolving puts it back, so a Mox cast again is a source of the
+    game it is in (n=60 `mo-post`: Affinity vs Izzet Prowess s54000)."""
+    game = _game(card_db, ["Fiery Islet", "Mox Opal", "Claws of Gix",
+                           "Skateboard"])
+    p = game.players[0]
+    mox = next(c for c in p.battlefield if c.name == "Mox Opal")
+    game.zone_mgr.move_card(game, mox, "battlefield", "hand", cause="bounce")
+    assert game.cast_spell(0, mox)
+    while not game.stack.is_empty:
+        game.resolve_stack()
+    assert mox.zone == "battlefield"
+    assert mox._game_state is game
+    assert p.untapped_mana_capacity() == 2

@@ -183,7 +183,9 @@ class PlayerState:
                 # A mana ability the payment evaluates when it taps (a
                 # metalcraft gate, CR 702.98) prints no static fields: ask
                 # the payment owner, so this list and the payment agree.
-                game = game or getattr(c, '_game_state', None)
+                game = game or next(
+                    (getattr(b, '_game_state', None) for b in self.battlefield
+                     if getattr(b, '_game_state', None) is not None), None)
                 if game is None:
                     continue
                 from .mana_payment import ManaPayment

@@ -12399,4 +12399,15 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Verified:** both test chunks pass on `68803aa` (5618 + 2837).
 
-**Measured:** `mo-post` arm (pending).
+**`mo-post` (`a2ead6e`, code `68803aa`) is superseded.** The rules auditor found the fix incomplete: 46 violations in 4 shards, almost all `605.1a/mana_source_offered` on Mox Opal, plus two `702.126a/improvise_pays_once`.
+- **Cause:** a card leaving the battlefield drops its game reference (`ZoneManager._cleanup_leaving_battlefield`). A permanent spell resolving onto the battlefield (`spell_resolution`) never set it back, so a Mox Opal that left and was cast again had no game, and the source list could not evaluate its metalcraft.
+- **The same gap** had silenced the lifelink of a Solitude cast again (Azorius Control vs Ruby Storm s58500, game 1, in the digest).
+- **Fix (MO.2):**
+  - the resolving permanent belongs to the game again;
+  - the source list reads the game from any battlefield card that carries one.
+- **Tests:** 1 more (red before). Both violating cells re-run with 0 violations.
+- **Pins:** the digest re-recorded (1 game changes: Solitude's lifelink gains 3, two times; same winner and turns). The anchor is unchanged.
+- **The `mo-post` field moves are recorded but not accepted as a measurement:** Pinnacle Affinity 55.8 → 74.9 and Affinity 44.7 → 50.2.
+  - Boros Energy vs Pinnacle Affinity (75 → 20) was replayed. Pinnacle now plays Mox Opal from turn 1, Kappa Cannoneer on turn 3, and kills on turn 4. Every payment is legal; before the fix all four Mox Opals in the list produced nothing.
+
+**Measured:** `mo2-post` arm (pending).
