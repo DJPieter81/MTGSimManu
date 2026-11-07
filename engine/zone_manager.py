@@ -200,6 +200,10 @@ class ZoneManager:
 
         if leaving is not None:
             self._source_left(game, leaving)
+        # CR 603.2, 603.6: the card changed zones -- an event (or part of
+        # the open one) the zone-change triggers see.
+        from .zone_events import record
+        record(game, card, from_zone, source_owner, actual_to, dest_owner)
         return True
 
     # ── "Until ~ leaves the battlefield" (CR 610.3) ─────────────────

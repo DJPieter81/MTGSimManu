@@ -2549,13 +2549,16 @@ class CastManager:
                 # Exile least valuable cards first
                 exile_targets.sort(key=lambda c: c.template.cmc)
                 delved_spells = 0
-                for i in range(delve_exiled):
-                    ex = exile_targets[i]
-                    player.graveyard.remove(ex)
-                    ex.zone = "exile"
-                    player.exile.append(ex)
-                    if ex.template.is_instant or ex.template.is_sorcery:
-                        delved_spells += 1
+                # CR 702.66a: delve exiles them as one cost payment -- one
+                # event (`zone_events`), through the zone funnel.
+                from .zone_events import event as _zone_event
+                with _zone_event(game):
+                    for i in range(delve_exiled):
+                        ex = exile_targets[i]
+                        game.zone_mgr.move_card(game, ex, "graveyard", "exile",
+                                                cause=f"delve ({card.name})")
+                        if ex.template.is_instant or ex.template.is_sorcery:
+                            delved_spells += 1
                 # Store count for Murktide Regent ETB (+1/+1 per delved spell)
                 card._delved_spells = delved_spells
                 if delve_exiled > 0:
@@ -2766,6 +2769,11 @@ class CastManager:
             player.hand.remove(card)
         elif card in player.graveyard:
             player.graveyard.remove(card)
+            # CR 601.2a: casting it moves it from the graveyard to the
+            # stack -- a card leaving a graveyard (`zone_events`).
+            from .zone_events import record as _record_move
+            _record_move(game, card, "graveyard", card.owner, "stack",
+                         card.owner)
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
@@ -2792,11 +2800,13 @@ class CastManager:
         # other cards and the additional cost, through the payer
         # activations use.
         if not free_cast and escaped and template.escape_exile_count:
-            for ex in ActivationManager.graveyard_exile_payment(
-                    game, player_idx, template.escape_exile_count,
-                    source=card):
-                game.zone_mgr.move_card_to_exile(
-                    game, ex, cause=f"escape cost ({card.name})")
+            from .zone_events import event as _zone_event
+            with _zone_event(game):          # one cost payment, one event
+                for ex in ActivationManager.graveyard_exile_payment(
+                        game, player_idx, template.escape_exile_count,
+                        source=card):
+                    game.zone_mgr.move_card_to_exile(
+                        game, ex, cause=f"escape cost ({card.name})")
         if additional is not None:
             ActivationManager.pay_resource_costs(
                 game, player_idx, additional, victim,

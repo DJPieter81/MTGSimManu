@@ -992,6 +992,13 @@ class GameState:
                      game=self)
 
     def _check_sba_once(self) -> bool:
+        """One CR 704.3 pass, its moves one event (CR 704.3: performed
+        simultaneously as a single event; `zone_events`)."""
+        from .zone_events import event as _zone_event
+        with _zone_event(self):
+            return self._check_sba_pass()
+
+    def _check_sba_pass(self) -> bool:
         """Single CR 704.3 pass. Rules with a single shared
         implementation are SBAManager statics called from here AND
         from the dead SBAManager.check_and_perform_loop:

@@ -4060,6 +4060,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Exemplar of Strength",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GY: 'remove a -1/-1 counter from it. If you do, you gain 1 life' -- with no -1/-1 counter on it nothing is removed, so no life is gained (CR 608.2c); the legacy attack pass gained the life regardless"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Falkenrath Perforator",
     "TRIGGERED:0:0"
    ],
@@ -8568,6 +8576,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit ML: no legacy apply performed the mill; the MILL executor mills each player the instruction names (CR 701.17a)"
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Perfect Intimidation",
+    "MODE:0:1:mode1"
+   ],
+   "reason": "unit GY: 'remove all counters from target creature' through the counter owner; every board is identical, and a target with no counters is reported as nothing performed where the legacy mode reported it performed"
   },
   {
    "pair": [
@@ -18562,6 +18578,11 @@
   [
    "cast:dispatch",
    "Kykar, Wind's Fury",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Magmaroth",
    "TRIGGERED:0:1"
   ],
   [

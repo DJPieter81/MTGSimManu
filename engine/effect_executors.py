@@ -60,7 +60,7 @@ from .effect_resolver import (CONDITION_EVALUATORS, EXECUTOR_DESCRIPTIONS,
                               target_players)
 from .effect_model import (DurationKind, Modification, ModKind, Selector,
                            SelectorKind)
-from .effect_spec import (Amount, AmountKind, CardFilter, Chooser,
+from .effect_spec import (Amount, AmountKind, CardFilter, Chooser, CounterSpec,
                           Condition, ConditionKind, Destination, EffectSpec,
                           KeywordAction, Ref, RefKind, RefPart, TokenSpec,
                           Verb)
@@ -83,6 +83,10 @@ FAMILY_STEP_TRIGGER = "step_trigger"
 # dispatch_attack_triggers`): what a permanent's typed attack ability
 # performs.
 FAMILY_ATTACK_TRIGGER = "attack_trigger"
+# The zone-change carrier's family (unit GY, `effect_carrier.
+# dispatch_zone_change_triggers`): what a permanent's ability that triggers
+# on cards being put into or leaving a graveyard, or put into exile, performs.
+FAMILY_ZONE_CHANGE_TRIGGER = "zone_change_trigger"
 # The enter carrier's linked-exile family (unit XL, `effect_carrier.
 # dispatch_etb`): an enter trigger that exiles a target permanent until its
 # source leaves the battlefield (CR 610.3), with the trigger body beside it
@@ -98,7 +102,8 @@ _TRIGGER_BODY_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
                                  Verb.KEYWORD_ACTION, Verb.CONTINUOUS,
                                  Verb.EXILE, Verb.SACRIFICE,
                                  Verb.PLAYER_COUNTERS, Verb.SEARCH,
-                                 Verb.MOVE, Verb.SHUFFLE})
+                                 Verb.MOVE, Verb.SHUFFLE,
+                                 Verb.REMOVE_COUNTERS})
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -126,8 +131,10 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.PLAYER_COUNTERS,
                                             Verb.SACRIFICE, Verb.SEARCH,
                                             Verb.MOVE, Verb.SHUFFLE,
-                                            Verb.KEYWORD_ACTION}),
+                                            Verb.KEYWORD_ACTION,
+                                            Verb.REMOVE_COUNTERS}),
             FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
+            FAMILY_ZONE_CHANGE_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
 
 
@@ -1679,12 +1686,77 @@ def team_counters_supported(s: EffectSpec) -> bool:
             and not s.optional and s.chooser is Chooser.CONTROLLER)
 
 
+def _keyword_counter(kind: str) -> bool:
+    """A keyword counter (CR 122.1b: "flying", "first strike", ...), which
+    the engine does not model: the engine's keyword vocabulary."""
+    from .cards import Keyword
+    return kind.replace(" ", "_") in {k.value for k in Keyword}
+
+
+def one_object_counters_supported(s: EffectSpec) -> bool:
+    """"Put <a | N> <kind> counter(s) on <~ | target permanent>" (CR 122.1):
+    printed kinds, a printed count, on the ability's own source while it is
+    the object the ability came from (CR 400.7) or on the one battlefield
+    permanent its target slot names. Keyword counters (CR 122.1b) and a
+    choice of kinds are refused."""
+    p, a = s.payload, s.amount
+    if s.verb is not Verb.PUT_COUNTERS or not isinstance(p, CounterSpec) \
+            or not p.kinds or p.choice or s.flags \
+            or any(k in ("those", "*", "") or _keyword_counter(k)
+                   for k in p.kinds):
+        return False
+    if a is not None and _literal_n(a) is None:
+        return False
+    if s.optional or s.alternatives or s.filter is not None \
+            or s.subject is not None or s.group is not None \
+            or s.dest is not None or s.duration is not None \
+            or s.actor is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    req = s.target
+    on_target = (s.target_slot is not None and req is not None
+                 and req.zone == "battlefield" and req.count_max == 1
+                 and req.mode_group is None and s.ref is None)
+    return on_target or changes_own_source(s)
+
+
+def _put_one_object(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The counters on the one object, through the counter owner
+    (`add_plus_counters` for +1/+1, the counter replacements applying;
+    `adjust_counters` for every other kind)."""
+    if s.target_slot is not None:
+        slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+        perms = [ctx.game.get_card_by_id(getattr(v, "instance_id", v))
+                 for v in slot]
+        perms = [c for c in perms if c is not None and c.zone == "battlefield"]
+    else:
+        h = ctx.source
+        src = ctx.game.get_card_by_id(h.instance_id) if h is not None else None
+        perms = [src] if (src is not None and src.zone == "battlefield"
+                          and h.zone == "battlefield"
+                          and src.battlefield_entry_seq == h.entry_seq) else []
+    times = _literal_n(s.amount) if s.amount is not None else 1
+    source = _source_object(ctx)
+    for perm in perms:
+        for kind in s.payload.kinds:
+            if kind in _PLUS_ONE:
+                perm.add_plus_counters(times, ctx.game, source)
+            else:
+                perm.adjust_counters(kind, times)
+            ctx.game.log.append(
+                f"T{ctx.game.display_turn} P{ctx.controller + 1}: "
+                f"{getattr(source, 'name', '')} puts {times} {kind} counter"
+                f"{'s' if times > 1 else ''} on {perm.name}")
+    return Outcome(bool(perms), {ctx.controller: tuple(handle_of(c) for c in perms)})
+
+
 def execute_put_counters(ctx: Resolution, s: EffectSpec,
                          actors: Tuple[int, ...]) -> Outcome:
     """Each permanent the named player controls that the description admits
     now (the source too, unless "other") gets the counters, through the
     counter owner (`CardInstance.add_plus_counters`: the counter
-    replacements apply)."""
+    replacements apply) -- or, for one object, `_put_one_object`."""
+    if not team_counters_supported(s):
+        return _put_one_object(ctx, s)
     f = s.filter
     n = len(s.payload.kinds) * (s.amount.n if s.amount is not None else 1)
     source = _source_object(ctx)
@@ -1747,7 +1819,90 @@ def _audit_described_counters(ctx: Resolution, f: CardFilter, source: Any,
                       f"{missed}", game=ctx.game)
 
 
-execute_put_counters.supports = team_counters_supported
+execute_put_counters.supports = (
+    lambda s: team_counters_supported(s) or one_object_counters_supported(s))
+# The one-object shape is the zone-change carrier's (unit GY); every other
+# family keeps the team shape only until each is measured with it.
+execute_put_counters.allowed_families = (
+    lambda s: None if team_counters_supported(s)
+    else frozenset({FAMILY_ZONE_CHANGE_TRIGGER}))
+
+
+# ── REMOVE_COUNTERS (CR 122.8) ─────────────────────────────────────────
+
+# "Remove all counters from it": every kind (`CounterSpec.kinds` '*').
+_EVERY_KIND = "*"
+
+
+def remove_counters_supported(s: EffectSpec) -> bool:
+    """"Remove <a | N | all> <kind> counter(s) from <~ | target permanent>":
+    one fixed kind, or every kind with "all"; from the ability's own
+    source while it is the object the ability came from (CR 400.7), or from
+    the one battlefield permanent its target slot names. "Those counters"
+    (a back-reference) and a choice of kinds are refused."""
+    p = s.payload
+    if s.verb is not Verb.REMOVE_COUNTERS or not isinstance(p, CounterSpec) \
+            or p.choice or len(p.kinds) != 1 or s.flags:
+        return False
+    kind = p.kinds[0]
+    if kind in ("those", ""):
+        return False
+    a = s.amount
+    every = a is not None and a.kind is AmountKind.ALL
+    if kind == _EVERY_KIND and not every:
+        return False
+    if a is not None and not every and _literal_n(a) is None:
+        return False
+    if s.optional or s.alternatives or s.filter is not None \
+            or s.group is not None or s.dest is not None \
+            or s.duration is not None or s.chooser is not Chooser.CONTROLLER:
+        return False
+    req = s.target
+    on_target = (s.target_slot is not None and req is not None
+                 and req.zone == "battlefield" and req.count_max == 1
+                 and req.mode_group is None and s.ref is None)
+    return on_target or changes_own_source(s)
+
+
+def execute_remove_counters(ctx: Resolution, s: EffectSpec,
+                            actors: Tuple[int, ...]) -> Outcome:
+    """Remove the counters through the counter owner
+    (`CardInstance.adjust_counters`; CR 122.3: removing more than there
+    are removes what is there)."""
+    if s.target_slot is not None:
+        slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+        perms = [ctx.game.get_card_by_id(getattr(v, "instance_id", v))
+                 for v in slot]
+        perms = [c for c in perms if c is not None and c.zone == "battlefield"]
+    else:
+        # CR 400.7: the source while it is the object the ability came from.
+        h = ctx.source
+        src = ctx.game.get_card_by_id(h.instance_id) if h is not None else None
+        perms = [src] if (src is not None and src.zone == "battlefield"
+                          and h.zone == "battlefield"
+                          and src.battlefield_entry_seq == h.entry_seq) else []
+    kind = s.payload.kinds[0]
+    every = s.amount is not None and s.amount.kind is AmountKind.ALL
+    removed = False
+    for perm in perms:
+        kinds = ([k for k, n in perm.last_known().counters if n]
+                 if kind == _EVERY_KIND else [kind])
+        for k in kinds:
+            have = perm.counter_count(k)
+            n = have if every else (
+                _literal_n(s.amount) if s.amount is not None else 1)
+            n = min(n, have)
+            if n <= 0:
+                continue
+            perm.adjust_counters(k, -n)
+            removed = True
+            ctx.game.log.append(
+                f"T{ctx.game.display_turn} P{ctx.controller + 1}: "
+                f"{n} {k} counter{'s' if n > 1 else ''} removed from {perm.name}")
+    return Outcome(removed, {})
+
+
+execute_remove_counters.supports = remove_counters_supported
 
 
 def _audit_counters_placed(ctx: Resolution, before) -> None:
@@ -2519,6 +2674,7 @@ EXECUTORS[Verb.CONTINUOUS] = execute_continuous
 EXECUTORS[Verb.DRAW] = execute_draw
 EXECUTORS[Verb.CREATE_TOKEN] = execute_create_token
 EXECUTORS[Verb.PUT_COUNTERS] = execute_put_counters
+EXECUTORS[Verb.REMOVE_COUNTERS] = execute_remove_counters
 EXECUTORS[Verb.SACRIFICE] = execute_sacrifice
 EXECUTORS[Verb.MILL] = execute_mill
 EXECUTORS[Verb.PLAYER_COUNTERS] = execute_player_counters

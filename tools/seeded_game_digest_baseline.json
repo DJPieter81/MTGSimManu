@@ -1,5 +1,5 @@
 {
-  "combined": "90b9eb225440f25e9d39e9024439913aa34e1a2f4f574ec0f4e13134ee091b08",
+  "combined": "93c29b8ed11116a5fd29f6791a8399571547ec011ea5100e7bf8ea8e7bdd66e4",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -15,8 +15,8 @@
       "winner": "Eldrazi Tron"
     },
     "bo1|Azorius Blink|Hollow One|56500": {
-      "lines": 513,
-      "sha256": "0c31fccbe599c8643f56ad2e53d352864ac32d4b5e4d87cc2a957776573684ae",
+      "lines": 514,
+      "sha256": "1bd3af255aef32fc348a6bff156dadca054e6301108c911d946f393b18faaf48",
       "turns": 7,
       "winner": "Hollow One"
     },
@@ -93,8 +93,8 @@
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
-      "lines": 519,
-      "sha256": "c42ce22f81a73608f16b1cb9fa6ab60c773b70e6a8e44b7f09b409dc5960becb",
+      "lines": 523,
+      "sha256": "e04c422e6fa85c81c6412a4a8cc16538d3ac60080aef4fd208200192fb344b7a",
       "turns": 7,
       "winner": "Dimir Midrange"
     },

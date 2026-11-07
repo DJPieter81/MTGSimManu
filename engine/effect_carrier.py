@@ -25,7 +25,7 @@ import functools
 import operator
 import weakref
 
-from typing import Any, Iterable, Optional, Sequence
+from typing import Any, Iterable, Optional, Sequence, Tuple
 
 from . import effect_resolver as er
 from .effect_spec import iter_specs
@@ -1877,6 +1877,192 @@ def _audit_slots_placed(game: Any, host: Any, chosen: Any) -> None:
                 bad.append((sorted(types), v))
     rules_audit.check("601.2c/slot_placed", not bad,
                       f"misplaced targets {bad}", game=game)
+
+
+# ── The zone-change carrier (unit GY, CR 603.2, 603.6, 700.14) ─────────
+
+# The strict shape the zone-change carrier takes (`effect_views.
+# strict_zone_change_trigger`, A38) and the family label its resolutions
+# carry.
+ZONE_CHANGE_FAMILY = "zone_change_trigger"
+# CR 110.4b: the permanent types ("permanent card").
+_PERMANENT_TYPES = frozenset({"artifact", "creature", "enchantment", "land",
+                              "planeswalker", "battle"})
+
+
+def _card_has_types(card: Any, types: Tuple[str, ...]) -> bool:
+    if not types:
+        return True
+    have = {getattr(t, "value", str(t)).lower()
+            for t in getattr(card.template, "card_types", ()) or ()}
+    want = set()
+    for t in types:
+        want |= _PERMANENT_TYPES if t == "permanent" else {t}
+    return bool(have & want)
+
+
+def _zone_owner_matches(owner: str, player: int, controller: int) -> bool:
+    return (owner == "any" or (owner == "you" and player == controller)
+            or (owner == "opponent" and player != controller))
+
+
+def zone_change_matches(game: Any, z: Any, src: Any, controller: int,
+                        moves: Tuple[Any, ...]) -> Tuple[Any, ...]:
+    """The moves of one event that a head typed `z` (`effect_spec.
+    ZoneChangeEvent`) on `src`, a permanent `controller` controls, names:
+    into or out of the zone, whose zone, from where, the card types, "another",
+    and the riders read as the event happens ("during your turn", "while ~
+    has a <kind> counter on it")."""
+    if z.your_turn and game.active_player != controller:
+        return ()
+    if z.source_counter and src.counter_count(z.source_counter) <= 0:
+        return ()
+    out = []
+    for m in moves:
+        if z.direction == "into":
+            if m.to_zone != z.zone:
+                continue
+            if z.zone == "graveyard" and not _zone_owner_matches(
+                    z.owner, m.to_player, controller):
+                continue
+            if z.origin == "library" and m.from_zone != "library":
+                continue
+            if z.origin == "battlefield" and m.from_zone != "battlefield":
+                continue
+            if z.origin == "not_battlefield" and m.from_zone == "battlefield":
+                continue
+        else:
+            if m.from_zone != z.zone or m.to_zone == z.zone:
+                continue
+            if not _zone_owner_matches(z.owner, m.from_player, controller):
+                continue
+        if z.other and getattr(m.card, "instance_id", None) == src.instance_id:
+            continue
+        if not _card_has_types(m.card, z.types):
+            continue
+        out.append(m)
+    return tuple(out)
+
+
+def fires_per_event(z: Any, matched: Tuple[Any, ...]) -> int:
+    """How many times the head triggers on one event: once for "one or
+    more" however many cards (CR 700.14), once per card for "a card"."""
+    if not matched:
+        return 0
+    return 1 if z.batch else len(matched)
+
+
+def _zone_change_family(h: Any) -> Optional[str]:
+    if h.trigger is None or not _takes(h, ZONE_CHANGE_FAMILY):
+        return None
+    return ZONE_CHANGE_FAMILY
+
+
+def zone_change_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The zone-change carrier's plan for one face: ``[(host, family)]`` for
+    every host whose head is a CARD_ZONE_CHANGE event when each is takeable;
+    None when the face has none or any one is not (a card is taken whole)."""
+    from .effect_spec import EventHint, HostKind
+    hosts = [h for h in face_hosts
+             if h.kind is HostKind.TRIGGERED and h.trigger is not None
+             and EventHint.CARD_ZONE_CHANGE in h.trigger.event_hints]
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = _zone_change_family(h)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def dispatch_zone_change_triggers(game: Any, moves: Tuple[Any, ...]) -> bool:
+    """The zone-change carrier (CR 603.2): each permanent's abilities that
+    trigger on cards changing zones, for one event (`engine.zone_events`):
+    the moves their typed head names (`zone_change_matches`), once per event
+    or once per card (`fires_per_event`), resolved through the dispatcher
+    with "that player" the owner of the zone the first named card moved
+    into or out of. In stack order (CR 603.3b). A card whose zone-change
+    triggers the carrier cannot take resolves none of them; the rules audit
+    records it (`603.2/zone_change_trigger_unresolved`)."""
+    if not er.dispatch_enabled() or not moves:
+        return False
+    performed = False
+    ap = game.active_player
+    order = [p for p in range(len(game.players)) if p != ap] + [ap]
+    for idx in order:
+        for src in list(game.players[idx].battlefield):
+            template = getattr(src, "template", None)
+            if template is None or getattr(template, "is_loyalty_clause",
+                                           False):
+                continue
+            hosts = _face_hosts(src)
+            plan = zone_change_plan(hosts)
+            controller = src.controller
+            if plan is None:
+                _audit_unresolved_zone_change_trigger(game, src, hosts, moves)
+                continue
+            for h, family in plan:
+                z = h.trigger.zone_change
+                matched = zone_change_matches(game, z, src, controller, moves)
+                times = fires_per_event(z, matched)
+                _audit_batch_fires(game, src, h, matched, times)
+                if not times:
+                    continue
+                m0 = matched[0]
+                event = er.TriggerEvent(
+                    player=m0.to_player if z.direction == "into"
+                    else m0.from_player)
+                for _ in range(times):
+                    for part, chosen in put_on_stack(game, src, controller, h):
+                        performed |= bool(er.resolve_ability(
+                            game, er.handle_of(src), controller, part, chosen,
+                            family=family, event=event, source_object=src))
+                        if game.game_over:
+                            return performed
+    return performed
+
+
+def _audit_batch_fires(game: Any, src: Any, h: Any, matched: Tuple[Any, ...],
+                       times: int) -> None:
+    """Rules audit (CR 700.14, 603.2): an ability printed "whenever one or
+    more ..." triggers at most once per event, and one printed "whenever a
+    ... card" once per card the event moved that it names. Read from the
+    printed head (`TriggerHead.raw`), not the typed `batch` flag.
+    Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled() or not matched:
+        return
+    batch = "one or more" in (h.trigger.raw or "")
+    due = 1 if batch else len(matched)
+    rules_audit.check("700.14/one_or_more_once", times == due,
+                      f"{src.name}: triggered {times} time(s) on an event "
+                      f"moving {len(matched)} card(s) it names "
+                      f"({'one or more' if batch else 'each card'})",
+                      game=game)
+
+
+def _audit_unresolved_zone_change_trigger(game: Any, src: Any,
+                                          hosts: Iterable[Any],
+                                          moves: Tuple[Any, ...]) -> None:
+    """Rules audit, a census once per card: a cards-changing-zones head of
+    `src` names this event (or is one the grammar could not type), but no
+    carrier resolves the card's zone-change triggers (CR 603.2)."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .effect_spec import EventHint, HostKind
+    for h in hosts:
+        if h.kind is not HostKind.TRIGGERED or h.trigger is None \
+                or EventHint.CARD_ZONE_CHANGE not in h.trigger.event_hints:
+            continue
+        z = h.trigger.zone_change
+        if z is None or zone_change_matches(game, z, src, src.controller,
+                                            moves):
+            rules_audit.census("603.2/zone_change_trigger_unresolved",
+                               src.name, detail=h.trigger.raw, game=game)
+            return
 
 
 def entry_counters(effects, face: int = 0):

@@ -394,9 +394,12 @@ class ResolutionManager:
         704.4, `sba_manager.resolving`); a resolution within another one
         leaves the check to the outermost."""
         from .sba_manager import resolving
+        from .zone_events import event as _zone_event
         if game.stack.is_empty:
             return
-        with resolving(game):
+        # What a legacy resolver moves outside the dispatcher's own
+        # per-instruction events is one event (`zone_events`).
+        with resolving(game), _zone_event(game):
             ResolutionManager._resolve_top(game)
         game.check_state_based_actions()
 

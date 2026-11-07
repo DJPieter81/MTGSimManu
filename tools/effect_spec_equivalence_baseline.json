@@ -216,8 +216,8 @@
    "AGREE": 22738
   },
   "creature_dies_observer": {
-   "AGREE": 22389,
-   "DERIVED_COVERAGE_GROWTH": 345,
+   "AGREE": 22391,
+   "DERIVED_COVERAGE_GROWTH": 343,
    "UNEXPLAINED": 4
   },
   "cycling_variant_data": {
@@ -453,8 +453,8 @@
    "AGREE": 22738
   },
   "has_lifegain_token_trigger": {
-   "AGREE": 22624,
-   "DERIVED_COVERAGE_GROWTH": 107,
+   "AGREE": 22635,
+   "DERIVED_COVERAGE_GROWTH": 96,
    "UNEXPLAINED": 5,
    "UNMODELLED_CLAUSE": 2
   },
@@ -763,13 +763,13 @@
  },
  "gate_parity": {
   "legacy_fallback": 3081,
-  "new_path": 2597,
-  "pairs": 5678
+  "new_path": 2600,
+  "pairs": 5681
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813963,
-  "DERIVED_COVERAGE_GROWTH": 7869,
+  "AGREE": 2813976,
+  "DERIVED_COVERAGE_GROWTH": 7856,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 7,

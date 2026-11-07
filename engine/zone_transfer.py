@@ -323,6 +323,8 @@ def transfer(game: "GameState", card: "CardInstance",
     # after it).
     _remove_from_zone(game, card, ctl, src_zone)
     _append_to_zone(game, card, ctl, dst_zone)
+    from .zone_events import record
+    record(game, card, src_zone, ctl, dst_zone, ctl)
 
     # Fan-out. Run each registered handler; exceptions propagate so
     # bugs are not masked.

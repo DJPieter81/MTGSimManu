@@ -767,7 +767,7 @@ _STEP_TRIGGER_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.EXILE, Verb.MILL,
     Verb.SURVEIL, Verb.PLAYER_COUNTERS, Verb.SACRIFICE, Verb.SEARCH,
-    Verb.MOVE, Verb.SHUFFLE, Verb.KEYWORD_ACTION})
+    Verb.MOVE, Verb.SHUFFLE, Verb.KEYWORD_ACTION, Verb.REMOVE_COUNTERS})
 _STEP_TARGET_ZONES = _TRIGGER_TARGET_ZONES | {"graveyard"}
 
 
@@ -804,7 +804,8 @@ _TRIGGER_BODY_VERBS = frozenset({
     Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.DRAW, Verb.DISCARD,
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
     Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE,
-    Verb.PLAYER_COUNTERS, Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE})
+    Verb.PLAYER_COUNTERS, Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE,
+    Verb.REMOVE_COUNTERS})
 _ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER})
 _CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
                                 RefKind.DEFENDING_PLAYER})
@@ -885,6 +886,27 @@ def strict_attack_trigger(h: AbilityEffects) -> bool:
     return _strict_trigger_body(h, _ATTACK_UNBOUND_REFS)
 
 
+# The zone-change carrier (unit GY, `effect_carrier.
+# dispatch_zone_change_triggers`): the moved cards are not bound (a body
+# that names "it" / "them" is refused); "that player" is the owner of the
+# zone the cards moved into or out of.
+FAMILY_ZONE_CHANGE_TRIGGER = "zone_change_trigger"
+_ZONE_CHANGE_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
+                                       RefKind.DEFENDING_PLAYER})
+
+
+def strict_zone_change_trigger(h: AbilityEffects) -> bool:
+    """A host the zone-change carrier takes (A38): a TRIGGERED host whose
+    head the grammar typed (`TriggerHead.zone_change`), every target slot
+    one the carrier picks as the trigger is put on the stack, and the
+    trigger body (`_strict_trigger_body`) naming none of the moved cards."""
+    if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
+            or h.trigger.zone_change is None \
+            or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
+        return False
+    return _strict_trigger_body(h, _ZONE_CHANGE_UNBOUND_REFS)
+
+
 def strict_cast_trigger(h: AbilityEffects) -> bool:
     """A cast-triggered host the cast carrier takes (A38): a TRIGGERED host
     whose head the grammar typed (`TriggerHead.cast`), with no intervening
@@ -950,6 +972,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_STEP_TRIGGER: strict_step_trigger,
     FAMILY_ATTACK_TRIGGER: strict_attack_trigger,
     FAMILY_ENTER_EXILE: strict_enter_exile,
+    FAMILY_ZONE_CHANGE_TRIGGER: strict_zone_change_trigger,
 })
 
 

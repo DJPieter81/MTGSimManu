@@ -241,6 +241,7 @@ class EventHint(Enum):
     COUNTERS_PUT = "counters_put"
     CYCLE = "cycle"
     DRAW = "draw"            # "<player> draws ..." (CR 121.1); TriggerHead.draw types it
+    CARD_ZONE_CHANGE = "card_zone_change"  # cards put into / leaving a graveyard, put into exile; TriggerHead.zone_change
     TAPPED_FOR_MANA = "tapped_for_mana"
     REFLEXIVE = "reflexive"
     DELAYED = "delayed"
@@ -602,6 +603,31 @@ class DrawEvent:
 
 
 @dataclass(**_FROZEN)
+class ZoneChangeEvent:
+    """The cards-changing-zones event a trigger head names (CR 603.2,
+    603.6, 700.14): cards put INTO a zone or leaving (`direction` 'into' /
+    'out') a graveyard, or put into exile. `owner` is whose zone, relative
+    to the ability's controller ('you', 'opponent' or 'any'); `types` the
+    card types one of which a card must have (empty for any card;
+    'permanent' for any permanent type, CR 110.4b); `origin` for an 'into'
+    event, the zone the cards come from ('anywhere', 'library',
+    'battlefield' or 'not_battlefield'); `batch` is "one or more" (one
+    trigger per event, however many cards) against "a card" (one per
+    card); `other` excludes the source's own card ("another"); `your_turn`
+    is "during your turn"; `source_counter` is "while ~ has a <kind>
+    counter on it". Tokens are not cards (CR 111.7)."""
+    direction: str
+    zone: str
+    owner: str
+    types: Tuple[str, ...] = ()
+    origin: str = "anywhere"
+    batch: bool = False
+    other: bool = False
+    your_turn: bool = False
+    source_counter: str = ""
+
+
+@dataclass(**_FROZEN)
 class CombatDamageEvent:
     """The combat damage a combat-damage-triggered head names (CR 510.2,
     603.2): who deals it -- 'self' ("~"), 'equipped' or 'enchanted' (the
@@ -682,6 +708,10 @@ class TriggerHead:
     # phrases (`structure._attack_event`); None for a rider the table does
     # not read ("attacks or blocks", "attacks alone", "while saddled").
     attack: Optional[AttackEvent] = None
+    # The cards-changing-zones event a CARD_ZONE_CHANGE head names, from a
+    # closed table (`structure._zone_change_event`); None for an origin,
+    # frequency or rider the table does not read.
+    zone_change: Optional[ZoneChangeEvent] = None
 
 
 @dataclass(**_FROZEN)

@@ -144,7 +144,7 @@ _OBJECT_HINTS = frozenset({EventHint.OTHER_ENTERS, EventHint.OTHER_DIES,
                            EventHint.ATTACKS_OTHER, EventHint.SPELL_CAST,
                            EventHint.LANDFALL, EventHint.COUNTERS_PUT,
                            EventHint.CYCLE, EventHint.TAPPED_FOR_MANA,
-                           EventHint.DRAW})
+                           EventHint.DRAW, EventHint.CARD_ZONE_CHANGE})
 _LEAVE_HINTS = frozenset({EventHint.SELF_DIES, EventHint.SELF_LEAVES})
 _SELF_HOSTS = frozenset({HostKind.ACTIVATED, HostKind.MANA_ABILITY,
                          HostKind.LOYALTY, HostKind.STATIC, HostKind.CHAPTER,

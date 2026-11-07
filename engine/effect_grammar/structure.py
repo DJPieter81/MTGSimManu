@@ -107,7 +107,7 @@ from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
 from engine.effect_spec import (Amount, AttackEvent, CastEvent,
                                 CombatDamageEvent, Condition, CostSnapshot,
-                                DrawEvent, EventHint, HostKind, KeywordSpec,
+                                DrawEvent, EventHint, ZoneChangeEvent, HostKind, KeywordSpec,
                                 Stage, StepEvent, TriggerHead, Unmodelled,
                                 freeze_cost)
 from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
@@ -392,6 +392,8 @@ def _part_hints(part: str) -> Tuple[Tuple[EventHint, ...], str]:
         return (EventHint.COMBAT_DAMAGE_TO_PLAYER,), ""
     if re.search(r"\bcounters? (?:is|are) put on\b", body):
         return (EventHint.COUNTERS_PUT,), ""
+    if _ZONE_CHANGE_WORD_RE.search(body):
+        return (EventHint.CARD_ZONE_CHANGE,), ""
     if _DRAW_WORD_RE.search(body):
         return (EventHint.DRAW,), ""
     verbs = list(_VERB_RE.finditer(body))
@@ -418,6 +420,33 @@ def _part_hints(part: str) -> Tuple[Tuple[EventHint, ...], str]:
 # A draw event's head (CR 121.1): "<player> draws ...". The beginning of a
 # draw step is a step trigger, matched before this.
 _DRAW_WORD_RE = re.compile(r"\bdraws?\b")
+# Cards changing zones (CR 603.2, 603.6): "<n> <type> card(s) is/are put
+# into <whose> graveyard / into exile", "<n> <type> card(s) leave(s) <whose>
+# graveyard". A card, not a permanent or a token (CR 111.7).
+_ZONE_CHANGE_WORD_RE = re.compile(
+    r"\bcards? (?:(?:is|are) put into [^,]*?\b(?:graveyards?|exile)\b|"
+    r"(?:leaves?|leave) [^,]*?\bgraveyards?\b)")
+_ZC_TYPE = r"(?:artifact|creature|land|enchantment|instant|sorcery|planeswalker|permanent)"
+_ZC_OWNERS = {"your": "you", "an opponent's": "opponent", "a": "any",
+              "graveyards": "any"}
+_ZC_ORIGINS = {None: "anywhere", "anywhere": "anywhere", "your library": "library",
+               "a library": "library", "their library": "library",
+               "the battlefield": "battlefield",
+               "anywhere other than the battlefield": "not_battlefield"}
+# The closed table of zone-change shapes (`ZoneChangeEvent`). Any other
+# origin ("from graveyards and/or the battlefield"), a frequency ("for the
+# first time each turn") or a rider leaves the head with no typed event.
+_ZONE_CHANGE_EVENT_RE = re.compile(
+    r"(?:whenever|when) (?P<n>one or more other|one or more|another|an|a) "
+    r"(?:(?P<types>%s(?: (?:and/or|or) %s)*) )?cards? "
+    r"(?:(?:is|are) put into (?:(?P<whose>your|an opponent's|a) graveyard|"
+    r"(?P<whose_all>graveyards)|(?P<exile>exile))(?: from (?P<origin>anywhere "
+    r"other than the battlefield|anywhere|your library|a library|their library|"
+    r"the battlefield))?"
+    r"|(?:leaves?|leave) (?P<owhose>your|an opponent's|a) graveyard)"
+    r"(?P<turn> during your turn)?"
+    r"(?P<while> while ~ has an? (?P<kind>[a-z0-9+/-]+) counter on it)?"
+    % (_ZC_TYPE, _ZC_TYPE))
 _DRAWERS = {"you": "you", "an opponent": "opponent", "a player": "player"}
 # The closed table of draw-event shapes: who draws, any card or the Nth card
 # of the turn, and the draw-step exemption. Any other rider ("during an
@@ -429,6 +458,38 @@ _DRAW_EVENT_RE = re.compile(
     r"(?P<exc> except the first one (?:they|you) draws? in each of "
     r"(?:their|your) draw steps)?"
     % ("|".join(_DRAWERS), "|".join(condition.ORDINALS)))
+
+
+def _zone_change_event(head: str) -> Optional[ZoneChangeEvent]:
+    """The cards-changing-zones event the head's one CARD_ZONE_CHANGE
+    disjunct names, read from the closed table (`_ZONE_CHANGE_EVENT_RE`);
+    None when the head has no such disjunct, more than one, or one the
+    table does not read."""
+    parts = [p for p in _DISJUNCT_RE.split(head)
+             if EventHint.CARD_ZONE_CHANGE in _part_hints(p)[0]]
+    if len(parts) != 1:
+        return None
+    m = _ZONE_CHANGE_EVENT_RE.fullmatch(parts[0])
+    if m is None:
+        return None
+    n = m.group("n")
+    types = tuple(re.split(r" (?:and/or|or) ", m.group("types"))) \
+        if m.group("types") else ()
+    if m.group("owhose") is not None:
+        direction, zone, owner, origin = "out", "graveyard", \
+            _ZC_OWNERS[m.group("owhose")], "anywhere"
+    else:
+        direction = "into"
+        zone = "exile" if m.group("exile") else "graveyard"
+        owner = ("any" if m.group("exile") or m.group("whose_all")
+                 else _ZC_OWNERS[m.group("whose")])
+        origin = _ZC_ORIGINS[m.group("origin")]
+    return ZoneChangeEvent(direction=direction, zone=zone, owner=owner,
+                           types=types, origin=origin,
+                           batch=n.startswith("one or more"),
+                           other=n in ("another", "one or more other"),
+                           your_turn=m.group("turn") is not None,
+                           source_counter=m.group("kind") or "")
 
 
 def _draw_event(head: str) -> Optional[DrawEvent]:
@@ -894,9 +955,12 @@ def _head(hints, raw: str, **kw) -> TriggerHead:
     cast = _cast_event(raw) if EventHint.SPELL_CAST in hints else None
     step = _step_event(raw) if EventHint.BEGINNING_OF in hints else None
     attack = _attack_event(raw) if _ATTACK_HINTS & set(hints) else None
+    zone_change = (_zone_change_event(raw)
+                   if EventHint.CARD_ZONE_CHANGE in hints else None)
     return TriggerHead(event_hints=hints, raw=raw, names_player=player,
                        names_object=obj, draw=draw, combat_damage=combat,
-                       cast=cast, step_event=step, attack=attack, **kw)
+                       cast=cast, step_event=step, attack=attack,
+                       zone_change=zone_change, **kw)
 
 
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:

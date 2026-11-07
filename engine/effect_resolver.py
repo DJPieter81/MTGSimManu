@@ -533,17 +533,22 @@ def _sequence(ctx: Resolution, specs: Tuple[EffectSpec, ...]) -> None:
     for r in specs:
         for v in r.replaces:
             by_victim.setdefault(v, []).append(r)
+    # CR 603.2, 603.6: each instruction is one event for the abilities
+    # that trigger on cards changing zones (`zone_events`).
+    from .zone_events import event as _zone_event
     for s in specs:
         if s.replaces:
             continue
         applying = [r for r in by_victim.get(s.seq, ()) if _instead_applies(ctx, r)]
         if applying:
             _not_performed(ctx, s)              # the victim did not happen
-            for r in applying:
-                if r.seq not in ctx.performed:
-                    _run(ctx, r, decided=True)
+            with _zone_event(ctx.game):
+                for r in applying:
+                    if r.seq not in ctx.performed:
+                        _run(ctx, r, decided=True)
             continue
-        _run(ctx, s)
+        with _zone_event(ctx.game):
+            _run(ctx, s)
 
 
 def _instead_applies(ctx: Resolution, r: EffectSpec) -> bool:

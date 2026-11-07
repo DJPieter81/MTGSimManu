@@ -612,21 +612,21 @@
     "strict": true
    }
   ],
-  "executable": 135,
+  "executable": 136,
   "family": "attack_trigger",
   "hosts": {
    "mainboard": 6,
-   "pool": 128,
+   "pool": 129,
    "sideboard": 1
   },
   "steps": {
    "E1": 26,
    "E2": 7,
    "E3": 40,
-   "E4": 29,
+   "E4": 30,
    "E5": 33
   },
-  "strict": 135,
+  "strict": 136,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 31,
@@ -906,21 +906,21 @@
     "strict": true
    }
   ],
-  "executable": 95,
+  "executable": 96,
   "family": "cast_trigger",
   "hosts": {
    "mainboard": 5,
-   "pool": 90,
+   "pool": 91,
    "sideboard": 0
   },
   "steps": {
    "E1": 16,
    "E2": 2,
    "E3": 21,
-   "E4": 31,
+   "E4": 32,
    "E5": 25
   },
-  "strict": 95,
+  "strict": 96,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS": 25,
@@ -1348,21 +1348,21 @@
     "strict": true
    }
   ],
-  "executable": 572,
+  "executable": 573,
   "family": "damage",
   "hosts": {
    "mainboard": 20,
-   "pool": 548,
+   "pool": 549,
    "sideboard": 4
   },
   "steps": {
    "E1": 154,
    "E2": 81,
    "E3": 175,
-   "E4": 131,
+   "E4": 132,
    "E5": 31
   },
-  "strict": 572,
+  "strict": 573,
   "sub_kinds": {},
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 14,
