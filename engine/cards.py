@@ -1385,6 +1385,10 @@ class CardTemplate:
                                         repr=False)
     _effects_slice: Optional[tuple] = field(default=None, compare=False,
                                             repr=False)
+    # The raw printed fields `_effects_key` was last checked against
+    # (`_effects_raw_fields`); None makes the next access check the key.
+    _effects_raw: Optional[tuple] = field(default=None, compare=False,
+                                          repr=False)
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -1722,13 +1726,30 @@ class CardTemplate:
         parses."""
         if self._effects_slice is not None:
             return self._sliced_effects()
+        # The parse input is a pure function of these printed fields
+        # (`effect_grammar.template_facts`), so while none of them has
+        # changed the memo stands without re-deriving the facts.
+        raw = self._effects_raw_fields()
+        e = self._effects
+        if e is not None and self._effects_raw == raw:
+            return e
         from . import effect_grammar
         key, facts = effect_grammar.template_inputs(self)
-        e = self._effects
         if e is None or self._effects_key != key:
             e = effect_grammar.parse_template(self, list(facts))
             self._effects, self._effects_key = e, key
+        self._effects_raw = raw
         return e
+
+    def _effects_raw_fields(self) -> tuple:
+        """Every field `effect_grammar.template_inputs` reads, as values."""
+        mc = self.mana_cost
+        return (self.name, self.oracle_text, self.back_face_oracle,
+                self.layout, tuple(self.card_types), tuple(self.subtypes),
+                tuple(self.supertypes), getattr(mc, "x_count", 0),
+                tuple(self.printed_keywords or ()),
+                tuple(self.back_face_types or ()),
+                tuple(self.back_face_subtypes or ()))
 
     def _sliced_effects(self):
         """A clause template's effects: its walker's LOYALTY host for the
@@ -1754,6 +1775,7 @@ class CardTemplate:
         template's pin holds while its walker's effects stay the same
         object."""
         self._effects = effects
+        self._effects_raw = None
         if effects is None:
             self._effects_key = None
         elif self._effects_slice is not None:
