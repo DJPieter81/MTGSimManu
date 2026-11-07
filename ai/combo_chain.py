@@ -46,6 +46,10 @@ class CardRole:
     splice_mana: int = 0      # mana produced when spliced (from ritual_mana)
     splice_paid: int = 0      # the splice cost after the reductions in play
     splice_pips: int = 0      # the splice cost's non-generic pips (CR 601.2f)
+    # A tutor whose pool holds a payoff: the payoff it finds and its role.
+    # The chain casts the tutor, then the payoff (`_simulate_sequence`).
+    fetched_card: Optional["CardInstance"] = None
+    fetched: Optional["CardRole"] = None
 
 
 @dataclass
@@ -109,6 +113,24 @@ def classify_card(card, available_mana: int, payoff_names: Set[str], *,
     # Is this a payoff for the combo?
     is_payoff = t.name in payoff_names or has_storm
 
+    # A tutor whose pool holds a storm payoff is a route to it
+    # (`combo_calc._tutor_pool`, the reach `_tutor_has_payoff_access`
+    # reads): the chain casts the tutor, then the payoff it finds, the one
+    # that deals damage first.
+    fetched_card = fetched = None
+    if not is_payoff and 'tutor' in tags and game is not None:
+        from ai.combo_calc import _is_storm_payoff, _tutor_pool
+        found = [c for c in _tutor_pool(card, game.players[player_idx])
+                 if _is_storm_payoff(c)]
+        if found:
+            fetched_card = min(found, key=lambda c: (
+                not getattr(c.template, 'deals_targeted_damage', False),
+                chain_cost(c, game, player_idx, reducers)))
+            fetched = classify_card(fetched_card, available_mana,
+                                    payoff_names, game=game,
+                                    player_idx=player_idx, reducers=reducers)
+            is_payoff = fetched is not None
+
     # Direct damage detection — typed field parsed once at DB load
     # (oracle_parser.parse_deals_targeted_damage); identical predicate.
     deals_direct = getattr(t, 'deals_targeted_damage', False)
@@ -141,6 +163,8 @@ def classify_card(card, available_mana: int, payoff_names: Set[str], *,
         splice_mana=splice_mana,
         splice_paid=splice_paid,
         splice_pips=splice_pips,
+        fetched_card=fetched_card,
+        fetched=fetched,
     )
 
 
@@ -225,8 +249,23 @@ def _simulate_sequence(
         names.append(t.name)
         mana_trace.append(mana)
 
+        # A tutor's payoff is cast after it, paid for and counted as a
+        # spell cast (CR 702.40a).
+        if role.fetched is not None:
+            f = role.fetched
+            f_cost = with_reducers(f.effective_cost, role.fetched_card,
+                                   cast_reducers)
+            if f_cost > mana:
+                return None  # the payoff it finds cannot be cast after it
+            mana -= f_cost
+            storm += 1
+            names.append(f.name)
+            mana_trace.append(mana)
+            payoff_name = f.name
+            payoff_damage = f.deals_direct_damage
+            payoff_storm = f.has_storm
         # Track payoff (last payoff in sequence wins)
-        if role.is_payoff:
+        elif role.is_payoff:
             payoff_name = t.name
             payoff_damage = role.deals_direct_damage
             payoff_storm = role.has_storm

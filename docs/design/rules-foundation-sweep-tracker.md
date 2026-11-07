@@ -12440,3 +12440,33 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - Row mean 15.2 → 16.0. Cells moved both ways by 5-20 pp: Goryo's Vengeance +20, Grixis Reanimator +15, Affinity -15, Instant Reanimator -10. That is within the noise of 20 matches per cell, so this is no measurable lift.
 - The rule stands as the correct valuation: it held the speculative rituals in the replay. Storm's win rate is bound elsewhere.
 - **The next named lead** is the chain planner's sequencing: a Wish exiled by an impulse draw, playable this turn only, went uncast while the mana went to Past in Flames and a dig.
+
+## Unit TC: a tutor that reaches a payoff closes the chain as that payoff, and a ritual is held when the reachable damage chain cannot kill (AI; 2026-11-07)
+
+**Source:** the Storm diagnostic's fourth root cause, traced with candidate lists on the replay's turn 4 (Ruby Storm vs Dimir Midrange s50000).
+- A same-turn Wish, exiled by an impulse draw, scored -12.4 at every step.
+- Two Desperate Rituals and a flashback Past in Flames fired for a chain that could not kill (about 5 damage into 17).
+- The ritual gates skipped their hold whenever any finisher route was in reach.
+- The chain planner never modelled a tutor, so no gate could ask whether the chain kills.
+
+**Principle, part 1 (the planner):** a tutor whose pool holds a storm payoff (`combo_calc._tutor_pool`, the reach `_tutor_has_payoff_access` reads) is a route to it. The chain casts the tutor and then the payoff it finds, damage first. Both are paid for, and both count as spells cast for the payoff's storm (CR 702.40a). Code: `combo_chain.classify_card` / `_simulate_sequence`.
+
+**Principle, part 2 (the gate):** when the turn's best chain ends on a damage payoff short of lethal, the ritual is held, at any storm count, if a later turn remains (the clock condition).
+- "Short of lethal" means both `ComboAssessment.is_ready` and `flashback_chain_viable`'s storm coverage say it does not kill.
+- A token payoff's value is the next turn's attack, which `is_ready` does not measure, so it is not judged here.
+- The mid-chain call into `_ritual_without_closer` now also receives `strip_risk` (unit RR's discard discount).
+
+**Class:** 112 pool instant and sorcery tutors (the AI's existing tutor predicate); every storm-zone ritual gate.
+
+**Tests:** 9 new (4 planner, 5 gate), red before.
+- Six older tests asserted that a reachable finisher always greenlights rituals, at 20 life with 2-7 damage in reach. They now sit in lethal spots, so they pin the recognition they were written for.
+- The Empty the Warrens case is asserted as "not hard-held": token payoffs are not judged by this rule.
+
+**Pins:**
+- Magic numbers unchanged.
+- Digest: 2 of 27 games change, both Azorius Control vs Ruby Storm. Game 2 ends in a turn-cap draw at turn 30 instead of an Azorius win at 25; Storm sat at 1 life with no graveyard. Game 3 is no longer played.
+- Anchor: turn-only drift refreshed (Ruby Storm vs Dimir Midrange s50000, turn 6 → 5, same winner).
+
+**Effect on the replay turn:** Storm casts Ruby Medallion and Twinned Vision, and keeps both rituals and Past in Flames.
+
+**Measured:** `tc-post` diagnostic arm, Ruby Storm's row only, n=20, against `rr-post` (pending). A drop below noise is cause to revert part 2.

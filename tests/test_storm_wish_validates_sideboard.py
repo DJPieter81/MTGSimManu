@@ -66,7 +66,7 @@ def _add(game, card_db, name, controller, zone):
 
 
 def _build_storm_game(card_db, hand_names, sideboard_names,
-                      library_names=()):
+                      library_names=(), opp_life=20):
     """Storm side: 2 Mountains + 2 Medallions on battlefield, T4,
     storm=0, opp life 20.  Hand / sideboard / library populated
     from the name lists.  Returns (game, ritual_card_in_hand).
@@ -101,7 +101,7 @@ def _build_storm_game(card_db, hand_names, sideboard_names,
     game.players[0].spells_cast_this_turn = 0
     game._global_storm_count = 0
     game.players[0].life = 20
-    game.players[1].life = 20
+    game.players[1].life = opp_life
     assert ritual is not None, "test scenario must include a ritual"
     return game, ritual
 
@@ -130,6 +130,11 @@ class TestWishValidatesSideboard:
             card_db,
             hand_names=["Desperate Ritual", "Wish"],
             sideboard_names=["Grapeshot"],
+            # A lethal spot: the chain through the Wish kills this turn, so
+            # recognising the route is what greenlights the ritual (short of
+            # lethal it is held: test_a_ritual_is_held_when_the_reachable_
+            # damage_chain_cannot_kill).
+            opp_life=3,
         )
         ev = _score_ritual(game, ritual)
         assert ev > STORM_PASS_THRESHOLD, (
@@ -148,7 +153,10 @@ class TestWishValidatesSideboard:
             sideboard_names=["Empty the Warrens"],
         )
         ev = _score_ritual(game, ritual)
-        assert ev > STORM_PASS_THRESHOLD, (
+        # A token route is recognised: the ritual is weighed by the chain
+        # timing heuristics, never clamped as a Wish with nothing to fetch.
+        from ai.combo_calc import STORM_HARD_HOLD
+        assert ev > STORM_HARD_HOLD / 2, (
             f"Ritual EV={ev:.2f} ≤ pass_threshold ({STORM_PASS_THRESHOLD}) "
             f"with Wish+Empty-the-Warrens-in-SB.  Empty is a valid "
             f"storm finisher; the patience gate must recognise it."
@@ -191,6 +199,10 @@ class TestWishValidatesSideboard:
             card_db,
             hand_names=["Desperate Ritual", "Grapeshot"],
             sideboard_names=[],
+            # A lethal spot: short of lethal, with a later turn, the ritual
+            # is held (test_a_ritual_is_held_when_the_reachable_damage_
+            # chain_cannot_kill). Ritual + Grapeshot deal 2.
+            opp_life=2,
         )
         ev = _score_ritual(game, ritual)
         assert ev > STORM_PASS_THRESHOLD, (

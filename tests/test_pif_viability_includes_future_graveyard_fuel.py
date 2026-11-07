@@ -217,7 +217,7 @@ class TestStormFiresPiFChainWhenPostChainGYViable:
         from ai.combo_calc import STORM_HARD_HOLD
 
         game = GameState(rng=random.Random(0))
-        _setup_storm(game, card_db, mountains=6)
+        _setup_storm(game, card_db, mountains=6, opp_life=3)  # a lethal spot: short of lethal, with a later turn, the ritual is held (test_a_ritual_is_held_when_the_reachable_damage_chain_cannot_kill)
         ritual = _add(game, card_db, "Desperate Ritual",
                       controller=0, zone="hand")
         _add(game, card_db, "Pyretic Ritual", controller=0, zone="hand")
