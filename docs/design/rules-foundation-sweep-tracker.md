@@ -12245,3 +12245,45 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - **Bodies that name the moved cards** ("return it to your hand", "put them onto the battlefield"; Hedge Shredder, Tamiyo) need the event's objects bound.
 - **The source leaving in the same event** (last-known information, CR 603.10a) is not seen.
 - **Refused heads:** "for the first time each turn", mixed origins ("from graveyards and/or the battlefield"), "put that many".
+
+## The Nov 2026 n=60 matrix (2026-11-07)
+
+**Run:** `matrix_requests/2026-11-07-n60.json`, 26 shards on Actions. The assemble commit is `cdf5c88`.
+
+**Results:** 650 cells, 0 aborts, 338 draws.
+- The rules audit recorded 6 violations in 549 findings. All six are one event, fixed by unit ST below.
+- 9 decks are outside their bands, total miss 65.4 pp. Ruby Storm 12.8 (band [40, 55]) is the largest; Affinity 40.1 is low; Eldrazi Tron 74.2 and Domain Zoo 70.4 are high.
+- **Rakdos Aggro:** 59.4, inside its default band.
+- **Top of the field:** Eldrazi Tron 74.2, Boros Energy 71.9, Domain Zoo 70.4.
+
+## Unit ST: a Saga that exiles itself and returns transformed returns as its back face (CR 714.2b, 712, 400.7; 2026-11-07)
+
+**Source:** the matrix's six `400.7/effect_characteristic_off_battlefield` violations (Domain Zoo vs Boros Ponza s79500, turn 22). The Legend of Roku in exile kept the colour Leyline of the Guildpact had set on it as a permanent.
+
+**Defect:** the legacy chapter pass removed the Saga from the battlefield list by hand, appended it to exile without the zone funnel's CR 400.7 cleanup, and created a 4/4 token renamed for the back face.
+
+**Fix:** chapter III goes through the one owner of the shape, `oracle_resolver._transform_permanent(..., returns_as_new_object=True)`, as the reflection branch already did. The token stand-in is deleted.
+
+**Class:** 28 pool Sagas.
+
+**Tests:** 2, both red before.
+
+**Pins:** zone mutation 33 → 32; the digest is byte-identical; the anchor is unchanged.
+
+## Unit DT: a projected draw is priced at what the opponent's draw triggers take (AI; 2026-11-07)
+
+**Root cause:** `docs/diagnostics/2026-11-07_ruby_storm_draw_tax_root_cause.md` (Bo3 Ruby Storm vs Dimir Midrange s50000).
+- The draw tax was priced, but the draw count came from a regex that read only printed counts, so "draw that many" was tax-free.
+- The lethal-to-self floor came after the deferral check.
+
+**Fix:**
+- `ai/draw_projection.py` counts a spell's draws from its typed instructions; the regex is now only the fallback.
+- `compute_play_ev` applies the lethal-to-self floor before the deferral check.
+
+**Class:** 57 "draw that many" pool cards; 14 draw-punish permanents. A Sheoldred case is tested beside the Bowmasters one.
+
+**Tests:** 6, 5 red before.
+
+**Pins:** magic numbers unchanged (the new module is at baseline 0); the digest is byte-identical; the anchor's Ruby Storm vs Dimir match ends on turn 6, not 5, with the same winner.
+
+**Measured:** next arm.
