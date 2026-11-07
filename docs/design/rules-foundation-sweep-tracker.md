@@ -12147,3 +12147,101 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
   - the inline trigger model, in which triggers resolve as their events happen rather than on the stack (CR 603.3), noted under unit SB;
   - turning face-down permanents face up, under unit MF;
   - the four census gaps.
+
+## Metagame refresh 2026-11-01: card DB, lists and shares, Rakdos Aggro
+
+**Why:**
+- The dashboard's matrix is from 2026-10-04, before the effect-pipeline sweep.
+- The lists and shares are from 2026-09-27.
+- mtgtop8's November breakdown has a new top deck: Rakdos Aggro at 15%, unregistered.
+
+**Steps (each its own commit):**
+- **Card DB** (`81638c8`): MTGJSON `5.3.0+20260926` → `20261031`.
+  - The pool is unchanged: 22,774 cards, none added or removed, and no card's text, types, cost, P/T, loyalty or Modern legality changed (Reality Fracture was in as previews).
+  - The printed `keywords` field gained "Empower Jace" (a CR 701 keyword action) on 35 cards and "Equip" on 2.
+  - Every pool pin held. The digest was byte-identical.
+- **Lists and shares** (`b34bdeb`): `tools/fetch_tier1_decklists.py`, top 20, two lists each, saved under `data/tier1_decklists/2026-11-01/`.
+  - 14 registered decks took a fresh list, mapped by card overlap.
+  - The shares are the raw percentages. "Reanimator" (2%) is Instant Reanimator by overlap.
+  - Azorius Blink's list is now an Esper blink-value deck, so its gameplan was regenerated.
+  - Pins moved only because the registered card set changed:
+    - the digest and the anchor (19 of 29 matches, 6 winners, each with an updated deck);
+    - the census deck-card figures;
+    - the spec-equivalence deck tables;
+    - the retired grammar witnesses (`tests/retired_deck_witnesses.py`).
+- **Unit EC** (`cb02252`), below.
+- **Rakdos Aggro registered** (`8570bc7`): mtgtop8 event 93016, deck 906614.
+  - Its gameplan roles were curated from the cards' text.
+  - The default calibration band is [30, 70].
+  - Two anchor matches were added.
+- **The harness no-op fixture** (`440b682`) was re-pinned for the new deck set: 275 → 279 hosts. It was missed in the lists commit, and CI on `8570bc7` failed on it.
+- **Unit GY** (`63168b4`), below.
+
+**Rakdos Aggro's readiness** (10-match audited field sweeps, n=10 Bo3):
+- 78% with Moonshadow entering as a 7/7 (fixed by EC).
+- 46% with Moonshadow a 1/1 that never grew (fixed by GY).
+- Still recorded as gaps:
+  - escape (Nethergoyf; `keyword/unmodelled`);
+  - Fear of Missing Out's delirium extra combat (`603.2/attack_trigger_unresolved`).
+
+## Unit EC: a permanent enters with the counters its text says it enters with (CR 614.1c, 122.6; 2026-11-01)
+
+**Rule:** "<this permanent> enters with N <kind> counters on it" is a replacement effect. The permanent never exists on the battlefield without them, by whatever route it enters. A face-down permanent has no text (CR 708.2a).
+
+**The defect:** the grammar typed the sentence as a REPLACEMENT host and refused it, and nothing placed the counters. Moonshadow ("enters with six -1/-1 counters") entered as a 7/7 menace for {B}.
+
+**Class:**
+- 153 pool cards with fixed counts: +1/+1 55, -1/-1 31, oil 21, charge 14, shield 9, and others.
+- 55 are refused: X counts (the X-cost path's), "for each" counts, choices, and keyword counters (CR 122.1b, not modelled).
+- None has a registered entry handler, modular, X-cost or sunburst data.
+
+**Steps:**
+- `effect_views.entry_counters` reads the typed host through the entry carrier (`effect_carrier.entry_counters`, the one views reader). It uses the grammar's normalised text, which has no reminder text, and the grammar's counter parser.
+- `CardInstance.enter_battlefield` places the counters beside the CR 306.5b loyalty rule.
+- Auditor `614.1c/entry_counters` at both entry points, tested both ways.
+
+**Tests:** 11; 7 red before.
+
+**Pins:** the digest is byte-identical.
+
+## Unit GY: a card changing zones triggers the abilities that watch for it (CR 603.2, 603.6, 700.14; 2026-11-07)
+
+**Rule:**
+- "Whenever <a | one or more> <type> card(s) is/are put into <whose> graveyard [from <zone>]", "... leave(s) <whose> graveyard" and "... put into exile" trigger on the event.
+- "One or more" triggers once per event; "a card" once per card (CR 700.14).
+- One instruction, one state-based-action pass (CR 704.3) and one cost payment are each one event.
+- A token is not a card (CR 111.7).
+
+**The defect:** the heads were typed as event OTHER and no carrier took them.
+- Moonshadow never lost a counter.
+- Murktide Regent never grew.
+- Hardened Academic (Hollow One) never triggered.
+
+**Class:** 57 pool heads; 31 typed by the closed table; 26 cards taken.
+
+**Steps (generalised):**
+- **Grammar:** a typed `ZoneChangeEvent` head (direction, zone, whose, types, origin, batch, other, "during your turn", source counter). The moved cards are the event's objects.
+- **Events:** one owner, `engine/zone_events.py`.
+  - The zone funnel records every card's move.
+  - Nested scopes gather each instruction, state-based-action pass, cost payment and resolution.
+  - Delve now goes through the funnel (zone mutation 34 → 33).
+- **Carrier:** `dispatch_zone_change_triggers`, with `fires_per_event`.
+- **Executors:**
+  - REMOVE_COUNTERS (CR 122.8) is a trigger-body verb for every trigger carrier.
+  - PUT_COUNTERS on one object (the source while it is the same object, or one target) is admitted for this family.
+- **Auditors:** `700.14/one_or_more_once` (read from the printed head) and the census row `603.2/zone_change_trigger_unresolved`.
+
+**Tests:** 13; 9 red before.
+
+**Pins:**
+- **Harness:** +1 proven (Magmaroth); +2 intended:
+  - Exemplar of Strength: "if you do" gains no life when no counter is removed;
+  - Perfect Intimidation: no counter removed reads as nothing performed.
+- **Digest:** 2 games, replayed; same winners.
+- **Anchor:** Affinity vs Rakdos Aggro s54000 ends turn 6, not 8; same winner.
+
+**Leads, not built:**
+- One-object PUT_COUNTERS for the other trigger carriers (690 triggered self-puts and 230 targeted, today on the legacy path). It is its own measured unit.
+- **Bodies that name the moved cards** ("return it to your hand", "put them onto the battlefield"; Hedge Shredder, Tamiyo) need the event's objects bound.
+- **The source leaving in the same event** (last-known information, CR 603.10a) is not seen.
+- **Refused heads:** "for the first time each turn", mixed origins ("from graveyards and/or the battlefield"), "put that many".
