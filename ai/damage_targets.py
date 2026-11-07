@@ -164,12 +164,13 @@ def _already_destroyed(card: "CardInstance") -> bool:
 
 
 def copies_to_destroy(card: "CardInstance", amount: int, most: int,
-                      source) -> Optional[int]:
+                      source, dealt: int = 0) -> Optional[int]:
     """The fewest copies of ``amount`` damage from ``source`` that together
     destroy ``card`` (`damage_destroys`, counting the damage already
-    marked), at most ``most``; None when even ``most`` do not."""
+    marked and ``dealt``, what the spell itself deals it), at most
+    ``most``; None when even ``most`` do not."""
     for k in range(1, most + 1):
-        if damage_destroys(card, k * amount, source):
+        if damage_destroys(card, k * amount + dealt, source):
             return k
     return None
 
@@ -177,11 +178,18 @@ def copies_to_destroy(card: "CardInstance", amount: int, most: int,
 def plan_copy_damage(game: "GameState", controller: int, source,
                      amount: int, copies: int,
                      requirement: "TargetRequirement", *,
-                     mana_committed: int = 0) -> list:
+                     mana_committed: int = 0,
+                     spell_target=None) -> list:
     """Where ``copies`` copies of a spell that deals ``amount`` damage to one
     target go (CR 707.10c: each copy's controller may choose its targets
     anew). One entry per copy: a target id, or None to keep the spell's
     own target.
+
+    The spell itself deals ``amount`` to ``spell_target`` (its own target,
+    None when unknown), so that damage counts: copies lethal together with
+    the spell go to the face when the spell is aimed there, and a permanent
+    the spell is aimed at needs only the copies its damage leaves short --
+    none, and no candidate, when the spell alone destroys it.
 
     Copies lethal together go to the face. Otherwise the copies kill the
     set of opposing permanents worth most (`permanent_threat`, each
@@ -203,17 +211,20 @@ def plan_copy_damage(game: "GameState", controller: int, source,
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
     face = slot_admits_player(requirement, opp_idx, controller)
-    if face and amount * copies >= opp.life:
+    at_face = amount if spell_target == PLAYER_TARGET_OPPONENT else 0
+    if face and amount * copies + at_face >= opp.life:
         return [PLAYER_TARGET_OPPONENT] * copies
     candidates = []
     for card in list(opp.battlefield):
+        dealt = amount if card.instance_id == spell_target else 0
         if not (slot_admits_permanent(requirement, card, controller)
                 and can_be_targeted(card, source, controller)) \
                 or _already_destroyed(card) \
+                or damage_destroys(card, dealt, source) \
                 or ward_rules_out_target(game, controller, source, card,
                                          mana_committed=mana_committed):
             continue
-        need = copies_to_destroy(card, amount, copies, source)
+        need = copies_to_destroy(card, amount, copies, source, dealt)
         if need is not None:
             candidates.append((card.instance_id, need,
                                permanent_threat(card, opp, game)))
@@ -227,8 +238,10 @@ def plan_copy_damage(game: "GameState", controller: int, source,
                 best[total] = (worth + value, kills + ((tid, need),))
 
     def plan_value(spent):
+        # The face's loss from the copies, on top of the spell's own.
         left = copies - spent
-        rest = (face_damage_value(game, opp_idx, left * amount)
+        rest = (face_damage_value(game, opp_idx, left * amount + at_face)
+                - face_damage_value(game, opp_idx, at_face)
                 if face and left else 0.0)
         return best[spent][0] + rest
     spent = max(best, key=lambda k: (plan_value(k), -k))
@@ -258,5 +271,6 @@ def copy_targets(game: "GameState", controller: int, item,
             or len(reqs) != 1 or len(item.targets) != 1:
         return None
     amount = amount_value(game, controller, specs[0].amount, item.x_value)
-    plan = plan_copy_damage(game, controller, card, amount, copies, reqs[0])
+    plan = plan_copy_damage(game, controller, card, amount, copies, reqs[0],
+                            spell_target=item.targets[0])
     return [None if t is None else [t] for t in plan] or None

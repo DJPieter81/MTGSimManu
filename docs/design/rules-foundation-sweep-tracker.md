@@ -12299,3 +12299,46 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
   - Instant Reanimator 40.3 (4.7)
   - Creatures Toolbox 25.4 (4.6)
   - Boros Energy 72.3 (2.3)
+
+## Perf: a template's parsed effects stand until a printed field changes (2026-11-07)
+
+**Symptom:** after unit SC, the Bo3 replay of Ruby Storm vs Boros Energy (s50000) aborted game 1 as a draw at the 30 s game budget. 29 Empty the Warrens copies had put about 60 Goblin tokens on the board.
+
+**Cause:** `continuous_effects.rule_effects` reads every permanent's `template.effects` on every query. Each access re-derived the full parse input (`effect_grammar.template_facts`: self names and CR 702 keywords, regex-heavy) only to confirm the memo. That was about 70% of game time in the profile.
+
+**Fix:** `CardTemplate.effects` also records the raw printed fields the facts are a pure function of, and the memo stands while they are unchanged. `set_effects` clears the record.
+
+**Tests:** 3, 2 red before.
+
+**Pins:** the digest is byte-identical (27 games). Commit `8dd8517`.
+
+## Unit SC: a storm copy is put on the stack and resolves on its own (CR 702.40a, 707.10, 707.12, 704.3, 608.2b; 2026-11-07)
+
+**Source:** a Bo3 replay of Ruby Storm vs Boros Energy (s50000), game 2, turn 5. Grapeshot with 8 copies sent 8 damage into a 3-loyalty Ajani, and Boros survived at 9.
+
+**Defect:** the copies ran inside the original's own resolution, after its effect, with no state-based check between them. A 0-loyalty planeswalker stayed on the battlefield, and the AI re-aimed each copy, seeing it as "killed by one more".
+
+**Rule:**
+- Storm is a cast trigger.
+- Its copies go onto the stack above the spell all at once, with their targets chosen together.
+- Each copy resolves alone, with a state-based check before the next, and does not resolve when every target is gone.
+- A copy is not cast, and it ceases to exist off the stack.
+- The spell is copied even after it has left the stack.
+
+**Fix:**
+- `CastManager.put_cast_triggers` puts the storm trigger; `resolve_storm`, `_spell_copies` and `_put_copy` build the copies as `_is_spell_copy` objects. `_handle_storm` is deleted.
+- `callbacks.choose_copy_targets` is asked once for all the copies, and `ai.damage_targets.copy_targets` plans them together.
+- The copy branch of `_move_resolved_spell_off_stack` comes first.
+- `zone_events.is_card` excludes spell copies.
+- Auditor `707.10/copy_resolves_on_its_own`: a copy's effect runs only as the copy itself resolves (`game._resolving_item`).
+
+**Class:** 18 pool storm cards; the copy machinery is the owner that the 168 "copy target spell" cards will need.
+
+**Tests:** 11 new, 8 red before; the AI-plan test was red on the replayed shape. One older AI test moved to a board without a dies-triggered transformer. With a state-based check between copies, a Cat dying transforms Ajani into a new object and the copies aimed at the creature fizzle, which is the correct rule.
+
+**Pins:**
+- Digest: 2 of 27 games change, with the same winners. The changes are the copy order on the stack, Omnath dying between copies, and one Azorius-vs-Storm tie-break shifted by the copies' instance ids.
+- The anchor is unchanged.
+- Commit `ccdf022`.
+
+**Measured:** `sc-post` arm (next).
