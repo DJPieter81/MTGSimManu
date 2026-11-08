@@ -104,3 +104,12 @@ def test_the_line_to_the_bigger_threat_beats_a_cheaper_line(card_db):
     line = best_line(g, 0)
     assert _names(line) == ["Persist"]
     assert line.payoff.name == "Archon of Cruelty"
+
+
+def test_a_creature_cheaper_to_cast_than_to_bin_and_return_is_no_line(
+        card_db):
+    """Looting then Unearth (3 mana) for a 2-mana creature in hand: casting
+    it is the cheaper way onto the battlefield."""
+    g = _game(card_db, 4, hand=["Faithless Looting", "Unearth",
+                                 "Psychic Frog"])
+    assert best_line(g, 0) is None

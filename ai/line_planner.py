@@ -132,7 +132,9 @@ def best_line(game: Any, player_idx: int) -> Optional[Line]:
                         or not _fills(f, creature):
                     continue
                 total = cost(f) + cost(r)
-                if cost(f) > mana:
+                if cost(f) > mana or total >= cost(creature):
+                    # A creature the player can cast for no more than the
+                    # line costs is no reason to bin and return it.
                     continue
                 lines.append(Line((f, r), creature, total,
                                   THIS_TURN if total <= mana else NEXT_TURN))
