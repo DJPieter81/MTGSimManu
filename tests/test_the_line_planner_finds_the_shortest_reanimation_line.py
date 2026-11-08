@@ -36,8 +36,9 @@ def _add(game, card_db, name, zone, controller=0):
 
 def _game(card_db, lands, hand=(), graveyard=()):
     g = GameState(rng=random.Random(0))
-    for _ in range(lands):
-        _add(g, card_db, "Watery Grave", "battlefield")
+    for i in range(lands):          # pays U, B and W (the planner reads colours)
+        _add(g, card_db, ("Watery Grave", "Hallowed Fountain")[i % 2],
+             "battlefield")
     for n in hand:
         _add(g, card_db, n, "hand")
     for n in graveyard:

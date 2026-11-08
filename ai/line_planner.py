@@ -64,13 +64,16 @@ def _graph(game: Any, player_idx: int):
         except AttributeError:
             pass
     me = game.players[player_idx]
-    zones = ("hand", "library", "graveyard", "battlefield", "exile",
-             "sideboard")
-    templates = {id(c.template): c.template for z in zones
-                 for c in (getattr(me, z, None) or ())}
-    key = (player_idx, frozenset(templates))
+    zones = ("hand", "library", "graveyard", "battlefield", "exile")
+    main = {id(c.template): c.template for z in zones
+            for c in (getattr(me, z, None) or ())}
+    side = {id(c.template): c.template
+            for c in (getattr(me, "sideboard", None) or ())}
+    key = (player_idx, frozenset(main), frozenset(side))
     if key not in cache:
-        cache[key] = build(list(templates.values()))
+        # The sideboard is the cards outside the game (CR 400.11a): what a
+        # FETCHES_OUTSIDE edge reaches.
+        cache[key] = build(list(main.values()), list(side.values()))
     return cache[key]
 
 
@@ -120,8 +123,9 @@ def best_line(game: Any, player_idx: int) -> Optional[Line]:
     for r in returners:
         for creature in me.graveyard:
             if creature.template.is_creature and _returns(graph, r, creature):
+                now = cost(r) <= mana and _castable(game, player_idx, r)
                 lines.append(Line((r,), creature, cost(r),
-                                  THIS_TURN if cost(r) <= mana else NEXT_TURN))
+                                  THIS_TURN if now else NEXT_TURN))
     in_hand = [c for c in me.hand if c.template.is_creature]
     for creature in in_hand:
         for r in returners:
@@ -132,7 +136,8 @@ def best_line(game: Any, player_idx: int) -> Optional[Line]:
                         or not _fills(f, creature):
                     continue
                 total = cost(f) + cost(r)
-                if cost(f) > mana or total >= cost(creature):
+                if cost(f) > mana or total >= cost(creature) \
+                        or not _castable(game, player_idx, f):
                     # A creature the player can cast for no more than the
                     # line costs is no reason to bin and return it.
                     continue
@@ -149,3 +154,96 @@ def best_line(game: Any, player_idx: int) -> Optional[Line]:
               for ln in lines}
     return min(lines, key=lambda ln: (ln.completes, -threat[id(ln.payoff)],
                                       ln.cost, len(ln.plays)))
+
+
+def _castable(game: Any, player_idx: int, card: Any) -> bool:
+    """Can the player cast this card now, colours included (the engine's
+    own check)? A position without the engine's state reads as castable."""
+    can = getattr(game, "can_cast", None)
+    if can is None:
+        return True
+    try:
+        return bool(can(player_idx, card))
+    except (AttributeError, TypeError, KeyError):
+        return True
+
+
+def _delivers_to_battlefield(template: Any) -> bool:
+    """Does the card's library search put what it finds onto the
+    battlefield (Green Sun's Zenith shape), not into a hand? Read from
+    the parsed instruction that moves the search's result."""
+    from engine.effect_spec import RefKind, iter_specs
+    effects = getattr(template, "effects", None)
+    for face in getattr(effects, "faces", ()) or ():
+        for host in face:
+            specs = list(iter_specs(host.specs))
+            for s in specs:
+                ref, dest = getattr(s, "ref", None), getattr(s, "dest", None)
+                if (ref is not None and ref.kind is RefKind.RESULT
+                        and dest is not None and dest.zone == "battlefield"):
+                    return True
+    return False
+
+
+def best_tutor_line(game: Any, player_idx: int) -> Optional[Line]:
+    """The best tutor line: a card the player may play that finds a payoff
+    (`Relation.TUTORS` from the library, `Relation.FETCHES_OUTSIDE` from the
+    sideboard), then the payoff -- put onto the battlefield by the search
+    itself, or cast from the hand or from outside the game. A payoff is a
+    creature (valued by `creature_threat_value`) or a storm spell (valued
+    by the damage of its copies now). An X bound ("mana value X or less")
+    costs the payoff's mana value in X. A line completes this turn when its
+    first play is castable now (colours included) and the mana pays the
+    whole line."""
+    from ai.card_graph import Relation
+    from ai.effective_cmc import chain_cost
+    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+    from ai.playable_cards import playable_cards
+    from engine.cards import Keyword
+    me = game.players[player_idx]
+    playable = [c for c in playable_cards(game, player_idx)
+                if not c.template.is_land]
+    mana = me.available_mana_estimate
+    graph = _graph(game, player_idx)
+    snap = snapshot_from_game(game, player_idx)
+    storm_now = getattr(game, "_global_storm_count", 0)
+
+    def cost(c) -> int:
+        return chain_cost(c, game, player_idx)
+
+    def value(card) -> Optional[float]:
+        if card.template.is_creature:
+            return creature_threat_value(card, snap)
+        if Keyword.STORM in getattr(card.template, "keywords", set()):
+            return float(storm_now + 1)
+        return None
+
+    lines: List[Tuple[Line, float]] = []
+    for t in playable:
+        found = [(c, False) for c in me.library if any(
+            x is c.template for x in graph.from_card(t.template,
+                                                     Relation.TUTORS))]
+        found += [(c, True) for c in getattr(me, "sideboard", ()) if any(
+            x is c.template for x in graph.from_card(
+                t.template, Relation.FETCHES_OUTSIDE))]
+        seen = set()
+        for card, outside in found:
+            if id(card.template) in seen:
+                continue
+            seen.add(id(card.template))
+            v = value(card)
+            if v is None:
+                continue
+            x_count = getattr(getattr(t.template, "mana_cost", None),
+                              "x_count", 0) or 0
+            first = cost(t) + x_count * (card.template.cmc or 0)
+            onto = not outside and _delivers_to_battlefield(t.template)
+            total = first if onto else first + cost(card)
+            now = total <= mana and _castable(game, player_idx, t)
+            plays = (t,) if onto else (t, card)
+            lines.append((Line(plays, card, total,
+                               THIS_TURN if now else NEXT_TURN), v))
+    if not lines:
+        return None
+    return min(lines, key=lambda lv: (lv[0].completes, -lv[1], lv[0].cost,
+                                      len(lv[0].plays)))[0]

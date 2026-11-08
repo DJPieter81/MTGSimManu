@@ -9,6 +9,7 @@ measurement that licenses hooking the planner into a decision family
 (docs/proposals/2026-11-08_card_interaction_graph_and_line_planner.md).
 
     python tools/line_planner_audit.py "Grixis Reanimator" -n 20 -s 70000
+    python tools/line_planner_audit.py "Amulet Titan" -n 20 --family tutor
 """
 from __future__ import annotations
 
@@ -22,10 +23,12 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-def audit(deck: str, n: int, seed0: int, side: str = "play") -> dict:
+def audit(deck: str, n: int, seed0: int, side: str = "play",
+          family: str = "reanimation") -> dict:
     os.environ.setdefault("MTG_LLM_DECISION_SCORER_OFFLINE", "1")
     from ai.ev_player import EVPlayer
-    from ai.line_planner import THIS_TURN, best_line
+    from ai.line_planner import THIS_TURN, best_line, best_tutor_line
+    planner = best_tutor_line if family == "tutor" else best_line
     import tools.goldfish as goldfish
 
     seen = collections.Counter()
@@ -35,7 +38,7 @@ def audit(deck: str, n: int, seed0: int, side: str = "play") -> dict:
     def spy(self, game, *a, **kw):
         line = None
         if getattr(game.players[self.player_idx], "deck_name", "") == deck:
-            line = best_line(game, self.player_idx)
+            line = planner(game, self.player_idx)
         chosen = real(self, game, *a, **kw)
         if (line is not None and line.completes == THIS_TURN
                 and not (chosen and chosen[0] == "play_land")):
@@ -59,7 +62,7 @@ def audit(deck: str, n: int, seed0: int, side: str = "play") -> dict:
     finally:
         EVPlayer.decide_main_phase = real
     total = seen["agree"] + seen["disagree"]
-    return {"deck": deck, "decisions_with_a_line": total,
+    return {"deck": deck, "family": family, "decisions_with_a_line": total,
             "agree": seen["agree"], "disagree": seen["disagree"],
             "examples": examples}
 
@@ -70,9 +73,12 @@ def main(argv=None) -> int:
     ap.add_argument("-n", type=int, default=20)
     ap.add_argument("-s", "--seed", type=int, default=70000)
     ap.add_argument("--side", choices=("play", "draw"), default="play")
+    ap.add_argument("--family", choices=("reanimation", "tutor"),
+                    default="reanimation")
     a = ap.parse_args(argv)
     import json
-    print(json.dumps(audit(a.deck, a.n, a.seed, a.side), indent=1))
+    print(json.dumps(audit(a.deck, a.n, a.seed, a.side, a.family),
+                     indent=1))
     return 0
 
 
