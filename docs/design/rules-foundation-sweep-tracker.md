@@ -13217,3 +13217,29 @@ Storm's slow chain-building turns remain open.
 **Rule for planner v2:** an impulse dig is worth the exiled cards the mana of this turn and the next can still play, and a dig whose cards would mostly expire is no better than holding it. Valuing that needs the multi-turn mana projection planner v2's objective needs anyway. Not built here.
 
 **Null result:** deferring an impulse dig cast with no chain begun and no mana left (its card draw is then no reason to cast it now) changed nothing in the Storm goldfish: n=30, bucket for bucket the same as the baseline. The wasted digs are cast mid-chain or with mana left over. Reverted. The waste needs the multi-turn mana valuation of planner v2.
+
+## Goryo's Vengeance: kept hands and the turn of the first reanimation (measurement only, 2026-11-08)
+
+**Setup:** Goryo's goldfish, n=20, seeds 70000–70019, on the play. For each game, the kept hand is classified by:
+- returner (R): Goryo's Vengeance or Unburial Rites;
+- target (T): a 7+ drop;
+- fill (F): a discard or loot spell;
+- its land count.
+
+It is compared with the turn of the first returner cast.
+
+| Kept hand | Games | Median first returner cast |
+|---|---|---|
+| R, T and F, 2+ lands | 8 | turn 4 (3–5, one outlier at 10) |
+| R, T and F, 0–1 lands | 3 | turn 10 |
+| No returner | 8 | turn 9.5 |
+
+**Mulligans:** 10 of 20 games went to 5 or 6 cards. 31 mulligan decisions in all:
+- 20 for "combo path under-covered", in a 7-card hand (13) or a 6-card hand (7);
+- 4 for "goal conjunction unreachable";
+- 4 for "lands miss colours";
+- 3 for land count.
+
+Several of those mulligans ended in a 5-card keep that is worse than the hand thrown back: a 1-land R+T+F (70008, 70013) or a hand with no returner (70001, 70007).
+
+**Lead:** the mulligan rule tests each hand against a fixed coverage bar, so it ships a 7 or a 6 that misses one role piece and then keeps a 5 that misses more. The decision the rule should make is a comparison: the expected kill turn of this hand against the expected kill turn of a random smaller hand. That is the same "turns to the payoff" currency the oracle and planner v2 need, so the mulligan belongs in that unit. Do not build it as a separate threshold change. Not built here.
