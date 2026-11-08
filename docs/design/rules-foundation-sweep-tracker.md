@@ -12579,3 +12579,16 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
   - The unit failed its decision rule anyway, so it is reverted rather than tuned.
 - **Local verification now also runs `tests/invariants/`.**
 - **Decision rule, stated before the run:** the solver becomes the default only if Storm's row beats its no-solver baseline (15.8) beyond one standard error (~2 pp) and no guard row falls beyond one.
+
+## Band re-derivation check (2026-11-08): the priors support the current bands
+Asked to re-derive the field bands for the three far outliers, I derived each deck's expected field WR from the band file's own matchup priors (`tools/calibration_bands.json` `matchup_bands`, the mean of the band midpoints).
+
+| Deck | Priors | Implied field WR | Current band | Sim (`mo2-post` and later) |
+|---|---|---|---|---|
+| Ruby Storm | 13 (2 user-reviewed: 43.8) | 49.2 | 40-55 | 13-16 |
+| Eldrazi Tron | 13 | 54.2 | 50-65 | ~75 |
+| Domain Zoo | 7 | 48.9 | 50-65 | ~72 |
+
+- **The priors do not support moving the bands toward the sim.** The bands are left unchanged, and the gaps stay the sim's to explain.
+- **Most of these priors are drafts.** They carry `needs_user_review` (archetype-logic, 2026-07-09). Real-world matchup win-rate data would settle them, but no such source is reachable from the session; mtgtop8 gives shares, not win rates.
+- **Shares refreshed** in `data/tier1_decklists/2026-11-08/` (not yet applied to `METAGAME_SHARES`): Rakdos Aggro 13, Broodscale Bloodchief 13, UW Control 7, Amulet Titan 7, Affinity 6, Ruby Storm 4.
