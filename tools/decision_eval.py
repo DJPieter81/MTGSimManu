@@ -11,7 +11,7 @@ behind it. A label's confidence is computed from that evidence:
   from the position under seeded continuations; `p_better` is the share
   of bootstrap resamples in which the labelled play's outcome is better.
 - review: independent reviewers each tried to refute the label;
-  confidence is the share that did not.
+  confidence is the non-refuting reviewers over reviewers plus one.
 
 Without a rules-forced verdict, a label's confidence is the smallest of
 its available components (one weak leg weakens the label). With none, it
@@ -54,7 +54,11 @@ def confidence(label: Dict[str, Any], unverified: float) -> float:
         legs.append(float(roll["p_better"]))
     rev = ev.get("review")
     if rev and rev.get("reviewers"):
-        legs.append(1.0 - rev["refuted"] / rev["reviewers"])
+        # Reviewers who failed to refute it, out of reviewers plus one: a
+        # unanimous small panel is evidence, not certainty (2 of 2 -> 2/3),
+        # so a judgement label needs rollout evidence too to reach the gate.
+        legs.append((rev["reviewers"] - rev["refuted"])
+                    / (rev["reviewers"] + 1))
     return min(legs) if legs else unverified
 
 

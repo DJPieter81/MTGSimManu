@@ -1,9 +1,12 @@
-"""A reanimation never targets a legendary creature its caster controls.
+"""A reanimation prefers a target that is not a copy of a controlled legend.
 
 The legend rule (CR 704.5j): when a player controls two or more legendary
 permanents with the same name, they choose one and put the rest into
 their owners' graveyards. Returning a second copy of a legendary creature
-its caster already controls returns nothing that stays. The main phase
+its caster already controls keeps only one of the two; the copy's enter
+trigger still resolves, so it is worth less than another target but not
+nothing. The pick prefers any other target, and falls back to the copy
+only when it is the only one. The main phase
 already keeps such a cast out of the spells it considers
 (`EVPlayer._filter_legend_rule`); the reanimation target pick did not ask
 the same owner.
@@ -56,6 +59,10 @@ def test_the_other_legend_is_returned_not_a_second_copy(card_db):
     assert targets == [found["Griselbrand"].instance_id]
 
 
-def test_only_a_copy_of_a_controlled_legend_is_no_target(card_db):
-    targets, _found = _targets(card_db, ["Atraxa, Grand Unifier"])
-    assert targets == []
+def test_only_a_copy_of_a_controlled_legend_is_still_a_target(card_db):
+    """The copy's enter trigger still resolves after the legend rule puts
+    one copy into the graveyard (CR 603.2, 603.6a, 704.5j), so with no
+    other target the copy is still worth returning (adversarial rules
+    review of the golden decision set, 2026-11-08)."""
+    targets, found = _targets(card_db, ["Atraxa, Grand Unifier"])
+    assert targets == [found["Atraxa, Grand Unifier"].instance_id]

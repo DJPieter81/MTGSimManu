@@ -4806,10 +4806,13 @@ class EVPlayer:
         # Reanimate: target the best creature card the spell may return
         if 'reanimate' in tags:
             me = game.players[self.player_idx]
-            # A second copy of a legend we control returns nothing that
-            # stays (CR 704.5j): the same filter the main phase applies.
-            gy_creatures = self._filter_legend_rule(
-                me, self._reanimation_candidates(game, spell, me))
+            # A second copy of a legend we control keeps only one of the
+            # two (CR 704.5j), though its enter trigger still resolves
+            # (CR 603.6a): prefer any other target (the main phase's own
+            # legend filter), the copy only when it is the only one.
+            _candidates = self._reanimation_candidates(game, spell, me)
+            gy_creatures = (self._filter_legend_rule(me, _candidates)
+                            or _candidates)
             if gy_creatures:
                 best = max(gy_creatures,
                            key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))

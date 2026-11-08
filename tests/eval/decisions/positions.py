@@ -113,10 +113,6 @@ def blink_before_combat_on_a_hasty_attacker(card_db):
     return g, _ai("Jeskai Blink")
 
 
-def blink_after_combat_on_a_hasty_attacker(card_db):
-    g, ai = blink_before_combat_on_a_hasty_attacker(card_db)
-    g.current_phase = Phase.MAIN2
-    return g, ai
 
 
 # ── target positions ─────────────────────────────────────────────────────
@@ -180,8 +176,6 @@ POSITIONS: Dict[str, Tuple[str, Callable[[Any], Any]]] = {
         ("main", flashback_grant_with_no_mana_left),
     "blink_before_combat_on_a_hasty_attacker":
         ("main", blink_before_combat_on_a_hasty_attacker),
-    "blink_after_combat_on_a_hasty_attacker":
-        ("main", blink_after_combat_on_a_hasty_attacker),
     "hand_attack_with_nothing_to_bin":
         ("targets", hand_attack_with_nothing_to_bin),
     "reanimation_beside_a_controlled_legend":

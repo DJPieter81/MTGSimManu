@@ -13112,3 +13112,21 @@ All 26 rows at n=20 Bo3 (`21d9122`) against `rn-post`: 650 cells, **0 violations
 - No deck moves beyond noise: Instant Reanimator 37.5 → 40.8 (+3.3), Goryo's 36.4 → 37.9 (+1.5), Jeskai Blink 49.1 → 50.6 (+1.5), Ruby Storm 40.0 → 37.8 (−2.2).
 - Storm's drop is within one standard error, but it now sits just below its band [40, 55]. Watch it in the next arm.
 - **All four units are kept** (MT, FL, LGR, BLK).
+
+## Golden decision set: adversarial review, round 1 (2026-11-08)
+
+Two independent reviewers each tried to refute every label of `tests/eval/decisions/labels.json`, one through the Comprehensive Rules and one through strategic play.
+
+**Refuted by both:** `blink_after_combat_on_a_hasty_attacker` ("cast Ephemerate in main phase 2"). Holding it is at least as good: it can be cast at the end step in response to the dash return trigger, or kept to protect against removal. On that board it trades a card for 1–2 mana. The label and its position are removed.
+
+**Corrected:**
+- **`reanimation_beside_a_controlled_legend` is not rules-forced.** The returned copy's enter trigger still resolves after the legend rule puts one copy into the graveyard (CR 603.2, 603.6a, 704.5j). Griselbrand is still the better target on that board, so the label holds as a judgement.
+  - The review also corrected **unit LGR itself.** The reanimation pick now prefers any other target and falls back to the copy only when it is the only one; before, it refused to cast. The test is renamed to the rule (`test_a_reanimation_prefers_a_target_that_is_not_a_copy_of_a_controlled_legend.py`), red first. Digest byte-identical, anchor green, 100 related tests pass.
+- **`flashback_grant_with_no_mana_left`:** the grant has its own, costlier flashback; the rule text now says so. Rules-forced is confirmed.
+
+**Confidence after round 1:**
+- 3 rules-forced labels at 1.0, all confirmed by the rules reviewer. These are gated.
+- 5 judgement labels at 0.67, upheld by both reviewers. The review leg is the non-refuting reviewers over reviewers plus one, so a small unanimous panel is evidence, not certainty.
+- Judgement labels need rollout evidence as well to reach the 0.9 gate.
+
+All 8 labels are made by the AI.
