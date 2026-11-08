@@ -12494,4 +12494,12 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - Azorius Control vs Ruby Storm games 1-2 move by turns; Azorius still wins both.
 - The anchor is unchanged.
 
-**Measured:** `pr-post` diagnostic arm, Ruby Storm's row, n=20, against `tc2-post` (pending).
+**Measured:** `pr-post` (`5acb06d`), Ruby Storm's row at n=20. 25 cells, 0 violations. Both test chunks pass on `5acb06d` (5630 + 2840).
+- Row mean 15.8 (`tc2-post`) → 13.8. Within noise, but negative.
+- **Reverted** (code and test; the digest is back byte-identical). This is the second "hold for better odds" change to lean negative on Storm's row; unit TC's part 2 was 16.0 → 12.8.
+
+**What the five Storm arms say together:** `rr-post` 16.0, `tc-post` 12.8, `tc2-post` 15.8, `pr-post` 13.8, all against `mo2-post` 15.2.
+- No decision change this series has moved Storm's row beyond the ~2 pp standard error of a 25-cell n=20 row.
+- The two holds that leaned negative suggest holding is not free in this field: the opponents' disruption and pressure are not priced beyond the two-turn clock condition.
+- In the game-1 batch Storm won 11 of 32, and 0 of 8 against Dimir. The remaining gap sits in the Dimir matchup (free counters, Bowmasters, discard) and in post-sideboard games, not in the chain gates.
+- The next Storm work should start from a Bo3 replay of a post-sideboard game, not from another gate.

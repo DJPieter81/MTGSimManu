@@ -1531,13 +1531,11 @@ def _payoff_reachable_this_turn(card: "CardInstance",
                                      trigger IS the finisher route
                                      for Living End, Crashing
                                      Footfalls, and similar decks.)
-      (d) cantrip digs in hand      (`_is_real_dig`, excluding the
-                                     card being evaluated) whose
-                                     chance to find a route to the
-                                     closer today is at least the
-                                     chance after holding a turn
-                                     (`combo_calc._digs_reach_today_
-                                     beats_holding`)
+      (d) cantrip dig in hand       (`_is_real_dig` — oracle-text-
+                                     based, excluding the card
+                                     being evaluated since PiF and
+                                     Manamorphose are themselves
+                                     cantrip-tagged)
       (e) finisher already in graveyard with flashback granted
           (Past in Flames already resolved — chain can replay it).
 
@@ -1551,7 +1549,6 @@ def _payoff_reachable_this_turn(card: "CardInstance",
     # The cards the plan can play this turn: the hand and the exiled cards
     # a permission names (`ai.playable_cards`).
     hand = playable_cards(game, player_idx)
-    digs = []
     for c in hand:
         kws = c.template.keywords or set()
         tags_c = c.template.tags or set()
@@ -1562,16 +1559,7 @@ def _payoff_reachable_this_turn(card: "CardInstance",
         if getattr(c.template, 'is_cascade', False):  # (c)
             return True
         if c is not card and _is_real_dig(c):
-            digs.append(c)                         # (d)
-    # (d) The digs reach the closer only as likely as they are: today's
-    # chance against holding a turn (`combo_calc.
-    # _digs_reach_today_beats_holding`, the ritual gate's own rule).
-    if digs:
-        from ai.combo_calc import _digs_reach_today_beats_holding
-        from ai.playable_cards import plan_view
-        if _digs_reach_today_beats_holding(
-                digs, plan_view(game, player_idx), 0.0):
-            return True
+            return True                            # (d)
     # (e) finisher in graveyard with flashback access available
     for c in me.graveyard:
         if _Kw.STORM in (c.template.keywords or set()):
