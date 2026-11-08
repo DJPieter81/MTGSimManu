@@ -131,3 +131,12 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
   - its other kill routes (Ral, Leyline Prodigy's damage; a Past in Flames that rebuys Wish);
   - whether the sim's Wish reaches every sideboard finisher;
   - the mulligan's Wish-access keep rule.
+
+## Against Domain Zoo: game 2 collapses, and the finisher fires short of lethal (2026-11-08, after unit OD)
+- **Game by game over 12 Bo3 matches** (`bo3_games.py`, the matrix seeds): game 1 5/12, game 2 0/12, game 3 2/5. Matches 2/12, in line with the matrix cell (8.0).
+- **The game-1 batch agrees:** 5/12. The Bo3 gap is concentrated in game 2.
+- **Zoo's legacy sideboard plan against Storm is +3 Mystical Dispute and +1 Celestial Purge.** Game 3 uses the same boards and goes 2/5, so the sideboard does not explain game 2's 0/12 alone. Who is on the play in game 2 is the next thing to check.
+- **The mechanism seen in s50000** (both games): Storm casts Wish into Grapeshot on turn 4 at about 6-12 copies, for damage short of lethal (game 2: Zoo 19 → 6), and then has no Wish left for a lethal turn.
+  - This is the finisher-side twin of unit TC's reverted ritual hold: firing a scarce, non-lethal finisher.
+  - The STORM branch of `combo_calc.card_combo_modifier` fires once chain fuel is exhausted (`scarce_payoff_commit_ev`). Whether to commit a one-shot finisher short of lethal belongs there.
+- **Next:** check game 2's play/draw order in the matrix, and weigh `scarce_payoff_commit_ev`'s commit against holding the Wish for a lethal turn while a later turn remains. Test first, and measure on Storm's row (TC part 2 showed holds can hurt).
