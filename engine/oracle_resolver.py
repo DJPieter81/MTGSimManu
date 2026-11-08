@@ -1331,17 +1331,16 @@ def _handle_coin_flip_transform(game: "GameState", controller: int,
     """Coin-flip transform handler (Ral, Monsoon Mage shape).
 
     Win → transform with loyalty = back_face_loyalty +
-    spells_cast_this_turn. Lose → the source permanent takes 1
-    damage from itself (Oracle: "<this> deals 1 damage to it" / self-
-    damage clause). The 1 is a rule constant straight from the
-    Oracle clause, not a magic threshold.
+    spells_cast_this_turn. Lose → the permanent deals 1 damage to its
+    controller (Oracle: "~ deals 1 damage to you"; "you" is the
+    ability's controller, CR 109.5). The 1 is a rule constant straight
+    from the Oracle clause, not a magic threshold.
 
-    R6 fix: route the lose branch through the W0-D `deal_damage`
-    primitive with target=source (the permanent), not raw-mutate
-    `player.life`. The primitive marks `damage_marked` on the
-    creature; SBAs (704.5h) destroy it later if marked damage >=
-    toughness. New self-damage cards composed from the same shape
-    inherit correctness.
+    The damage routes through the one damage owner (`deal_damage`),
+    with the permanent as its source and the controller as its
+    recipient; a loss of life to 0 is the state-based check's (704.5a).
+    It once went to the permanent itself, so the walker died and its
+    controller lost no life (Ruby Storm vs Domain Zoo s52500 g2).
     """
     # Late import: avoid module-cycle risk between oracle_resolver
     # (which game_state imports indirectly) and damage. The damage
@@ -1355,9 +1354,16 @@ def _handle_coin_flip_transform(game: "GameState", controller: int,
         # a rule constant from card text (CLAUDE.md §Hard prohibitions:
         # rule constants are allowed). Damage routes through the W0-D
         # primitive so triggers/SBA semantics fire correctly.
-        deal_damage(source=creature, target=creature, amount=1)
+        from . import rules_audit
+        marked = creature.damage_marked
+        deal_damage(source=creature, target=player, amount=1)
+        rules_audit.check(
+            "109.5/you_is_the_controller",
+            creature.damage_marked == marked,
+            f"{creature.name}'s damage to 'you' marked on itself", game)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"{creature.name} — lost coin flip, takes 1 damage")
+                        f"{creature.name} — lost coin flip, deals 1 damage"
+                        f" to its controller")
         return
     spells_this_turn = player.spells_cast_this_turn
     game.log.append(f"T{game.display_turn} P{controller+1}: "

@@ -12717,3 +12717,32 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 - Boros Energy, Jeskai Blink and 4/5c Control change only in their cell against Amulet. Arena of Glory decided no game.
 - **Kept.** It restores a rule unit TU lost, and moves no row beyond noise.
 - **Lead:** Amulet's goldfish median kill turn is still 7 against a real-world 4-5. The first Titan arrives on turns 4-5, so the next gap is earlier in the turn sequence: Amulet of Vigor, bounce lands and extra land drops.
+
+## Unit RAL: damage a permanent deals "to you" is dealt to its controller (rules; CR 109.5; 2026-11-08)
+
+**Source:** Ruby Storm vs Domain Zoo s52500, game 2, turn 5, the replay of Storm's post-board loss.
+- At 2 life, Storm cast three spells under Ral, Monsoon Mage and lost three coin flips.
+- Each time Ral took 1 damage itself. The 1/3 died, and Storm's life stayed at 2.
+
+**Rule:** "you" in an ability means that ability's controller (CR 109.5). "If you lose the flip, ~ deals 1 damage to you" deals the damage to Ral's controller.
+
+**Owner:** the coin-flip transform handler (`engine/oracle_resolver._handle_coin_flip_transform`). The effect grammar refuses "flip a coin", so this legacy path performs the trigger, and Ral is the only pool card its dispatch admits.
+- An earlier fix ("R6") had read the clause as "deals 1 damage to it". It routed the damage to the permanent and pinned that reading in `tests/test_oracle_self_damage_clause_marks_source_not_player_life.py`.
+- That file asserted the defect, so it is deleted. The damage-primitive test keeps its generic rule (the primitive gives damage to the target it is handed), with the wrong Ral wording removed.
+
+**Fix:** the lose branch calls `deal_damage(source=Ral, target=controller, 1)`; a loss at 0 life is the state-based check's (704.5a).
+
+**Auditor:** `109.5/you_is_the_controller`. The damage to "you" must not be marked on the permanent; it reads `damage_marked` before and after. It is tested both ways: it fires with the damage routed back to the permanent, and is silent on the fix.
+
+**Tests:** 4 (`tests/test_damage_a_permanent_deals_to_you_is_dealt_to_its_controller.py`), 3 red first. The fourth is the auditor's silent case, which cannot be red before the fix.
+
+**Pins:**
+- Digest: 2 of 27 games change, with the same winners:
+  - 4c Omnath vs Ruby Storm s57500: Storm still wins on turn 8;
+  - Azorius Control vs Ruby Storm s58500 g2: turn 14 → 12.
+  Storm now takes Ral's damage, and Ral survives the flips.
+- The anchor is green.
+
+**Lead (AI, not built):** the cast scorer does not count a cast trigger's expected self-damage. Ral costs half a life per instant or sorcery, and at low life a chain can now kill its own caster. The lethal-to-self floor (units DT, OD) reads only draw taxes and overdraw.
+
+**Measured:** `ral-post`, Ruby Storm's row at n=20 Bo3. Pending.

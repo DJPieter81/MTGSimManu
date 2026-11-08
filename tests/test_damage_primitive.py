@@ -9,10 +9,10 @@ never silently swaps with the controlling player.
 Each test names a *mechanic*, not a card. The R6 case
 (`test_self_damage_routes_to_source_as_target`) is rule-phrased
 as "source-as-target marks damage on the source object, not on
-the source's controller". It happens to fail today for Ral's
-coin-flip (`engine/oracle_resolver.py:638` deducts player.life
-when oracle says the planeswalker takes the damage), but the rule
-holds for any future card with self-damage too.
+the source's controller": the primitive gives the damage to the
+target it is handed. Which object that is ("deals 1 damage to you"
+is the controller, CR 109.5) is the caller's reading, pinned in
+`tests/test_damage_a_permanent_deals_to_you_is_dealt_to_its_controller.py`.
 
 Failing-test-first protocol — these go red before
 `engine/damage.py` exists.
@@ -177,10 +177,8 @@ def test_self_damage_routes_to_source_as_target(card_db):
     or any self-targeting effect), the damage marks on the source
     object — not on the source's controller's life total.
 
-    Today, `engine/oracle_resolver.py:638` for Ral's lost coin flip
-    does `player.life -= 1` despite oracle saying Ral takes the
-    damage. The damage primitive must not silently swap target=source
-    for target=controller.
+    The damage primitive must not silently swap target=source for
+    target=controller.
 
     Phrased without naming Ral: any DamageTarget passed as `target`
     receives the damage, regardless of whether it is the source.
@@ -195,15 +193,14 @@ def test_self_damage_routes_to_source_as_target(card_db):
     loyalty_before = self_target.loyalty_counters
     life_before = game.players[0].life
 
-    # The source IS the target: the PW deals 1 to itself (Ral lost-flip shape).
+    # The source IS the target: the PW deals 1 to itself.
     deal_damage(self_target, self_target, 1)
 
     assert self_target.loyalty_counters == loyalty_before - 1, (
         "self-damage on a planeswalker target must mark on the PW"
     )
     assert game.players[0].life == life_before, (
-        "self-damage must not deduct life from the source's controller "
-        "(R6: Ral's lost coin-flip damages Ral, not Ral's controller)"
+        "self-damage must not deduct life from the source's controller"
     )
 
 
