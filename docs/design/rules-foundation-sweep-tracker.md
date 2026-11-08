@@ -12745,7 +12745,9 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 
 **Lead (AI, not built):** the cast scorer does not count a cast trigger's expected self-damage. Ral costs half a life per instant or sorcery, and at low life a chain can now kill its own caster. The lethal-to-self floor (units DT, OD) reads only draw taxes and overdraw.
 
-**Measured:** `ral-post`, Ruby Storm's row at n=20 Bo3. Pending.
+**Measured:** `ral-post` (`1bb6f3c`), Ruby Storm's row at n=20 Bo3: 25 cells, 0 violations. Both test chunks pass on `1bb6f3c` (5675 + 2834; the second chunk is 3 tests smaller because the test file that pinned the defect is deleted).
+- Row 18.4 (`lsb-post`) → 18.0. Cells move both ways by 5–15, within cell noise.
+- **Kept** as a rules fix. Storm now pays Ral's damage, which the AI does not yet weigh (lead above).
 
 ## Unit GYF: a turn plan reads the spells castable from the graveyard (AI; CR 702.34a, 702.138a; 2026-11-08)
 
