@@ -235,10 +235,6 @@
    "TRIGGERED:0:2"
   ],
   [
-   "Summoner's Pact",
-   "SPELL:0:0"
-  ],
-  [
    "The Echoverse Fulcrum",
    "TRIGGERED:0:0"
   ],
@@ -303,5 +299,5 @@
    "LOYALTY:0:0"
   ]
  ],
- "state_changing_floor": 205
+ "state_changing_floor": 206
 }
