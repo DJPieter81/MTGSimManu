@@ -200,7 +200,77 @@ def choose_tutor_delivery(game, player_idx, eligible, source=None):
     return max(eligible, key=_worth)
 
 
-def _choose_land_delivery(game, player_idx, lands, batch=()):
+def haste_grant_gain(snap, me):
+    """What granting haste is worth this turn: (target, ev, clock without,
+    clock with, opponent's clock), or None when it converts nothing.
+
+    The one valuation of a haste grant (CR 702.10), read by the activation
+    scorer for an ability in play and by the land valuation for a land a
+    search would deliver (`_choose_land_delivery`). Valued only on the
+    player's OWN summoning-sick would-be attacker: hasting an
+    already-attackable body (or the opponent's creature, engine-legal since
+    the printed ability targets any creature) buys nothing. Scored on the
+    `combat_clock` primitives under the land-animation race gates: the
+    grant changes no `position_value` field, because the snapshot's power
+    terms already count summoning-sick creatures."""
+    from engine.cards import Keyword as _Kw
+    sick = [c for c in me.creatures
+            if c.has_summoning_sickness and not c.tapped
+            and _Kw.DEFENDER not in c.keywords]
+    if not sick:
+        return None
+    tgt = max(sick, key=lambda c: max(0, c.power or 0))
+    p = max(0, tgt.power or 0)
+    if p <= 0:
+        return None
+    evasive_p = p if ({k.value for k in tgt.keywords}
+                      & _EVASION_WORDS) else 0
+    # Clock WITH the grant is the snapshot clock (snap.my_power already
+    # counts every creature, sick or not — the clock model does not know
+    # about summoning sickness); clock WITHOUT is the same board minus this
+    # body's power, since without haste it does not attack this turn.
+    my_clock_with = combat_clock(
+        snap.my_power, snap.opp_life,
+        snap.my_evasion_power, snap.opp_toughness)
+    my_clock_without = combat_clock(
+        max(0, snap.my_power - p), snap.opp_life,
+        max(0, snap.my_evasion_power - evasive_p),
+        snap.opp_toughness)
+    opp_clock = combat_clock(
+        snap.opp_power, snap.my_life,
+        snap.opp_evasion_power, snap.my_toughness)
+    if my_clock_with >= my_clock_without:
+        return None  # no clock improvement — save the mana
+    if my_clock_with > opp_clock:
+        return None  # attacking loses the race — hold for defense
+    # The credited delta is capped at the one combat step haste actually
+    # advances (CR 702.10): the raw with/without difference measures the
+    # creature's whole ongoing clock contribution and hits the NO_CLOCK
+    # sentinel when it is the board's only attacker.
+    turns_saved = min(HASTE_GRANT_COMBAT_STEPS_ADVANCED,
+                      my_clock_without - my_clock_with)
+    return (tgt, turns_saved * CLOCK_IMPACT_LIFE_SCALING,
+            my_clock_without, my_clock_with, opp_clock)
+
+
+def _haste_land_gain(game, player_idx, me, batch, watcher) -> float:
+    """The haste gain a delivered haste land could still add this turn
+    (`haste_grant_gain`), or 0: only in the searcher's own precombat main
+    phase, with no haste land already in play or in the batch."""
+    from engine.game_state import Phase as _Phase
+    if game.current_phase is not _Phase.MAIN1 \
+            or game.active_player != player_idx:
+        return 0.0
+    if any(getattr(c.template, 'grants_haste_activation', False)
+           for c in list(me.battlefield) + list(batch)):
+        return 0.0
+    from ai.ev_evaluator import snapshot_from_game
+    gain = haste_grant_gain(snapshot_from_game(game, player_idx), me)
+    return gain[1] if gain is not None else 0.0
+
+
+def _choose_land_delivery(game, player_idx, lands, batch=(),
+                          enters_tapped=None):
     """Which land a library land tutor delivers — ranked by the plan, not
     by mana value (every land's is zero, so the generic ranking picked
     whichever came first).
@@ -216,10 +286,19 @@ def _choose_land_delivery(game, player_idx, lands, batch=()):
     gameplan's declared `land_priorities`, colour needs, landfall — the
     same question "which land do I most want next"). No card names, no
     new weights, no second land valuation.
+
+    Between those two, a land whose own ability grants haste
+    (`grants_haste_activation`) ranks by the attack it converts THIS turn
+    (`haste_grant_gain`, the activation scorer's own valuation), when it
+    will be usable: precombat main phase, no haste land already in play or
+    in the batch, untapped on entry (`enters_tapped` is the delivering
+    instruction's "tapped", None when it states none; an untap-on-enter
+    watcher untaps it, CR 603.6a), and its activation's mana within reach.
     """
     import random as _random
     from engine.land_manager import LandManager
     from ai.ev_player import EVPlayer
+    from engine.cards import ActivationEffectKind as _AEK
     me = game.players[player_idx]
     watcher = LandManager.player_has_untap_on_enter_watcher(game, player_idx)
     ai = EVPlayer(player_idx=player_idx,
@@ -240,10 +319,28 @@ def _choose_land_delivery(game, player_idx, lands, batch=()):
     batch_has_bounce = any(getattr(b.template, 'etb_return_land', False)
                            for b in batch)
 
+    haste_ev = _haste_land_gain(game, player_idx, me, batch, watcher)
+
+    def _converts(c) -> float:
+        if not haste_ev or not getattr(c.template, 'grants_haste_activation',
+                                       False):
+            return 0.0
+        tapped = bool(enters_tapped) or bool(c.template.enters_tapped)
+        if tapped and not watcher:
+            return 0.0
+        reach = me.available_mana_estimate + (
+            sum(tap_mana_units(b) for b in batch) if watcher else 0)
+        cost = min((a.cost.mana.cmc for a in c.template.activated_abilities
+                    if a.effect_kind is _AEK.GRANT_HASTE_TARGET),
+                   default=None)
+        if cost is None or cost > reach:
+            return 0.0
+        return haste_ev
+
     def _key(c):
         is_bounce = bool(getattr(c.template, 'etb_return_land', False))
         bounce_penalised = is_bounce and (not watcher or batch_has_bounce)
-        return (not bounce_penalised, _drop_value(c))
+        return (not bounce_penalised, _converts(c), _drop_value(c))
 
     return max(lands, key=_key)
 
@@ -726,53 +823,14 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                 # an attack THIS turn.
                 if game.current_phase is not _Phase.MAIN1:
                     continue
-                from engine.cards import Keyword as _Kw
-                # Valued only on OUR OWN summoning-sick would-be attacker.
-                # Hasting an already-attackable body (or the opponent's
-                # creature — engine-legal, the printed ability targets any
-                # creature) buys nothing, so no candidate is emitted.
-                sick = [c for c in me.creatures
-                        if c.has_summoning_sickness and not c.tapped
-                        and _Kw.DEFENDER not in c.keywords]
-                if not sick:
+                gain = haste_grant_gain(snap, me)
+                if gain is None:
                     continue
-                tgt = max(sick, key=lambda c: max(0, c.power or 0))
-                p = max(0, tgt.power or 0)
-                if p <= 0:
-                    continue
-                evasive_p = p if ({k.value for k in tgt.keywords}
-                                  & _EVASION_WORDS) else 0
-                # Clock WITH the grant is the snapshot clock (snap.my_power
-                # already counts every creature, sick or not — the clock
-                # model does not know about summoning sickness); clock
-                # WITHOUT is the same board minus this body's power, since
-                # without haste it does not attack this turn.
-                my_clock_with = combat_clock(
-                    snap.my_power, snap.opp_life,
-                    snap.my_evasion_power, snap.opp_toughness)
-                my_clock_without = combat_clock(
-                    max(0, snap.my_power - p), snap.opp_life,
-                    max(0, snap.my_evasion_power - evasive_p),
-                    snap.opp_toughness)
-                opp_clock = combat_clock(
-                    snap.opp_power, snap.my_life,
-                    snap.opp_evasion_power, snap.my_toughness)
-                if my_clock_with >= my_clock_without:
-                    continue  # no clock improvement — save the mana
-                if my_clock_with > opp_clock:
-                    continue  # attacking loses the race — hold for defense
-                # The credited delta is capped at the one combat step haste
-                # actually advances (CR 702.10): the raw with/without
-                # difference measures the creature's whole ongoing clock
-                # contribution and hits the NO_CLOCK sentinel when it is
-                # the board's only attacker.
-                turns_saved = min(HASTE_GRANT_COMBAT_STEPS_ADVANCED,
-                                  my_clock_without - my_clock_with)
-                ev = turns_saved * CLOCK_IMPACT_LIFE_SCALING
+                tgt, ev, without, with_, opp_clock = gain
                 out.append((perm, ability.index, [tgt.instance_id], ev,
                             (f"activate: haste on {tgt.name} converts an "
                              f"attack this turn (clock "
-                             f"{my_clock_without:.0f}→{my_clock_with:.0f} "
+                             f"{without:.0f}→{with_:.0f} "
                              f"vs opp {opp_clock:.0f})")))
                 continue
             elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET,

@@ -11,7 +11,7 @@ here.
 """
 from __future__ import annotations
 
-from typing import Any, List, Sequence
+from typing import Any, List, Optional, Sequence
 
 
 def _to_own_hand(spec: Any) -> bool:
@@ -182,6 +182,21 @@ def _deliver(game: Any, player_idx: int, cards: Sequence[Any],
     return picked
 
 
+def _search_puts_tapped(ctx: Any, spec: Any) -> Optional[bool]:
+    """Whether the instruction that puts this search's found cards onto
+    the battlefield says "tapped" (`Destination.tapped`); None when no
+    instruction of the resolving ability puts them there."""
+    from engine.effect_spec import RefKind
+    seq = getattr(spec, "seq", None)
+    for s in getattr(getattr(ctx, "ability", None), "specs", ()) or ():
+        ref, dest = getattr(s, "ref", None), getattr(s, "dest", None)
+        if (ref is not None and ref.kind is RefKind.RESULT
+                and ref.index == seq and dest is not None
+                and dest.zone == "battlefield"):
+            return bool(dest.tapped)
+    return None
+
+
 def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
                n: int) -> List[Any]:
     """Which cards of `pool` a resolving effect takes, up to `n`.
@@ -231,9 +246,11 @@ def pick_cards(game: Any, ctx: Any, spec: Any, pool: Sequence[Any],
         from ai.activation_ev import _choose_land_delivery
         lands = list(pool)
         picked = []
+        tapped = _search_puts_tapped(ctx, spec)
         while lands and len(picked) < n:
             land = _choose_land_delivery(game, ctx.controller, lands,
-                                         batch=tuple(picked))
+                                         batch=tuple(picked),
+                                         enters_tapped=tapped)
             picked.append(land)
             lands = [c for c in lands if c is not land]
         return picked
