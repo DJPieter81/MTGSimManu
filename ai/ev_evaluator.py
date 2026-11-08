@@ -1436,6 +1436,19 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             if payoff_reach:
                 signals.append('flashback_combo_with_gy_fuel')
 
+    # 16b. A spell that returns a creature card from its caster's graveyard
+    #      to the battlefield delivers that creature this turn. Whether it
+    #      can return a given card is the returner's parsed graveyard
+    #      requirement (`card_classes.deck_can_return`, the owner the card
+    #      graph's RETURNS edges read). With such a card in the graveyard
+    #      the cast is not deferrable.
+    if game is not None and (t.is_instant or t.is_sorcery):
+        from ai.card_classes import deck_can_return
+        gy = game.players[player_idx].graveyard
+        if any(c.template.is_creature
+               and deck_can_return(c.template, [card]) for c in gy):
+            signals.append('reanimates_now')
+
     # 17. A card a permission lets the player play only until this turn
     #     ends (an impulse draw's last turn, CR 611.2): casting it next
     #     turn is not an option, so it is never deferrable. The engine's

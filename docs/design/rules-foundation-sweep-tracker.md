@@ -12872,3 +12872,37 @@ Every combo deck kills about three turns late. Each deck's replays name a few sp
 - **Goryo's sequencing:**
   - Ephemerate cast before combat on a hasty reanimated creature gives up its attack;
   - Goryo's reanimates a second copy of a legendary creature it already controls (legend rule, CR 704.5j).
+
+## Unit RN: a reanimation spell with a creature to return is not deferred (AI; 2026-11-08)
+
+**Source:** Grixis Reanimator vs Azorius Blink s53000, traced. With Archon of Cruelty in the graveyard, Persist scored +48.9, the best play, yet the AI cast Emperor of Bones at +1.8.
+
+**Rule:** the main phase defers a cast that delivers nothing this turn: no same-turn signal fires in `_enumerate_this_turn_signals`, and `decide_main_phase` passes. A spell that returns a creature card from its caster's graveyard to the battlefield delivers that creature this turn.
+- No signal covered one-sided reanimation, so Persist and Unburial Rites were deferred indefinitely.
+- Goryo's Vengeance and Unearth got through only on unrelated signals (a recurring-engine trigger; cycling read as card draw).
+
+**Fix:** signal 16b, `reanimates_now`. It fires when the caster's graveyard holds a creature card the spell can return. That is decided by the returner's parsed graveyard requirement (`card_classes.deck_can_return`), the same owner the card graph's RETURNS edges read.
+
+**Class:** 422 pool cards carry the `reanimate` tag.
+
+**Tests:** 4 (`tests/test_a_reanimation_spell_with_a_target_is_not_deferred.py`), 3 red first. 91 related tests pass.
+
+**Effect, goldfish (n=20, on the play):**
+
+| | Before | After |
+|---|---|---|
+| Grixis Reanimator kills by turn 5 | 0 | 4 |
+| Grixis Reanimator kills by turn 6 | 4 | 10 |
+| Grixis Reanimator kills by turn 7 | 11 | 16 |
+| Grixis Reanimator median kill turn | 7 | 6.5 |
+
+Goryo's (11), Instant Reanimator (7) and Living End (6.5) are unchanged: their reanimation already passed through other signals.
+
+**Pins:**
+- Digest: 1 of 27 games changes (Creatures Toolbox vs Grixis Reanimator s56000), same winner, turn 7 → 5.
+- Anchor:
+  - Grixis vs Azorius Blink s53000 flips to Grixis, replayed exactly as the anchor runs it: Faithless Looting bins Archon on turn 3 and Persist returns it on turn 4. Legal.
+  - One turn-only drift (Creatures Toolbox vs Grixis s52000, 8 → 5).
+  - Refreshed.
+
+**Measured:** `rn-post`, all 26 rows at n=20 Bo3. It also carries PFG. Pending.

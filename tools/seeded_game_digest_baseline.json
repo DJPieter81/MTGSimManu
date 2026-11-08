@@ -1,5 +1,5 @@
 {
-  "combined": "2e311e1499dd6d5699ef26a30ec8ea0f8ab600d17a8dfeffb5899baff66cb162",
+  "combined": "ea1a3ba63194bb74ea26d26c37189136e358635c08744082703567384daf88d6",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -39,9 +39,9 @@
       "winner": "Boros Energy"
     },
     "bo1|Creatures Toolbox|Grixis Reanimator|56000": {
-      "lines": 538,
-      "sha256": "0119962cd597da0bbea74c9e2e0bc92f9489648ce106a86accca25afa7f65021",
-      "turns": 7,
+      "lines": 370,
+      "sha256": "b387fceee2dd1f1025a8754f3fa443e75a222e7068073cde6dd2a4a375914fcd",
+      "turns": 5,
       "winner": "Grixis Reanimator"
     },
     "bo1|Dimir Midrange|Domain Zoo|57000": {
