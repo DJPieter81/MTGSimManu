@@ -108,7 +108,8 @@ def choose_discard(game: "GameState", player_idx: int,
         return _choose_for_caster(
             game, victim_idx=player_idx, hand=hand,
             opp_gameplan=opp_gameplan,
-        ) or choose_card_to_strip(hand, caster_snap, opp_gameplan)
+        ) or choose_card_to_strip(hand, caster_snap, opp_gameplan,
+                                  caster_payoffs(game, caster_idx))
 
     # Self-discard: score-based choice, highest score = discard first.
     from ai.predicates import count_lands
@@ -717,3 +718,20 @@ def _choose_for_caster(game: "GameState", victim_idx: int,
 
     ranked = sorted(enumerate(nonland), key=_key)
     return ranked[0][1]
+
+
+def caster_payoffs(game: "GameState", caster_idx: int) -> list:
+    """The cards the caster's plan resolves to win: those its gameplan
+    names as payoffs (the EXECUTE_PAYOFF goal's payoff role, deck data),
+    wherever the caster still holds or can reach them (hand, library,
+    graveyard, sideboard). Empty for a caster whose plan names none."""
+    from ai.gameplan import GoalType, get_gameplan
+    player = game.players[caster_idx]
+    gp = get_gameplan(getattr(player, "deck_name", "") or "")
+    if gp is None:
+        return []
+    names = {n for g in gp.goals if g.goal_type is GoalType.EXECUTE_PAYOFF
+             for n in g.card_roles.get("payoffs", ())}
+    zones = ("hand", "library", "graveyard", "sideboard")
+    return [c for z in zones for c in (getattr(player, z, None) or ())
+            if getattr(c, "name", None) in names]

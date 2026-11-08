@@ -13399,3 +13399,32 @@ Priced by hand, paying and casting Ral scored −0.907 against −0.95 for decli
 **Reading:** PE corrects a decision that was demonstrably wrong (an unpriced spell), but at n=20 it does not move Storm out of noise. Storm's band gap is not this decision. Keep PE (it is the correct pricing); do not chase Storm's number with it.
 
 **Next for Storm:** its worst cells are now the disruption decks (Dimir Midrange 15, WST 10–15). Replay those before any further Storm change.
+
+## Unit HA: a hand attack whose caster has a payoff to resolve takes the card that would stop it (AI; CR 701.9b; 2026-11-08)
+
+**Symptom:** Ruby Storm vs Dimir Midrange s51000, game 2, turn 7. Thoughtseize (via Wish) took Psychic Frog. Dimir had held Counterspell since turn 1, and it countered Storm's lethal Wish on turn 9.
+
+**Rule:** "you choose a nonland card" (CR 701.9b). The caster picks by what each card does to the caster's own plan. A caster whose gameplan resolves payoff spells to win (its EXECUTE_PAYOFF goal's payoff role) takes the card that can counter one of those payoffs before a threat that only clocks it. When the caster is about to die to the board, the existing attack-imminence rule still takes the attacker first.
+
+**Defect:** `choose_card_to_strip` ranked only by the victim's own keystones and the card's threat:
+- Psychic Frog: always-early (60) plus mulligan key (40) plus its creature threat, about 105;
+- Counterspell: a flat tag weight of 6.
+
+The caster's plan was never read, so no weight would fix this. The fix is ordinal.
+
+**Fix:**
+- `ai/ev_evaluator.stops_a_payoff`: a COUNTER whose printed spell kind admits a payoff, matched by `target_solver.spell_matches`, the one owner of that match.
+- `ai/discard_advisor.caster_payoffs`: the caster's payoff cards from gameplan data, in hand, library, graveyard or sideboard.
+- `choose_card_to_strip` ranks "stops a payoff" first.
+- No new literals; a sort index literal was removed.
+
+**Class:** every hand attack (Thoughtseize, Inquisition, Duress, Grief, Kitesail-style) cast by a deck with an EXECUTE_PAYOFF goal, against every counter.
+
+**Tests:** `tests/test_a_hand_attack_takes_the_answer_to_its_casters_payoff.py` (3 tests; the main one red first):
+- a counter that cannot stop the payoff earns nothing;
+- a caster with no payoff keeps the threat ranking.
+
+**Pins:**
+- Anchor: 1 winner flip, Instant Reanimator vs Dimir Midrange s51000, replayed old and new. Reanimator's turn-2 Thoughtseize now takes Counterspell instead of Psychic Frog, and Reanimator wins on turn 10 instead of losing. Accepted.
+- Digest byte-identical.
+- Storm vs Dimir, same 4 Bo3 seeds: 1 game won of 8 → 2 of 9 (s51000 0–2 → 1–2).
