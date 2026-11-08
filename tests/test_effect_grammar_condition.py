@@ -476,7 +476,7 @@ def test_an_ability_word_is_a_label_on_the_condition_not_a_condition():
 
 @pytest.mark.parametrize("text,detail", [
     ("if ~ is in your opening hand", "condition.opening_hand"),
-    ("if you win the flip", "condition.coin_flip"),
+    ("if you lose a flip", "condition.coin_flip"),
     ("if it targets a blue spell", "condition.targets"),
     ("if blorp the zorp", "condition.unparsed:blorp"),
     ("unless you discard a card", "condition.unless_action:discard"),

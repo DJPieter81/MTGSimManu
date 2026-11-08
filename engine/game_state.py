@@ -499,6 +499,17 @@ class GameState:
         the dispatcher's executors and the land-destruction rider share."""
         self.rng.shuffle(self.players[player_idx].library)
 
+    def flip_coin(self, player_idx: int, cause: str = "") -> bool:
+        """A player flips a coin (CR 705.1): it wins or loses the flip,
+        each equally likely, decided by the game's seeded rng. The one
+        coin-flip owner, logged. True = the player won the flip."""
+        won = self.rng.choice(("win", "lose")) == "win"
+        self.log.append(
+            f"T{self.display_turn} P{player_idx+1}: "
+            f"{cause + ' — ' if cause else ''}"
+            f"{'won' if won else 'lost'} coin flip")
+        return won
+
     def mill(self, player_idx: int, n: int, cause: str = "") -> List[CardInstance]:
         """CR 701.17a — Mill N: the player puts that many cards from the
         top of their library into their graveyard; with fewer, all of them

@@ -99,6 +99,7 @@ class Verb(Enum):
     END_TURN = "end_turn"
     SKIP = "skip"
     CREATE_TRIGGER = "create_trigger"    # delayed (CR 603.7) / reflexive (CR 603.12)
+    FLIP = "flip"                        # CR 705: flip a coin; its result is the outcome
     UNMODELLED = "unmodelled"
 
 
@@ -185,6 +186,7 @@ class ConditionKind(Enum):
     TURN = "turn"
     HISTORY = "history"
     RESOLUTION_ORDINAL = "resolution_ordinal"
+    FLIP = "flip"            # CR 705.1: the outcome of an earlier FLIP (its RESULT)
     UNLESS = "unless"
     ALL_OF = "all_of"
     ANY_OF = "any_of"
@@ -644,9 +646,12 @@ class CastEvent:
     relative to the ability's controller ('you', 'opponent' or 'player'),
     and what kind of spell -- 'any', 'noncreature', 'instant_or_sorcery',
     'creature', 'artifact', 'enchantment', 'colorless' or 'multicolored',
-    read from the spell as it is cast."""
+    read from the spell as it is cast. `your_turn`: "... during your turn"
+    -- only a cast during the ability's controller's turn triggers it (CR
+    500.1: the active player's turn)."""
     caster: str
     spell: str = "any"
+    your_turn: bool = False
 
 
 @dataclass(**_FROZEN)
@@ -970,7 +975,7 @@ ACTOR_ONLY_VERBS: FrozenSet[Verb] = frozenset({
     Verb.SHUFFLE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.SET_LIFE,
     Verb.EXCHANGE_LIFE, Verb.DRAW, Verb.MILL, Verb.SCRY, Verb.SURVEIL,
     Verb.SEARCH, Verb.PLAYER_COUNTERS, Verb.ADD_MANA, Verb.CREATE_EMBLEM,
-    Verb.EXTRA_TURN, Verb.END_TURN, Verb.SKIP})
+    Verb.EXTRA_TURN, Verb.END_TURN, Verb.SKIP, Verb.FLIP})
 
 _IMMUTABLE_LEAVES = (type(None), bool, int, float, str, bytes, Enum)
 

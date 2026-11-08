@@ -509,9 +509,10 @@ def _draw_event(head: str) -> Optional[DrawEvent]:
 
 
 # A cast event's head (CR 601.2i, 603.2): the closed table of casters and
-# spell kinds. An ordinal ("your second spell each turn"), a rider ("during
-# your turn", "that targets ~", "with mana value ...", "from exile") or any
-# other spell kind leaves the head a SPELL_CAST head with no typed event.
+# spell kinds, and the one turn rider "during your turn". An ordinal ("your
+# second spell each turn"), another rider ("that targets ~", "with mana
+# value ...", "from exile") or any other spell kind leaves the head a
+# SPELL_CAST head with no typed event.
 _CASTERS = {"you": "you", "an opponent": "opponent", "a player": "player"}
 _CAST_SPELLS = {"": "any", "noncreature ": "noncreature",
                 "instant or sorcery ": "instant_or_sorcery",
@@ -520,6 +521,7 @@ _CAST_SPELLS = {"": "any", "noncreature ": "noncreature",
                 "multicolored ": "multicolored"}
 _CAST_EVENT_RE = re.compile(
     r"(?:whenever|when) (?P<who>%s) casts? an? (?P<what>%s)spell"
+    r"(?P<turn> during your turn)?"
     % ("|".join(_CASTERS),
        "|".join(re.escape(k) for k in sorted(_CAST_SPELLS, key=len,
                                               reverse=True))))
@@ -537,7 +539,8 @@ def _cast_event(head: str) -> Optional[CastEvent]:
     if m is None:
         return None
     return CastEvent(caster=_CASTERS[m.group("who")],
-                     spell=_CAST_SPELLS[m.group("what")])
+                     spell=_CAST_SPELLS[m.group("what")],
+                     your_turn=m.group("turn") is not None)
 
 
 # A combat-damage event's head (CR 510.2): the closed table of single

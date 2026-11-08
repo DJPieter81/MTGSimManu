@@ -71,6 +71,12 @@ passes only the "if ..." part.
   no zone (the object as it was at the event);
 * RESOLUTION_ORDINAL -- "this is the Nth time this ability has resolved
   this turn": ``resolved`` with ``op`` "==" and ``n`` = N;
+* FLIP -- "you win the flip" / "you lose the flip" (CR 705.1): ``won`` /
+  ``lost``, the outcome of the coin this ability flipped earlier. ``ref``
+  is an unbound RESULT the linker binds to the nearest earlier flip
+  (pending ``("result", "flipped")``). Any other flip phrase -- a count of
+  flips won, heads or tails, a past-tense "won" -- stays refused
+  (``condition.coin_flip``);
 * UNLESS -- "unless <player> pays <cost>": ``pays`` with the payer from the
   participant leaf and the cost through the payload leaf's PAY payload,
   i.e. the activation-cost parser (A31); every other "unless <COND>" is
@@ -152,6 +158,7 @@ PREDICATES = {
                                    "your_main_phase"}),
     ConditionKind.HISTORY: HISTORY_PREDS,
     ConditionKind.RESOLUTION_ORDINAL: frozenset({"resolved"}),
+    ConditionKind.FLIP: frozenset({"won", "lost"}),
     ConditionKind.UNLESS: frozenset({"pays"}),
     ConditionKind.ALL_OF: frozenset({""}),
     ConditionKind.ANY_OF: frozenset({""}),
@@ -544,8 +551,18 @@ _ORDINAL_CAST_RE = re.compile(
     % "|".join(_ORDINALS))
 
 
+# "you win the flip" / "you lose the flip" (CR 705.1): the outcome of the
+# coin an earlier instruction of the ability flipped, its RESULT.
+_FLIP_OUTCOME = {"you win the flip": "won", "you lose the flip": "lost"}
+_FLIPPED = (("result", "flipped"),)
+
+
 def _fixed(t: str) -> Optional[_W]:
-    """TURN, day/night and the resolution ordinal: whole-text rows."""
+    """TURN, day/night, the resolution ordinal and a flip's outcome:
+    whole-text rows."""
+    if t in _FLIP_OUTCOME:
+        return _ok(Condition(ConditionKind.FLIP, pred=_FLIP_OUTCOME[t],
+                             ref=Ref(RefKind.RESULT), raw=t), _FLIPPED)
     if t in _TURN:
         return _ok(Condition(ConditionKind.TURN, pred=_TURN[t], raw=t))
     if t in _DAY_NIGHT:
@@ -1308,6 +1325,8 @@ def _whole(t: str) -> _W:
     w = _devotion(t)
     if w is not None:
         return w
+    if t in _FLIP_OUTCOME:
+        return _fixed(t)
     for code, rx in _REFUSALS:
         if rx.search(t):
             return _fail(code)

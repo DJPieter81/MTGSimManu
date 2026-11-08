@@ -12989,3 +12989,45 @@ Updated to drive the stack, with every assertion kept:
 **Leads, not built:**
 - **A madness discard does not advance the per-turn discard counter.** `ZoneManager.move_card` counts only hand → graveyard, but a madness discard is still a discard (CR 701.9a, 702.35a). Hollow One's cost reduction does not see a discarded Blazing Rootwalla.
 - **A generic zone-entry ordinal on `CardInstance`** would close the CR 400.7 gap above and `Handle`'s.
+## Unit FL: "flip a coin" is an instruction of the effect grammar (rules; CR 705, 109.5, 614.1c; 2026-11-08)
+
+**Symptom:** the effect grammar recognised "flip a coin" and refused it (`lexicon.unsupported:flip_a_coin`), and refused "if you win / lose the flip" (`condition.coin_flip`). The one flip card in a registered deck, Ral, Monsoon Mage (Ruby Storm), was performed by a legacy shape-specific handler, `oracle_resolver._handle_coin_flip_transform`, gated on a typed `has_coin_flip` flag. That handler:
+- flipped on any turn, though the trigger says "during your turn";
+- counted every spell cast this turn as extra loyalty, though the back face counts instant and sorcery spells (Ral's own creature spell was counted);
+- transformed Ral in place, though the text exiles it and returns it (a new object, CR 400.7).
+
+**Rule:** a player flips a coin and wins or loses the flip, each equally likely (CR 705.1); "if you win the flip, A. If you lose the flip, B" performs A exactly on a win and B exactly on a loss, in printed order (CR 608.2c). "You" is the ability's controller (CR 109.5). A permanent that enters with an additional counter "for each" of something counts it as it enters (CR 614.1c).
+
+**Owner:** the effect dispatcher, through the existing seams:
+- grammar: lexicon row `flip a coin` → `Verb.FLIP` (the guard refuses "until you lose a flip", "for each ...", "two coins", which stay the recognised-unsupported action); condition row `ConditionKind.FLIP` (`won` / `lost`) whose RESULT ref the linker binds to the nearest earlier flip (pending `("result", "flipped")`);
+- the coin: `GameState.flip_coin`, the one coin-flip owner (seeded `game.rng`, logged); `execute_flip` records the outcome as the instruction's result and `evaluate_flip` reads it;
+- the trigger head: `CastEvent.your_turn` ("during your turn", CR 500.1), read by `effect_carrier.cast_matches` and its audit;
+- "~ deals N damage to you": `execute_damage` (`damages_you`) deals it to the controller through `deal_damage_to`;
+- the self exile and the return transformed (`self_exile`, `self_return_transformed`): what the dispatcher sequences around them -- a condition, "you may", "if you do" -- is no longer refused by the executors; the cast carrier's strict shape admits the pair (`self_flip`);
+- the back face's "enters with an additional loyalty counter on ~ for each instant and sorcery spell you've cast this turn": `effect_views.scaled_entry_counters` (counter parser + quantity leaf), evaluated by the entry owner (`CardInstance._put_entry_counters` through `effect_carrier.entry_counters`) over the controller's cast tally (`effect_conditions.cast_history_count`). `_announce_transform` adds to, rather than overwrites, the loyalty of a permanent that entered.
+
+**Deleted:** `oracle_resolver._handle_coin_flip_transform` and its dispatch branch; `CardTemplate.has_coin_flip`, `oracle_parser.parse_has_coin_flip`, its population and its effect_views row; the parser's tests in `tests/test_batch18_typed_fields.py`. The deterministic "if you've cast N or more ... spells" transform branch stays.
+
+**Class** (`tools/class_census.py "flip a coin"`: 29 pool cards, 31 names with the split forms):
+- Typed (the flip and its outcome conditions parse): 19 cards. Through a carrier today: Ral (cast carrier) and Skyclaw Thrash (attack carrier). Executable by the dispatcher but with no activation carrier yet: Tavern Scoundrel, Tavern Swindler, The Gold Saucer. The other typed cards stay refused by their other instructions (a spell's self-return, an extra turn, "that creature", passive sacrifices, ...): fail closed.
+- Refused, as before: Fiery Gambit and Mirror March ("until you lose a flip"), Rakdos, the Showstopper ("for each"), Molten Sentry and Odds // Ends (heads / tails), Krark's Thumb (a replacement), Karplusan Minotaur (cumulative upkeep), Goblin Kaboomist (glued "then flip a coin"), Frenetic Sliver (a granted ability), Breeches ("when you win the flip", reflexive), Mana Clash (two flippers; residue).
+- Beside the class, the pool-wide take diff (strict shape and `can_execute`): "~ deals N damage to you" now runs in the step carrier (Graf Reaver, Jinxed Idol, Ravenous Giant, Sleeper Agent, Force of Nature) and "during your turn" cast heads are typed (Hermit of the Natterknolls). None is in a registered deck.
+
+**Auditors:**
+- `109.5/you_is_the_controller` moves to the seam where the grammar deals the damage (`execute_damage`): damage "to you" is not marked on its source. Both ways tested (the damage owner monkeypatched back to the permanent fires it).
+- `705.1/flip_outcome_gates` (new, `audit_flip_branches`, end of `resolve_ability`): an instruction gated on a flip's outcome was performed only when the flip came out that way, restated from the resolution's raw results. Both ways tested (an evaluator that always holds fires it).
+- `306.5b/entry_loyalty` now expects the printed loyalty plus the additional loyalty counters the face enters with, restated from the raw cast tally.
+
+**Tests:** 17 in `tests/test_a_coin_flip_is_an_instruction_whose_outcome_gates_its_branches.py`, 8 red first (the refused-form pins, the lost-flip damage and the auditor's silent case pass either way). The RAL tests (`tests/test_damage_a_permanent_deals_to_you_is_dealt_to_its_controller.py`) now drive the trigger through the real cast path, keeping their rule and both auditor tests. The condition leaf's refusal witnesses move to "if you lose a flip" (Fiery Gambit); Ral's "if you win the flip" becomes a typed witness.
+
+**Pins:**
+- Census (`tools/effect_census.py --update`): RECOGNIZED_UNSUPPORTED 478 → 457, CONDITION 1137 → 1109; clauses that passed their condition are now refused at their own stage (REFERENCE +2, NO_LEMMA +2, AMOUNT +1, residue `target.unparsed` +1 on Mana Clash's two-player flip).
+- Ratchets: no baseline moves (the deleted handler held no name key, runtime oracle parse or zone write).
+- Digest: 4 of 28 games change, all Ruby Storm, same winners and turn counts; replayed to the first divergence, each is the grammar path's log ("won coin flip", the exile and return) and Ral's back face entering with 1 extra loyalty per instant or sorcery cast that turn (3, where the legacy counted Ral's own creature spell for 4; 5 in AzCon s58500 g2, unchanged). Rules-correct; re-recorded.
+- Anchor green.
+- Host harness: 8 new-path pairs recorded as intended changes in `tools/host_harness_switched.json` (the legacy side performed nothing for Skyclaw Thrash, Hermit of the Natterknolls and the five "damage to you" step triggers, and has no handler left for Ral); the registered-deck self-check pins one more state-changing host (Ral's cast trigger, 279 → 280). Gate-parity and closure baselines (`tools/effect_spec_equivalence.py --update`) re-locked.
+
+**Leads, not built:**
+- An activation carrier for the executable activated flips (Tavern Swindler, The Gold Saucer).
+- "if you lose a flip" / "for each flip you won" over a repeated flip, and heads / tails outcomes (Molten Sentry, Odds).
+- `cast_history_supported` is not in `quantity_supported`: "equal to the number of instant and sorcery spells you've cast this turn" amounts stay refused until a unit widens it with its own measurement.

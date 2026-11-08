@@ -45,6 +45,7 @@ built once per parsed `CardEffects` and a lookup never parses.
 from __future__ import annotations
 
 import dataclasses
+import functools
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -805,7 +806,7 @@ _TRIGGER_BODY_VERBS = frozenset({
     Verb.CREATE_TOKEN, Verb.PUT_COUNTERS, Verb.MILL, Verb.SURVEIL,
     Verb.KEYWORD_ACTION, Verb.CONTINUOUS, Verb.EXILE, Verb.SACRIFICE,
     Verb.PLAYER_COUNTERS, Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE,
-    Verb.REMOVE_COUNTERS})
+    Verb.REMOVE_COUNTERS, Verb.FLIP})
 _ATTACK_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT, RefKind.EVENT_PLAYER})
 _CAST_UNBOUND_REFS = frozenset({RefKind.EVENT_OBJECT,
                                 RefKind.DEFENDING_PLAYER})
@@ -821,7 +822,8 @@ def _names_unbound_event(s, unbound: frozenset) -> bool:
 
 def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
                          battlefield_exile: bool = False,
-                         linked_exile: bool = False) -> bool:
+                         linked_exile: bool = False,
+                         self_flip: bool = False) -> bool:
     """The body a trigger carrier performs from a typed host (A38): every
     spec one of `_TRIGGER_BODY_VERBS` with no residue or sub-ability -- an
     intervening "if" aside, which the carrier that admits one checks as the
@@ -834,9 +836,12 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
     `linked_exile`, of a target permanent until the source leaves the
     battlefield (CR 610.3); a continuous effect is a permission over what
     that exile moved or a characteristic change until end of turn on a
-    target (with the linked exile, the specs with a duration). A head that
-    limits how often it triggers ("this ability triggers only once each
-    turn") is refused: no carrier counts its triggers yet."""
+    target (with the linked exile, the specs with a duration). With
+    `self_flip`, the source's own exile and its return transformed
+    (`effect_executors.self_exile`, `self_return_transformed`, CR 400.7,
+    712) are among it. A head that limits how often it triggers ("this
+    ability triggers only once each turn") is refused: no carrier counts
+    its triggers yet."""
     if h.trigger.frequency_raw:
         return False
     bare = h
@@ -848,7 +853,8 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
         return False
     from .effect_executors import (characteristic_supported,
                                    exile_target_supported,
-                                   exile_top_supported, exile_until_leaves)
+                                   exile_top_supported, exile_until_leaves,
+                                   self_exile, self_return_transformed)
     specs = list(iter_specs(h.specs))
     exiled = {s.seq for s in specs if _library_top_exile(s)}
     for s in specs:
@@ -859,6 +865,7 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
                 and not _graveyard_target_exile(s) \
                 and not exile_top_supported(s) \
                 and not (battlefield_exile and exile_target_supported(s)) \
+                and not (self_flip and self_exile(s)) \
                 and not linked:
             return False
         if s.verb is Verb.CONTINUOUS and not (
@@ -867,7 +874,8 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
         if s.duration is not None and s.verb is not Verb.CONTINUOUS \
                 and not linked:
             return False
-        if not _search_part(s):
+        if not (_search_part(s) or (self_flip
+                                    and self_return_transformed(s))):
             return False
     return True
 
@@ -913,14 +921,16 @@ def strict_cast_trigger(h: AbilityEffects) -> bool:
     "if" (the carrier checks none), every target slot one the carrier picks
     as the trigger is put on the stack, and the trigger body the other
     carriers perform (`_strict_trigger_body`, CR 603.2, 608.2c), the exile
-    of a target permanent among it (unit UG, CR 701.13a). "That player" is
-    the caster, whom the carrier binds as the event's player; no spec names
-    the spell."""
+    of a target permanent among it (unit UG, CR 701.13a), and the source's
+    own exile and return transformed (unit FL, CR 400.7, 712). "That
+    player" is the caster, whom the carrier binds as the event's player; no
+    spec names the spell."""
     if h is None or h.kind is not HostKind.TRIGGERED or h.trigger is None \
             or h.trigger.cast is None or h.trigger.intervening_if is not None \
             or not all(r.zone in _STEP_TARGET_ZONES for r in h.targets):
         return False
-    return _strict_trigger_body(h, _CAST_UNBOUND_REFS, battlefield_exile=True)
+    return _strict_trigger_body(h, _CAST_UNBOUND_REFS, battlefield_exile=True,
+                                self_flip=True)
 
 
 # An enter event names the entering object, which a self-enter host calls
@@ -3396,7 +3406,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "has_lifegain_equal_power": _AI, "has_lifegain_effect": _AI,
     "has_delirium": _AI, "has_all_basic_land_types": _AI,
     "color_setting_scope": _STATIC, "has_artifact_count_scaling": _AI,
-    "has_coin_flip": _AI, "has_transform_effect": _AI,
+    "has_transform_effect": _AI,
     "has_instant_or_sorcery_reference": _AI,
     "has_cc_tap_draw": _AI, "has_artifact_pump_equipment": _AI,
     "has_artifact_or_enchantment_scaling": _AI,
@@ -3489,4 +3499,53 @@ def entry_counters(effects: CardEffects, face: int = 0) -> Tuple[Tuple[str, int]
             continue
         out.extend((kind, a.n) for kind, a in counters)
     return tuple(out)
+
+
+# "~ enters with <counters> on it for each <quantity>" (CR 614.1c): the
+# count is the printed number times the quantity as the permanent enters.
+# A self reference after "on" reads `~` in the normalised text.
+_ENTERS_WITH_FOR_EACH = re.compile(
+    r"~ enters with (?P<items>.+?) on (?:it|~) for each (?P<q>.+?)\.?$")
+
+
+def scaled_entry_counters(effects: CardEffects, face: int = 0
+                          ) -> Tuple[Tuple[str, int, Any], ...]:
+    """The counters a permanent's own text says it enters with for each of
+    something: "~ enters with [an additional] N <kind> counter(s) on it for
+    each <quantity>", a REPLACEMENT host of `face` (CR 614.1c, 122.6), as
+    ``(kind, N, quantity)``; the entry owner places N times the quantity
+    as the permanent enters. The counter phrase is read by the grammar's
+    one counter parser and the quantity by its quantity leaf; a quantity
+    the entry owner does not evaluate (`effect_conditions.
+    entry_quantity_supported`), a choice of kinds or a keyword counter is
+    refused -- the whole sentence, never part of it."""
+    faces = getattr(effects, "faces", ()) or ()
+    if face >= len(faces):
+        return ()
+    out = []
+    for h in faces[face]:
+        if h.kind is HostKind.REPLACEMENT:
+            out.extend(_scaled_entry(h.text or ""))
+    return tuple(out)
+
+
+@functools.lru_cache(maxsize=None)
+def _scaled_entry(text: str) -> Tuple[Tuple[str, int, Any], ...]:
+    from .effect_conditions import entry_quantity_supported
+    from .effect_grammar.keywords import canonical_keyword
+    from .effect_grammar.sub.dest import _counters
+    from .effect_grammar.sub.quantity import parse_quantity
+    m = _ENTERS_WITH_FOR_EACH.match(text.strip())
+    if m is None:
+        return ()
+    counters = _counters(m.group("items"))
+    q = parse_quantity(m.group("q")).value
+    if not isinstance(counters, tuple) or not counters \
+            or not entry_quantity_supported(q):
+        return ()
+    if any(a.kind is not AmountKind.LITERAL or a.quantity is not None
+           or not a.n or canonical_keyword(kind) is not None
+           for kind, a in counters):
+        return ()
+    return tuple((kind, a.n, q) for kind, a in counters)
 

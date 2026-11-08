@@ -537,6 +537,36 @@ def quantity_value(game: Any, controller: int, q: Quantity) -> int:
     return basic_land_types(game, controller)
 
 
+def cast_history_supported(q: Optional[Quantity]) -> bool:
+    """"<kind> spell(s) you've cast this turn": a tally of the spells the
+    controller cast this turn (CR 601.2), of any of the card types its
+    filter names (any spell when it names none)."""
+    if not isinstance(q, Quantity) or q.kind is not QuantityKind.HISTORY \
+            or q.event != "cast" or q.player != "you" or q.ref is not None \
+            or q.stat is not None or q.counter_kind is not None:
+        return False
+    f = q.filter
+    return f is None or (isinstance(f, CardFilter)
+                         and _set_fields(f) <= {"types", "zone"}
+                         and f.zone == "")
+
+
+def cast_history_count(game: Any, controller: int, q: Quantity) -> int:
+    """How many spells `controller` cast this turn of a type the quantity
+    names, read from what each was as it was cast (`PlayerState.
+    spells_cast_this_turn_kinds`, CR 601.2)."""
+    types = frozenset(q.filter.types) if q.filter is not None else frozenset()
+    cast = game.players[controller].spells_cast_this_turn_kinds
+    return sum(1 for kind in cast if not types or kind[0] & types)
+
+
+def entry_quantity_supported(q: Optional[Quantity]) -> bool:
+    """The quantities a "for each" entry count is evaluated over as its
+    permanent enters (`effect_carrier.entry_counters`, CR 614.1c):
+    the controller's spells cast this turn. Any other count is refused."""
+    return cast_history_supported(q)
+
+
 def amount_supported(a: Optional[Amount]) -> bool:
     """The amounts evaluated here: a printed number, X (the value chosen
     on casting, CR 107.3), "X, where X is <quantity>" / "equal to

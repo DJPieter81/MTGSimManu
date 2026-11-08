@@ -773,7 +773,7 @@ _EXTRA_TURN_RE = re.compile(r"[a-z]+ extra turns?(?: after this one)?$")
 
 def _row_fixed(m: _M, a: int, b: int) -> None:
     """A verb whose object is a fixed phrase: a library shuffle, an extra
-    turn, ending the turn."""
+    turn, ending the turn, flipping a coin (the lemma consumes "a coin")."""
     h = m.h
     a, b = _trim(h, a, b)
     if a >= b:
@@ -804,7 +804,8 @@ _ROW_FNS = {
                                Verb.KEYWORD_ACTION, Verb.CREATE_EMBLEM)),
     "continuous": (_row_continuous, (Verb.CONTINUOUS,)),
     "search": (_row_search, (Verb.SEARCH,)),
-    "fixed": (_row_fixed, (Verb.SHUFFLE, Verb.EXTRA_TURN, Verb.END_TURN)),
+    "fixed": (_row_fixed, (Verb.SHUFFLE, Verb.EXTRA_TURN, Verb.END_TURN,
+                           Verb.FLIP)),
 }
 ROWS = {v: (row, fn) for row, (fn, verbs) in _ROW_FNS.items() for v in verbs}
 

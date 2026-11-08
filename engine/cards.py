@@ -1067,9 +1067,6 @@ class CardTemplate:
     # Scry keyword (CR 701.18) -- True when oracle contains the scry keyword.
     # Populated by oracle_parser.parse_has_scry.
     has_scry: bool = False
-    # Coin-flip effect -- True when oracle involves flipping a coin.
-    # Populated by oracle_parser.parse_has_coin_flip.
-    has_coin_flip: bool = False
     # Mobilize keyword -- True when oracle contains the mobilize keyword.
     # Populated by oracle_parser.parse_has_mobilize.
     has_mobilize: bool = False
@@ -2796,13 +2793,16 @@ class CardInstance:
         the permanent enters with them, by whatever route (cast, put onto
         the battlefield, returned), from the face it shows. A face-down
         permanent has no text (CR 708.2a). +1/+1 counters go through their
-        one funnel; every other kind through `adjust_counters`."""
+        one funnel; every other kind through `adjust_counters`. A count
+        "for each" of something is counted as it enters, in the game the
+        permanent is in (none known: only the fixed counts)."""
         from .effect_carrier import entry_counters
         effects = getattr(self.template, "effects", None)
         if effects is None:
             return
         face = 1 if self.is_transformed and len(effects.faces) > 1 else 0
-        for kind, n in entry_counters(effects, face):
+        for kind, n in entry_counters(effects, face, self._game_state,
+                                      self.controller):
             if kind == COUNTER_KIND_PLUS:
                 self.add_plus_counters(n)
             else:

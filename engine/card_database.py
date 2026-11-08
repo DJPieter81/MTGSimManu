@@ -1977,7 +1977,7 @@ class CardDatabase:
             parse_has_destroy_or_exile,
             parse_has_artifact_count_scaling, parse_has_surveil,
             parse_has_scry,
-            parse_has_coin_flip, parse_has_mobilize, parse_has_transform_effect,
+            parse_has_mobilize, parse_has_transform_effect,
             parse_has_instant_or_sorcery_reference, parse_has_graveyard_target,
             parse_has_dual_land_search, parse_has_energy_damage_target,
             parse_has_energy_production, parse_has_look_hand_selection,
@@ -2200,7 +2200,6 @@ class CardDatabase:
         template.has_artifact_count_scaling = parse_has_artifact_count_scaling(oracle)
         template.has_surveil = parse_has_surveil(oracle)
         template.has_scry = parse_has_scry(oracle)
-        template.has_coin_flip = parse_has_coin_flip(oracle)
         template.has_mobilize = parse_has_mobilize(oracle)
         template.has_transform_effect = parse_has_transform_effect(oracle)
         template.has_instant_or_sorcery_reference = parse_has_instant_or_sorcery_reference(oracle)

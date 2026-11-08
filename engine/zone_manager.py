@@ -180,8 +180,10 @@ class ZoneManager:
                 card._front_template = card.template
                 card.template = face_down_template(card)
                 card.face_down = True
-            card.enter_battlefield()
+            # The game it enters is known as it enters: an entry count
+            # "for each" of something is counted in it (CR 614.1c).
             card._game_state = game
+            card.enter_battlefield()
             self._audit_entry_loyalty(game, card)
             self._audit_entry_counters(game, card)
             self._audit_new_object(game, card)
@@ -545,7 +547,9 @@ class ZoneManager:
     def _audit_entry_loyalty(game: "GameState", card: "CardInstance") -> None:
         """Rules audit (CR 306.5b): a planeswalker enters with the loyalty
         printed on the face it shows -- its back face when it entered
-        transformed. Restated from the raw face fields. Observes only."""
+        transformed -- plus the additional loyalty counters that face
+        says it enters with (CR 614.1c). Restated from the raw face fields
+        and the raw cast tally. Observes only."""
         from .rules_audit import enabled as _audit_on, check as _audit_check
         if not _audit_on():
             return
@@ -555,9 +559,31 @@ class ZoneManager:
         if not any(getattr(ct, "name", "") == "PLANESWALKER" for ct in types):
             return
         printed = (t.back_face_loyalty if back else t.loyalty) or 0
-        _audit_check("306.5b/entry_loyalty", card.loyalty_counters == printed,
+        due = printed + ZoneManager._entry_loyalty_restated(game, card)
+        _audit_check("306.5b/entry_loyalty", card.loyalty_counters == due,
                      f"{card.name} entered with {card.loyalty_counters} loyalty "
-                     f"(printed {printed})", game=game)
+                     f"(printed {printed}, due {due})", game=game)
+
+    @staticmethod
+    def _entry_loyalty_restated(game: "GameState", card: "CardInstance") -> int:
+        """The additional loyalty counters the face it shows says it enters
+        with, its "for each" counts restated from the controller's raw cast
+        tally (`spells_cast_this_turn_kinds`, CR 601.2)."""
+        from .effect_carrier import entry_counters, scaled_entry_counters
+        from .cards import COUNTER_KIND_LOYALTY
+        effects = getattr(card.template, "effects", None)
+        if effects is None:
+            return 0
+        face = 1 if card.is_transformed and len(effects.faces) > 1 else 0
+        extra = sum(n for kind, n in entry_counters(effects, face)
+                    if kind == COUNTER_KIND_LOYALTY)
+        cast = game.players[card.controller].spells_cast_this_turn_kinds
+        for kind, n, q in scaled_entry_counters(effects, face):
+            if kind != COUNTER_KIND_LOYALTY:
+                continue
+            types = set(q.filter.types) if q.filter is not None else set()
+            extra += n * sum(1 for k in cast if not types or set(k[0]) & types)
+        return extra
 
     @staticmethod
     def _audit_entry_counters(game: "GameState", card: "CardInstance") -> None:

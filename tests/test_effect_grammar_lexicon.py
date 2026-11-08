@@ -277,6 +277,7 @@ def test_your_choice_of_is_a_continuous_grant_with_alternatives():
     ("change the target of target spell with a single target", Verb.CHANGE_TARGETS),
     ("take an extra turn after this one", Verb.EXTRA_TURN),
     ("end the turn", Verb.END_TURN),
+    ("flip a coin", Verb.FLIP),
     ("skip your next combat phase", Verb.SKIP),
     ("transform ~", Verb.TRANSFORM),
     ("attach ~ to target creature you control", Verb.ATTACH),
@@ -396,7 +397,8 @@ def test_a_passive_relative_or_noun_use_of_a_verb_word_is_not_the_clause_verb(
     ("target creature phases out", "phase out"),
     ("you win the game", "win the game"),
     ("target player loses the game", "lose the game"),
-    ("flip a coin", "flip a coin"),
+    # one coin flipped once is Verb.FLIP (unit FL); a repeated flip is not
+    ("flip a coin until you lose a flip", "flip a coin"),
     ("manifest the top card of your library", "manifest"),
 ])
 def test_a_recognised_unsupported_action_is_unmodelled_with_its_printed_lemma(

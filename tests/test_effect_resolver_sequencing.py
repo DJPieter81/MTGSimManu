@@ -218,10 +218,13 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
     # unit GX: "if it was a <type> card" over the card an earlier
     # instruction moved; unit BT: the turn's life tallies ("if you gained
     # life this turn"); unit UP: "unless you pay <cost>" (CR 118.12)
+    # unit FL: "if you win / lose the flip" over an earlier flip's
+    # outcome (CR 705.1)
     assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE,
                                             ConditionKind.OBJECT,
                                             ConditionKind.HISTORY,
-                                            ConditionKind.UNLESS}
+                                            ConditionKind.UNLESS,
+                                            ConditionKind.FLIP}
     keys = dict(er.EXECUTOR_FILTER_KEYS)
     edict = keys.pop(Verb.SACRIFICE)
     assert {k for k, _ in edict} == {"types", "token"}

@@ -103,7 +103,7 @@ _TRIGGER_BODY_VERBS = frozenset({Verb.DAMAGE, Verb.LOSE_LIFE, Verb.GAIN_LIFE,
                                  Verb.EXILE, Verb.SACRIFICE,
                                  Verb.PLAYER_COUNTERS, Verb.SEARCH,
                                  Verb.MOVE, Verb.SHUFFLE,
-                                 Verb.REMOVE_COUNTERS})
+                                 Verb.REMOVE_COUNTERS, Verb.FLIP})
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
@@ -188,18 +188,32 @@ def _amount(ctx: Resolution, s: EffectSpec) -> int:
 _DAMAGE_SLOT_TYPES = frozenset({"any", "creature", "planeswalker", "player"})
 
 
+def damages_you(s: Any) -> bool:
+    """"~ deals <amount> damage to you": the recipient is "you", the
+    ability's controller (CR 109.5) -- the participant leaf's PLAYER
+    selector in the recipient slot, with no target."""
+    subj = s.subject
+    return (isinstance(subj, Selector) and subj.kind is SelectorKind.PLAYER
+            and subj.player is None and subj.obj is None
+            and subj.filter is None and s.ref is None and s.target is None
+            and s.target_slot is None and s.actor is None)
+
+
 def _damage_supported(s: EffectSpec) -> bool:
     """"~ deals <amount> damage to <one target>": the source deals it (CR
     120.1) to the one creature, planeswalker or player chosen for the slot,
     re-checked on resolution (CR 608.2b). A source sacrificed to pay the
     cost deals it as it last existed (CR 608.2h): the carrier's source
     object is that object. "~ deals <amount> damage to that player": to
-    the player the trigger event names (CR 603.2)."""
+    the player the trigger event names (CR 603.2). "~ deals <amount>
+    damage to you": to the ability's controller (CR 109.5)."""
     if s.verb is not Verb.DAMAGE or not _plain_participants(s) or s.flags:
         return False
     src = s.other
     if not (isinstance(src, Ref) and src.kind is RefKind.SELF):
         return False
+    if damages_you(s):
+        return conditions.amount_supported(s.amount)
     if is_event_player(s.ref):
         return (s.target is None and s.target_slot is None
                 and s.subject is None and s.actor is None
@@ -262,6 +276,21 @@ def _audit_damage_upgrade(ctx: Resolution, source: Any, amount: int) -> None:
             f"met but dealt {amount}, not {up}", game=ctx.game)
 
 
+def _audit_you_is_the_controller(ctx: Resolution, source: Any,
+                                 marked: int) -> None:
+    """CR 109.5, restated from the source's raw damage: damage an ability
+    deals "to you" is dealt to its controller, so none of it is marked on
+    the permanent that is its source. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    rules_audit.check(
+        "109.5/you_is_the_controller",
+        getattr(source, "damage_marked", 0) == marked,
+        f"{getattr(source, 'name', '?')}'s damage to 'you' marked on itself",
+        ctx.game)
+
+
 def execute_damage(ctx: Resolution, s: EffectSpec,
                    actors: Tuple[int, ...]) -> Outcome:
     from .oracle_resolver import deal_damage_to
@@ -270,6 +299,12 @@ def execute_damage(ctx: Resolution, s: EffectSpec,
     _audit_damage_upgrade(ctx, source, amount)
     if amount <= 0:                 # CR 120.8: no damage is dealt
         return Outcome(False, {})
+    if damages_you(s):              # "to you": the controller (CR 109.5)
+        marked = getattr(source, "damage_marked", 0)
+        deal_damage_to(ctx.game, source, ctx.controller, amount,
+                       ctx.controller)
+        _audit_you_is_the_controller(ctx, source, marked)
+        return Outcome(True, {ctx.controller: (ctx.controller,)})
     if is_event_player(s.ref):      # "to that player" (CR 603.2)
         player = event_player(ctx, s.ref)
         if player is None:
@@ -963,17 +998,25 @@ def _self_object(r: Any) -> bool:
             and not r.lki and not r.per_actor)
 
 
+# The flags of a spec that are the sequencer's, not its executor's: "if
+# you do" nests it in the then-branch of the instruction it follows (CR
+# 608.2c), which the dispatcher runs only when that one was performed.
+_SEQUENCED_FLAGS = frozenset({"if_you_do"})
+
+
 def _names_only_its_ref(s: Any) -> bool:
     """The spec names its object only through `ref`: no target, filter,
-    subject, amount, payload, duration, condition, branch or choice, and
-    the controller acts."""
+    subject, amount, payload, duration, replacement or choice, and the
+    controller ("you") acts. What the dispatcher sequences around the
+    instruction -- a condition, "you may", "if you do" and the branches
+    after it (CR 608.2c, 608.2d) -- is not the executor's to bind."""
     return (s.target is None and s.target_slot is None and s.filter is None
             and s.subject is None and s.other is None and s.amount is None
             and s.payload is None and s.duration is None
-            and s.condition is None and not s.replaces and not s.flags
-            and not s.optional and not s.alternatives and s.group is None
-            and not s.then and not s.otherwise and not s.residue
-            and s.chooser is Chooser.CONTROLLER and s.actor is None)
+            and not s.replaces and s.flags <= _SEQUENCED_FLAGS
+            and not s.alternatives and s.group is None and not s.residue
+            and s.chooser is Chooser.CONTROLLER
+            and _acts_as_controller(s.actor))
 
 
 def self_exile(s: Any) -> bool:
@@ -3118,6 +3161,85 @@ def _took_the_may(ctx: Resolution, s: EffectSpec) -> bool:
     return head is None or bool(ctx.performed.get(head.seq))
 
 
+# ── FLIP (CR 705) ──────────────────────────────────────────────────────
+
+# A flip's RESULT: the one outcome the flipping player got (CR 705.1).
+FLIP_WON = 1
+FLIP_LOST = 0
+_FLIP_PREDS = {"won": FLIP_WON, "lost": FLIP_LOST}
+
+
+def flip_supported(s: EffectSpec) -> bool:
+    """"[You] flip a coin": the controller flips one coin, once (CR 705.1).
+    Another flipper, several coins or flips repeated "until you lose a
+    flip" are other actions the grammar refuses."""
+    return (s.verb is Verb.FLIP and _acts_as_controller(s.actor)
+            and s.target is None and s.target_slot is None
+            and s.subject is None and s.ref is None and s.other is None
+            and s.filter is None and s.amount is None and s.dest is None
+            and s.payload is None and s.duration is None and not s.flags
+            and s.group is None and not s.alternatives and not s.replaces
+            and s.chooser is Chooser.CONTROLLER)
+
+
+def execute_flip(ctx: Resolution, s: EffectSpec,
+                 actors: Tuple[int, ...]) -> Outcome:
+    """The controller flips a coin through the one coin-flip owner
+    (`GameState.flip_coin`, the seeded rng); the outcome is the
+    instruction's result, which "if you win / lose the flip" reads."""
+    won = ctx.game.flip_coin(ctx.controller,
+                             getattr(_source_object(ctx), "name", ""))
+    return Outcome(True, {ctx.controller: (FLIP_WON if won else FLIP_LOST,)})
+
+
+execute_flip.supports = flip_supported
+
+
+def flip_condition_supported(cond: Condition) -> bool:
+    """"If you win / lose the flip": the outcome of an earlier flip of
+    this ability, its RESULT (CR 705.1)."""
+    r = cond.ref
+    return (cond.kind is ConditionKind.FLIP and cond.pred in _FLIP_PREDS
+            and isinstance(r, Ref) and r.kind is RefKind.RESULT
+            and isinstance(r.index, int) and r.part is RefPart.ALL
+            and r.n is None and r.of is None and not r.per_actor
+            and cond.payer is None and cond.filter is None
+            and cond.n is None and cond.cost is None and not cond.children)
+
+
+def evaluate_flip(ctx: Resolution, cond: Condition) -> bool:
+    """Did the controller get the outcome the condition names on the flip
+    it reads? A flip that was not performed has no outcome: neither."""
+    got = (ctx.results.get(cond.ref.index) or {}).get(ctx.controller, ())
+    return bool(got) and got[0] == _FLIP_PREDS[cond.pred]
+
+
+evaluate_flip.supports = flip_condition_supported
+
+
+def audit_flip_branches(ctx: Resolution, specs) -> None:
+    """CR 705.1, restated from the resolution's raw record: an instruction
+    gated on "if you win the flip" was performed only when the flip it
+    names came out a win for its controller, and one gated on "if you lose
+    the flip" only on a loss. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    from .effect_spec import iter_specs
+    for s in iter_specs(specs):
+        c = s.condition
+        if c is None or c.kind is not ConditionKind.FLIP \
+                or not ctx.performed.get(s.seq):
+            continue
+        got = (ctx.results.get(getattr(c.ref, "index", None)) or {}).get(
+            ctx.controller, ())
+        due = (FLIP_WON,) if c.pred == "won" else (FLIP_LOST,)
+        rules_audit.check(
+            "705.1/flip_outcome_gates", tuple(got) == due,
+            f"{getattr(_source_object(ctx), 'name', '?')}: '{s.raw}' was "
+            f"performed on a flip that came out {got}", game=ctx.game)
+
+
 def execute_shuffle(ctx: Resolution, s: EffectSpec,
                     actors: Tuple[int, ...]) -> Outcome:
     """Each named player shuffles their library through the shuffle owner
@@ -3215,3 +3337,5 @@ CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state
 CONDITION_EVALUATORS[ConditionKind.OBJECT] = evaluate_object
 CONDITION_EVALUATORS[ConditionKind.HISTORY] = evaluate_history
 CONDITION_EVALUATORS[ConditionKind.UNLESS] = evaluate_unless
+EXECUTORS[Verb.FLIP] = execute_flip
+CONDITION_EVALUATORS[ConditionKind.FLIP] = evaluate_flip

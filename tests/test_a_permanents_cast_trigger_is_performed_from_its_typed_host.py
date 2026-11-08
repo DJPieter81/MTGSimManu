@@ -85,11 +85,22 @@ def test_a_cast_head_is_typed_by_caster_and_spell_kind(card_db, name, caster,
     assert (h.trigger.cast.caster, h.trigger.cast.spell) == (caster, kind)
 
 
-@pytest.mark.parametrize("name", ["Ral, Monsoon Mage // Ral, Leyline Prodigy",
-                                  "Cori-Steel Cutter"])
+def test_a_during_your_turn_head_is_typed_with_its_turn_rider(card_db):
+    """"... during your turn" (unit FL): the cast triggers it only on its
+    controller's turn (CR 500.1)."""
+    from engine.effect_spec import CastEvent, EventHint
+    (h,) = [h for h in card_db.get_card(
+                "Ral, Monsoon Mage // Ral, Leyline Prodigy").effects.front()
+            if h.trigger is not None
+            and EventHint.SPELL_CAST in h.trigger.event_hints]
+    assert h.trigger.cast == CastEvent("you", "instant_or_sorcery",
+                                       your_turn=True)
+
+
+@pytest.mark.parametrize("name", ["Cori-Steel Cutter"])
 def test_a_head_with_a_rider_the_table_does_not_read_is_left_untyped(card_db,
                                                                     name):
-    """"... during your turn" and "your second spell each turn"."""
+    """"Your second spell each turn"."""
     from engine.effect_spec import EventHint
     for h in card_db.get_card(name).effects.front():
         if h.trigger is not None and EventHint.SPELL_CAST in h.trigger.event_hints:

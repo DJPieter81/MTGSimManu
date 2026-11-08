@@ -1,8 +1,8 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.2685,
-  "deck_removal_typed_share": 0.8599,
+  "deck_removal_ready_share": 0.2763,
+  "deck_removal_typed_share": 0.8638,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
    "target.scope:not_you": 1,
@@ -17,16 +17,16 @@
    "target.union:sorcery": 1,
    "target.unparsed": 5
   },
-  "deck_typed_share": 0.7568,
+  "deck_typed_share": 0.76,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 8,
    "CLAUSE": 25,
-   "CONDITION": 20,
+   "CONDITION": 18,
    "DURATION": 3,
    "FILTER": 29,
    "ITERATION": 2,
    "NO_LEMMA": 21,
-   "RECOGNIZED_UNSUPPORTED": 9,
+   "RECOGNIZED_UNSUPPORTED": 8,
    "REFERENCE": 16,
    "REPLACEMENT": 66,
    "STRUCTURE": 5,
@@ -84,16 +84,16 @@
    "target.union:spacecraft": 2,
    "target.union:triggered": 6,
    "target.union:vehicle": 28,
-   "target.unparsed": 295
+   "target.unparsed": 296
   },
   "residue_by_polarity": {
    "NARROWING": 296,
-   "UNPARSED": 295,
+   "UNPARSED": 296,
    "WIDENING": 584
   },
-  "typed_share": 0.7405,
+  "typed_share": 0.7415,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7991,
+   "ACTIVATED": 0.8016,
    "ALTERNATIVE_COST": 0.0,
    "CHAPTER": 0.7525,
    "KEYWORD": 0.0,
@@ -101,23 +101,23 @@
    "MANA_ABILITY": 0.9448,
    "MODE": 0.7941,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.7473,
+   "SPELL": 0.7483,
    "STATIC": 0.6313,
-   "TRIGGERED": 0.7989,
+   "TRIGGERED": 0.8,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
-   "AMOUNT": 681,
+   "AMOUNT": 682,
    "CLAUSE": 1693,
-   "CONDITION": 1137,
+   "CONDITION": 1109,
    "DELAY": 16,
    "DURATION": 53,
    "FILTER": 1528,
    "ITERATION": 110,
-   "NO_LEMMA": 1164,
+   "NO_LEMMA": 1166,
    "QUANTITY": 133,
-   "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1357,
+   "RECOGNIZED_UNSUPPORTED": 457,
+   "REFERENCE": 1359,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1156,
@@ -128,9 +128,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7991,
+    "share": 0.8016,
     "specs": 6670,
-    "typed": 5330
+    "typed": 5347
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -168,9 +168,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.7473,
+    "share": 0.7483,
     "specs": 9998,
-    "typed": 7472
+    "typed": 7482
    },
    "STATIC": {
     "share": 0.6313,
@@ -178,9 +178,9 @@
     "typed": 3395
    },
    "TRIGGERED": {
-    "share": 0.7989,
+    "share": 0.8,
     "specs": 15290,
-    "typed": 12215
+    "typed": 12232
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -249,9 +249,9 @@
      "typed": 36
     },
     "TRIGGERED": {
-     "share": 0.8773,
+     "share": 0.8909,
      "specs": 220,
-     "typed": 193
+     "typed": 196
     },
     "UNKNOWN": {
      "share": 0.0,
@@ -264,13 +264,13 @@
     "clauses": 257,
     "gate": 0.85,
     "met": false,
-    "ready": 69,
-    "ready_share": 0.2685,
-    "typed": 221,
-    "typed_share": 0.8599
+    "ready": 71,
+    "ready_share": 0.2763,
+    "typed": 222,
+    "typed_share": 0.8638
    },
    "specs": 921,
-   "typed": 697
+   "typed": 700
   },
   "keyword_lines": [
    [
@@ -1189,7 +1189,7 @@
     1
    ]
   ],
-  "residue": 1175,
+  "residue": 1176,
   "specs": 44381,
   "sub_abilities": [
    [
@@ -1229,9 +1229,9 @@
     2
    ]
   ],
-  "typed": 32864,
-  "unmodelled": 11517,
-  "unmodelled_row_count": 1947,
+  "typed": 32908,
+  "unmodelled": 11473,
+  "unmodelled_row_count": 1935,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1243,7 +1243,7 @@
     "NO_LEMMA",
     "",
     "lexicon.no_lemma",
-    1164
+    1166
    ],
    [
     "REFERENCE",
@@ -1588,12 +1588,12 @@
     24
    ],
    [
-    "RECOGNIZED_UNSUPPORTED",
-    "flip a coin",
-    "lexicon.unsupported:flip_a_coin",
+    "REFERENCE",
+    "deal",
+    "link.unbound",
     24
    ]
   ]
  },
- "session": "2026-11-01"
+ "session": "2026-11-08"
 }

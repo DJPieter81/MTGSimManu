@@ -217,6 +217,11 @@ _ITS_CONTROLLER_PAYS = {"kind": ConditionKind.UNLESS, "pred": "pays",
 # (card, printed slot, label, expected Condition (raw ignored) or a dict of
 #  pinned fields, pending)
 _WITNESSES = (
+    # CR 705.1: the outcome of the coin this ability flipped earlier; its
+    # RESULT is the linker's to bind.
+    ("Ral, Monsoon Mage // Ral, Leyline Prodigy", "if you win the flip", "",
+     Condition(ConditionKind.FLIP, pred="won", ref=Ref(RefKind.RESULT)),
+     (("result", "flipped"),)),
     ("Galvanic Blast", "if you control three or more artifacts", "metalcraft",
      _count(">=", _n(3), types=frozenset({"artifact"}), controller="you"), ()),
     ("Stubborn Denial", "if you control a creature with power 4 or greater",
@@ -322,8 +327,6 @@ _WITNESSES = (
 _REFUSED = (
     ("Leyline of Sanctity", "if ~ is in your opening hand", "condition.opening_hand"),
     ("Mystical Dispute", "if it targets a blue spell", "condition.targets"),
-    ("Ral, Monsoon Mage // Ral, Leyline Prodigy", "if you win the flip",
-     "condition.coin_flip"),
 )
 
 # Printed phrases that are structure, never conditions (section 6).

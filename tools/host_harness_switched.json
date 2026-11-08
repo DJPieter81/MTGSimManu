@@ -4564,6 +4564,14 @@
   {
    "pair": [
     "attack:dispatch",
+    "Skyclaw Thrash",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit FL: the legacy attack branches performed nothing for this host; the attack carrier performs it as printed: a coin flip (CR 705.1), and on a win +1/+1 and flying until end of turn"
+  },
+  {
+   "pair": [
+    "attack:dispatch",
     "Skysovereign, Consul Flagship",
     "TRIGGERED:0:1"
    ],
@@ -5044,6 +5052,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Hermit of the Natterknolls // Lone Wolf of the Natterknolls",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit FL: the legacy cast branches performed nothing for this host; its 'during your turn' cast head is typed (CR 500.1) and the cast carrier draws the card as printed"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Hero of Precinct One",
     "TRIGGERED:0:0"
    ],
@@ -5160,6 +5176,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: 2 damage to any target"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit FL: the legacy coin-flip handler is deleted; the cast carrier performs the trigger as printed: a coin flip (CR 705.1), on a loss 1 damage to its controller (CR 109.5), on a win the optional exile and the return transformed as a new object (CR 400.7, 712) with a loyalty counter for each instant and sorcery spell cast this turn (CR 614.1c), and only during its controller's turn"
   },
   {
    "pair": [
@@ -16788,6 +16812,14 @@
   {
    "pair": [
     "step:dispatch",
+    "Force of Nature",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit FL: the legacy step branches performed nothing for this host; the step carrier deals the damage '~ deals N damage to you' prints to the ability's controller (CR 109.5)"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Fountain of Renewal",
     "TRIGGERED:0:0"
    ],
@@ -16840,6 +16872,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Graf Reaver",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit FL: the legacy step branches performed nothing for this host; the step carrier deals the damage '~ deals N damage to you' prints to the ability's controller (CR 109.5)"
   },
   {
    "pair": [
@@ -16920,6 +16960,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Jinxed Idol",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit FL: the legacy step branches performed nothing for this host; the step carrier deals the damage '~ deals N damage to you' prints to the ability's controller (CR 109.5)"
   },
   {
    "pair": [
@@ -17172,6 +17220,14 @@
   {
    "pair": [
     "step:dispatch",
+    "Ravenous Giant",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit FL: the legacy step branches performed nothing for this host; the step carrier deals the damage '~ deals N damage to you' prints to the ability's controller (CR 109.5)"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Reaver Drone",
     "TRIGGERED:0:1"
    ],
@@ -17224,6 +17280,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit BT: the beginning-of-step carrier performs the typed step trigger as its step begins (CR 603.2, 603.3b, 603.4); no engine path performed a printed step trigger, so with the dispatcher off the step changes nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
+    "Sleeper Agent",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit FL: the legacy step branches performed nothing for this host; the step carrier deals the damage '~ deals N damage to you' prints to the ability's controller (CR 109.5)"
   },
   {
    "pair": [

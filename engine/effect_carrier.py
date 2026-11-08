@@ -984,12 +984,16 @@ CAST_FAMILY = "cast_trigger"
 
 
 def cast_matches(event: Any, controller: int, caster: int,
-                 spell: Any) -> bool:
+                 spell: Any, active: int) -> bool:
     """Does `caster` casting `spell` trigger a head typed `event`
     (`effect_spec.CastEvent`) on a permanent `controller` controls? Who
     casts, relative to the controller, and what kind of spell, read from
-    the spell as it is cast (CR 601.2i)."""
+    the spell as it is cast (CR 601.2i); a "during your turn" head only
+    during the controller's own turn (`active`, the active player, CR
+    500.1)."""
     from .cards import CardType
+    if event.your_turn and active != controller:
+        return False
     if event.caster == "you" and caster != controller:
         return False
     if event.caster == "opponent" and caster == controller:
@@ -1071,7 +1075,8 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
         taken.add(src.instance_id)
         controller = src.controller
         for h, family in plan:
-            fires = cast_matches(h.trigger.cast, controller, caster, spell)
+            fires = cast_matches(h.trigger.cast, controller, caster, spell,
+                                 game.active_player)
             _audit_cast_trigger_fires(game, src, controller, h, fires,
                                       caster, spell)
             if not fires:
@@ -1129,7 +1134,8 @@ def performed_cast_triggers(game: Any, caster: int, spell: Any) -> list:
     return [(src, h) for src, _hosts, plan in _cast_trigger_plans(game)
             if plan is not None
             for h, _family in plan
-            if cast_matches(h.trigger.cast, src.controller, caster, spell)]
+            if cast_matches(h.trigger.cast, src.controller, caster, spell,
+                            game.active_player)]
 
 
 def _counter_owner_performs(src: Any, host: Any) -> bool:
@@ -1156,7 +1162,8 @@ def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],
                 or _counter_owner_performs(src, h):
             continue
         c = h.trigger.cast
-        if c is not None and cast_matches(c, src.controller, caster, spell):
+        if c is not None and cast_matches(c, src.controller, caster, spell,
+                                          game.active_player):
             rules_audit.census("603.2/cast_trigger_unresolved", src.name,
                                detail=h.trigger.raw, game=game)
             return
@@ -1169,7 +1176,8 @@ def _audit_cast_trigger_fires(game: Any, src: Any, controller: int,
     triggers for a spell exactly when its caster and kind name it -- "you"
     the ability's controller, "an opponent" another player; the kind read
     from the spell's printed card types and its colours (an effect's colour
-    over the printed one) -- once for that spell, and never for another.
+    over the printed one); "during your turn" only on the controller's own
+    turn -- once for that spell, and never for another.
     Observation only."""
     from . import rules_audit
     if not rules_audit.enabled():
@@ -1182,6 +1190,8 @@ def _audit_cast_trigger_fires(game: Any, src: Any, controller: int,
         colors = getattr(spell.template, "colors", ()) or ()
     who = {"you": caster == controller, "opponent": caster != controller,
            "player": True}.get(ev.caster, False)
+    # "during your turn": the controller is the active player (CR 500.1).
+    when = not ev.your_turn or game.active_player == controller
     kind = {
         "any": True,
         "noncreature": CardType.CREATURE not in types,
@@ -1193,7 +1203,7 @@ def _audit_cast_trigger_fires(game: Any, src: Any, controller: int,
         "colorless": not colors,
         "multicolored": len(colors) > 1,      # CR 105.4: two or more colours
     }.get(ev.spell, False)
-    due = who and kind
+    due = who and kind and when
     rules_audit.check("603.2/cast_trigger_once", fires == due,
                       f"{src.name}: {host.trigger.raw!r} "
                       f"{'triggered' if fires else 'did not trigger'} for "
@@ -2065,11 +2075,31 @@ def _audit_unresolved_zone_change_trigger(game: Any, src: Any,
             return
 
 
-def entry_counters(effects, face: int = 0):
+def entry_counters(effects, face: int = 0, game: Any = None,
+                   controller: Optional[int] = None):
     """The entry carrier (CR 614.1c, 122.6): the counters a permanent's own
     text says it enters with, from the typed REPLACEMENT host of the face
-    it shows (`effect_views.entry_counters`). Read by the entry owner,
+    it shows (`effect_views.entry_counters`), and -- given the game and the
+    permanent's controller -- the ones it enters with for each of
+    something, counted as it enters (`effect_views.scaled_entry_counters`:
+    "an additional loyalty counter on ~ for each instant and sorcery spell
+    you've cast this turn"). Read by the entry owner,
     `CardInstance.enter_battlefield`, and by its auditor."""
     from .effect_views import entry_counters as _view
+    fixed = _view(effects, face)
+    if game is None or controller is None:
+        return fixed
+    from .effect_conditions import cast_history_count
+    scaled = tuple((kind, n * cast_history_count(game, controller, q))
+                   for kind, n, q in scaled_entry_counters(effects, face))
+    return fixed + tuple((k, n) for k, n in scaled if n)
+
+
+def scaled_entry_counters(effects, face: int = 0):
+    """The "for each" entry counts of the face (`effect_views.
+    scaled_entry_counters`): ``(kind, N, quantity)``, unevaluated. Read by
+    the entry carrier above and by the entry auditor, which restates the
+    count from the raw cast tally."""
+    from .effect_views import scaled_entry_counters as _view
     return _view(effects, face)
 

@@ -131,10 +131,10 @@
    "UNMODELLED_CLAUSE": 13
   },
   "can_destroy_artifact": {
-   "AGREE": 22486,
+   "AGREE": 22487,
    "DERIVED_COVERAGE_GROWTH": 223,
    "UNEXPLAINED": 14,
-   "UNMODELLED_CLAUSE": 15
+   "UNMODELLED_CLAUSE": 14
   },
   "can_destroy_enchantment": {
    "AGREE": 22422,
@@ -153,27 +153,27 @@
    "UNMODELLED_CLAUSE": 101
   },
   "can_target_planeswalker": {
-   "AGREE": 22036,
+   "AGREE": 22037,
    "DERIVED_COVERAGE_GROWTH": 17,
    "UNEXPLAINED": 312,
-   "UNMODELLED_CLAUSE": 373
+   "UNMODELLED_CLAUSE": 372
   },
   "can_target_player": {
-   "AGREE": 21625,
+   "AGREE": 21626,
    "DERIVED_COVERAGE_GROWTH": 22,
    "UNEXPLAINED": 532,
-   "UNMODELLED_CLAUSE": 559
+   "UNMODELLED_CLAUSE": 558
   },
   "cast_prohibition": {
    "AGREE": 22734,
    "DERIVED_COVERAGE_GROWTH": 4
   },
   "cast_targets": {
-   "AGREE": 4406,
+   "AGREE": 4407,
    "LEGACY_TARGET_ZONE": 10,
    "SEMANTIC_FIX": 38,
    "UNEXPLAINED": 317,
-   "UNMODELLED_CLAUSE": 465
+   "UNMODELLED_CLAUSE": 464
   },
   "cast_trigger_token": {
    "AGREE": 22671,
@@ -234,11 +234,11 @@
    "UNEXPLAINED": 2
   },
   "deals_targeted_damage": {
-   "AGREE": 21011,
+   "AGREE": 21012,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_TARGETED_DAMAGE_SCOPE": 8,
-   "UNEXPLAINED": 900,
-   "UNMODELLED_CLAUSE": 796
+   "UNEXPLAINED": 901,
+   "UNMODELLED_CLAUSE": 794
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -385,11 +385,11 @@
    "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
-   "AGREE": 20832,
+   "AGREE": 20835,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
    "UNEXPLAINED": 924,
-   "UNMODELLED_CLAUSE": 945
+   "UNMODELLED_CLAUSE": 942
   },
   "has_discard_effect": {
    "AGREE": 22256,
@@ -398,11 +398,11 @@
    "UNMODELLED_CLAUSE": 170
   },
   "has_draw_effect": {
-   "AGREE": 20900,
+   "AGREE": 20901,
    "DERIVED_COVERAGE_GROWTH": 290,
    "LEGACY_DRAW_SCOPE": 162,
    "UNEXPLAINED": 652,
-   "UNMODELLED_CLAUSE": 734
+   "UNMODELLED_CLAUSE": 733
   },
   "has_dual_land_search": {
    "AGREE": 22682,
@@ -484,17 +484,17 @@
    "UNMODELLED_CLAUSE": 8
   },
   "has_opponent_cast_damage": {
-   "AGREE": 22639,
-   "DERIVED_COVERAGE_GROWTH": 97,
+   "AGREE": 22638,
+   "DERIVED_COVERAGE_GROWTH": 98,
    "UNEXPLAINED": 1,
    "UNMODELLED_CLAUSE": 1
   },
   "has_pump_grant": {
-   "AGREE": 20582,
+   "AGREE": 20583,
    "DERIVED_COVERAGE_GROWTH": 720,
    "LEGACY_PUMP_GRANT_SCOPE": 11,
    "UNEXPLAINED": 882,
-   "UNMODELLED_CLAUSE": 543
+   "UNMODELLED_CLAUSE": 542
   },
   "has_recurring_draw_trigger": {
    "AGREE": 21783,
@@ -506,8 +506,8 @@
   "has_recurring_trigger": {
    "AGREE": 17533,
    "LEGACY_RECURRING_TRIGGER_SCOPE": 5,
-   "UNEXPLAINED": 4172,
-   "UNMODELLED_CLAUSE": 1028
+   "UNEXPLAINED": 4176,
+   "UNMODELLED_CLAUSE": 1024
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -550,11 +550,11 @@
    "UNMODELLED_CLAUSE": 12
   },
   "has_token_effect": {
-   "AGREE": 22046,
+   "AGREE": 22047,
    "DERIVED_COVERAGE_GROWTH": 55,
    "REMINDER_TEXT": 3,
    "UNEXPLAINED": 248,
-   "UNMODELLED_CLAUSE": 386
+   "UNMODELLED_CLAUSE": 385
   },
   "has_x_counter_scaling": {
    "AGREE": 22633,
@@ -763,13 +763,13 @@
  },
  "gate_parity": {
   "legacy_fallback": 3081,
-  "new_path": 2600,
-  "pairs": 5681
+  "new_path": 2608,
+  "pairs": 5689
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813976,
-  "DERIVED_COVERAGE_GROWTH": 7856,
+  "AGREE": 2813986,
+  "DERIVED_COVERAGE_GROWTH": 7857,
   "LEGACY_DRAW_SCOPE": 162,
   "LEGACY_GRAVEYARD_HATE": 1,
   "LEGACY_GRAVEYARD_RECURSION": 7,
@@ -785,7 +785,7 @@
   "MASKED_GROWTH": 69,
   "REMINDER_TEXT": 71,
   "SEMANTIC_FIX": 38,
-  "UNEXPLAINED": 18058,
-  "UNMODELLED_CLAUSE": 9300
+  "UNEXPLAINED": 18063,
+  "UNMODELLED_CLAUSE": 9284
  }
 }

@@ -5826,17 +5826,6 @@ def parse_has_scry(oracle: str) -> bool:
     return 'scry' in oracle.lower()
 
 
-def parse_has_coin_flip(oracle: str) -> bool:
-    """Return True when oracle involves flipping a coin.
-
-    Replaces 'flip a coin' in oracle in oracle_resolver.py.
-    Class size: Ral, Izzet Viceroy and similar transform-on-coin-flip cards.
-    """
-    if not oracle:
-        return False
-    return 'flip a coin' in oracle.lower()
-
-
 def parse_has_mobilize(oracle: str) -> bool:
     """Return True when oracle contains the mobilize keyword.
 

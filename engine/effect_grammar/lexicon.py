@@ -134,7 +134,7 @@ VERB_FAMILY: Mapping[Verb, Family] = MappingProxyType({
     Verb.COPY: _F.STACK_MANA_RULES, Verb.CHANGE_TARGETS: _F.STACK_MANA_RULES,
     Verb.CREATE_EMBLEM: _F.STACK_MANA_RULES,
     Verb.EXTRA_TURN: _F.STACK_MANA_RULES, Verb.SKIP: _F.STACK_MANA_RULES,
-    Verb.CREATE_TRIGGER: _F.STACK_MANA_RULES,
+    Verb.CREATE_TRIGGER: _F.STACK_MANA_RULES, Verb.FLIP: _F.STACK_MANA_RULES,
 })
 
 # The participant slots a reading fills (section 4 "Roles and slots").
@@ -202,6 +202,7 @@ _VERB_FACTS: Dict[Verb, Tuple[Tuple[str, ...], Optional[str], Optional[bool], st
     Verb.EXTRA_TURN: (("player",), None, False, "none yet"),
     Verb.END_TURN: (("player",), None, None, "GameState.end_the_turn"),
     Verb.SKIP: (("player",), None, True, "none yet"),
+    Verb.FLIP: (("player",), None, False, "game.rng (CR 705.1)"),
     Verb.UNMODELLED: ((), None, None, "none (recognised, unsupported)"),
 }
 
@@ -403,6 +404,11 @@ _ROWS: Tuple[_Row, ...] = (
     _r("take", Verb.EXTRA_TURN, r"(?= (?:an|%s) extra turns?\b)" % _COUNT),
     _r("end", Verb.END_TURN, r" the turn\b"),
     _r("skip", Verb.SKIP),
+    # CR 705: one coin, flipped once. "Flip a coin until you lose a flip",
+    # "flip a coin for each <object>" and "flip two coins" are other
+    # actions: the guard refuses them, and they read as the recognised-
+    # unsupported "flip a coin" below.
+    _r("flip a coin", Verb.FLIP, r"(?=$|[.,;])"),
 )
 
 # Recognised-but-unsupported lemmas (section 4) beyond the payload leaf's

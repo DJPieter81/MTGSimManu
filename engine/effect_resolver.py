@@ -510,6 +510,8 @@ def resolve_ability(game: Any, source: Handle, controller: int,
     with resolving(game):
         _sequence(ctx, specs)
         _drain_reflexive(ctx)
+    from .effect_executors import audit_flip_branches
+    audit_flip_branches(ctx, specs)
     return any(ctx.performed.values())
 
 

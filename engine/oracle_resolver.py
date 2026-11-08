@@ -1326,52 +1326,6 @@ def _parse_count_threshold(oracle: str) -> Optional[int]:
     return word_map.get(raw)
 
 
-def _handle_coin_flip_transform(game: "GameState", controller: int,
-                                 creature: "CardInstance") -> None:
-    """Coin-flip transform handler (Ral, Monsoon Mage shape).
-
-    Win → transform with loyalty = back_face_loyalty +
-    spells_cast_this_turn. Lose → the permanent deals 1 damage to its
-    controller (Oracle: "~ deals 1 damage to you"; "you" is the
-    ability's controller, CR 109.5). The 1 is a rule constant straight
-    from the Oracle clause, not a magic threshold.
-
-    The damage routes through the one damage owner (`deal_damage`),
-    with the permanent as its source and the controller as its
-    recipient; a loss of life to 0 is the state-based check's (704.5a).
-    It once went to the permanent itself, so the walker died and its
-    controller lost no life (Ruby Storm vs Domain Zoo s52500 g2).
-    """
-    # Late import: avoid module-cycle risk between oracle_resolver
-    # (which game_state imports indirectly) and damage. The damage
-    # primitive depends on no engine modules; importing here is safe.
-    from .damage import deal_damage
-
-    player = game.players[controller]
-    result = game.rng.choice(["win", "lose"])
-    if result == "lose":
-        # Oracle clause: "deals 1 damage to it" — the literal 1 is
-        # a rule constant from card text (CLAUDE.md §Hard prohibitions:
-        # rule constants are allowed). Damage routes through the W0-D
-        # primitive so triggers/SBA semantics fire correctly.
-        from . import rules_audit
-        marked = creature.damage_marked
-        deal_damage(source=creature, target=player, amount=1)
-        rules_audit.check(
-            "109.5/you_is_the_controller",
-            creature.damage_marked == marked,
-            f"{creature.name}'s damage to 'you' marked on itself", game)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"{creature.name} — lost coin flip, deals 1 damage"
-                        f" to its controller")
-        return
-    spells_this_turn = player.spells_cast_this_turn
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"{creature.name} — won coin flip!")
-    _transform_permanent(game, creature, controller,
-                          extra_loyalty=spells_this_turn)
-
-
 def _transform_permanent(game: "GameState", perm: "CardInstance",
                           controller: int, extra_loyalty: int = 0,
                           returns_as_new_object: bool = False) -> None:
@@ -1422,7 +1376,7 @@ def return_transformed(game: "GameState", card: "CardInstance",
             game, card, "exile", "battlefield",
             controller_override=controller, transformed=True):
         return False
-    _announce_transform(game, card, controller, extra_loyalty)
+    _announce_transform(game, card, controller, extra_loyalty, entered=True)
     return True
 
 
@@ -1447,11 +1401,20 @@ def _audit_face_colours(game: "GameState", perm: "CardInstance") -> None:
 
 
 def _announce_transform(game: "GameState", perm: "CardInstance",
-                        controller: int, extra_loyalty: int) -> None:
+                        controller: int, extra_loyalty: int,
+                        entered: bool = False) -> None:
+    """`entered`: the permanent entered the battlefield with its back face
+    up (CR 400.7), so the entry owner already gave it the loyalty that
+    face prints and the counters it says it enters with (CR 306.5b,
+    614.1c); `extra_loyalty` adds to them. An in-place transform sets the
+    back face's loyalty here."""
     _audit_face_colours(game, perm)
     back_loyalty = getattr(perm.template, 'back_face_loyalty', 0) or 0
     if back_loyalty > 0:
-        perm.loyalty_counters = back_loyalty + extra_loyalty
+        if entered:
+            perm.loyalty_counters += extra_loyalty
+        else:
+            perm.loyalty_counters = back_loyalty + extra_loyalty
 
     loy_str = (f" (loyalty: {perm.loyalty_counters})"
                if back_loyalty > 0 else "")
@@ -1771,23 +1734,21 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             game.surveil(caster_idx, n)
 
         # ── Transform-on-cast trigger ──
-        # Two patterns, both oracle-driven:
-        #   a) "flip a coin, if you win, exile ..., return transformed" (Ral)
-        #   b) "if you've cast N or more ... spells, exile ..., return
-        #      transformed" (deterministic variant; no card names).
+        # "if you've cast N or more ... spells, exile ..., return
+        # transformed" (oracle-driven; no card names). The coin-flip shape
+        # ("flip a coin. ... if you win the flip, you may exile ~. if you
+        # do, return ~ transformed") is the effect grammar's: the cast
+        # carrier resolves it (CR 705).
         if ((spell_cast.template.is_instant or spell_cast.template.is_sorcery)
                 and permanent.template.is_creature
                 and getattr(permanent.template, 'has_transform_effect', False)
                 and not getattr(permanent, 'is_transformed', False)
                 and getattr(permanent.template, 'has_instant_or_sorcery_reference', False)):
-            if getattr(permanent.template, 'has_coin_flip', False):
-                _handle_coin_flip_transform(game, caster_idx, permanent)
-            else:
-                threshold = _parse_count_threshold(oracle)
-                if (threshold is not None
-                        and player.spells_cast_this_turn >= threshold):
-                    _transform_permanent(game, permanent, caster_idx,
-                                          extra_loyalty=player.spells_cast_this_turn)
+            threshold = _parse_count_threshold(oracle)
+            if (threshold is not None
+                    and player.spells_cast_this_turn >= threshold):
+                _transform_permanent(game, permanent, caster_idx,
+                                      extra_loyalty=player.spells_cast_this_turn)
 
         # ── "Whenever an opponent draws a card" (Orcish Bowmasters) ──
         # Already handled by EFFECT_REGISTRY — skip to avoid double-fire
