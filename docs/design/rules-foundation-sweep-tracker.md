@@ -12709,4 +12709,11 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 
 **Effect:** Amulet goldfish (n=30, play, s70000): median kill turn 8 → 7; kills by turn 7 rise from 14/30 to 17/30.
 
-**Measured:** `hl-post`, n=20 Bo3, rows for the decks that carry the class: Amulet Titan, Boros Energy, Jeskai Blink, 4/5c Control. Pending.
+**Measured:** `hl-post` (`c50a043`), n=20 Bo3, rows for the decks that carry the class: 100 cells, 0 violations. Both test chunks pass on `c50a043`, `tests/invariants/` included (5671 + 2837).
+- Amulet Titan 44.0 → 45.0 (2 standard errors: 6.3), with 22 cells changed:
+  - up against the slower decks: Azorius Control (WST v2) +25, WST +20, Azorius Control +15, 4/5c +15, Broodscale +15;
+  - down 10 against the fast decks: Boros Energy, Domain Zoo, Goryo's Vengeance, Living End, Grixis Reanimator.
+  - With n=20 per cell, both directions are within cell noise.
+- Boros Energy, Jeskai Blink and 4/5c Control change only in their cell against Amulet. Arena of Glory decided no game.
+- **Kept.** It restores a rule unit TU lost, and moves no row beyond noise.
+- **Lead:** Amulet's goldfish median kill turn is still 7 against a real-world 4-5. The first Titan arrives on turns 4-5, so the next gap is earlier in the turn sequence: Amulet of Vigor, bounce lands and extra land drops.
