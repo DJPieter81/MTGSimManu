@@ -13031,3 +13031,30 @@ Updated to drive the stack, with every assertion kept:
 - An activation carrier for the executable activated flips (Tavern Swindler, The Gold Saucer).
 - "if you lose a flip" / "for each flip you won" over a repeated flip, and heads / tails outcomes (Molten Sentry, Odds).
 - `cast_history_supported` is not in `quantity_supported`: "equal to the number of instant and sorcery spells you've cast this turn" amounts stay refused until a unit widens it with its own measurement.
+
+## Graph step 2: the read-only line planner, and what its audit says (2026-11-08)
+
+**Built:** `ai/line_planner.py` (`d37390a`, `22bd0c5`, `41a800d`). From the cards a player may play, the planner finds the best reanimation line through the card graph's RETURNS edges:
+- a returner with a returnable creature in the graveyard, or
+- a fill (a loot whose discard the caster chooses, or a hand attack on the caster's own hand) and then a returner.
+
+Lines rank by the turn they complete, then by the threat they return (`creature_threat_value`), then by cost. A line to a creature the player can cast for no more than the line costs is no line. There are 8 rule-named tests. The planner is read-only.
+
+**Audit** (`tools/line_planner_audit.py`, goldfish n=20, on the play, land drops excluded). Main-phase decisions with a line completing this turn:
+
+| Deck | Decisions | Agree | Disagree | What the disagreements are |
+|---|---|---|---|---|
+| Goryo's Vengeance | 69 | 66 | 3 | All Unburial Rites for Goryo's; both reanimate |
+| Instant Reanimator | 32 | 27 | 5 | Traces show Goryo's was never a castable candidate. The planner reads mana count, not colours, so these are planner imprecision |
+| Grixis Reanimator | 41 | 34 | 7 | Unearth on Abhorrent Oculus (cycling Unearth, or passing twice). Unearth bypasses Oculus's six-card exile cost, so this is a small real lead |
+
+**Conclusion:** since unit RN, the main phase agrees with the planner on 83–96% of reanimation decisions where a castable line exists. Hooking the planner into reanimation (step 3) is **not justified by this evidence**, so it is not built.
+
+The reanimator decks' remaining slowness lies elsewhere:
+- mana and keep quality: Goryo's mulligans to 5 and land-light keeps;
+- Goryo's sequencing: reanimating a second copy of a legendary creature it already controls, and Ephemerate cast before combat;
+- shock lands entered tapped while a 2-mana fill was in hand.
+
+**Leads for the planner:**
+- read colours, not just mana count;
+- extend it to tutor and chain lines (Amulet, Storm), where per-card play is weakest.

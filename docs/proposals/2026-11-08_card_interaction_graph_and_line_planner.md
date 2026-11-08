@@ -68,3 +68,8 @@ Every type is mechanic-sized.
 2. A read-only planner that logs its best line next to the AI's actual choice in goldfish traces, to measure disagreement before it decides anything.
 3. Hook the planner into one decision family (reanimation: fill, then return), measure, and delete the predicates it replaces.
 4. Extend it to tutors and chains (Storm, Amulet), then to cascade.
+
+## Progress (2026-11-08)
+- **Step 1 is built** (`7520cba`), and **step 2 is built, read-only** (`d37390a`, `22bd0c5`, `41a800d`).
+- **The step-2 audit does not justify step 3 for reanimation.** The main phase agrees with the planner on 83–96% of decisions where a castable line exists (tracker, "Graph step 2").
+- **Next:** extend the planner to tutor and chain lines, and read colours, before hooking it anywhere.
