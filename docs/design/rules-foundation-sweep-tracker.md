@@ -12537,4 +12537,9 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - **Leads, not built:**
   - A main-deck card's value should include its role in its own deck's plan (the gameplan's roles), so the solver weighs a dig spell against what replaces it.
   - Storm's in-band target should be re-derived once the field sideboards realistically, since the band was set against a field that brought no hate.
+- **Worked locally, not built: protecting plan roles does not fix the solver.**
+  - Ruby Storm's gameplan predates its November list. Hex Magic, Twinned Vision and Artist's Talent are in no `card_roles`, and the roles still name Grapeshot and Empty the Warrens, which are sideboard-only now.
+  - Updating the roles and protecting every card in the combo roles (engines, enablers, payoffs, rituals) would protect every nonland card Storm plays. The solver would then swap nothing, and Thoughtseize would never come in.
+  - The solver needs a deck's own cards valued in the same currency as its opponent-facing clauses: what a dig is worth to the deck's plan against this opponent, beside what a hand attack takes from that opponent. That is a design unit of its own.
+  - The gameplan roles also drive live play (`combo_calc.card_combo_role`), so updating them is a measured change too.
 - **Decision rule, stated before the run:** proceed to the default flip only if Storm's row improves beyond one standard error (~2 pp) and no guard row falls beyond one.
