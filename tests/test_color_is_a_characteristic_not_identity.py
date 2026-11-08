@@ -103,13 +103,17 @@ def test_a_search_for_a_coloured_creature_card_never_finds_a_colourless_one(
 
 
 def test_a_pact_for_a_green_creature_card_never_finds_a_devoid_one(card_db):
-    from engine.card_effects import summoners_pact_resolve
+    """Through the real cast path (the card-flow carrier's typed search,
+    unit LG retired the name-keyed handler)."""
     g = _game(active=0)
     devoid = _put(g, card_db, "Basking Broodscale", 0, "library")
+    green = _put(g, card_db, "Primeval Titan", 0, "library")
     pact = _put(g, card_db, "Summoner's Pact", 0, "hand")
-    summoners_pact_resolve(g, pact, 0)
+    assert g.cast_spell(0, pact, [])
+    g.resolve_stack()
     assert devoid in g.players[0].library
     assert devoid not in g.players[0].hand
+    assert green in g.players[0].hand
 
 
 def test_a_red_or_black_permanent_is_one_whose_colour_is_red_or_black(card_db):
