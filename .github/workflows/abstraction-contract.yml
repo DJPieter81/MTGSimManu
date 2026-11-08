@@ -41,7 +41,9 @@ jobs:
         # silently consume the 6h GitHub Actions wall budget. The
         # primary defense against the decision-scorer hang is the
         # MTG_LLM_DECISION_SCORER_OFFLINE env at the top of this job.
-        run: pip install pytest pytest-timeout pydantic-ai-slim requests beautifulsoup4
+        # pyyaml: required by tests/test_weekly_refresh_commits_before_long_steps.py,
+        # which parses .github/workflows/weekly.yml to pin its step ordering.
+        run: pip install pytest pytest-timeout pydantic-ai-slim requests beautifulsoup4 pyyaml
 
       - name: Run abstraction ratchet
         run: python tools/check_abstraction.py
