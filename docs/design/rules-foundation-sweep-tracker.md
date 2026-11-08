@@ -12905,7 +12905,17 @@ Goryo's (11), Instant Reanimator (7) and Living End (6.5) are unchanged: their r
   - One turn-only drift (Creatures Toolbox vs Grixis s52000, 8 → 5).
   - Refreshed.
 
-**Measured:** `rn-post`, all 26 rows at n=20 Bo3. It also carries PFG. Pending.
+**Measured:** `rn-post` (`652d065`), all 26 rows at n=20 Bo3. It also carries PFG.
+- 650 cells, 1 violation (details below).
+- **Grixis Reanimator 56.5 → 73.1 (+16.6).** Its largest cells: vs Azorius Control 10 → 70, vs Boros Ponza 40 → 95; Ruby Storm vs Grixis 50 → 10.
+- Every other deck moves by 2.5 or less.
+- Ruby Storm stays at 40.0 (in band).
+- Grixis now sits above the default 30–70 band. It has no real-world band (0.5% share); recorded as a calibration lead.
+- **Kept.**
+- **The violation is a real latent engine defect**, exposed because Archon of Cruelty is now reanimated and its trigger forces discards: `701.9a/discarded`, Hollow One vs Grixis Reanimator s58000 turn 4, "Blazing Rootwalla was discarded but is in stack".
+  - The discard funnel casts a madness card inline, in the middle of the discarding ability's resolution.
+  - CR 702.35b makes the madness cast a trigger that goes on the stack and casts the card when it resolves.
+  - It is being built as its own unit (madness trigger on the stack).
 
 ## Repayment: the graveyard flashback grant is no longer tagged a cantrip (2026-11-08)
 
