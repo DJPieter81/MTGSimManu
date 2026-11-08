@@ -12645,4 +12645,7 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 - s56500 is now a Storm win: it holds the last Manamorphose, then casts Wish into Grapeshot (13 copies) for exactly 14.
 - Game 1 against Living End over 16 seeds: 6/16 → 7/16.
 
-**Measured:** `od-post`, Ruby Storm's row (pending).
+**Measured:** `od-post` (`a2cfdba`), Ruby Storm's row at n=20 Bo3. 25 cells, 0 violations. Both test chunks pass on `a2cfdba`, `tests/invariants/` included (5658 + 2837).
+- Row mean 15.8 (`tc2-post`) → 18.0 (+2.2, about one standard error).
+- The highest Storm row this session and the first move in the right direction, but not yet beyond noise.
+- Storm's real-world win rate is ~49% (band [40, 55]). The remaining gap is large, so the hunt continues from Storm's losses against low-interaction decks.
