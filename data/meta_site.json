@@ -183,7 +183,7 @@
     55.0
    ],
    "band_verdict": "below",
-   "band_provenance": "CLAUDE.md post-sim pipeline EXPECTED dict — high-variance combo, hated by SB interaction in Bo3.",
+   "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Ruby Storm 49.2% at 2.8% share; MTGO window 46% (n=260). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
    "best": "Eldrazi Ramp",
    "worst": "Azorius Control (WST)",
    "detail": {
@@ -349,11 +349,11 @@
    "weighted_wr": 66.8,
    "tier": "T1",
    "band": [
-    50.0,
-    65.0
+    40.0,
+    55.0
    ],
    "band_verdict": "above",
-   "band_provenance": "CLAUDE.md post-sim pipeline EXPECTED dict — big-mana prison/beatdown, solidly positive vs the field.",
+   "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Eldrazi Tron 45.5% at 3.8% share; earlier events 47.4% (US/China RCs) and 59% (July tracker, n=110, wide CI). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
    "best": "Azorius Control (WST v2)",
    "worst": "Pinnacle Affinity",
    "detail": {
@@ -604,11 +604,11 @@
    "weighted_wr": 72.3,
    "tier": "T1",
    "band": [
-    50.0,
-    65.0
+    45.0,
+    60.0
    ],
    "band_verdict": "above",
-   "band_provenance": "CLAUDE.md post-sim pipeline EXPECTED dict — efficient aggro with reach, positive field expectation.",
+   "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Domain Zoo 51.1% at 4.5% share; MTGO Challenges 53% (n=744). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
    "best": "Creatures Toolbox",
    "worst": "Grixis Reanimator",
    "detail": {
@@ -1699,11 +1699,11 @@
    "weighted_wr": 54.4,
    "tier": "T2",
    "band": [
-    30.0,
-    70.0
+    45.0,
+    60.0
    ],
    "band_verdict": "in",
-   "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
+   "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Broodscale Combo 54.8% at 17.3% share; MTGO window 51% (n=677). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
    "best": "Boros Ponza",
    "worst": "Domain Zoo",
    "detail": {
@@ -2124,11 +2124,11 @@
    "weighted_wr": 62.8,
    "tier": "T1",
    "band": [
-    30.0,
-    70.0
+    40.0,
+    55.0
    ],
-   "band_verdict": "in",
-   "band_provenance": "New deck (mtgtop8 15%, 2026-11-01): the default field band until a band is set by meta judgment.",
+   "band_verdict": "above",
+   "band_provenance": "Real-world match win rate, MTGMeta tracker (mtgmeta.com, retrieved via web search 2026-11-08): Rakdos Aggro 48.7% over 269 matches at 4.5% share; Rakdos Delirium 57.1% at 1.4% share at the 2026 Fall Regional Championships (small sample). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
    "best": "Ruby Storm",
    "worst": "Azorius Control (WST v2)",
    "detail": null
@@ -71332,7 +71332,7 @@
  ],
  "provenance": {
   "generated": "2026-11-07T17:39:41.377659",
-  "commit": "8190a2d",
+  "commit": "0d9fedb",
   "format": "bo3",
   "n_per_pair": 60,
   "total_matches": 19500,
@@ -71344,7 +71344,7 @@
   "command": "tools/resumable_matrix.py -n 60 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/2026-11-07-n60_seed.jsonl"
  },
  "calibration": {
-  "decks_in_band": 17,
+  "decks_in_band": 16,
   "decks_total": 26,
   "matchups_in_band": 32,
   "matchups_total": 142

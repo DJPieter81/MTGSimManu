@@ -12607,3 +12607,19 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 - **Not mapped:** Jeskai Aggro 2% (ambiguous: overlap 0.65 with Boros Energy, 0.57 with Jeskai Blink).
 - **Flagged:** the current mtgtop8 Creatures Toolbox build overlaps the registered list only 0.25.
 - **Pins:** `decks/metagame.json` mirrors the shares, and the site was rebuilt (`build_dashboard.py --merge`, the n=60 matrix). Games are unchanged; shares only weight results.
+
+## Field bands anchored to real-world win rates (2026-11-08)
+- **Asked to find appropriate win rates for the new metagame,** I used web search (the sites themselves are not reachable from the session). It found real-world match win rates:
+  - Ruby Storm 49.2% (Fall RCs; MTGO 46%, n=260)
+  - Eldrazi Tron 45.5% (Fall RCs; earlier 47.4%, and 59% on n=110)
+  - Domain Zoo 51.1% (Fall RCs; MTGO Challenges 53%, n=744)
+  - Broodscale Combo 54.8% (Fall RCs; MTGO 51%, n=677)
+  - Rakdos Aggro 48.7% (MTGMeta, n=269)
+- **Band rule:** the real win rate ±7.5 pp, rounded to the nearest 5. The sources are recorded in each band's provenance in `tools/calibration_bands.json`.
+- **New bands:**
+  - Ruby Storm [40, 55] (unchanged)
+  - Eldrazi Tron [40, 55] (was [50, 65])
+  - Domain Zoo [45, 60] (was [50, 65])
+  - Broodscale Bloodchief [45, 60] (was the default)
+  - Rakdos Aggro [40, 55] (was the default)
+- **Real data confirms all three outliers are roughly 50% decks.** The sim is about 33 pp low on Storm and about 23-30 pp high on Tron and Zoo. On these bands the n=60 matrix (`check_calibration.py`) also has Broodscale (61.7) and Rakdos Aggro (59.2) above band. The site was rebuilt with the new bands.
