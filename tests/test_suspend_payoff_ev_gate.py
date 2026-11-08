@@ -136,7 +136,11 @@ class TestSuspendChosenWithoutCascadeEnabler:
             action, card, _targets = decision
             actions.append((action, card.name))
             if action == "cycle":
+                # As the runner does: the cycling ability resolves
+                # before the next decision (CR 117.3b, 117.4).
                 game.activate_cycling(0, card)
+                while not game.stack.is_empty:
+                    game.resolve_stack()
             elif action == "suspend":
                 game.suspend_card(0, card)
             elif action == "play_land":

@@ -12932,3 +12932,60 @@ Goryo's (11), Instant Reanimator (7) and Living End (6.5) are unchanged: their r
 - Storm goldfish (n=30, on the play) against PFG: kills 28 → 29, decking 2 → 1, median 7, kills by turn 8 20 → 20. No regression.
 - 579 storm, combo, chain, flashback and tag tests pass. The anchor is green.
 - Digest: 4 Storm games change. Azorius Control vs Ruby Storm s58500 game 1 flips to Storm: a legal Grapeshot kill on turn 22. That adds a game 3. Re-recorded.
+
+## Unit MT: a madness card is cast when its trigger resolves, never inside the discard (CR 702.35b; 2026-11-08)
+
+**Symptom:** the rules auditor's `701.9a/discarded` fired on matrix arm `rn-post`, Hollow One vs Grixis Reanimator s58000, turn 4: "Blazing Rootwalla was discarded but is in stack". Archon of Cruelty's trigger ("target opponent sacrifices …, discards a card, and loses 3 life …") made Hollow One discard a madness card. The discard funnel (`DiscardManager.discard_card`) exiled it (CR 702.35a, correct) and then cast it on the spot, in the middle of the trigger's resolution.
+
+**Rule:** CR 702.35a-b. Madness is a replacement (discard into exile) plus a triggered ability: "When this card is exiled this way, its owner may cast it by paying [cost] … If that player doesn't, they put this card into their graveyard." The trigger is put on the stack the next time a player would receive priority (CR 603.3), so:
+- after the ability or spell that made the player discard has finished resolving (CR 608.2);
+- above a spell or ability whose cost was the discard (CR 601.2i, 602.2e);
+- in the cleanup step, with priority and then another cleanup step (CR 514.3a).
+
+The card is cast while the trigger resolves (CR 608.2g).
+
+**Class:** 47 pool cards via `CardTemplate.madness_cost` (`tools/class_census.py "\bmadness \{" --field madness_cost`: 47 of 47 populated). Registered deck: Hollow One (Blazing Rootwalla ×4).
+
+**Fix:**
+- **Discard funnel** (`engine/discard_manager.py`): `discard_card` exiles the card and pushes a `TRIGGERED_ABILITY` (`description="madness"`, controller = owner). It returns `"exile"` while the trigger is pending. `resolve_madness_trigger` opens the `_madness_pending` window, offers the cast through `callbacks.decide_offered_cast`, and otherwise moves the card from exile to the graveyard through the zone funnel. A card that has left exile by then is not touched (CR 400.7).
+  - Known gap: the identity check uses (zone, `battlefield_entry_seq`), the same gap as `effect_resolver.Handle`. A card that leaves exile and is exiled again before the trigger resolves is not told apart.
+- **Waiting triggers** (`Stack.below_waiting_triggers`, CR 603.3): one owner of "a trigger set off while a spell is cast or an ability activated goes above it". `CastManager.cast_spell` and `ActivationManager.activate` record the stack depth at entry and settle their item beneath anything pushed since.
+- **Cycling is an activated ability on the stack** (CR 702.29a, 602.2): `activate_cycling` pays the cost and pushes the ability. `resolve_cycling` draws or tutors. A cycled madness card's trigger goes above the cycling ability and resolves first. The runner's `cycle` arm drains the stack before the next decision, as the `activate` arm does.
+- **Combat damage step:** the runner drains the stack after combat damage (CR 510.3), so a madness card discarded to a combat-damage trigger resolves in that step instead of waiting for the next drain.
+- **Cleanup:** `TurnManager.cleanup_step` already returned False with anything on the stack, and `GameRunner._cleanup_step` drains it and repeats cleanup (CR 514.3a). That now carries the trigger, with the madness spell offered to the opponent before it resolves.
+- **Call sites** of `discard_card`: none reads the return value. All six were audited:
+  - `effect_executors.execute_discard`
+  - `GameState.discard_cards`
+  - `TurnManager.cleanup_step`
+  - `CyclingManager.activate_cycling`
+  - `oracle_resolver` loot
+  - `ActivationManager.pay_resource_costs` (via `_force_discard`)
+
+  Each now ends in a stack drain with normal priority.
+- **AI:** nothing in `ai/` projects a madness cast.
+
+**Auditor:** `702.35b/madness_cast_on_trigger_resolution` (`cast_manager._audit_madness_cast`) is restated from `game._resolving_item`: a madness cast happens only while a `TRIGGERED_ABILITY` whose source is that card and whose description is `madness` is resolving. It fires with the old inline cast monkeypatched back and is silent on the fix. `701.9a/discarded` is kept unchanged.
+
+**Tests:** `tests/test_madness_trigger_resolves_with_priority_cr702_35b.py` has 13 tests; 12 were red before the fix. The silent-auditor test is green by construction. The tests cover:
+- exile under the trigger;
+- the cast made while the trigger resolves;
+- decline and unpayable go to the graveyard;
+- CR 400.7 (left exile → untouched);
+- a resolving ability's discard waits for the ability to finish;
+- a loot spell;
+- cycling: trigger above the ability, the madness spell resolves before the draw;
+- an additional-cost discard (Cathartic Reunion): trigger above the spell;
+- the main-phase `cycle` arm;
+- cleanup repeats;
+- the auditor, both ways.
+
+Updated to drive the stack, with every assertion kept:
+- `test_madness_discard_replacement.py` (4 tests);
+- cycling tests (`test_cycle_log.py`, `test_cycling_draw_and_triggers.py`, `test_landcycling_searches_library.py`);
+- the main-phase mirror in `test_suspend_payoff_ev_gate.py`.
+
+**Pins:** digest 28 of 28 games byte-identical (no re-record). Anchor green (31 passed).
+
+**Leads, not built:**
+- **A madness discard does not advance the per-turn discard counter.** `ZoneManager.move_card` counts only hand → graveyard, but a madness discard is still a discard (CR 701.9a, 702.35a). Hollow One's cost reduction does not see a discarded Blazing Rootwalla.
+- **A generic zone-entry ordinal on `CardInstance`** would close the CR 400.7 gap above and `Handle`'s.

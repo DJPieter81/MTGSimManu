@@ -1102,6 +1102,12 @@ class GameRunner:
                                   lethal=(game.players[opponent_idx].life <= 0))
                         if game.game_over:
                             break
+                        # CR 510.3: players receive priority once combat
+                        # damage is dealt, so what it put on the stack (a
+                        # madness card discarded to a combat-damage
+                        # trigger, CR 702.35b) resolves in this step.
+                        if not game.stack.is_empty:
+                            self._resolve_stack_loop(game)
 
                 elif step == TurnStep.END_COMBAT:
                     game.current_phase = Phase.END_COMBAT
@@ -1326,7 +1332,7 @@ class GameRunner:
 
     def _cleanup_step(self, game: GameState) -> None:
         """CR 514: the cleanup step. A discard to hand size that puts
-        anything on the stack (a madness cast) gives players priority;
+        anything on the stack (a madness trigger) gives players priority;
         once the stack is empty another cleanup step begins (CR 514.3a).
         The stack resolves through the one drain (CR 117.3b, 117.4)."""
         from .constants import MAX_STACK_RESOLVES
@@ -1756,7 +1762,12 @@ class GameRunner:
                     actions += 1
                     continue
             elif action == "cycle":
-                game.activate_cycling(ai.player_idx, card)
+                # Cycling is an activated ability (CR 702.29a, 602.2): it
+                # and any trigger its cost set off (a cycled madness card,
+                # CR 702.35b) resolve before the next decision, as the
+                # activate arm's do (CR 117.3b, 117.4).
+                if game.activate_cycling(ai.player_idx, card):
+                    self._resolve_stack_loop(game)
             elif action == "suspend":
                 game.suspend_card(ai.player_idx, card)
             elif action == "plot":

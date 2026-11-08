@@ -293,9 +293,9 @@ class TurnManager:
                 game.active_player, card, cause="discard to hand size")
 
         # CR 514.3a: if the discard put anything on the stack (a madness
-        # cast made as the reflexive trigger resolved), players receive
-        # priority and it resolves; another cleanup step follows -- the
-        # turn does not end with a spell still pending.
+        # card's trigger, CR 702.35b), players receive priority and it
+        # resolves -- the madness spell with it; another cleanup step
+        # follows -- the turn does not end with anything still pending.
         if not game.stack.is_empty:
             return False
 

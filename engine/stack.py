@@ -176,6 +176,21 @@ class Stack:
         return next((i for i in reversed(self.items)
                      if i.item_type == StackItemType.SPELL), None)
 
+    def below_waiting_triggers(self, item: StackItem, depth: int) -> None:
+        """Settle `item` -- a spell just cast or an ability just activated,
+        already on the stack -- beneath the triggered abilities that
+        triggered while it was being cast or activated (a madness card
+        discarded to pay its cost, CR 702.35b). They wait until a player
+        would receive priority, which is once `item` is on the stack, so
+        they go above it (CR 601.2i, 602.2e, 603.3). `depth` is the stack's
+        size when the cast or activation began; nothing below it moves."""
+        k = next((k for k, i in enumerate(self.items) if i is item), None)
+        depth = min(depth, len(self.items))
+        if k is None or k <= depth:
+            return
+        del self.items[k]
+        self.items.insert(depth, item)
+
     def remove(self, item: StackItem) -> None:
         """Take this item off the stack, by identity."""
         for k, i in enumerate(self.items):

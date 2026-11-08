@@ -529,6 +529,26 @@ def _audit_cascade_triggers_on_cast(game: "GameState", card) -> None:
           game=game)
 
 
+def _audit_madness_cast(game: "GameState", card) -> None:
+    """Rules audit (CR 702.35b, 608.2, 608.2g), restated from the object
+    resolving: a card is cast for its madness cost only while its own
+    madness trigger -- a triggered ability whose source is the card -- is
+    resolving, never inside the discard or in the middle of another
+    resolution. Observes only."""
+    from .rules_audit import check, enabled
+    if not enabled():
+        return
+    resolving = getattr(game, "_resolving_item", None)
+    check("702.35b/madness_cast_on_trigger_resolution",
+          resolving is not None
+          and resolving.item_type == StackItemType.TRIGGERED_ABILITY
+          and resolving.source is card
+          and resolving.description == "madness",
+          f"{card.name} was cast for its madness cost while "
+          f"{getattr(resolving, 'description', None) or getattr(getattr(resolving, 'source', None), 'name', None)!r}"
+          f" resolved", game=game)
+
+
 def _audit_cast_counter(game: "GameState", card, stack_item) -> None:
     """Rules audit (CR 603.2, 701.6, 202.3e), restated from the raw fields
     -- each battlefield permanent's printed cast counter, its controller and
@@ -915,10 +935,11 @@ class CastManager:
 
         # Madness (CR 702.35b): a card just discarded into exile may be
         # cast from there for its madness cost. The offer is made while
-        # the reflexive trigger resolves, so it ignores sorcery-speed
+        # the madness trigger resolves, so it ignores sorcery-speed
         # timing (CR 608.2g) — only payability and target legality gate
-        # it. `_madness_pending` is raised by the discard funnel
-        # (engine/discard_manager.py) for the duration of the offer only.
+        # it. `_madness_pending` is raised by that trigger
+        # (`DiscardManager.resolve_madness_trigger`) for the duration of
+        # the offer only.
         if card.zone == "exile" and getattr(card, '_madness_pending', False):
             if template.madness_cost is None:
                 return False
@@ -2391,6 +2412,9 @@ class CastManager:
         # The mana spent on this cast is what the payment owner takes from
         # here on (CR 601.2h; `StackItem.mana_spent`).
         paid_before = getattr(game, "mana_paid_total", 0)
+        # What a trigger that triggers while this spell is cast goes above
+        # (`Stack.below_waiting_triggers`, CR 603.3).
+        stack_depth = len(game.stack.items)
 
         # CR 111.2 — tokens are never castable, free_cast included.
         if getattr(card, 'is_token', False):
@@ -2449,9 +2473,10 @@ class CastManager:
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
 
-            # Madness (CR 702.35b): the card sits in exile inside the
-            # discard funnel's offer window; it is cast for the madness
-            # cost and no other alternative-cost route applies.
+            # Madness (CR 702.35b): the card sits in exile in the offer
+            # window its madness trigger opens as it resolves; it is cast
+            # for the madness cost and no other alternative-cost route
+            # applies.
             madnessed = (template.madness_cost is not None
                          and card.zone == "exile"
                          and getattr(card, '_madness_pending', False))
@@ -2873,6 +2898,8 @@ class CastManager:
         card._warped = warped  # Track for exile at beginning of next end step
         card._madness = madnessed  # Cast via the madness route (CR 702.35b)
         card._madness_pending = False  # The exile offer window is consumed
+        if madnessed:
+            _audit_madness_cast(game, card)
         # Turn-scoped budget for `_eval_evoke`: each removal-class
         # evoke ramps the cost of the next one. Increment at cast
         # time (not on resolve) — even a fizzling evoke pitches the
@@ -3347,6 +3374,10 @@ class CastManager:
         from .oracle_resolver import resolve_self_cast_trigger
         resolve_self_cast_trigger(game, player_idx, card)
 
+        # CR 601.2i, 603.3: what triggered while the spell was being cast
+        # (a madness card discarded for its additional cost) goes on the
+        # stack above it once it is cast.
+        game.stack.below_waiting_triggers(stack_item, stack_depth)
         # CR 603.3, 702.85a: the cast triggers that go on the stack above
         # the spell (cascade).
         CastManager.put_cast_triggers(game, stack_item)

@@ -97,6 +97,9 @@ class TestCyclingDrawAndTriggers:
         ok = game.activate_cycling(0, wraith)
 
         assert ok, "activate_cycling returned False for a legal cycling activation"
+        # The cycling ability resolves from the stack (CR 702.29a, 602.2).
+        while not game.stack.is_empty:
+            game.resolve_stack()
 
         # Discard half: Street Wraith must be in graveyard.
         gy = [c.name for c in game.players[0].graveyard]

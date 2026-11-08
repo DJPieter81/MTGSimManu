@@ -654,6 +654,9 @@ class ActivationManager:
         from .activated_effects import resolve_activated_ability
 
         game._activation_depth = getattr(game, '_activation_depth', 0) + 1
+        # What a trigger that triggers while the cost is paid goes above
+        # (`Stack.below_waiting_triggers`, CR 602.2e, 603.3).
+        stack_depth = len(game.stack.items)
         try:
             # Victim RESOLUTION before any payment: choosing is not a
             # mutation, and it is the only tranche-3 step that can refuse —
@@ -783,7 +786,7 @@ class ActivationManager:
                 game.zone_mgr.move_card_to_exile(
                     game, perm, cause=f"activation cost ({perm.name})")
 
-            game.stack.items.append(StackItem(
+            activated = StackItem(
                 item_type=StackItemType.ACTIVATED_ABILITY,
                 source=perm,
                 controller=player_idx,
@@ -796,7 +799,11 @@ class ActivationManager:
                 target_zones=target_zones,
                 target_entry_seqs=target_entry_seqs,
                 x_value=chosen_x,
-            ))
+            )
+            game.stack.push(activated)
+            # CR 602.2e, 603.3: what triggered while the cost was paid (a
+            # madness card discarded for it) goes on the stack above it.
+            game.stack.below_waiting_triggers(activated, stack_depth)
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: activate "
                 f"{perm.name} — {ability.effect_text}")
