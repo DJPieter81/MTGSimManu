@@ -12477,3 +12477,21 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
   - Measured alone by `tc2-post` (`a686e64`): 25 cells, 0 violations; Ruby Storm's row 15.8, against `rr-post` 16.0. Neutral.
   - Both test chunks pass on `a686e64` (5630 + 2837).
   - Part 1 is the foundation a lethal-aware gate needs, once the planner also counts multiple finishers in a turn and token damage on the next attack.
+
+## Unit PR: payoff reach through digs is weighed, not assumed (AI; 2026-11-08)
+
+**Source:** a batch of Storm game-1s (8 seeds each against Dimir Midrange, Boros Energy, Eldrazi Ramp and Domain Zoo): 11 of 32 won, 0 of 8 against Dimir. In Ruby Storm vs Dimir Midrange s52000, turn 6, Past in Flames was cast from hand at storm 2 with no finisher in hand, and its flashback was spent on digs.
+
+**Cause:** `ev_evaluator._payoff_reachable_this_turn`, the owner of "does this chain spell have a payoff to spend itself on" for chain continuation, ritual mana and Past in Flames. Its clause (d) said yes whenever any dig was in hand. Unit RR had replaced that boolean only inside the ritual gate.
+
+**Fix:** clause (d) uses RR's comparison (`combo_calc._digs_reach_today_beats_holding`), so one rule answers "do these digs reach the closer?" everywhere.
+
+**Tests:** 3 (the long-shot case red before).
+
+**Pins:**
+- Digest: 3 of 27 games change.
+- 4c Omnath vs Ruby Storm s57500 flips to a Storm win. Replayed: on turn 6 Storm holds a speculative Pyretic Ritual; Hex Magic then draws three, including Wish and Past in Flames; turn 7 kills with an 18-spell Grapeshot. Legal and stronger.
+- Azorius Control vs Ruby Storm games 1-2 move by turns; Azorius still wins both.
+- The anchor is unchanged.
+
+**Measured:** `pr-post` diagnostic arm, Ruby Storm's row, n=20, against `tc2-post` (pending).
