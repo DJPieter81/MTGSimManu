@@ -140,3 +140,17 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
   - This is the finisher-side twin of unit TC's reverted ritual hold: firing a scarce, non-lethal finisher.
   - The STORM branch of `combo_calc.card_combo_modifier` fires once chain fuel is exhausted (`scarce_payoff_commit_ev`). Whether to commit a one-shot finisher short of lethal belongs there.
 - **Next:** check game 2's play/draw order in the matrix, and weigh `scarce_payoff_commit_ev`'s commit against holding the Wish for a lethal turn while a later turn remains. Test first, and measure on Storm's row (TC part 2 showed holds can hurt).
+
+### Game 2 explained: play order is not the cause; the legacy sideboard table is
+- **Play/draw across the 12 matches:**
+  - Storm on the play wins game 1 5/10, but games 2-3 only 2/12.
+  - On the draw it loses every game 2 (0/5) and its two draw-side game 1s (0/2).
+  - So the sideboard, not the play order, makes the difference.
+- **Zoo's post-board plan against Storm comes from the legacy name table** (`engine/sideboard_manager.sideboard`, `SB_SOLVER` unset). Its "counterspells vs combo" rule brings in Mystical Dispute, Flusterstorm, Spell Pierce and Force of Negation whenever the opponent's deck name contains "storm".
+  - Against red Storm, Dispute is a three-mana soft counter that Zoo's AI holds up for Wish or Grapeshot.
+  - That rule is name matching inside `engine/`, which the abstraction contract forbids, and a strategic choice in the engine.
+- **The fix belongs in the sideboard owner.** The oracle solver needs:
+  - the hand-attack clause (unit SBH, built);
+  - a counterspell clause that prices a conditional tax counter by the opponent's mana and colours, not by the deck's name;
+  - and the own-plan question (unit OWN, reverted).
+- **Until that lands,** the legacy table's Storm rules decide Storm's post-board games.
