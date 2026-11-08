@@ -13354,3 +13354,9 @@ Measured by the turn the deck goes off, the combo gap to real play (turns 3–5)
 **Unit LG follow-up (AI):** the pay-or-lose gate checked each pact on its own cost. Two pacts are paid at the same upkeep from the same board, so a second pact is cast only when the sum of every pending pay-or-lose cost (read from the one delayed-trigger queue) and its own is payable (`ai/deferred_costs.pending_loss_costs`). The test was red without the sum. Amulet goldfish n=40 went from 38 to 39 kills.
 
 **Lead, not built:** a pending pact can still be made unpayable by a later play of the same turn. In 70028, Scapeshift sacrificed the lands that made {G}{G} and fetched lands that do not. The land-delivery choice (`ai/activation_ev._choose_land_delivery`) and the sacrifice choice should keep the pending pay-or-lose costs payable. 1 game in 40.
+
+**`lg2-post`** (n=20 Bo3, full field, against `blk-post`; commit `cb4c438`, unit LG plus the summed gate):
+- 0 rules violations (541 findings).
+- **Amulet Titan 42.8 → 38.3 (−4.5).** Its cells move 10–35 points: a pact is no longer free.
+- Every other deck is within ±1.0. Ruby Storm 37.8 → 38.0 is still under its [40, 55] band. Goryo's 37.9 → 37.2.
+- Amulet's drop is the rules-correct price of the pact. Do not tune the gate back; the Scapeshift lead above is the remaining AI loss.
