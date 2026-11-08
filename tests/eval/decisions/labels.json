@@ -1,0 +1,79 @@
+{
+  "_comment": "Golden decision labels. Each names a position (tests/eval/decisions/positions.py), the expected play, the rule, the replay source, and the evidence that sets its confidence (tools/decision_eval.py: rules_forced = 1.0; else the minimum of rollout p_better and the reviewers' non-refuted share; with neither, unverified_confidence). tests/test_golden_decisions.py requires every label at or above gate_confidence to pass.",
+  "gate_confidence": 0.9,
+  "unverified_confidence": 0.5,
+  "labels": [
+    {
+      "id": "reanimate_with_target_in_graveyard",
+      "family": "reanimation",
+      "expect": {"cast": "Persist"},
+      "rule": "A spell that returns a creature card from its caster's graveyard delivers it this turn; with Archon of Cruelty in the graveyard, Persist is not deferred (unit RN).",
+      "source": "Grixis Reanimator vs Azorius Blink s53000, turn 7 (game turn): Persist +48.9 passed over for Emperor of Bones +1.8",
+      "evidence": {"rules_forced": false, "rollout": null, "review": null}
+    },
+    {
+      "id": "storm_closer_with_graveyard_fuel",
+      "family": "chain_finisher",
+      "expect": {"not_cast": "Grapeshot"},
+      "rule": "A storm closer below lethal holds while chain fuel castable this turn remains, graveyard flashback included (unit GYF).",
+      "source": "Ruby Storm goldfish s70004 turn 8: Grapeshot at storm 9, then four flashback casts after it",
+      "evidence": {"rules_forced": false, "rollout": null, "review": null}
+    },
+    {
+      "id": "flashback_grant_with_no_mana_left",
+      "family": "chain_enabler",
+      "expect": {"not_cast": "Past in Flames"},
+      "rule": "A graveyard flashback grant lasts this turn only; with no granted spell affordable after it resolves it does nothing and spends the card (CR 702.34a; unit PFG).",
+      "source": "Ruby Storm goldfish s70000 turns 4, 5 and 7",
+      "evidence": {"rules_forced": true, "rollout": null, "review": null}
+    },
+    {
+      "id": "blink_before_combat_on_a_hasty_attacker",
+      "family": "sequencing",
+      "expect": {"not_cast": "Ephemerate"},
+      "rule": "A blink returns a new, summoning-sick object (CR 400.7): before combat it costs the attack, after combat the same blink does the same for no attack (unit BLK).",
+      "source": "Goryo's Vengeance goldfish s70000 turn 4 (Ephemerate at -4.09 cast); Jeskai Blink vs Broodscale s50000",
+      "evidence": {"rules_forced": true, "rollout": null, "review": null}
+    },
+    {
+      "id": "blink_after_combat_on_a_hasty_attacker",
+      "family": "sequencing",
+      "expect": {"cast": "Ephemerate"},
+      "rule": "After combat the blink forfeits nothing and keeps the dashed creature, which would otherwise return to hand at end of turn (unit BLK).",
+      "source": "Jeskai Blink vs Broodscale s50000",
+      "evidence": {"rules_forced": false, "rollout": null, "review": null}
+    },
+    {
+      "id": "hand_attack_with_nothing_to_bin",
+      "family": "targeting",
+      "expect": {"targets_exclude": "self"},
+      "rule": "A hand attack is aimed at its caster only when binning has value; with no reanimation target in hand, hitting its own hand only discards its own card (unit HAS).",
+      "source": "Grixis Reanimator goldfish s70001 turn 4: Thoughtseize discarded Cling to Dust from its own hand",
+      "evidence": {"rules_forced": true, "rollout": null, "review": null}
+    },
+    {
+      "id": "reanimation_beside_a_controlled_legend",
+      "family": "targeting",
+      "expect": {"targets_equal": ["Griselbrand"]},
+      "rule": "The legend rule keeps one of several same-named legendary permanents; a second copy of a controlled legend returns nothing that stays (CR 704.5j; unit LGR).",
+      "source": "Goryo's Vengeance goldfish s70000 turn 5",
+      "evidence": {"rules_forced": true, "rollout": null, "review": null}
+    },
+    {
+      "id": "titan_search_beside_an_untap_watcher",
+      "family": "land_search",
+      "expect": {"includes": "Hanweir Battlements // Hanweir, the Writhing Township"},
+      "rule": "A land whose ability grants haste is worth the attack it converts this turn when it will be untapped (unit HL).",
+      "source": "Amulet Titan goldfish s70002: Titan fetched bounce lands for three turns while the haste land stayed in the library",
+      "evidence": {"rules_forced": false, "rollout": null, "review": null}
+    },
+    {
+      "id": "zoo_boards_against_red_storm",
+      "family": "sideboarding",
+      "expect": {"not_added": "Mystical Dispute"},
+      "rule": "A sideboard counterspell comes in when most of the opponent's nonland spells are ones it answers for no more than their mana value; a 3-mana Dispute does not answer red 1-2 mana spells (unit LSB).",
+      "source": "Ruby Storm vs Domain Zoo, game 2 collapse (Storm diagnostic)",
+      "evidence": {"rules_forced": false, "rollout": null, "review": null}
+    }
+  ]
+}
