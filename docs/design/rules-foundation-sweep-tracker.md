@@ -13211,3 +13211,7 @@ The anchor flipped Storm vs Dimir s50000 to Dimir. Replayed: Grapeshot fired at 
 - count the mana the rest of the chain leaves.
 
 Storm's slow chain-building turns remain open.
+
+**Storm chain-building waste, measured** (the same 10 goldfish dumps): 142 cards were exiled by impulse digs (Reckless Impulse, Wrenn's Resolve; "until the end of your next turn, you may play those cards"). At most 93 were cast within their window, so **at least 49 (about 35%, around 5 per game) expire unplayed.** Those are fuel burned from the library and lost.
+
+**Rule for planner v2:** an impulse dig is worth the exiled cards the mana of this turn and the next can still play, and a dig whose cards would mostly expire is no better than holding it. Valuing that needs the multi-turn mana projection planner v2's objective needs anyway. Not built here.
