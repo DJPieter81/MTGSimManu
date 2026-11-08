@@ -13058,3 +13058,25 @@ The reanimator decks' remaining slowness lies elsewhere:
 **Leads for the planner:**
 - read colours, not just mana count;
 - extend it to tutor and chain lines (Amulet, Storm), where per-card play is weakest.
+
+## Unit LGR: a reanimation never targets a legendary creature its caster controls (AI; CR 704.5j; 2026-11-08)
+
+**Source:** Goryo's Vengeance goldfish s70000, turn 5. Goryo's Vengeance returned a second Atraxa beside the one in play (the blinked one). The legend rule took one copy, and the hasty copy was exiled at end of turn.
+
+**Rule:** the legend rule keeps one of several same-named legendary permanents, so returning a copy of a legend its caster controls returns nothing that stays. The main phase already filters such casts (`EVPlayer._filter_legend_rule`); the reanimation target pick now asks the same owner. With only such a copy left, there is no target and the spell is not cast.
+
+**Tests:** 2 (`tests/test_a_reanimation_never_targets_a_legend_its_caster_controls.py`), both red first. 69 related tests pass.
+
+**Pins:** digest byte-identical; anchor green.
+
+**Goldfish (n=20):**
+
+| Deck | Kills | Kills by turn 6 | Median kill turn |
+|---|---|---|---|
+| Goryo's Vengeance | 19 → 20 | 1 → 3 | 11 (unchanged) |
+| Instant Reanimator | unchanged | unchanged | unchanged |
+
+**Goryo's remaining slowness is mana and keep quality** (the planner audit agrees), and that is the next lead for this deck:
+- mulligans to 5;
+- land-light keeps;
+- a shock land entered tapped while a 2-mana fill was in hand.
