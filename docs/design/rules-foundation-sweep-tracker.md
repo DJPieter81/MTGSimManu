@@ -13176,3 +13176,13 @@ A first version laid the position out before the first turn's untap, which reset
 - a storm closer placed at the end of the chain, read through `finisher_reach`, not at its current storm count.
 
 Until v2, the planner is a measurement instrument for reanimation, where it is reliable (83–96% agreement), and not a decision source.
+
+## Line planner v2, step 1: a storm closer is a payoff only when the chain reaches lethal (2026-11-08)
+
+**Change:** `best_tutor_line` values a storm closer through `finisher_reach.reach_now`, the owner of the damage the turn's chain reaches with the closer cast last. The closer is a payoff only when that reach is lethal now. It no longer asks the AI to fire below lethal, where chaining first is right. 7 tutor-line tests pass, 2 of them new: lethal → payoff, short of lethal → no line.
+
+**Re-audit** (Ruby Storm, `--family tutor`, n=20): 4 decisions with a lethal line. The AI took lethal in all of them; the 3 "disagreements" cast the Grapeshot already in hand instead of Wish → Empty the Warrens.
+
+**Conclusion:** **Storm never misses a lethal turn it can reach.** Its slowness is in reaching lethal sooner (assembling mana, fuel and reducers over turns), not in a missed kill.
+
+**Next lead for Storm:** the turns before lethal. Measure the "turns from first reducer to kill" distribution against an oracle search of each goldfish draw.

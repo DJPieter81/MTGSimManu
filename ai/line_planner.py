@@ -190,8 +190,9 @@ def best_tutor_line(game: Any, player_idx: int) -> Optional[Line]:
     (`Relation.TUTORS` from the library, `Relation.FETCHES_OUTSIDE` from the
     sideboard), then the payoff -- put onto the battlefield by the search
     itself, or cast from the hand or from outside the game. A payoff is a
-    creature (valued by `creature_threat_value`) or a storm spell (valued
-    by the damage of its copies now). An X bound ("mana value X or less")
+    creature (valued by `creature_threat_value`) or a storm spell, which is
+    a payoff only when the chain this turn reaches lethal with it cast last
+    (`finisher_reach.reach_now`), valued at that reach. An X bound ("mana value X or less")
     costs the payoff's mana value in X. A line completes this turn when its
     first play is castable now (colours included) and the mana pays the
     whole line."""
@@ -206,7 +207,6 @@ def best_tutor_line(game: Any, player_idx: int) -> Optional[Line]:
     mana = me.available_mana_estimate
     graph = _graph(game, player_idx)
     snap = snapshot_from_game(game, player_idx)
-    storm_now = getattr(game, "_global_storm_count", 0)
 
     def cost(c) -> int:
         return chain_cost(c, game, player_idx)
@@ -215,7 +215,13 @@ def best_tutor_line(game: Any, player_idx: int) -> Optional[Line]:
         if card.template.is_creature:
             return creature_threat_value(card, snap)
         if Keyword.STORM in getattr(card.template, "keywords", set()):
-            return float(storm_now + 1)
+            # A storm closer is worth what the turn's chain reaches with
+            # it cast last (`finisher_reach`, the owner of that sum); it
+            # is a payoff of a line only when that reach is lethal now.
+            from ai.finisher_reach import reach_now
+            reached, _first = reach_now(game, player_idx, mana)
+            opp_life = game.players[1 - player_idx].life
+            return float(reached) if reached >= opp_life else None
         return None
 
     lines: List[Tuple[Line, float]] = []

@@ -73,11 +73,24 @@ def test_too_little_mana_for_x_is_a_later_line(card_db):
     assert best_tutor_line(g, 0).completes == NEXT_TURN
 
 
-def test_a_card_from_outside_the_game_is_a_sideboard_payoff(card_db):
+def test_a_storm_closer_from_outside_the_game_is_a_payoff_when_lethal(
+        card_db):
+    """The chain reaches lethal with the closer cast last: the sideboard
+    Grapeshot is the line's payoff."""
     g = _game(card_db, "Ruby Storm", ["Mountain"] * 5, hand=["Wish"],
               library=["Mountain"], sideboard=["Grapeshot", "Prismatic Ending"])
+    g.players[0].spells_cast_this_turn = g._global_storm_count = 12
+    g.players[1].life = 5
     line = best_tutor_line(g, 0)
     assert _names(line) == ["Wish", "Grapeshot"]
+
+
+def test_a_storm_closer_short_of_lethal_is_no_payoff_yet(card_db):
+    """Below lethal the chain should grow first: the closer is no line."""
+    g = _game(card_db, "Ruby Storm", ["Mountain"] * 5, hand=["Wish"],
+              library=["Mountain"], sideboard=["Grapeshot"])
+    g.players[1].life = 20
+    assert best_tutor_line(g, 0) is None
 
 
 def test_a_first_play_the_colours_cannot_pay_is_not_this_turn(card_db):
