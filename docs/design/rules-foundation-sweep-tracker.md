@@ -12573,4 +12573,9 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 - **Decision: the rule fails (Storm 11.0 is below 15.8). The solver stays opt-in.**
 - Valuing a deck's own cards recovered part of `sbh-post`'s loss (8.4 → 11.0). Under realistic sideboarding, though, the field's hate against Storm costs it more than its own Thoughtseizes gain.
+- **Reverted** (code and test). CI on `8d3cd86` failed `tests/invariants/test_sb_value.py::test_swap_in_gy_hate_vs_living_end`, which the local chunk globs (`tests/test_*.py`) do not cover.
+  - The own-impact floor gives Lightning Bolt 2.0 (mana value 1 over the window), the same as Relic of Progenitus's graveyard-hate value against the Living End stub. On a tie nothing swaps.
+  - A floor at a card's own impact also lifts interaction whose opponent-facing value the clauses do not model (Bolt against creatures), so it is the wrong measure for "a card of the deck's own plan".
+  - The unit failed its decision rule anyway, so it is reverted rather than tuned.
+- **Local verification now also runs `tests/invariants/`.**
 - **Decision rule, stated before the run:** the solver becomes the default only if Storm's row beats its no-solver baseline (15.8) beyond one standard error (~2 pp) and no guard row falls beyond one.

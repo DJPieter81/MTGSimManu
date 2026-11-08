@@ -617,18 +617,8 @@ def plan_sideboard(
             return 0.0
         return sb_value(tmpl, opp_templates, opp_gameplan)
 
-    # A main card is worth to its deck at least what the solver says it is
-    # worth to take from that deck (`_card_impact`, the hand-attack
-    # clause's measure): a deck's own plan cards -- digs, rituals, engines
-    # -- face no opponent-facing clause and would otherwise score 0 and be
-    # cut first in every matchup. Sideboard cards keep their matchup value:
-    # that is the reason they would come in.
-    def _own(name: str) -> float:
-        tmpl = card_db.get_card(name)
-        return 0.0 if tmpl is None else _card_impact(tmpl)
-
     main_scored = sorted(
-        ((name, max(_score(name), _own(name))) for name in my_main),
+        ((name, _score(name)) for name in my_main),
         key=lambda x: x[1],
     )  # ascending — weakest first
     sb_scored = sorted(
