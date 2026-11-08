@@ -72,7 +72,8 @@ def test_a_bucket_lists_its_readings_most_specific_first():
     assert gain[-1] == (Verb.CONTINUOUS, ModKind.ADD_KEYWORDS)
     lose = [(e.verb, e.mod_kind) for e in L.VERB_LEXICON["lose"]
             if e.verb is not Verb.UNMODELLED]
-    assert lose == [(Verb.LOSE_LIFE, None),
+    assert lose == [(Verb.LOSE_GAME, None),  # "lose the game" (unit LG)
+                    (Verb.LOSE_LIFE, None),
                     (Verb.CONTINUOUS, ModKind.REMOVE_ALL_ABILITIES),
                     (Verb.CONTINUOUS, ModKind.REMOVE_KEYWORDS)]
     get = [(e.verb, e.mod_kind) for e in L.VERB_LEXICON["get"]]
@@ -395,8 +396,7 @@ def test_a_passive_relative_or_noun_use_of_a_verb_word_is_not_the_clause_verb(
     ("the ring tempts you", "the ring tempts you"),
     ("regenerate target creature", "regenerate"),
     ("target creature phases out", "phase out"),
-    ("you win the game", "win the game"),
-    ("target player loses the game", "lose the game"),
+    # "<player> wins / loses the game" is Verb.WIN_GAME / LOSE_GAME (unit LG)
     # one coin flipped once is Verb.FLIP (unit FL); a repeated flip is not
     ("flip a coin until you lose a flip", "flip a coin"),
     ("manifest the top card of your library", "manifest"),

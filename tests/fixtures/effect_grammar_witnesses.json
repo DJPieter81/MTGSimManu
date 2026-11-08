@@ -269,8 +269,7 @@
           "verb": "PAY",
           "otherwise": [
            {
-            "verb": "UNMODELLED",
-            "stage": "RECOGNIZED_UNSUPPORTED"
+            "verb": "LOSE_GAME"
            }
           ]
          }

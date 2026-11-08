@@ -622,7 +622,10 @@ def _find_rel(t: str, lemma: str):
             refused = word
             break
     if refused is not None:
-        base = next(rd.entry.lemma for rd in _BUCKETS[refused])
+        # The refused word's own lemma: a one-word reading when its bucket
+        # has one ("lose", not the fixed phrase "lose the game").
+        lemmas = [rd.entry.lemma for rd in _BUCKETS[refused]]
+        base = next((x for x in lemmas if " " not in x), lemmas[0])
         return ("um", Stage.CLAUSE, base, "no_reading", base)
     return ("um", Stage.NO_LEMMA, lemma, "no_lemma", "")
 

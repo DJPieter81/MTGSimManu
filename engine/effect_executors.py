@@ -135,7 +135,12 @@ FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
                                             Verb.REMOVE_COUNTERS}),
             FAMILY_ATTACK_TRIGGER: _TRIGGER_BODY_VERBS,
             FAMILY_ZONE_CHANGE_TRIGGER: _TRIGGER_BODY_VERBS,
-            FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS}
+            FAMILY_ENTER_EXILE: _TRIGGER_BODY_VERBS,
+            # unit LG: a payment with an "if you don't" branch (CR 118.12)
+            # and a game won or lost by an effect (CR 104.2b, 104.3c) -- the
+            # body of a pact's delayed upkeep trigger
+            "stack_mana": frozenset({Verb.PAY, Verb.LOSE_GAME,
+                                     Verb.WIN_GAME})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────

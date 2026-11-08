@@ -555,7 +555,7 @@ def test_a_delay_paragraph_of_a_spell_holds_the_connective_bound_to_its_payment(
     (pay,) = sub.host.specs
     assert pay.verb is Verb.PAY
     (lose,) = pay.otherwise
-    assert _refusal(lose).stage is Stage.RECOGNIZED_UNSUPPORTED
+    assert lose.verb is Verb.LOSE_GAME            # CR 104.3c (unit LG)
 
 
 # ── Connectives and may-scope (A14, A29) ───────────────────────────────
