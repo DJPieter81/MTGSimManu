@@ -1686,6 +1686,13 @@ def valakut_awakening_resolve(game, card, controller, targets=None, item=None):
 # Amulet Titan effects
 # ═══════════════════════════════════════════════════════════════════
 
+# Summoner's Pact handler removed (unit LG) -- it performed the search and
+# dropped the delayed upkeep trigger, so its caster never paid and never
+# lost. The card-flow carrier resolves the typed host: the search, and the
+# delayed "pay <cost>. If you don't, you lose the game." (CR 603.7, 118.12,
+# 104.3c) the delayed-trigger queue fires at its controller's next upkeep.
+
+
 @EFFECT_REGISTRY.register("Explore", EffectTiming.SPELL_RESOLVE,
                            description="Draw a card, may play an additional land this turn")
 def explore_resolve(game, card, controller, targets=None, item=None):
@@ -1700,26 +1707,6 @@ def explore_resolve(game, card, controller, targets=None, item=None):
 # (`oracle_resolver._resolve_x_creature_tutor`), which serves every card in
 # the class instead of one. Its per-card riders (green colour constraint,
 # shuffle-self-into-library) are parsed data on that field, not code here.
-
-
-@EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
-                           description="Search library for a green creature, put into hand")
-def summoners_pact_resolve(game, card, controller, targets=None, item=None):
-    from .cards import Color
-    player = game.players[controller]
-    candidates = [
-        c for c in player.library
-        if c.template.is_creature
-        and Color.GREEN in c.colors
-    ]
-    if candidates:
-        best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
-        player.library.remove(best)
-        game.rng.shuffle(player.library)
-        best.zone = "hand"
-        player.hand.append(best)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Summoner's Pact finds {best.name}")
 
 
 # ═══════════════════════════════════════════════════════════════════

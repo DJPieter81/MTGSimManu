@@ -697,8 +697,14 @@ class EVPlayer:
                     reanimate_override = spell
                     break
 
+        from ai.deferred_costs import deferred_costs_payable
         for spell in spells:
             if not game.can_cast(self.player_idx, spell):
+                continue
+            # A cost deferred to a later upkeep on pain of losing the game
+            # is part of the spell's cost (CR 104.3c): unpayable then, the
+            # spell loses the game.
+            if not deferred_costs_payable(game, self.player_idx, spell):
                 continue
 
             # Skip PURE counterspells in main phase (nothing to target).

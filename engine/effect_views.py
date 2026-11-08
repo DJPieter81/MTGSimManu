@@ -291,14 +291,27 @@ def _no_unparsed(s) -> bool:
 # and as it resolves (CR 603.4), and its controller chooses its targets as
 # it is put on the stack (CR 603.3d). A host holding one is strict when
 # the trigger's own host, its intervening "if" aside, is in an effect
-# family's strict shape.
+# family's strict shape. A delayed trigger (CR 603.7, unit LG): "At the
+# beginning of <a later step>, <effect>" is created as its instruction is
+# performed and waits in the one delayed-trigger queue, whose firing
+# resolves it through the dispatcher (`effect_resolver.resolve_sub_ability`)
+# at its step; a SPELL host holding one is strict on the same terms.
 _EFFECT_FAMILIES = (FAMILY_DAMAGE, FAMILY_REMOVAL, FAMILY_CARD_FLOW,
                     FAMILY_TOKENS_COUNTERS, FAMILY_PUMP_RESTRICT,
                     FAMILY_STACK_MANA, FAMILY_TYPE_CHANGE, FAMILY_EDICT)
 
 
-def _strict_reflexive(s) -> bool:
-    if not _is_sub(s) or s.payload.kind is not SubAbilityKind.REFLEXIVE:
+def _strict_reflexive(s, spell: bool = False) -> bool:
+    """A reflexive sub-ability; on a SPELL host also a delayed one (an
+    activated ability's delay is its own typed field, resolved by the
+    activation path before any dispatch: `activated_effects.
+    resolve_activated_ability`)."""
+    if not _is_sub(s):
+        return False
+    kind = s.payload.kind
+    if not (kind is SubAbilityKind.REFLEXIVE
+            or (spell and kind is SubAbilityKind.DELAYED
+                and s.payload.timing is not None)):
         return False
     if s.residue or s.condition is not None or s.optional or s.then \
             or s.otherwise or s.alternatives or s.replaces \
@@ -318,8 +331,9 @@ def _strict_host(h: AbilityEffects, verbs: frozenset, *,
         return False
     if h.trigger is not None and h.trigger.intervening_if is not None:
         return False
+    spell = h.kind is HostKind.SPELL
     for s in iter_specs(h.specs):
-        if _strict_reflexive(s):
+        if _strict_reflexive(s, spell):
             continue
         if s.verb not in verbs or _is_sub(s) or s.residue:
             return False
@@ -347,7 +361,8 @@ _TOKEN_COUNTER_VERBS = frozenset({Verb.CREATE_TOKEN, Verb.PUT_COUNTERS,
                                   Verb.KEYWORD_ACTION})
 _PUMP_VERBS = frozenset({Verb.CONTINUOUS, Verb.TAP, Verb.UNTAP})
 _STACK_MANA_VERBS = frozenset({Verb.COUNTER, Verb.ADD_MANA, Verb.PAY,
-                               Verb.END_TURN})
+                               Verb.END_TURN, Verb.LOSE_GAME,
+                               Verb.WIN_GAME})
 
 
 def strict_damage(h: AbilityEffects) -> bool:

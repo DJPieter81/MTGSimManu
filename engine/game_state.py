@@ -499,6 +499,27 @@ class GameState:
         the dispatcher's executors and the land-destruction rider share."""
         self.rng.shuffle(self.players[player_idx].library)
 
+    def end_game(self, losers=(), winners=(), cause: str = "") -> None:
+        """An effect ends the game (CR 104.2b: a player an effect says wins
+        the game wins; 104.3c: a player an effect says loses it loses). The
+        one owner of an effect-driven game end, logged. In a two-player game
+        a win is the other player's loss; every player losing at once is a
+        draw (CR 104.4a). A game already over is not ended again."""
+        if self.game_over:
+            return
+        lost = set(losers) | {1 - w for w in winners}
+        if not lost:
+            return
+        self.game_over = True
+        self.winner = (None if len(lost) >= len(self.players)
+                       else next(i for i in range(len(self.players))
+                                 if i not in lost))
+        names = ", ".join(f"P{i+1}" for i in sorted(lost))
+        self.log.append(
+            f"T{self.display_turn}: {names} "
+            f"{'loses' if len(lost) == 1 else 'lose'} the game"
+            f"{' — ' + cause if cause else ''} (CR 104.3c)")
+
     def flip_coin(self, player_idx: int, cause: str = "") -> bool:
         """A player flips a coin (CR 705.1): it wins or loses the flip,
         each equally likely, decided by the game's seeded rng. The one

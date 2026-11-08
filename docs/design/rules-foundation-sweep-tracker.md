@@ -13273,3 +13273,66 @@ The policy is at least as fast for all three. **Do not rebuild the mulligan to c
 - it is not needed for mulligans or the reanimation lines.
 
 A **go-off turn metric** (the first turn the payoff is on the battlefield, or the closer resolves) beside the kill turn would make the combo comparison to real-world numbers honest. That is a tooling lead for `tools/goldfish.py`.
+
+## Unit LG: an effect that says a player loses (or wins) the game ends it (rules; CR 104.2b, 104.3c, 118.12, 603.7; 2026-11-08)
+
+**Symptom:** Amulet Titan goldfish logs show Summoner's Pact cast on turn 1 with one or two lands. The game went on past the turn 2 upkeep, where its {2}{G}{G} could not be paid.
+
+**Rule:**
+- CR 104.3c: if an effect says a player loses the game, that player loses.
+- CR 104.2b: if an effect says a player wins, that player wins.
+- CR 104.4a: if all players lose at once, the game is a draw.
+- CR 118.12: "pay <cost>. If you don't, <instruction>" offers the cost and runs the instruction only when it is not paid.
+- CR 603.7: a delayed trigger created by a resolving spell fires at its stated step.
+
+**Defect:**
+- The effect grammar recognised "lose the game" and "win the game" and refused both.
+- No executor existed for "pay <cost>" with an "if you don't" branch.
+- A spell host holding a delayed sub-ability was never strict, so it never reached the dispatcher.
+- Summoner's Pact therefore resolved through a name-keyed handler that searched and dropped the upkeep trigger: a free spell.
+- Five token spells in the same shape lost their delayed exile, so their tokens stayed for good: Feral Lightning, Giantbaiting, Stone Idol Trap and Thunderheads (exile at the next end step), and Pact of the Titan (its own upkeep payment).
+
+**Class:** 57 pool cards print "<player> loses / wins the game" (`tools/class_census.py`); 5 print the pact shape. Registered decks: Summoner's Pact (Amulet Titan, MB ×2).
+
+**Built:**
+- **Grammar:** `Verb.LOSE_GAME` and `Verb.WIN_GAME` (lexicon rows, fixed-object pattern, actor-only). "You can't lose the game" stays a refused static.
+- **Engine:**
+  - `GameState.end_game`, the one owner of an effect-driven game end; all players losing at once is a draw.
+  - `execute_game_end`.
+  - `execute_pay`, which offers the cost through the one "unless" payment owner (`optional_costs.offer_unless_cost`); the "if you don't" branch runs when it is not paid.
+  - A SPELL host holding a delayed sub-ability is strict when the sub-ability's host is. Activated abilities keep their own typed delay, which `resolve_activated_ability` resolves before any dispatch.
+- **AI:**
+  - Declining a payment whose "if you don't" branch loses the payer the game projects the position with no life (`ai/unless_value.py`).
+  - A spell that defers a cost on pain of losing is cast only when that cost is payable from the board as it will stand at that upkeep (`ai/deferred_costs.py`): every permanent untapped (CR 502.3), creatures unsick (CR 302.6), the mana pool empty (CR 500.4).
+- **Deleted:** the Summoner's Pact handler; the card-name registry goes 70 → 69.
+- **Auditor:** `104.3c/effect_ends_the_game` at the executor seam, tested both ways.
+
+**Tests:** `tests/test_an_effect_that_says_a_player_loses_the_game_ends_it.py`, 14 rule-named tests. 7 were red before the engine change, and the AI test was red with the gate removed.
+
+**Pins:**
+- Census re-locked: RECOGNIZED_UNSUPPORTED 457 → 410. 10 clauses moved to later-stage refusals (FILTER 1528 → 1532, REFERENCE 1359 → 1363); each is still refused (e.g. "each player with exactly 13 life loses the game").
+- Equivalence and closure baselines re-locked.
+- Host harness: 11 intended new-path pairs recorded, each verified by hand. The legacy token path left the tokens on the battlefield; the new path exiles them at the end step.
+
+**Measured** (Amulet goldfish n=20, s70000):
+
+| Arm | Kills | Losses | Median kill turn |
+|---|---|---|---|
+| Before (pact free) | 20 | 0 | 7 |
+| Engine rule only | 15 | 5 (an unpaid pact) | 8 |
+| Engine rule and AI rule | 20 | 0 | 8 |
+
+Amulet's turn-7 goldfish median was partly a rules defect.
+
+**Not built:**
+- The response path (`ai/response.py`) does not yet read deferred costs. No registered deck casts an instant-speed pact.
+- 52 more "loses / wins the game" cards remain refused at later stages: conditions such as "if you control …", relative clauses, delayed "that turn's end step".
+
+**Addendum to "Combo speed" (same day): Storm dig timing, falsified.** Same seeds (n=40), digs held while no spell has been cast this turn:
+
+| Arm | Median kill turn | Mean | Decking losses |
+|---|---|---|---|
+| As is | 7 | 8.57 | 3 |
+| Digs held | 8 | 9.00 | 7 |
+
+Casting digs on building turns is right. The cards they exile that expire are not what costs Storm turns. **Do not build a dig-deferral rule.**

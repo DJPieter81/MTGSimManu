@@ -851,7 +851,7 @@
    "E6": 34,
    "none": 274
   },
-  "strict": 90,
+  "strict": 91,
   "sub_kinds": {
    "DELAYED": 6,
    "REFLEXIVE": 2
@@ -1105,7 +1105,7 @@
     "strict": false
    }
   ],
-  "executable": 182,
+  "executable": 183,
   "family": "tokens_counters",
   "hosts": {
    "mainboard": 3,
@@ -1118,7 +1118,7 @@
    "E6": 9,
    "none": 89
   },
-  "strict": 214,
+  "strict": 222,
   "sub_kinds": {
    "DELAYED": 12,
    "REFLEXIVE": 2
@@ -1315,6 +1315,13 @@
     "strict": true
    },
    {
+    "card": "Summoner's Pact",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": true
+   },
+   {
     "card": "Surgical Extraction",
     "host": "SPELL:0:0",
     "part": "sideboard",
@@ -1357,22 +1364,25 @@
     "strict": true
    }
   ],
-  "executable": 573,
+  "executable": 579,
   "family": "damage",
   "hosts": {
-   "mainboard": 20,
-   "pool": 549,
+   "mainboard": 21,
+   "pool": 554,
    "sideboard": 4
   },
   "steps": {
    "E1": 154,
    "E2": 81,
    "E3": 175,
-   "E4": 132,
-   "E5": 31
+   "E4": 136,
+   "E5": 31,
+   "none": 2
   },
-  "strict": 573,
-  "sub_kinds": {},
+  "strict": 579,
+  "sub_kinds": {
+   "DELAYED": 6
+  },
   "verb_sets": {
    "CONTINUOUS,CREATE_TOKEN": 14,
    "CONTINUOUS,EXILE": 7,

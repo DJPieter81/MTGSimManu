@@ -161,8 +161,8 @@
   "can_target_player": {
    "AGREE": 21626,
    "DERIVED_COVERAGE_GROWTH": 22,
-   "UNEXPLAINED": 532,
-   "UNMODELLED_CLAUSE": 558
+   "UNEXPLAINED": 533,
+   "UNMODELLED_CLAUSE": 557
   },
   "cast_prohibition": {
    "AGREE": 22734,
@@ -237,8 +237,8 @@
    "AGREE": 21012,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_TARGETED_DAMAGE_SCOPE": 8,
-   "UNEXPLAINED": 901,
-   "UNMODELLED_CLAUSE": 794
+   "UNEXPLAINED": 902,
+   "UNMODELLED_CLAUSE": 793
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -388,8 +388,8 @@
    "AGREE": 20835,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
-   "UNEXPLAINED": 924,
-   "UNMODELLED_CLAUSE": 942
+   "UNEXPLAINED": 927,
+   "UNMODELLED_CLAUSE": 939
   },
   "has_discard_effect": {
    "AGREE": 22256,
@@ -427,15 +427,15 @@
    "AGREE": 22307,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_GRAVEYARD_HATE": 1,
-   "UNEXPLAINED": 218,
-   "UNMODELLED_CLAUSE": 189
+   "UNEXPLAINED": 219,
+   "UNMODELLED_CLAUSE": 188
   },
   "has_graveyard_recursion": {
    "AGREE": 21475,
    "DERIVED_COVERAGE_GROWTH": 29,
    "LEGACY_GRAVEYARD_RECURSION": 5,
-   "UNEXPLAINED": 715,
-   "UNMODELLED_CLAUSE": 514
+   "UNEXPLAINED": 716,
+   "UNMODELLED_CLAUSE": 513
   },
   "has_graveyard_target": {
    "AGREE": 22121,
@@ -506,8 +506,8 @@
   "has_recurring_trigger": {
    "AGREE": 17533,
    "LEGACY_RECURRING_TRIGGER_SCOPE": 5,
-   "UNEXPLAINED": 4176,
-   "UNMODELLED_CLAUSE": 1024
+   "UNEXPLAINED": 4177,
+   "UNMODELLED_CLAUSE": 1023
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -535,8 +535,8 @@
   "has_self_trigger": {
    "AGREE": 20997,
    "DERIVED_COVERAGE_GROWTH": 1344,
-   "UNEXPLAINED": 355,
-   "UNMODELLED_CLAUSE": 42
+   "UNEXPLAINED": 356,
+   "UNMODELLED_CLAUSE": 41
   },
   "has_surveil": {
    "AGREE": 22682,
@@ -762,9 +762,9 @@
   }
  },
  "gate_parity": {
-  "legacy_fallback": 3081,
-  "new_path": 2608,
-  "pairs": 5689
+  "legacy_fallback": 3076,
+  "new_path": 2619,
+  "pairs": 5695
  },
  "templates": 22738,
  "totals": {
@@ -785,7 +785,7 @@
   "MASKED_GROWTH": 69,
   "REMINDER_TEXT": 71,
   "SEMANTIC_FIX": 38,
-  "UNEXPLAINED": 18063,
-  "UNMODELLED_CLAUSE": 9284
+  "UNEXPLAINED": 18072,
+  "UNMODELLED_CLAUSE": 9275
  }
 }

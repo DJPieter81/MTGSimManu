@@ -14,7 +14,9 @@ The projections:
   source and with the cards it exiled until it left back on their
   owners' battlefields (CR 610.3) -- the hypothetical-board technique
   `ai.permanent_threat` uses (take the permanent off, snapshot, put it
-  back). Any other instruction has no term yet and projects the board as
+  back). A loss of the game for the payer (CR 104.3c: "pay <cost>. If
+  you don't, you lose the game") projects the position with no life
+  left. Any other instruction has no term yet and projects the board as
   it is.
 """
 from __future__ import annotations
@@ -33,6 +35,10 @@ def project_unless_declined(game: Any, payer: int, source: Any, spec: Any,
                             snap: Any) -> Any:
     """The position after declining: the guarded instruction `spec`
     performed (see module docs)."""
+    if _loses_the_game(spec):
+        # CR 104.3c: declining loses the payer the game -- the position
+        # with no life left, the one the clock reads as lost.
+        return snap.model_copy(update={"my_life": 0})
     from engine.effect_executors import sacrifice_self
     if spec is None or source is None or not sacrifice_self(spec) \
             or source.zone != "battlefield":
@@ -55,3 +61,12 @@ def project_unless_declined(game: Any, payer: int, source: Any, spec: Any,
         for card in added:
             game.players[card.owner].battlefield.remove(card)
         holder.insert(idx, source)
+
+
+def _loses_the_game(spec: Any) -> bool:
+    """The guarded instruction is "you lose the game" -- the payer, the
+    printed "you", loses (CR 104.3c)."""
+    from engine.effect_spec import Verb
+    from engine.effect_executors import _acts_as_controller
+    return (spec is not None and getattr(spec, "verb", None) is Verb.LOSE_GAME
+            and _acts_as_controller(spec.actor))

@@ -135,6 +135,7 @@ VERB_FAMILY: Mapping[Verb, Family] = MappingProxyType({
     Verb.CREATE_EMBLEM: _F.STACK_MANA_RULES,
     Verb.EXTRA_TURN: _F.STACK_MANA_RULES, Verb.SKIP: _F.STACK_MANA_RULES,
     Verb.CREATE_TRIGGER: _F.STACK_MANA_RULES, Verb.FLIP: _F.STACK_MANA_RULES,
+    Verb.LOSE_GAME: _F.STACK_MANA_RULES, Verb.WIN_GAME: _F.STACK_MANA_RULES,
 })
 
 # The participant slots a reading fills (section 4 "Roles and slots").
@@ -203,6 +204,8 @@ _VERB_FACTS: Dict[Verb, Tuple[Tuple[str, ...], Optional[str], Optional[bool], st
     Verb.END_TURN: (("player",), None, None, "GameState.end_the_turn"),
     Verb.SKIP: (("player",), None, True, "none yet"),
     Verb.FLIP: (("player",), None, False, "game.rng (CR 705.1)"),
+    Verb.LOSE_GAME: (("player",), None, False, "GameState.end_game (CR 104.3c)"),
+    Verb.WIN_GAME: (("player",), None, False, "GameState.end_game (CR 104.2b)"),
     Verb.UNMODELLED: ((), None, None, "none (recognised, unsupported)"),
 }
 
@@ -297,6 +300,10 @@ _ROWS: Tuple[_Row, ...] = (
     # damage and life (CR 120, 119)
     _r("deal", Verb.DAMAGE, r"(?= [^.;]*?\bdamage\b)"),
     _r("fight", Verb.FIGHT),
+    # CR 104.2b, 104.3c: "<player> loses / wins the game" (the lemma
+    # row consumes "the game"; the fixed-object row reads nothing more).
+    _r("lose the game", Verb.LOSE_GAME, r"(?=$|[.,;])"),
+    _r("win the game", Verb.WIN_GAME, r"(?=$|[.,;])"),
     _r("lose", Verb.LOSE_LIFE, _LIFE_AFTER),
     _r("gain", Verb.GAIN_LIFE, _LIFE_AFTER),
     _r("become", Verb.SET_LIFE, subject=r"\blife totals? $"),
@@ -418,8 +425,6 @@ _UNSUPPORTED_ROWS: Tuple[Tuple[str, str], ...] = (
     ("regenerate", r"regenerates?\b"),
     # CR 707.2, 613.1a: a layer 1 copy effect has no continuous owner yet.
     ("become a copy", r"(?:becomes? a copy|become copies) of\b"),
-    ("win the game", r"wins? the game\b"),
-    ("lose the game", r"loses? the game\b"),
     ("face a villainous choice", r"faces? a villainous choice\b"),
     ("separate into piles", r"separates? [^.;]*? into (?:two|\w+) piles\b"),
     ("name a card", r"names? (?:a|an|one)\b"),

@@ -3339,3 +3339,91 @@ CONDITION_EVALUATORS[ConditionKind.HISTORY] = evaluate_history
 CONDITION_EVALUATORS[ConditionKind.UNLESS] = evaluate_unless
 EXECUTORS[Verb.FLIP] = execute_flip
 CONDITION_EVALUATORS[ConditionKind.FLIP] = evaluate_flip
+
+
+# ── LOSE_GAME / WIN_GAME (CR 104.2b, 104.3c) and PAY (CR 118.12) ───────
+
+def _game_end_supported(s: EffectSpec) -> bool:
+    """"<Player> loses / wins the game": the controller, a printed player
+    set, the player chosen for a target or the event's player loses (or
+    wins) the game (CR 104.3c, 104.2b)."""
+    return (s.verb in (Verb.LOSE_GAME, Verb.WIN_GAME)
+            and _plain_participants(s) and not s.flags
+            and s.subject is None and s.ref is None and s.other is None
+            and s.amount is None and _named_players_supported(s.actor))
+
+
+def execute_game_end(ctx: Resolution, s: EffectSpec,
+                     actors: Tuple[int, ...]) -> Outcome:
+    """The players the instruction names lose (or win) the game through
+    the one owner of an effect-driven game end (`GameState.end_game`)."""
+    if not actors:
+        return Outcome(False, {})
+    cause = getattr(_source_object(ctx), "name", "")
+    if s.verb is Verb.LOSE_GAME:
+        ctx.game.end_game(losers=actors, cause=cause)
+    else:
+        ctx.game.end_game(winners=actors, cause=cause)
+    _audit_game_end(ctx, s, actors)
+    return Outcome(True, {a: () for a in actors})
+
+
+def _audit_game_end(ctx: Resolution, s: EffectSpec,
+                    actors: Tuple[int, ...]) -> None:
+    """CR 104.3c / 104.2b, restated from the raw game fields: after an
+    effect says a player loses the game, the game is over and that player
+    is not its winner; after it says a player wins, no other player is.
+    Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    g = ctx.game
+    if s.verb is Verb.LOSE_GAME:
+        ok = g.game_over and g.winner not in actors
+    else:
+        ok = g.game_over and (g.winner in actors or g.winner is None)
+    rules_audit.check(
+        "104.3c/effect_ends_the_game", ok,
+        f"{getattr(_source_object(ctx), 'name', '?')}: {s.verb.value} for "
+        f"{actors}, game_over={g.game_over}, winner={g.winner}", game=g)
+
+
+execute_game_end.supports = _game_end_supported
+
+
+def _pay_supported(s: EffectSpec) -> bool:
+    """"Pay <cost>. If you don't, <instruction>": the controller is offered
+    a cost the payment owner charges (`optional_costs.unless_cost_payable`)
+    and the "if you don't" branch runs when it is not paid -- CR 118.12's
+    "<instruction> unless you pay <cost>" printed the other way round. A
+    payment with no "if you don't" branch, or one that gates an "if you
+    do", is another shape."""
+    from .optional_costs import unless_cost_payable
+    return (s.verb is Verb.PAY and _acts_as_controller(s.actor)
+            and bool(s.otherwise) and not s.then and not s.optional
+            and not s.flags and not s.alternatives and not s.replaces
+            and s.target is None and s.target_slot is None
+            and s.subject is None and s.ref is None and s.other is None
+            and s.filter is None and s.amount is None and s.dest is None
+            and s.duration is None and s.group is None
+            and s.chooser is Chooser.CONTROLLER
+            and unless_cost_payable(s.payload))
+
+
+def execute_pay(ctx: Resolution, s: EffectSpec,
+                actors: Tuple[int, ...]) -> Outcome:
+    """The controller is offered the cost through the one "unless" payment
+    owner (`optional_costs.offer_unless_cost`), the declined branch being
+    the instruction that then happens; performed iff paid, so the
+    sequencer runs the "if you don't" branch exactly when it was not."""
+    from .optional_costs import offer_unless_cost
+    paid = offer_unless_cost(ctx.game, ctx.controller, s.payload,
+                             _source_object(ctx), s.otherwise[0])
+    return Outcome(paid, {})
+
+
+execute_pay.supports = _pay_supported
+
+EXECUTORS[Verb.LOSE_GAME] = execute_game_end
+EXECUTORS[Verb.WIN_GAME] = execute_game_end
+EXECUTORS[Verb.PAY] = execute_pay

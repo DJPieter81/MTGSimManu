@@ -1,7 +1,7 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.2763,
+  "deck_removal_ready_share": 0.284,
   "deck_removal_typed_share": 0.8638,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
@@ -17,7 +17,7 @@
    "target.union:sorcery": 1,
    "target.unparsed": 5
   },
-  "deck_typed_share": 0.76,
+  "deck_typed_share": 0.7611,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 8,
    "CLAUSE": 25,
@@ -26,7 +26,7 @@
    "FILTER": 29,
    "ITERATION": 2,
    "NO_LEMMA": 21,
-   "RECOGNIZED_UNSUPPORTED": 8,
+   "RECOGNIZED_UNSUPPORTED": 7,
    "REFERENCE": 16,
    "REPLACEMENT": 66,
    "STRUCTURE": 5,
@@ -91,19 +91,19 @@
    "UNPARSED": 296,
    "WIDENING": 584
   },
-  "typed_share": 0.7415,
+  "typed_share": 0.7424,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.8016,
+   "ACTIVATED": 0.8021,
    "ALTERNATIVE_COST": 0.0,
    "CHAPTER": 0.7525,
    "KEYWORD": 0.0,
    "LOYALTY": 0.7854,
    "MANA_ABILITY": 0.9448,
-   "MODE": 0.7941,
+   "MODE": 0.7947,
    "REPLACEMENT": 0.0,
    "SPELL": 0.7483,
    "STATIC": 0.6313,
-   "TRIGGERED": 0.8,
+   "TRIGGERED": 0.8023,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
@@ -112,12 +112,12 @@
    "CONDITION": 1109,
    "DELAY": 16,
    "DURATION": 53,
-   "FILTER": 1528,
+   "FILTER": 1532,
    "ITERATION": 110,
    "NO_LEMMA": 1166,
    "QUANTITY": 133,
-   "RECOGNIZED_UNSUPPORTED": 457,
-   "REFERENCE": 1359,
+   "RECOGNIZED_UNSUPPORTED": 410,
+   "REFERENCE": 1363,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1156,
@@ -128,9 +128,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.8016,
+    "share": 0.8021,
     "specs": 6670,
-    "typed": 5347
+    "typed": 5350
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -158,9 +158,9 @@
     "typed": 1505
    },
    "MODE": {
-    "share": 0.7941,
+    "share": 0.7947,
     "specs": 1758,
-    "typed": 1396
+    "typed": 1397
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -178,9 +178,9 @@
     "typed": 3395
    },
    "TRIGGERED": {
-    "share": 0.8,
+    "share": 0.8023,
     "specs": 15290,
-    "typed": 12232
+    "typed": 12267
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -249,9 +249,9 @@
      "typed": 36
     },
     "TRIGGERED": {
-     "share": 0.8909,
+     "share": 0.8955,
      "specs": 220,
-     "typed": 196
+     "typed": 197
     },
     "UNKNOWN": {
      "share": 0.0,
@@ -264,13 +264,13 @@
     "clauses": 257,
     "gate": 0.85,
     "met": false,
-    "ready": 71,
-    "ready_share": 0.2763,
+    "ready": 73,
+    "ready_share": 0.284,
     "typed": 222,
     "typed_share": 0.8638
    },
    "specs": 921,
-   "typed": 700
+   "typed": 701
   },
   "keyword_lines": [
    [
@@ -1229,9 +1229,9 @@
     2
    ]
   ],
-  "typed": 32908,
-  "unmodelled": 11473,
-  "unmodelled_row_count": 1935,
+  "typed": 32947,
+  "unmodelled": 11434,
+  "unmodelled_row_count": 1939,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1564,12 +1564,6 @@
     25
    ],
    [
-    "RECOGNIZED_UNSUPPORTED",
-    "lose the game",
-    "lexicon.unsupported:lose_the_game",
-    25
-   ],
-   [
     "AMOUNT",
     "can't",
     "amount.scaler:and",
@@ -1591,6 +1585,12 @@
     "REFERENCE",
     "deal",
     "link.unbound",
+    24
+   ],
+   [
+    "TARGET",
+    "exile",
+    "patterns.possessive_object",
     24
    ]
   ]

@@ -15,6 +15,7 @@
   "ai/combo_evaluator.py": 0,
   "ai/damage_targets.py": 0,
   "ai/deck_knowledge.py": 0,
+  "ai/deferred_costs.py": 0,
   "ai/discard_advisor.py": 0,
   "ai/draw_projection.py": 0,
   "ai/edict_value.py": 0,

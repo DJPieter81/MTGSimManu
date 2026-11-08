@@ -805,7 +805,7 @@ _ROW_FNS = {
     "continuous": (_row_continuous, (Verb.CONTINUOUS,)),
     "search": (_row_search, (Verb.SEARCH,)),
     "fixed": (_row_fixed, (Verb.SHUFFLE, Verb.EXTRA_TURN, Verb.END_TURN,
-                           Verb.FLIP)),
+                           Verb.FLIP, Verb.LOSE_GAME, Verb.WIN_GAME)),
 }
 ROWS = {v: (row, fn) for row, (fn, verbs) in _ROW_FNS.items() for v in verbs}
 

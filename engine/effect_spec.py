@@ -100,6 +100,8 @@ class Verb(Enum):
     SKIP = "skip"
     CREATE_TRIGGER = "create_trigger"    # delayed (CR 603.7) / reflexive (CR 603.12)
     FLIP = "flip"                        # CR 705: flip a coin; its result is the outcome
+    LOSE_GAME = "lose_game"              # CR 104.3c: an effect says a player loses the game
+    WIN_GAME = "win_game"                # CR 104.2b: an effect says a player wins the game
     UNMODELLED = "unmodelled"
 
 
@@ -975,7 +977,8 @@ ACTOR_ONLY_VERBS: FrozenSet[Verb] = frozenset({
     Verb.SHUFFLE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.SET_LIFE,
     Verb.EXCHANGE_LIFE, Verb.DRAW, Verb.MILL, Verb.SCRY, Verb.SURVEIL,
     Verb.SEARCH, Verb.PLAYER_COUNTERS, Verb.ADD_MANA, Verb.CREATE_EMBLEM,
-    Verb.EXTRA_TURN, Verb.END_TURN, Verb.SKIP, Verb.FLIP})
+    Verb.EXTRA_TURN, Verb.END_TURN, Verb.SKIP, Verb.FLIP,
+    Verb.LOSE_GAME, Verb.WIN_GAME})
 
 _IMMUTABLE_LEAVES = (type(None), bool, int, float, str, bytes, Enum)
 

@@ -5924,6 +5924,14 @@
   {
    "pair": [
     "create_token",
+    "Feral Lightning",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
+  },
+  {
+   "pair": [
+    "create_token",
     "Flurry of Horns",
     "SPELL:0:0"
    ],
@@ -5944,6 +5952,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit PO: the whole spell now resolves on the dispatcher (the tokens/counters family takes a P/T change until end of turn as a rider of its token instruction): the same -1/-1 on the target, and the token owner gives the Saproling its printed subtype, where the legacy handler made an untyped 'saproling' token (CR 111.3, 608.2c)"
+  },
+  {
+   "pair": [
+    "create_token",
+    "Giantbaiting",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
   },
   {
    "pair": [
@@ -6236,6 +6252,14 @@
   {
    "pair": [
     "create_token",
+    "Pact of the Titan",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the legacy token path created the token and dropped the delayed 'pay <cost>. If you don't, you lose the game.' (CR 603.7, 118.12, 104.3c); the carrier performs the host as printed, the upkeep payment offered through the one 'unless' payment owner"
+  },
+  {
+   "pair": [
+    "create_token",
     "Queen's Commission",
     "SPELL:0:0"
    ],
@@ -6476,6 +6500,14 @@
   {
    "pair": [
     "create_token",
+    "Stone Idol Trap",
+    "SPELL:0:1"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
+  },
+  {
+   "pair": [
+    "create_token",
     "Summon the School",
     "SPELL:0:0"
    ],
@@ -6520,6 +6552,14 @@
     "SPELL:0:0"
    ],
    "reason": "unit PO: the whole spell now resolves on the dispatcher: four 1/1 Hero creature tokens (the token owner gives them their printed subtype, where the legacy handler made untyped creature tokens), then a +1/+1 counter on each creature its controller controls, which the legacy route skipped (CR 111.3, 122.1, 608.2c)"
+  },
+  {
+   "pair": [
+    "create_token",
+    "Thunderheads",
+    "SPELL:0:1"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
   },
   {
    "pair": [
@@ -7556,6 +7596,14 @@
   {
    "pair": [
     "dispatched",
+    "Feral Lightning",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Fiery Conclusion",
     "SPELL:0:1"
    ],
@@ -7704,6 +7752,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`): the card-flow executors move the chosen card (CR 700.2, 608.2b). No clause handler performed the mode, so it did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Giantbaiting",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
   },
   {
    "pair": [
@@ -8592,6 +8648,14 @@
     "MODE:0:0:mode0"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pact of the Titan",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the legacy token path created the token and dropped the delayed 'pay <cost>. If you don't, you lose the game.' (CR 603.7, 118.12, 104.3c); the carrier performs the host as printed, the upkeep payment offered through the one 'unless' payment owner"
   },
   {
    "pair": [
@@ -9604,6 +9668,14 @@
   {
    "pair": [
     "dispatched",
+    "Stone Idol Trap",
+    "SPELL:0:1"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
+  },
+  {
+   "pair": [
+    "dispatched",
     "Stone by Sunlight",
     "MODE:0:1:mode1"
    ],
@@ -9680,6 +9752,14 @@
     "SPELL:0:0"
    ],
    "reason": "The legacy token clause built the token from a regex over the clause and got its colors, name, subtypes wrong: a worded count ('two') failed the regex, leaving a colourless 'Creature Token' with no subtypes or keywords, and a digit count named the token by its lowercased last subtype with no subtypes. The token family (unit TK) resolves the host through the dispatcher: the token owner builds the token its text prints (CR 111.3: its types, subtypes, colours, power and toughness, keywords and granted sacrifice-for-mana ability; CR 111.4: an unnamed token is named for its subtypes plus 'Token') for each player it names (CR 111.2)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Summoner's Pact",
+    "SPELL:0:0"
+   ],
+   "reason": "unit LG: the name-keyed handler performed the search and dropped the delayed 'pay <cost>. If you don't, you lose the game.' (CR 603.7, 118.12, 104.3c), so a pact cost nothing; the card-flow carrier performs the search and creates the delayed payment"
   },
   {
    "pair": [
@@ -9848,6 +9928,14 @@
     "MODE:0:2:mode2"
    ],
    "reason": "A modal spell's chosen mode resolves through the dispatcher (unit MR, `effect_carrier.mode_family`, the chosen mode a host of its own): its damage is dealt to the target chosen for it through the damage family's executor (CR 700.2, 120.3, 608.2b). No clause handler performed an aimed-damage mode, so the chosen mode did nothing."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thunderheads",
+    "SPELL:0:1"
+   ],
+   "reason": "unit LG: the legacy token path created the token(s) and dropped the delayed 'exile it/them at the beginning of the next end step' (CR 603.7), so they stayed for good; the card-flow/tokens carrier performs the host as printed: the tokens, and the delayed exile the delayed-trigger queue fires at that end step"
   },
   {
    "pair": [
