@@ -94,3 +94,14 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
   1. A tutor whose pool holds a payoff is that payoff in the chain, at the tutor's cost plus the payoff's, with one more storm.
   2. Then the ritual gate holds a reachable but non-lethal finisher route when a later turn remains.
 - **Tests first:** a Storm case, plus another tutor-to-payoff chain.
+
+## Fifth lead (named, not built): Storm never sideboards
+- **The evidence:**
+  - A game-1 batch of 8 seeds each against four decks: Storm wins 11 of 32, and 0 of 8 against Dimir.
+  - The decision-gate arms (`rr-post`, `tc-post`, `tc2-post`, `pr-post`) moved Storm's Bo3 row by no more than noise.
+  - In Bo3 Ruby Storm vs Boros Energy s51500, Storm wins game 1 on turn 4 and loses games 2 and 3.
+- **The finding:**
+  - The default sideboarding path (`engine/sideboard_manager.sideboard`, legacy deck-name and card-name string matching) boards in nothing for Ruby Storm against any opponent. Four Thoughtseize, the standard plan against Dimir and Azorius control, never come in.
+  - The oracle-driven solver (`SB_SOLVER=new`, `ai/sideboard_solver.plan_sideboard`) swaps one Fatal Push for one Hex Magic against every opponent alike.
+- **The subsystem:** sideboarding. It is a strategic choice that lives in `engine/`, and its legacy path matches names, which the abstraction contract forbids.
+- **Next unit:** make the oracle-driven solver the owner. Test-first: hand disruption comes in against counter-dense and discard-dense opponents (BHI priors), and a Storm case is paired with another deck whose sideboard answers a matchup. Measure on Bo3 (the canonical format), not game 1.
