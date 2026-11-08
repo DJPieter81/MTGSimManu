@@ -112,3 +112,10 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
 - **Default unchanged.** The solver needs plan-aware values for a deck's own cards before it can own sideboarding.
 - **Re-derive the band.** Storm's band of 40-55 was set against a field that never sideboarded against it; it should be re-derived once the field does.
 
+
+## The list is current (checked 2026-11-08)
+- **Source:** a fresh mtgtop8 fetch (`data/tier1_decklists/2026-11-08/`, run by the `weekly` workflow in `decklists_only` mode, since this session cannot reach mtgtop8).
+- **The newest Ruby Storm list** (event 93409) matches the registered mainboard card for card. Its sideboard differs by one card: 1 Brotherhood's End where we play 1 Fatal Push.
+- **The other new list** (event 93268) runs the same 37 spells with a slightly different mana base and sideboard (Veil of Summer, Nature's Claim, no Thoughtseize).
+- **So the list is not the cause of Storm's gap.**
+- **Storm's metagame share is 4%.** The registry's seven "gaps" in `DIFF_REPORT.md` are name differences already mapped on 2026-11-01: UW Control → Azorius Control, UrzaTron → Eldrazi Tron, Dimir Control → Dimir Midrange, and so on.
