@@ -1445,6 +1445,16 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         if rules_query.permission_ends_this_turn(game, player_idx, card):
             signals.append('permission_ends_this_turn')
 
+    # A graveyard-wide flashback grant does this turn exactly what its
+    # granted casts do (CR 702.34a): signal 16 decides that, counting the
+    # granted spells the mana left after the grant pays for. The grant is
+    # tagged a cantrip for the chain projections (`card_database`), which
+    # would also fire the chain-continuation signal (10) for a grant that
+    # leaves nothing castable -- the card spent for nothing.
+    if _grants_graveyard_flashback(oracle):
+        signals = [s for s in signals
+                   if s in ('flashback_combo_with_gy_fuel',
+                            'permission_ends_this_turn')]
     return signals
 
 

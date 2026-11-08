@@ -71,6 +71,16 @@ def test_a_granted_spell_the_mana_left_pays_for_is_a_signal(card_db):
     assert SIGNAL in _signals(g, pif)
 
 
+def test_a_cost_reducer_in_play_does_not_make_the_grant_a_signal(card_db):
+    """The replayed board: a cost reducer in play, the chain-continuation
+    shape. The grant still leaves no granted spell affordable."""
+    g, pif = _game(card_db, 3, ["Wrenn's Resolve"])
+    _add(g, card_db, "Ruby Medallion", "battlefield")
+    _add(g, card_db, "Wish", "hand")                  # a payoff in reach
+    _add(g, card_db, "Grapeshot", "sideboard")
+    assert _signals(g, pif) == []
+
+
 def test_the_grant_is_held_rather_than_cast_for_nothing(card_db):
     from ai.ev_player import EVPlayer
     g, _pif = _game(card_db, 4, ["Desperate Ritual", "Pyretic Ritual"])
