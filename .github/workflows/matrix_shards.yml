@@ -7,6 +7,9 @@ name: Matrix (sharded)
 # Request file matrix_requests/<tag>.json: {"tag": "...", "n": 60}
 # Optional "rows": [deck, ...] runs only those row shards and skips the
 # assemble job (a diagnostic run; each shard prints its rule violations).
+# Optional "env": {"NAME": "value"} exported in every shard before it plays
+# (an opt-in backend under measurement, e.g. SB_SOLVER); pair it with "rows"
+# so the run stays diagnostic.
 # Optional matrix_requests/<tag>_seed.jsonl: cells already played (a
 # tools/resumable_matrix.py checkpoint); no runner repeats them.
 #
@@ -45,6 +48,7 @@ jobs:
       n: ${{ steps.req.outputs.n }}
       decks: ${{ steps.req.outputs.decks }}
       partial: ${{ steps.req.outputs.partial }}
+      env: ${{ steps.req.outputs.env }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,6 +77,10 @@ jobs:
           echo "n=$N" >> "$GITHUB_OUTPUT"
           echo "decks=$DECKS" >> "$GITHUB_OUTPUT"
           echo "partial=$PARTIAL" >> "$GITHUB_OUTPUT"
+          # Optional "env": variables the shards export before playing
+          # (an opt-in backend under measurement, e.g. SB_SOLVER).
+          ENVS=$(python3 -c "import json;print(json.dumps(json.load(open('matrix_requests/$TAG.json')).get('env') or {}))")
+          echo "env=$ENVS" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG n=$N decks=$(echo "$DECKS" | python3 -c 'import json,sys;print(len(json.load(sys.stdin)))')"
 
   shard:
@@ -93,7 +101,15 @@ jobs:
       - name: Assemble the card database
         run: python3 merge_db.py
       - name: Play the row
+        env:
+          REQUEST_ENV: ${{ needs.plan.outputs.env }}
         run: |
+          eval "$(python3 -c "
+          import json, os, re, shlex
+          for k, v in json.loads(os.environ.get('REQUEST_ENV') or '{}').items():
+              assert re.fullmatch(r'[A-Z][A-Z0-9_]*', k), k
+              print('export ' + k + '=' + shlex.quote(str(v)))
+          ")"
           SEED="matrix_requests/${{ needs.plan.outputs.tag }}_seed.jsonl"
           python3 -m tools.resumable_matrix -n "${{ needs.plan.outputs.n }}" --workers 2 \
             --checkpoint "row-${{ matrix.row.slug }}.jsonl" --rules-audit --neutralise-deadline \

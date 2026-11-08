@@ -12503,3 +12503,26 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - The two holds that leaned negative suggest holding is not free in this field: the opponents' disruption and pressure are not priced beyond the two-turn clock condition.
 - In the game-1 batch Storm won 11 of 32, and 0 of 8 against Dimir. The remaining gap sits in the Dimir matchup (free counters, Bowmasters, discard) and in post-sideboard games, not in the chain gates.
 - The next Storm work should start from a Bo3 replay of a post-sideboard game, not from another gate.
+
+## Unit SBH: the sideboard solver values hand disruption; the oracle solver is measured as the sideboarder (AI; 2026-11-08)
+
+**Source:** the Storm diagnostic's fifth lead. Under the default sideboarding path (`engine/sideboard_manager.sideboard`, legacy name matching), Ruby Storm boards in nothing against any opponent. The oracle solver (`SB_SOLVER=new`) had no clause for a hand attack: Thoughtseize scored 0, and Storm's four never came in against Dimir Midrange (0 of 8 game-1s) or the control decks.
+
+**Step 1 (the clause):** `ai/sideboard_solver._clause_hand_disruption`, read from the typed `hand_attack_data`.
+- The value is the card the attack takes from a starting hand drawn from the opponent's deck (`STARTING_HAND_SIZE`, CR 103.4).
+- What it may take is the engine's own reading of the choose clause (`oracle_resolver._targeted_discard_candidates`).
+- A card's worth is `_card_impact`: a creature its threat, any other spell its mana value over the residency window.
+- The chooser picks: the caster takes the expected best card present (hypergeometric order statistics, `_expected_best_in_hand`), a random discard the mean card, the victim its least valuable card.
+
+**Effect on the solver's plan:** Storm brings in four Thoughtseize against Dimir and Azorius Control.
+- The solver's structural limit is visible: a deck's own engine cards score 0 (only opponent-facing clauses exist), so Hex Magic, Twinned Vision and, against Eldrazi Tron, Valakut Awakening and Artist's Talent are the first cut.
+- Only the gameplan's `critical_pieces` and `mulligan_keys` are protected.
+
+**Tests:** 6, red before.
+
+**Pins:** the solver is opt-in, so the digest is byte-identical and the anchor unchanged.
+
+**Workflow:** a request file may name `"env"`, which each shard exports before it plays (keys must be upper-case names). Pair it with `"rows"` so the run stays diagnostic.
+
+**Step 2, measured:** `sbh-post` with `SB_SOLVER=new` on rows Ruby Storm, Dimir Midrange and Goryo's Vengeance, plus guards Boros Energy and Azorius Control, at n=20 Bo3. Baselines: `tc2-post` (the same code) for Storm's row, `mo2-post` for the others (pending).
+- **Decision rule, stated before the run:** proceed to the default flip only if Storm's row improves beyond one standard error (~2 pp) and no guard row falls beyond one.
