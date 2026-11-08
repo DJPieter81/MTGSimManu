@@ -13,8 +13,10 @@ behind it. A label's confidence is computed from that evidence:
 - review: independent reviewers each tried to refute the label;
   confidence is the non-refuting reviewers over reviewers plus one.
 
-Without a rules-forced verdict, a label's confidence is the smallest of
-its available components (one weak leg weakens the label). With none, it
+Without a rules-forced verdict, independent legs that agree combine: the
+label is wrong only if every leg is (1 - product of (1 - leg)). A leg below
+even odds is evidence against the label: the confidence is then the
+weakest leg, and the label goes back to review. With none, it
 is unverified and scores the label file's `unverified_confidence`. The
 gate (`tests/test_golden_decisions.py`) requires every label at or above
 the file's `gate_confidence` to pass. The rest are reported.
@@ -44,6 +46,9 @@ def load_labels(path: str = LABELS) -> Dict[str, Any]:
     return data
 
 
+CONTRADICTION = 0.5   # a leg below even odds is evidence against the label
+
+
 def confidence(label: Dict[str, Any], unverified: float) -> float:
     ev = label["evidence"]
     if ev.get("rules_forced"):
@@ -59,7 +64,16 @@ def confidence(label: Dict[str, Any], unverified: float) -> float:
         # so a judgement label needs rollout evidence too to reach the gate.
         legs.append((rev["reviewers"] - rev["refuted"])
                     / (rev["reviewers"] + 1))
-    return min(legs) if legs else unverified
+    if not legs:
+        return unverified
+    if min(legs) < CONTRADICTION:
+        # Evidence against the label: the weakest leg, and a re-review.
+        return min(legs)
+    # Independent legs agreeing: the label is wrong only if every leg is.
+    wrong = 1.0
+    for leg in legs:
+        wrong *= 1.0 - leg
+    return 1.0 - wrong
 
 
 def observe(kind: str, built: Any) -> Any:

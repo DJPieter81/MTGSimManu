@@ -13130,3 +13130,22 @@ Two independent reviewers each tried to refute every label of `tests/eval/decisi
 - Judgement labels need rollout evidence as well to reach the 0.9 gate.
 
 All 8 labels are made by the AI.
+
+## Golden decision set: rollout evidence (2026-11-08)
+
+**Tool:** `tools/decision_rollout.py`. For a main-phase label, each seed runs one game twice. `run_game(start_hook=...)` makes player 0 active. At player 0's first main-phase decision the position is laid out, so its this-turn state is the decision's, and that decision is forced: once to the labelled play, once to the label's `alternative`. Both sides then play as the AI plays.
+
+The outcome is the number of turns until player 0 wins, with a loss scored as the turn cap. Seeds are paired across the two runs. `p_better` is a seeded paired bootstrap.
+
+A first version laid the position out before the first turn's untap, which reset this-turn state such as the storm count. Its Storm result (`p_better` 0.14) was invalid and is discarded.
+
+**Results (n=20):**
+- `reanimate_with_target_in_graveyard`: Persist 3.0 turns against Emperor of Bones 3.5; `p_better` 1.0.
+- `storm_closer_with_graveyard_fuel`: 9.9 against 9.9; `p_better` 0.48. The decision does not move the rest of the game measurably, but the rules review shows casting Grapeshot before flashing back the rituals is dominated (storm 8 and 8 mana against storm 6). The label is now rules-forced, with that note.
+
+**Scoring:** agreeing independent legs combine as 1 − Π(1 − leg). A leg below even odds is evidence against the label: confidence is then the weakest leg, and the label is re-reviewed. Tests: `tests/test_decision_rollout_evidence.py`.
+
+**After this round:**
+- 5 labels are gated at 1.0: 4 rules-forced, plus Persist with rollout and review.
+- 3 judgement labels are at 0.67 (review only), all from decision kinds the rollout does not yet cover (targets, land search, sideboard).
+- All 8 labels are made. The digest is byte-identical: `start_hook=None` changes nothing.

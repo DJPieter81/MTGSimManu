@@ -608,7 +608,8 @@ class GameRunner:
                   deck2_sideboard: Dict[str, int] = None,
                   forced_first_player: Optional[int] = None,
                   replay_log=None,
-                  game_number: int = 1) -> GameResult:
+                  game_number: int = 1,
+                  start_hook=None) -> GameResult:
         """Run a complete game and return the result.
 
         forced_first_player: see GameState.setup_game. Bo3 match orchestration
@@ -620,6 +621,11 @@ class GameRunner:
         recording channel for the new HTML replayer.
 
         game_number: 1/2/3 within a Bo3 — used as the GAME_START id.
+        start_hook: optional ``start_hook(game, ais)`` called once after the
+        mulligans, before the first turn: the decision-rollout tool
+        (`tools/decision_rollout.py`) lays out a golden position there and
+        plays it forward. None (every game the simulator plays) changes
+        nothing.
         """
         deck1 = self.build_deck(deck1_list)
         deck2 = self.build_deck(deck2_list)
@@ -808,6 +814,9 @@ class GameRunner:
             "creatures_played": [0, 0],
             "damage_dealt": [0, 0],
         }
+
+        if start_hook is not None:
+            start_hook(game, ais)
 
         first_player = game.active_player
         turn_mgr = game.turn_mgr

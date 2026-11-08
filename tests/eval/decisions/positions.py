@@ -39,8 +39,23 @@ def _add(game, card_db, name, zone, controller=0, sick=False):
     return c
 
 
+# A rollout lays a position out into a game the runner has already set
+# up (`tools/decision_rollout.py`): its libraries are the decks' own,
+# shuffled by the seed, so a builder neither creates a game nor fills a
+# library while `_INTO` holds one.
+_INTO: list = []
+
+
 def _game(deck: str, opp: str = "Goldfish", phase=Phase.MAIN1,
           turn: int = 5, opp_life: int = 20) -> GameState:
+    if _INTO:
+        g = _INTO[-1]
+        for p in g.players:
+            for zone in ("hand", "battlefield", "graveyard", "exile"):
+                getattr(p, zone).clear()
+        g.players[1].life = opp_life
+        g.players[0].lands_played_this_turn = 1
+        return g
     g = GameState(rng=random.Random(0))
     g.players[0].deck_name = deck
     g.players[1].deck_name = opp
@@ -53,6 +68,8 @@ def _game(deck: str, opp: str = "Goldfish", phase=Phase.MAIN1,
 
 
 def _library(g, card_db, n=15, name="Island", controller=0):
+    if _INTO:
+        return
     for _ in range(n):
         _add(g, card_db, name, "library", controller)
 

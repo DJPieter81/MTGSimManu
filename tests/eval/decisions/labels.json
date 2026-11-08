@@ -13,7 +13,13 @@
       "source": "Grixis Reanimator vs Azorius Blink s53000, turn 7 (game turn): Persist +48.9 passed over for Emperor of Bones +1.8",
       "evidence": {
         "rules_forced": false,
-        "rollout": null,
+        "rollout": {
+          "p_better": 1.0,
+          "n": 20,
+          "metric": "turns until player 0 wins (loss = turn cap)",
+          "labelled_mean": 3.0,
+          "alternative_mean": 3.5
+        },
         "review": {
           "reviewers": 2,
           "refuted": 0,
@@ -23,6 +29,9 @@
             "strategic play"
           ]
         }
+      },
+      "alternative": {
+        "cast": "Emperor of Bones"
       }
     },
     {
@@ -34,8 +43,14 @@
       "rule": "A storm closer below lethal holds while chain fuel castable this turn remains, graveyard flashback included (unit GYF).",
       "source": "Ruby Storm goldfish s70004 turn 8: Grapeshot at storm 9, then four flashback casts after it",
       "evidence": {
-        "rules_forced": false,
-        "rollout": null,
+        "rules_forced": true,
+        "rollout": {
+          "p_better": 0.484,
+          "n": 20,
+          "metric": "turns until player 0 wins (loss = turn cap)",
+          "labelled_mean": 9.9,
+          "alternative_mean": 9.9
+        },
         "review": {
           "reviewers": 2,
           "refuted": 0,
@@ -44,7 +59,11 @@
             "comprehensive rules",
             "strategic play"
           ]
-        }
+        },
+        "rules_forced_note": "Rules review: flashing back the two Desperate Rituals first (each {1}{R} for RRR, net +1 mana) leaves storm 8 and 8 mana, so Grapeshot then deals 9 instead of 7 with every resource equal or better; casting it first is dominated. The rollout (n=20) finds the two indistinguishable over the rest of the game (9.9 vs 9.9 turns)."
+      },
+      "alternative": {
+        "cast": "Grapeshot"
       }
     },
     {
