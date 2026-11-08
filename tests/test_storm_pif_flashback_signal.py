@@ -82,8 +82,11 @@ def _add(game, card_db, name, controller, zone):
     return card
 
 
-def _build_storm_pif_game(card_db, gy_fuel_count=3, mountains=5):
-    """Storm side, T4 main, `mountains` Mountains on battlefield,
+def _build_storm_pif_game(card_db, gy_fuel_count=3, mountains=6):
+    """Storm side, T4 main, `mountains` Mountains on battlefield (6: the
+    grant costs 4 and leaves 2, which pays a granted ritual -- a grant
+    that leaves no granted spell affordable is worth nothing this turn,
+    `test_a_flashback_grant_is_worth_the_granted_spells_it_leaves_mana_for`),
     Past in Flames in hand, `gy_fuel_count` instant/sorcery cards
     in graveyard for PiF to flashback.  No reducer deployed yet
     (so combo_continuation signal does NOT fire — isolates the new
@@ -194,7 +197,7 @@ class TestPiFFlashbackSignal:
         )
 
     def test_pif_chosen_when_only_play_with_gy_fuel(self, card_db):
-        """End-to-end: T4, Storm has 5 mana (enough to cast PiF
+        """End-to-end: T4, Storm has 6 mana (enough to cast PiF
         for {3}{R}), 3 ritual/cantrip cards in graveyard, PiF the
         only spell in hand.  `decide_main_phase` must return PiF
         — not None (pass).
@@ -207,7 +210,7 @@ class TestPiFFlashbackSignal:
         assert chosen is not None and chosen[1] == "Past in Flames", (
             f"`decide_main_phase` returned {chosen!r}; expected "
             f"('cast_spell', 'Past in Flames', ...).  At T4 with "
-            f"5 mana and 3 graveyard fuel cards, PiF is the only "
+            f"6 mana and 3 graveyard fuel cards, PiF is the only "
             f"available chain-restart play.  If filtered out by "
             f"the deferral gate, the AI passes the turn and "
             f"loses a full turn of chain progress."

@@ -1388,10 +1388,18 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         # `_enumerate_this_turn_signals` via the
         # `_grants_graveyard_flashback` short-circuit — this
         # branch only sees first-cast scenarios.
+        # Graveyard fuel is the granted spells the mana left after the
+        # grant pays for: a flashback cast pays the card's cost (CR
+        # 702.34a), and the grant ends this turn, so a granted spell the
+        # player cannot afford now is no value of this cast. The costs
+        # are the AI's cost estimate (`effective_cmc.chain_cost`).
+        from ai.effective_cmc import chain_cost
         gy = game.players[player_idx].graveyard
+        left = snap.my_mana - chain_cost(card, game, player_idx)
         gy_fuel = sum(
             1 for c in gy
             if (c.template.is_instant or c.template.is_sorcery)
+            and chain_cost(c, game, player_idx) <= left
         )
         # Graveyard fuel is the load-bearing precondition: PiF without
         # fuel is a 5-mana spell that does literally nothing, so the
