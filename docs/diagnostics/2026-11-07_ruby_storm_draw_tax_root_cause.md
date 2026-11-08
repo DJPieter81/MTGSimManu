@@ -105,3 +105,10 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
   - The oracle-driven solver (`SB_SOLVER=new`, `ai/sideboard_solver.plan_sideboard`) swaps one Fatal Push for one Hex Magic against every opponent alike.
 - **The subsystem:** sideboarding. It is a strategic choice that lives in `engine/`, and its legacy path matches names, which the abstraction contract forbids.
 - **Next unit:** make the oracle-driven solver the owner. Test-first: hand disruption comes in against counter-dense and discard-dense opponents (BHI priors), and a Storm case is paired with another deck whose sideboard answers a matchup. Measure on Bo3 (the canonical format), not game 1.
+
+## Fifth lead, measured (unit SBH)
+- **The solver now values hand attacks.** Under `SB_SOLVER=new` (the `sbh-post` arm), Storm's row falls 15.8 → 8.4.
+- **Why:** Storm cuts its own digs (Hex Magic x4, Twinned Vision) for Thoughtseize against every opponent, and the field boards in real hate against it (Consign to Memory, Mystical Dispute, Obsidian Charmaw).
+- **Default unchanged.** The solver needs plan-aware values for a deck's own cards before it can own sideboarding.
+- **Re-derive the band.** Storm's band of 40-55 was set against a field that never sideboarded against it; it should be re-derived once the field does.
+

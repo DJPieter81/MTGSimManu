@@ -12524,5 +12524,17 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Workflow:** a request file may name `"env"`, which each shard exports before it plays (keys must be upper-case names). Pair it with `"rows"` so the run stays diagnostic.
 
-**Step 2, measured:** `sbh-post` with `SB_SOLVER=new` on rows Ruby Storm, Dimir Midrange and Goryo's Vengeance, plus guards Boros Energy and Azorius Control, at n=20 Bo3. Baselines: `tc2-post` (the same code) for Storm's row, `mo2-post` for the others (pending).
+**Step 2, measured:** `sbh-post` with `SB_SOLVER=new` on rows Ruby Storm, Dimir Midrange and Goryo's Vengeance, plus guards Boros Energy and Azorius Control, at n=20 Bo3. Baselines: `tc2-post` (the same code) for Storm's row, `mo2-post` for the others.
+- **Result:** `sbh-post` (`e769dd5`; the shard logs show `REQUEST_ENV` and `SB-solver` swap lines, so the solver ran). 125 cells, 0 violations. Both test chunks pass on `e769dd5` (5636 + 2837).
+  - Ruby Storm 15.8 → 8.4
+  - Dimir Midrange 51.0 → 57.4
+  - Goryo's Vengeance 33.6 → 33.6
+  - Boros Energy 71.8 → 73.8
+  - Azorius Control 35.6 → 31.0
+- **Decision: the rule fails, so the default stays the legacy table and the solver stays opt-in.** Two causes, read from the shards' swap lines:
+  1. Storm cuts its own engine. It trades four Hex Magic and one Twinned Vision for four Thoughtseize and a Fatal Push against every opponent, creature decks included: its own plan cards score 0 under opponent-facing clauses.
+  2. The field now sideboards against Storm: Consign to Memory, Mystical Dispute, Obsidian Charmaw, the real Modern hate the legacy table never brought in. That is closer to the canonical Bo3 world, and it lowers Storm further.
+- **Leads, not built:**
+  - A main-deck card's value should include its role in its own deck's plan (the gameplan's roles), so the solver weighs a dig spell against what replaces it.
+  - Storm's in-band target should be re-derived once the field sideboards realistically, since the band was set against a field that brought no hate.
 - **Decision rule, stated before the run:** proceed to the default flip only if Storm's row improves beyond one standard error (~2 pp) and no guard row falls beyond one.
