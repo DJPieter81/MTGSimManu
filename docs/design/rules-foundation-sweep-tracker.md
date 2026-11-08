@@ -13186,3 +13186,28 @@ Until v2, the planner is a measurement instrument for reanimation, where it is r
 **Conclusion:** **Storm never misses a lethal turn it can reach.** Its slowness is in reaching lethal sooner (assembling mana, fuel and reducers over turns), not in a missed kill.
 
 **Next lead for Storm:** the turns before lethal. Measure the "turns from first reducer to kill" distribution against an oracle search of each goldfish draw.
+
+## Storm's chain-building turns, and a falsified recast reach (2026-11-08)
+
+**Measurement** (Storm goldfish dumps, n=10): the engine is online early in every game. The first cost reducer comes on turn 2–3 and land drops are fine. Storm then spends three to five turns casting 1–4 spells a turn before one kill turn of 12–20 spells.
+
+**Hypothesis:** the lethal-reach owner (`finisher_reach.finisher_casts`) did not count a second shot of the same closer: Grapeshot, then a graveyard flashback grant (Past in Flames), then Grapeshot again from the graveyard. With one closer in the list (Wish → the sideboard Grapeshot), the AI then waits for storm around 19 for a single lethal shot.
+
+**Built and measured:** a recast entry in the reach, with a precedence constraint so the recast follows the cast that puts its closer in the graveyard. Unit tests passed.
+
+| Storm goldfish (n=30) | Before | With the recast entry |
+|---|---|---|
+| Kills | 28–29 | 20 |
+| Lost to decking | 1–2 | 10 |
+| Median kill turn | 7 | 8 |
+
+The anchor flipped Storm vs Dimir s50000 to Dimir. Replayed: Grapeshot fired at storm 15, counting on a recast through Past in Flames. Past in Flames had already resolved earlier in that chain, and its own flashback costs 4R; the reach priced it at its mana cost (`_cost` reads `effective_cmc`, not the flashback cost) and did not check the mana left after the chain.
+
+**Reverted. Falsified as built; do not re-run this form.**
+
+**Leads for a retry:**
+- price a graveyard grant at its flashback cost;
+- require the grant to be cast after the closer, not before it, in the chain the AI actually plays;
+- count the mana the rest of the chain leaves.
+
+Storm's slow chain-building turns remain open.
