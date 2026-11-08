@@ -47,6 +47,7 @@ from typing import Any, Optional, Union, get_args
 
 from pydantic import BaseModel
 
+from ai.llm_inputs import TaskInput
 from ai.llm_models import LLMTask, select_model
 from ai.llm_prompts import latest_version, load_fewshot, load_prompt
 from ai.llm_schemas import (
@@ -57,6 +58,9 @@ from ai.llm_schemas import (
     HandlerGapReport,
     OracleTagClassification,
     SynthesizedGameplan,
+    decision_to_tags,
+    decision_to_weights,
+    decision_weight_decision_model,
     oracle_tag_decision_model,
 )
 
@@ -83,6 +87,7 @@ DECISION_MODEL_PROVIDERS: tuple[str, ...] = ("typesafe:",)
 
 _DECISION_OUTPUT_TYPES = {
     "classify_oracle": oracle_tag_decision_model,
+    "decision_scorer": decision_weight_decision_model,
 }
 
 
@@ -97,6 +102,42 @@ def output_type_for(task: str, model: str) -> type:
     if is_decision_model(model) and task in _DECISION_OUTPUT_TYPES:
         return _DECISION_OUTPUT_TYPES[task]()
     return _OUTPUT_TYPES[task]
+
+
+def canonical_output(task: str, output: Any, user_input: Any = None) -> Any:
+    """`output` in the task's canonical schema (`_OUTPUT_TYPES[task]`).
+
+    A decision model answers in the task's decision shape; this maps
+    that answer back so every consumer — the decision scorer, the
+    committed-weights export, the eval harness — reads one shape
+    whichever model produced it.  Canonical outputs pass through.
+    `user_input` supplies fields a decision shape does not carry (the
+    classified card's name)."""
+    decision_shape = _DECISION_OUTPUT_TYPES.get(task)
+    if decision_shape is None or not isinstance(output, decision_shape()):
+        return output
+    return _FROM_DECISION_SHAPE[task](output, user_input)
+
+
+def _tags_from_decision(output: BaseModel, user_input: Any) -> BaseModel:
+    """classify_oracle: one boolean per tag → the tag list."""
+    card_name = getattr(user_input, "name", None)
+    if card_name is None and isinstance(user_input, dict):
+        card_name = user_input.get("name")
+    return OracleTagClassification(
+        card_name=card_name or "", tags=decision_to_tags(output),
+    )
+
+
+def _weights_from_decision(output: BaseModel, user_input: Any) -> BaseModel:
+    """decision_scorer: a pick on the weight grid → the weight row."""
+    return decision_to_weights(output)
+
+
+_FROM_DECISION_SHAPE = {
+    "classify_oracle": _tags_from_decision,
+    "decision_scorer": _weights_from_decision,
+}
 
 
 def _format_fewshot(examples: list[dict]) -> str:
@@ -170,7 +211,13 @@ def render_user_prompt(user_prompt: Any) -> Any:
     needs the structure for its key). pydantic-ai ≥ 2.48 rejects a bare
     ``dict`` in ``UserPromptPart.content`` — earlier versions were merely
     lenient — so every shape must cross this boundary as text.
-    ``sort_keys=True`` keeps the rendering byte-stable for the cache."""
+    ``sort_keys=True`` keeps the rendering byte-stable for the cache.
+
+    A typed task input (``ai.llm_inputs.TaskInput``) renders through its
+    own ``render()`` — the task's user-prompt renderer — so the text the
+    model sees is the one the eval goldens pin."""
+    if isinstance(user_prompt, TaskInput):
+        return user_prompt.render()
     if isinstance(user_prompt, BaseModel):
         return json.dumps(user_prompt.model_dump(), sort_keys=True)
     if isinstance(user_prompt, dict):

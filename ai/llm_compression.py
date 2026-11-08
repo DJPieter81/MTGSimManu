@@ -128,12 +128,31 @@ def compress_decklist(
     removal/ramp/cantrip classification from oracle text.  Only the
     first two oracle lines are included as a sanity-check anchor (most
     mechanics live in the first two lines).
+
+    The text is `decklist_input(...).render()` — the typed
+    `ai.llm_inputs.SynthGameplanInput` owns the format, so the eval
+    goldens exercise exactly this prompt.
     """
+    return decklist_input(
+        deck_name, mainboard, db,
+        include_oracle_excerpt=include_oracle_excerpt,
+    ).render()
+
+
+def decklist_input(
+    deck_name: str,
+    mainboard: dict[str, int],
+    db: Any,
+    *,
+    include_oracle_excerpt: bool = True,
+):
+    """The typed synth_gameplan input for a decklist: one
+    `DecklistCardRow` per card, sorted by name, carrying the
+    `ai.card_features` flags and a capped oracle excerpt."""
+    from ai.llm_inputs import DecklistCardRow, SynthGameplanInput
+
     features = extract_features_for_deck(mainboard, db)
-
-    lines: list[str] = [f"Deck name: {deck_name}", ""]
-    lines.append(f"Mainboard ({sum(mainboard.values())} cards):")
-
+    rows: list = []
     for name in sorted(mainboard.keys()):
         qty = mainboard[name]
         f = features.get(name)
@@ -141,38 +160,27 @@ def compress_decklist(
             # Defensive fallback — extract_features_for_deck always
             # returns an entry per name (it stubs DB misses), but keep
             # the safety net so a future refactor that drops the stub
-            # still produces a parseable line.
-            lines.append(f"- {qty}× {name}  (NO FEATURES — DB miss)")
+            # still produces a parseable row.
+            rows.append(DecklistCardRow(name=name, quantity=qty, db_miss=True))
             continue
 
-        # Compact one-line feature signature.  Flags omitted entirely
-        # when none fire — vanilla creatures get just `{cmc}` after the
-        # name to keep the line short.
-        flags: list[str] = []
-        for attr in _FEATURE_FLAG_ATTRS:
-            if getattr(f, attr, False):
-                # Strip the "is_" prefix so the flag list reads as a
-                # bag of mechanic tags rather than predicate names.
-                flags.append(attr.replace("is_", ""))
+        # Flags omitted entirely when none fire — vanilla creatures get
+        # just `{cmc}` after the name.  The "is_" prefix is stripped so
+        # the list reads as a bag of mechanic tags, not predicate names.
+        flags = [attr.replace("is_", "") for attr in _FEATURE_FLAG_ATTRS
+                 if getattr(f, attr, False)]
 
-        type_line = "/".join(f.types) if f.types else "?"
-        cost = f"{{{f.cmc}}}"
-        if flags:
-            cost = f"{cost}|{','.join(flags)}"
-        lines.append(f"- {qty}× {name} {cost} | {type_line}")
-
+        excerpt = ""
         if include_oracle_excerpt and f.first_two_oracle_lines:
             excerpt = f.first_two_oracle_lines.replace("\n", " ")
             if len(excerpt) > _ORACLE_EXCERPT_CHAR_CAP:
                 excerpt = excerpt[:_ORACLE_EXCERPT_CHAR_CAP]
-            lines.append(f'    "{excerpt}"')
 
-    lines.append("")
-    lines.append(
-        "Emit a SynthesizedGameplan JSON object describing this deck's "
-        "goals, role assignments, and mulligan keys."
-    )
-    return "\n".join(lines)
+        rows.append(DecklistCardRow(
+            name=name, quantity=qty, cmc=f.cmc, flags=flags,
+            types=list(f.types), oracle_excerpt=excerpt,
+        ))
+    return SynthGameplanInput(deck_name=deck_name, cards=rows)
 
 
 # ─── Replay log compression for diagnose_replay ──────────────────────
@@ -254,6 +262,7 @@ def compress_handler(
 
 __all__ = [
     "compress_decklist",
+    "decklist_input",
     "compress_replay",
     "compress_handler",
 ]

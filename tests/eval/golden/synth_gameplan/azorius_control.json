@@ -95,33 +95,333 @@
   },
   "input": {
     "deck_name": "Azorius Control",
-    "mainboard": {
-      "Arid Mesa": 2,
-      "Consult the Star Charts": 2,
-      "Counterspell": 4,
-      "Demolition Field": 2,
-      "Flooded Strand": 4,
-      "Hall of Storm Giants": 1,
-      "Hallowed Fountain": 2,
-      "Island": 3,
-      "Isochron Scepter": 2,
-      "L\u00f3rien Revealed": 2,
-      "Meticulous Archive": 2,
-      "Monumental Henge": 1,
-      "Mystic Gate": 1,
-      "Orim's Chant": 4,
-      "Otawara, Soaring City": 1,
-      "Plains": 2,
-      "Prismatic Ending": 4,
-      "Sanctifier en-Vec": 3,
-      "Solitude": 4,
-      "Steam Vents": 1,
-      "Stock Up": 2,
-      "Supreme Verdict": 2,
-      "Teferi, Hero of Dominaria": 2,
-      "Teferi, Time Raveler": 4,
-      "Thundering Falls": 1,
-      "Wrath of the Skies": 2
-    }
+    "cards": [
+      {
+        "name": "Arid Mesa",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Consult the Star Charts",
+        "quantity": 2,
+        "cmc": 2,
+        "flags": [
+          "card_draw",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Kicker {1}{U} (You may pay an additional {1}{U} as you cast ",
+        "db_miss": false
+      },
+      {
+        "name": "Counterspell",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "counterspell",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Counter target spell.",
+        "db_miss": false
+      },
+      {
+        "name": "Demolition Field",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}: Add {C}. {2}, {T}, Sacrifice this land: Destroy target ",
+        "db_miss": false
+      },
+      {
+        "name": "Flooded Strand",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Hall of Storm Giants",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "If you control two or more other lands, this land enters tap",
+        "db_miss": false
+      },
+      {
+        "name": "Hallowed Fountain",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {W} or {U}.) As this land enters, you may pay 2 li",
+        "db_miss": false
+      },
+      {
+        "name": "Island",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Basic",
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {U}.)",
+        "db_miss": false
+      },
+      {
+        "name": "Isochron Scepter",
+        "quantity": 2,
+        "cmc": 2,
+        "flags": [],
+        "types": [
+          "Artifact"
+        ],
+        "oracle_excerpt": "Imprint — When this artifact enters, you may exile an instan",
+        "db_miss": false
+      },
+      {
+        "name": "Lórien Revealed",
+        "quantity": 2,
+        "cmc": 5,
+        "flags": [
+          "card_draw",
+          "tutor"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Draw three cards. Islandcycling {1} ({1}, Discard this card:",
+        "db_miss": false
+      },
+      {
+        "name": "Meticulous Archive",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {W} or {U}.) This land enters tapped.",
+        "db_miss": false
+      },
+      {
+        "name": "Monumental Henge",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped unless you control a Plains. {T}: Ad",
+        "db_miss": false
+      },
+      {
+        "name": "Mystic Gate",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}: Add {C}. {W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
+        "db_miss": false
+      },
+      {
+        "name": "Orim's Chant",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Kicker {W} (You may pay an additional {W} as you cast this s",
+        "db_miss": false
+      },
+      {
+        "name": "Otawara, Soaring City",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Legendary",
+          "Land"
+        ],
+        "oracle_excerpt": "{T}: Add {U}. Channel — {3}{U}, Discard this card: Return ta",
+        "db_miss": false
+      },
+      {
+        "name": "Plains",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Basic",
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {W}.)",
+        "db_miss": false
+      },
+      {
+        "name": "Prismatic Ending",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [
+          "removal"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Converge — Exile target nonland permanent if its mana value ",
+        "db_miss": false
+      },
+      {
+        "name": "Sanctifier en-Vec",
+        "quantity": 3,
+        "cmc": 2,
+        "flags": [],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "Protection from black and from red When this creature enters",
+        "db_miss": false
+      },
+      {
+        "name": "Solitude",
+        "quantity": 4,
+        "cmc": 5,
+        "flags": [
+          "instant_speed"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "Flash Lifelink",
+        "db_miss": false
+      },
+      {
+        "name": "Steam Vents",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {U} or {R}.) As this land enters, you may pay 2 li",
+        "db_miss": false
+      },
+      {
+        "name": "Stock Up",
+        "quantity": 2,
+        "cmc": 3,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Look at the top five cards of your library. Put two of them ",
+        "db_miss": false
+      },
+      {
+        "name": "Supreme Verdict",
+        "quantity": 2,
+        "cmc": 4,
+        "flags": [
+          "removal",
+          "sweeper"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "This spell can't be countered. Destroy all creatures.",
+        "db_miss": false
+      },
+      {
+        "name": "Teferi, Hero of Dominaria",
+        "quantity": 2,
+        "cmc": 5,
+        "flags": [
+          "removal",
+          "card_draw"
+        ],
+        "types": [
+          "Legendary",
+          "Planeswalker"
+        ],
+        "oracle_excerpt": "[+1]: Draw a card. At the beginning of the next end step, un",
+        "db_miss": false
+      },
+      {
+        "name": "Teferi, Time Raveler",
+        "quantity": 4,
+        "cmc": 3,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Legendary",
+          "Planeswalker"
+        ],
+        "oracle_excerpt": "Each opponent can cast spells only any time they could cast ",
+        "db_miss": false
+      },
+      {
+        "name": "Thundering Falls",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {U} or {R}.) This land enters tapped.",
+        "db_miss": false
+      },
+      {
+        "name": "Wrath of the Skies",
+        "quantity": 2,
+        "cmc": 2,
+        "flags": [
+          "removal"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "You get X {E} (energy counters), then you may pay any amount",
+        "db_miss": false
+      }
+    ]
   }
 }

@@ -15,6 +15,13 @@ Rates asserted here are published Anthropic pricing (2026-07 refresh):
     Opus 4.7      in $5.00 / out $25.00
     Opus 4.8      in $5.00 / out $25.00
 
+2026-11 refresh (current family):
+
+    Opus tier     in $4.00 / out $20.00
+    Sonnet tier   in $2.00 / out $10.00
+    Haiku tier    in $0.10 / out  $0.50 up to 100K prompt tokens,
+                  in $0.50 / out  $2.50 beyond
+
 When Anthropic publishes new rates, update the table AND these tests in
 the same commit — the test is the provenance record.
 """
@@ -112,7 +119,9 @@ def test_budget_gate_blocks_haiku_call_that_stale_pricing_let_through(
     monkeypatch.setattr(llm_metrics, "METRICS_FILE", tmp_path / "calls.jsonl")
     with pytest.raises(BudgetExceededError):
         check_budget(
-            "handler_audit",  # $1.00 default cap
+            # $1.00 default cap (handler_audit's cap was scaled to its
+            # Opus-tier default in the 2026-11 refresh).
+            "audit_doc_freshness",
             "anthropic:claude-haiku-4-5",
             2_000_000,
         )
@@ -125,3 +134,37 @@ def test_jev_priced_at_published_rates():
     assert pricing["in"] == 0.042
     assert pricing["out"] == 0.0
     assert estimate_cost_usd("typesafe:jev-latest", 1_000_000, 50_000) == pytest.approx(0.042)
+
+
+# ─── 2026-11 refresh: the current family ──────────────────────────────
+
+
+def test_current_family_priced_at_published_rates():
+    """The tiers every default now resolves to price at their published
+    list rates, so the budget gate sees the true cost of each call."""
+    from ai.llm_models import DEFAULT_MODELS
+    opus = DEFAULT_MODELS["diagnose_replay"]
+    sonnet = DEFAULT_MODELS["classify_oracle"]
+    assert MODEL_PRICING_USD_PER_MTOKEN[opus]["in"] == 4.00
+    assert MODEL_PRICING_USD_PER_MTOKEN[opus]["out"] == 20.00
+    assert MODEL_PRICING_USD_PER_MTOKEN[sonnet]["in"] == 2.00
+    assert MODEL_PRICING_USD_PER_MTOKEN[sonnet]["out"] == 10.00
+
+
+def test_a_size_tiered_model_bills_a_long_prompt_at_its_long_rate():
+    """The Haiku tier prices per prompt size: base rate up to the
+    boundary, the long rate for the whole call beyond it."""
+    from ai.llm_models import DEFAULT_MODELS
+    haiku = DEFAULT_MODELS["audit_doc_freshness"]
+    row = MODEL_PRICING_USD_PER_MTOKEN[haiku]
+    at_boundary = row["long_above"]
+    assert estimate_cost_usd(haiku, at_boundary, 0) == pytest.approx(
+        at_boundary * 0.10 / 1_000_000)
+    assert estimate_cost_usd(haiku, at_boundary + 1, 1_000) == pytest.approx(
+        ((at_boundary + 1) * 0.50 + 1_000 * 2.50) / 1_000_000)
+
+
+def test_a_flat_rated_model_ignores_prompt_size():
+    from ai.llm_models import DEFAULT_MODELS
+    opus = DEFAULT_MODELS["diagnose_replay"]
+    assert estimate_cost_usd(opus, 2_000_000, 0) == pytest.approx(8.00)

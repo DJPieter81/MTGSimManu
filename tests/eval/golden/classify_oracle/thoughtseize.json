@@ -1,0 +1,16 @@
+{
+  "source": "expected tags = decks/gameplans/_oracle_classifier.json",
+  "input": {
+    "name": "Thoughtseize",
+    "mana_cost": "{B}",
+    "type_line": "Sorcery",
+    "oracle_text": "Target player reveals their hand. You choose a nonland card from it. That player discards that card. You lose 2 life."
+  },
+  "expected": {
+    "card_name": "Thoughtseize",
+    "tags": [
+      "FORCED_DISCARD",
+      "SELF_DAMAGE_ON_CAST"
+    ]
+  }
+}

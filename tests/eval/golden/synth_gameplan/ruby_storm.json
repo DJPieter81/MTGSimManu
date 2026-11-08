@@ -131,30 +131,307 @@
   },
   "input": {
     "deck_name": "Ruby Storm",
-    "mainboard": {
-      "Arid Mesa": 3,
-      "Bloodstained Mire": 2,
-      "Desperate Ritual": 4,
-      "Elegant Parlor": 2,
-      "Gemstone Caverns": 1,
-      "Glimpse the Impossible": 3,
-      "Grapeshot": 1,
-      "Manamorphose": 4,
-      "March of Reckless Joy": 1,
-      "Mountain": 4,
-      "Past in Flames": 3,
-      "Pyretic Ritual": 4,
-      "Ral, Monsoon Mage // Ral, Leyline Prodigy": 4,
-      "Reckless Impulse": 4,
-      "Ruby Medallion": 4,
-      "Sacred Foundry": 1,
-      "Scalding Tarn": 3,
-      "Sunbaked Canyon": 1,
-      "Thundering Falls": 1,
-      "Valakut Awakening // Valakut Stoneforge": 2,
-      "Wish": 2,
-      "Wooded Foothills": 2,
-      "Wrenn's Resolve": 4
-    }
+    "cards": [
+      {
+        "name": "Arid Mesa",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Bloodstained Mire",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Desperate Ritual",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "ramp",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Add {R}{R}{R}. Splice onto Arcane {1}{R} (As you cast an Arc",
+        "db_miss": false
+      },
+      {
+        "name": "Elegant Parlor",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {R} or {W}.) This land enters tapped.",
+        "db_miss": false
+      },
+      {
+        "name": "Gemstone Caverns",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Legendary",
+          "Land"
+        ],
+        "oracle_excerpt": "If this card is in your opening hand and you're not the star",
+        "db_miss": false
+      },
+      {
+        "name": "Glimpse the Impossible",
+        "quantity": 3,
+        "cmc": 3,
+        "flags": [
+          "ramp",
+          "card_draw"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Exile the top three cards of your library. You may play thos",
+        "db_miss": false
+      },
+      {
+        "name": "Grapeshot",
+        "quantity": 1,
+        "cmc": 2,
+        "flags": [
+          "removal",
+          "combo_payoff"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Grapeshot deals 1 damage to any target. Storm (When you cast",
+        "db_miss": false
+      },
+      {
+        "name": "Manamorphose",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "ramp",
+          "card_draw",
+          "combo_enabler",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Add two mana in any combination of colors. Draw a card.",
+        "db_miss": false
+      },
+      {
+        "name": "March of Reckless Joy",
+        "quantity": 1,
+        "cmc": 1,
+        "flags": [
+          "card_draw",
+          "combo_enabler",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "As an additional cost to cast this spell, you may exile any ",
+        "db_miss": false
+      },
+      {
+        "name": "Mountain",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Basic",
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {R}.)",
+        "db_miss": false
+      },
+      {
+        "name": "Past in Flames",
+        "quantity": 3,
+        "cmc": 4,
+        "flags": [
+          "combo_payoff"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Each instant and sorcery card in your graveyard gains flashb",
+        "db_miss": false
+      },
+      {
+        "name": "Pyretic Ritual",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "ramp",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Add {R}{R}{R}.",
+        "db_miss": false
+      },
+      {
+        "name": "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "combo_enabler"
+        ],
+        "types": [
+          "Legendary",
+          "Creature"
+        ],
+        "oracle_excerpt": "Instant and sorcery spells you cast cost {1} less to cast. W",
+        "db_miss": false
+      },
+      {
+        "name": "Reckless Impulse",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Exile the top two cards of your library. Until the end of yo",
+        "db_miss": false
+      },
+      {
+        "name": "Ruby Medallion",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "combo_enabler"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "oracle_excerpt": "Red spells you cast cost {1} less to cast.",
+        "db_miss": false
+      },
+      {
+        "name": "Sacred Foundry",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {R} or {W}.) As this land enters, you may pay 2 li",
+        "db_miss": false
+      },
+      {
+        "name": "Scalding Tarn",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Sunbaked Canyon",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life: Add {R} or {W}. {1}, {T}, Sacrifice this la",
+        "db_miss": false
+      },
+      {
+        "name": "Thundering Falls",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {U} or {R}.) This land enters tapped.",
+        "db_miss": false
+      },
+      {
+        "name": "Valakut Awakening // Valakut Stoneforge",
+        "quantity": 2,
+        "cmc": 3,
+        "flags": [
+          "card_draw",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Put any number of cards from your hand on the bottom of your",
+        "db_miss": false
+      },
+      {
+        "name": "Wish",
+        "quantity": 2,
+        "cmc": 3,
+        "flags": [],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "You may play a card you own from outside the game this turn.",
+        "db_miss": false
+      },
+      {
+        "name": "Wooded Foothills",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Wrenn's Resolve",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Sorcery"
+        ],
+        "oracle_excerpt": "Exile the top two cards of your library. Until the end of yo",
+        "db_miss": false
+      }
+    ]
   }
 }

@@ -133,6 +133,104 @@ def test_run_eval_threshold_gates_pass_fail():
     )
 
 
+# ─── Every task's goldens through the harness (offline) ─────────────
+
+
+def _language_model_for(task):
+    """The task's model when it answers in the canonical schema — its
+    language-model fallback if its default is a decision model."""
+    from ai.llm_agents import is_decision_model
+    from ai.llm_models import DEFAULT_MODELS, FALLBACK_MODELS
+    model = DEFAULT_MODELS[task]
+    return FALLBACK_MODELS.get(task, model) if is_decision_model(model) else model
+
+
+def _echo_payload(task, expected):
+    """TestModel output args for `expected`; a list output (ranked
+    hypotheses) is a list of one."""
+    from ai.llm_agents import _OUTPUT_TYPES
+    import typing
+    if typing.get_origin(_OUTPUT_TYPES[task]) is list:
+        return [expected]
+    return expected
+
+
+@requires_pydantic_ai
+@pytest.mark.parametrize("task", [
+    "synth_gameplan", "diagnose_replay", "audit_doc_freshness",
+    "handler_audit", "failing_test_spec", "classify_oracle",
+    "decision_scorer",
+])
+def test_every_tasks_golden_passes_when_the_model_echoes_it(task):
+    """The harness validates each golden input into its task's typed
+    input, renders it with the production renderer, and scores the
+    canonical output — so an output equal to `expected` gets every
+    structured field right and passes.  It scores exactly 1.0 except
+    where the schema fills nested defaults a partial golden omits
+    (synth_gameplan's goals), which only the free-text half sees."""
+    pairs = load_golden_pairs(task)
+    first = pairs[0]
+    report = run_eval(
+        task,
+        model=_language_model_for(task),
+        test_model_payload=_echo_payload(task, first["expected"]),
+    )
+    assert len(report.pair_results) == len(pairs)
+    (match,) = [r for r in report.pair_results if r.pair_id == first["_pair_id"]]
+    assert match.closed_match_score == pytest.approx(1.0), match.notes
+    assert match.passed, match
+    if task != "synth_gameplan":
+        assert match.overall_score == pytest.approx(1.0), match
+
+
+@requires_pydantic_ai
+def test_a_decision_models_pick_is_scored_against_the_weight_band():
+    """On the decision model the scorer answers a pick on the weight
+    grid; the harness maps it to the canonical weight and scores it
+    against each pair's band — in band passes, out of band fails."""
+    from ai.llm_models import DEFAULT_MODELS
+    report = run_eval(
+        "decision_scorer",
+        model=DEFAULT_MODELS["decision_scorer"],
+        test_model_payload={"weight": "4.0"},
+    )
+    by_id = {r.pair_id: r for r in report.pair_results}
+    assert by_id["ramp__tron_mana_advantage"].passed      # band 3.0..5.0
+    assert not by_id["aggro__tron_mana_advantage"].passed  # band 0.0..0.0
+
+
+def test_numeric_fields_score_inside_their_band_or_on_the_exact_value():
+    from tests.eval.llm_eval import _score_pair
+    inside = _score_pair("decision_scorer", {"weight": 4.5}, {"weight": 4.0},
+                         pair_id="x", bands={"weight": [3.0, 5.0]})
+    outside = _score_pair("decision_scorer", {"weight": 5.5}, {"weight": 4.0},
+                          pair_id="x", bands={"weight": [3.0, 5.0]})
+    exact = _score_pair("decision_scorer", {"weight": 4.5}, {"weight": 4.0},
+                        pair_id="x")
+    assert (inside.overall_score, outside.overall_score, exact.overall_score) \
+        == (1.0, 0.0, 0.0)
+
+
+def test_set_fields_score_by_overlap_not_order():
+    from tests.eval.llm_eval import _score_pair
+    expected = {"card_name": "A", "tags": ["X", "Y"]}
+    same = _score_pair("classify_oracle", {"card_name": "A", "tags": ["Y", "X"]},
+                       expected, pair_id="x")
+    half = _score_pair("classify_oracle", {"card_name": "A", "tags": ["X"]},
+                       expected, pair_id="x")
+    assert same.overall_score == 1.0
+    assert half.overall_score == pytest.approx((1.0 + 0.5) / 2)
+
+
+def test_audit_failing_test_classify_and_scorer_goldens_load():
+    for task in ("audit_doc_freshness", "failing_test_spec",
+                 "classify_oracle", "decision_scorer"):
+        pairs = load_golden_pairs(task)
+        assert len(pairs) >= 3, task
+        for p in pairs:
+            assert "input" in p and "expected" in p
+
+
 def test_default_threshold_table_has_every_task():
     """Every supported LLMTask must have a default threshold."""
     from ai.llm_models import DEFAULT_MODELS

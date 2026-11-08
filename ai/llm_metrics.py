@@ -69,6 +69,17 @@ MODEL_PRICING_USD_PER_MTOKEN: dict[str, dict[str, float]] = {
     "anthropic:claude-opus-4-7":             {"in": 5.0,   "out": 25.0},
     "anthropic:claude-opus-4-7-1m":          {"in": 5.0,   "out": 25.0},
     "anthropic:claude-opus-4-8":             {"in": 5.0,   "out": 25.0},
+    # Current family (2026-11 refresh; published Anthropic list rates).
+    # The previous-generation rows above stay so historical call
+    # records and old cache rows still price.
+    "anthropic:claude-opus-5-5":             {"in": 4.0,   "out": 20.0},
+    "anthropic:claude-sonnet-5-5":           {"in": 2.0,   "out": 10.0},
+    # The current Haiku tier is priced per prompt size: the base rate
+    # up to `long_above` input tokens, the `*_long` rate beyond it.
+    "anthropic:claude-haiku-5-5": {
+        "in": 0.10, "out": 0.50,
+        "in_long": 0.50, "out_long": 2.50, "long_above": 100_000,
+    },
     # TypeSafe AI's Jev (System One decision model, early access
     # 2026-09-15): $0.042 per million input tokens, output free — it
     # returns typed answers, not generated text.
@@ -92,7 +103,15 @@ def estimate_cost_usd(model: str, tokens_in: int, tokens_out: int) -> float:
     pricing = MODEL_PRICING_USD_PER_MTOKEN.get(model)
     if pricing is None:
         return 0.0
-    return (tokens_in * pricing["in"] + tokens_out * pricing["out"]) / 1_000_000.0
+    # A size-tiered row (`long_above`) bills the whole call at its long
+    # rate once the prompt exceeds the boundary — how the provider
+    # prices it, so the budget gate sees the same cost.
+    long_above = pricing.get("long_above")
+    if long_above is not None and tokens_in > long_above:
+        rate_in, rate_out = pricing["in_long"], pricing["out_long"]
+    else:
+        rate_in, rate_out = pricing["in"], pricing["out"]
+    return (tokens_in * rate_in + tokens_out * rate_out) / 1_000_000.0
 
 
 def _input_hash_for_metrics(user_prompt: Any) -> str:
