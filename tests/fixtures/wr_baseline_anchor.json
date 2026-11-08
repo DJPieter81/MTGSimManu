@@ -12,8 +12,8 @@
       "deck1": "Ruby Storm",
       "deck2": "Dimir Midrange",
       "seed": 50000,
-      "winner": "Dimir Midrange",
-      "turns": 6
+      "winner": "Ruby Storm",
+      "turns": 4
     },
     {
       "deck1": "Domain Zoo",
@@ -173,8 +173,8 @@
       "deck1": "Grixis Reanimator",
       "deck2": "Azorius Blink",
       "seed": 53000,
-      "winner": "Azorius Blink",
-      "turns": 13
+      "winner": "Grixis Reanimator",
+      "turns": 10
     },
     {
       "deck1": "Hollow One",
@@ -188,7 +188,7 @@
       "deck2": "Hollow One",
       "seed": 53500,
       "winner": "Broodscale Bloodchief",
-      "turns": 8
+      "turns": 7
     },
     {
       "deck1": "Rakdos Aggro",

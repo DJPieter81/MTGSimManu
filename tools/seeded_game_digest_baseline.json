@@ -1,11 +1,11 @@
 {
-  "combined": "34d0122db5979201155acc37dbe583fbb672fda4bdf9a725039aad90815d0661",
+  "combined": "8feb1a25794a8cc6ad6534907132f4d3c699d677102e1968e03d63fd080a8ab7",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
-      "lines": 1001,
-      "sha256": "33cd75f3c3f4792ee260868f770f21c60b53fcf490d7948ad65b68a913267239",
-      "turns": 8,
+      "lines": 598,
+      "sha256": "a320f8cca585e07c57200e43a7027e16e582066289dbd67bd9008b30be027143",
+      "turns": 6,
       "winner": "Ruby Storm"
     },
     "bo1|Amulet Titan|Eldrazi Tron|54500": {
@@ -15,8 +15,8 @@
       "winner": "Eldrazi Tron"
     },
     "bo1|Azorius Blink|Hollow One|56500": {
-      "lines": 514,
-      "sha256": "1bd3af255aef32fc348a6bff156dadca054e6301108c911d946f393b18faaf48",
+      "lines": 509,
+      "sha256": "5c1bc66e4c95f18c687fe0a7a268e1a0cffc6241c5015e36d18661e99a7ed197",
       "turns": 7,
       "winner": "Hollow One"
     },
@@ -69,8 +69,8 @@
       "winner": "Izzet Prowess"
     },
     "bo1|Instant Reanimator|Boros Ponza|55000": {
-      "lines": 1039,
-      "sha256": "c757ff78bb2bf246b6e0d98d6b9048338743bb435ed0b1e8fc51debf24d433c6",
+      "lines": 1033,
+      "sha256": "529979a62f724575e145114ab9c750de940631f234b8f75fa53d23bb288a1679",
       "turns": 15,
       "winner": "Boros Ponza"
     },
@@ -99,15 +99,15 @@
       "winner": "Dimir Midrange"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g1": {
-      "lines": 1645,
-      "sha256": "9e6236a6bbc93232241aaf3ca5c59accc988549f5703c7ab29b3260ae2b325ea",
-      "turns": 22,
+      "lines": 1333,
+      "sha256": "26ddc6cfc8ea8547d4b67421dc178c320054518bd68d82438cde0e6d495288e0",
+      "turns": 19,
       "winner": "Azorius Control"
     },
     "bo3|Azorius Control|Ruby Storm|58500|g2": {
-      "lines": 923,
-      "sha256": "6ceaaa6067996501c8dfa9abc7435e8d3f13eeb09d6236c1a94a747bd8bfd470",
-      "turns": 12,
+      "lines": 1002,
+      "sha256": "7a301d26caba04ab8643ad61c26e7ce22259a9efabf18d0198a9348338b0ba7b",
+      "turns": 13,
       "winner": "Azorius Control"
     },
     "bo3|Boros Energy|Domain Zoo|58000|g1": {

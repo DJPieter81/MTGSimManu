@@ -12746,3 +12746,45 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 **Lead (AI, not built):** the cast scorer does not count a cast trigger's expected self-damage. Ral costs half a life per instant or sorcery, and at low life a chain can now kill its own caster. The lethal-to-self floor (units DT, OD) reads only draw taxes and overdraw.
 
 **Measured:** `ral-post`, Ruby Storm's row at n=20 Bo3. Pending.
+
+## Unit GYF: a turn plan reads the spells castable from the graveyard (AI; CR 702.34a, 702.138a; 2026-11-08)
+
+**Source:** the Storm goldfish. Ruby Storm decked itself in 11 of 30 goldfish games on the play, and its median kill turn was 8. Seed 70004, turn 8:
+- after Past in Flames, Grapeshot fired at storm 9 for 10 damage into 20;
+- three Reckless Impulse and a Wrenn's Resolve were then flashed back. Cast before the Grapeshot, they would have made it 14.
+
+**Rule:** a card with flashback (printed, or granted until end of turn), escape or harmonize may be cast from its owner's graveyard. The engine lists those casts among the legal plays. A turn plan is made of the cards the player may play from where they are, so the graveyard ones belong in it.
+
+**Owner:** `ai/playable_cards.playable_cards`, the one list every turn plan reads (storm chain fuel, combo readiness, payoff reach, lethal lines; `plan_view`). It read the hand and the exiled cards a permission names, never the graveyard. The storm finisher's hold (`combo_calc.card_combo_modifier`) therefore counted no graveyard fuel and fired below lethal.
+
+**Fix:**
+- `castable_from_graveyard` is the engine's own permission predicate: `has_flashback`, `escape_cost` or `harmonize_cost`.
+- `playable_cards` adds those graveyard cards. The hand itself, read by discard and hand size, is unchanged.
+
+**Tests:** 5 (`tests/test_a_turn_plan_reads_the_spells_castable_from_the_graveyard.py`), 4 red first:
+- a granted flashback is playable, while a graveyard card without a permission is not;
+- an escape card is playable;
+- the hand stays the hand;
+- the closer holds while castable flashback fuel remains, and graveyard spells without a permission are no fuel.
+
+439 combo, storm and chain tests pass.
+
+**Effect, Storm goldfish (n=30, on the play, s70000):**
+
+| | Before | After |
+|---|---|---|
+| Kills | 19 | 27 |
+| Lost to decking | 11 | 3 |
+| Kills by turn 6 | 6 | 10 |
+| Kills by turn 7 | 8 | 16 |
+| Kills by turn 8 | 10 | 18 |
+| Median kill turn | 8 | 7 |
+
+**Pins:**
+- Digest: 5 of 27 games change, with the same winners. 4c Omnath vs Ruby Storm s57500 is now a Storm kill on turn 6 instead of turn 8.
+- Anchor: two winner flips, each replayed exactly as the anchor runs it and legal:
+  - Ruby Storm vs Dimir Midrange s50000 is now a Storm kill on turn 4: a 19-spell chain with Past in Flames flashbacks, ending in Grapeshot with storm 18;
+  - Grixis Reanimator vs Azorius Blink s53000 is now a Grixis win, with a Faithless Looting flashback on turn 10.
+- One turn-only drift (Broodscale vs Hollow One s53500, 8 → 7). The anchor is refreshed.
+
+**Measured:** `gyf-post`, all 26 rows at n=20 Bo3. Every deck with a flashback, escape or harmonize card reads the same list. Pending.
