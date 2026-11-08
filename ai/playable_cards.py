@@ -2,7 +2,8 @@
 
 A turn plan -- a storm chain, a combo's readiness, a payoff check, the
 turn planner's orderings, a lethal line -- is made of the cards the player
-may play from where they are: the hand, and the exiled cards a resolved
+may play from where they are: the hand, the graveyard cards it may cast
+from there (flashback, escape, harmonize), and the exiled cards a resolved
 permission names ("exile the top two cards of your library ... you may
 play those cards"; the engine's one read path is
 `rules_query.permitted_cards`). Reading the hand alone makes an impulse
@@ -20,11 +21,26 @@ from __future__ import annotations
 from typing import Any, List
 
 
+def castable_from_graveyard(card: Any) -> bool:
+    """A graveyard card its owner may cast from there: flashback, printed
+    or granted until end of turn (CR 702.34a), escape (CR 702.138a) or
+    harmonize. The same permission the engine's legal-play list reads; the
+    timing and cost are the cast's own checks."""
+    t = card.template
+    return bool(getattr(card, "has_flashback", False)
+                or getattr(t, "escape_cost", None) is not None
+                or getattr(t, "harmonize_cost", None) is not None)
+
+
 def playable_cards(game: Any, player_idx: int) -> List[Any]:
-    """The hand, then the cards a permission lets the player play from
-    exile (no timing or cost check: each play makes its own)."""
+    """The hand, then the graveyard cards the player may cast from there
+    (`castable_from_graveyard`), then the cards a permission lets the
+    player play from exile (no timing or cost check: each play makes its
+    own)."""
     player = game.players[player_idx]
     hand = list(player.hand)
+    hand += [c for c in getattr(player, "graveyard", ()) or ()
+             if not c.template.is_land and castable_from_graveyard(c)]
     if not any(getattr(p, "exile", None) for p in game.players):
         return hand          # nothing exiled, nothing a permission names
     from engine import rules_query
