@@ -13149,3 +13149,30 @@ A first version laid the position out before the first turn's untap, which reset
 - 5 labels are gated at 1.0: 4 rules-forced, plus Persist with rollout and review.
 - 3 judgement labels are at 0.67 (review only), all from decision kinds the rollout does not yet cover (targets, land search, sideboard).
 - All 8 labels are made. The digest is byte-identical: `start_hook=None` changes nothing.
+
+## Line planner: tutor lines, and what their audit says (2026-11-08)
+
+**Built:** `best_tutor_line` (`04992be`, read-only):
+- TUTORS edges from the library and FETCHES_OUTSIDE edges from the sideboard.
+- A search onto the battlefield pays X for the payoff; a search into the hand, or a card played from outside the game, is followed by casting it.
+- Payoffs are creatures (by threat) and storm spells.
+- A line completes this turn only when its first play passes the engine's `can_cast`, colours included. That also fixes the reanimation planner's colour imprecision.
+- 6 rule-named tests.
+
+**Audit** (`--family tutor`, goldfish n=20, land drops excluded):
+
+| Deck | Decisions | Agree | Disagree | What the disagreements are |
+|---|---|---|---|---|
+| Ruby Storm | 110 | 12 | 98 | The planner wants Wish → Grapeshot now; the AI keeps chaining rituals and digs first |
+| Amulet Titan | 47 | 34 | 13 | The planner prefers a cheap line it can finish this turn (Green Sun's Zenith at X=0 for Dryad Arbor) |
+
+- **Storm:** the AI is right. A storm closer belongs last, because each spell before it adds a copy (`ai.finisher_reach` owns that).
+- **Amulet:** where both point at Primeval Titan they agree in substance.
+
+**Conclusion:** the planner's objective (the turn a line completes, then the payoff's value) is too crude for tutor lines. Its disagreements there are planner errors, not AI errors, and nothing is hooked.
+
+**Lead (planner v2):**
+- a value-aware objective: the payoff's value in the position currency (`position_value` / `creature_threat_value`), set against the line's cost and its delay;
+- a storm closer placed at the end of the chain, read through `finisher_reach`, not at its current storm count.
+
+Until v2, the planner is a measurement instrument for reanimation, where it is reliable (83–96% agreement), and not a decision source.
