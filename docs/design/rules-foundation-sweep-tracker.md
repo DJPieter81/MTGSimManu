@@ -12473,4 +12473,7 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 - Row mean 16.0 (`rr-post`) → 12.8: about 1.4 standard errors, leaning negative. The largest drop was Eldrazi Ramp 40 → 5, the over-holding risk this unit flagged.
 - Under the unit's own criterion, **part 2 is reverted**. A hold on "short of lethal" with a later turn reads as too passive while the chain planner still misses other kill lines: multiple finishers, and token damage next turn.
 - One correction to the pins above: the digest had grown to 28 games, because game 3 of Azorius Control vs Ruby Storm was newly played; none was dropped. After the revert, the digest and the anchor (turn 6) are back at their pre-TC values.
-- Part 1 (the planner models tutors) stays. It changes no reference game; it is measured alone by `tc2-post` (pending).
+- Part 1 (the planner models tutors) stays; it changes no reference game.
+  - Measured alone by `tc2-post` (`a686e64`): 25 cells, 0 violations; Ruby Storm's row 15.8, against `rr-post` 16.0. Neutral.
+  - Both test chunks pass on `a686e64` (5630 + 2837).
+  - Part 1 is the foundation a lethal-aware gate needs, once the planner also counts multiple finishers in a turn and token damage on the next attack.
