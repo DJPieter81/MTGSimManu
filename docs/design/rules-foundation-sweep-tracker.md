@@ -12561,5 +12561,16 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
 
 **Pins:** the solver is opt-in, so the digest is byte-identical.
 
-**Measured:** `own-post` (`SB_SOLVER=new`; rows Ruby Storm, Dimir Midrange, Goryo's Vengeance, Boros Energy, Azorius Control; n=20) against `sbh-post` and the no-solver baselines (pending).
+**Measured:** `own-post` (`8d3cd86`, `SB_SOLVER=new`; rows Ruby Storm, Dimir Midrange, Goryo's Vengeance, Boros Energy, Azorius Control; n=20). 125 cells, 0 violations. Both test chunks pass on `8d3cd86` (5642 + 2837).
+
+| Row | No solver (`tc2-post` / `mo2-post`) | `sbh-post` | `own-post` |
+|---|---|---|---|
+| Ruby Storm | 15.8 | 8.4 | 11.0 |
+| Dimir Midrange | 51.0 | 57.4 | 51.2 |
+| Goryo's Vengeance | 33.6 | 33.6 | 33.2 |
+| Boros Energy | 71.8 | 73.8 | 76.4 |
+| Azorius Control | 35.6 | 31.0 | 38.2 |
+
+- **Decision: the rule fails (Storm 11.0 is below 15.8). The solver stays opt-in.**
+- Valuing a deck's own cards recovered part of `sbh-post`'s loss (8.4 → 11.0). Under realistic sideboarding, though, the field's hate against Storm costs it more than its own Thoughtseizes gain.
 - **Decision rule, stated before the run:** the solver becomes the default only if Storm's row beats its no-solver baseline (15.8) beyond one standard error (~2 pp) and no guard row falls beyond one.
