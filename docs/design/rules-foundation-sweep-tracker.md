@@ -12789,4 +12789,39 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
   - Grixis Reanimator vs Azorius Blink s53000 is now a Grixis win, with a Faithless Looting flashback on turn 10.
 - One turn-only drift (Broodscale vs Hollow One s53500, 8 → 7). The anchor is refreshed.
 
-**Measured:** `gyf-post`, all 26 rows at n=20 Bo3. Every deck with a flashback, escape or harmonize card reads the same list. Pending.
+**Measured:** `gyf-post` (`7f487c2`), all 26 rows at n=20 Bo3: 650 cells, 0 violations (539 findings, against 547 in `lsb-post`). Both test chunks pass on `7f487c2` (5680 + 2834).
+- **Ruby Storm 18.4 → 40.3 (+21.9), into its real-world band [40, 55]** for the first time since the 2026-09-27 list refresh.
+- Every other deck moves by 2.0 or less, mostly down: the cost of losing more often to Storm.
+- The largest cells are Storm's:
+  - vs Broodscale 15 → 70, vs Boros Ponza 20 → 75, vs 4c Omnath 25 → 70;
+  - Eldrazi Ramp vs Storm 90 → 30.
+- **Kept.**
+- **Why September's 55% fell:** that engine was no faster. Its goldfish median kill turn was 8.5 with 10 of 30 games lost to decking. The current engine with GYF kills by a median turn 7 with 3 of 30 lost.
+
+## Unit PFG: a graveyard flashback grant is worth only the granted casts it leaves mana for (AI; CR 702.34a; 2026-11-08)
+
+**Source:** Storm goldfish s70000. Past in Flames was cast on turns 4, 5 and 7 at a score of 0.00, with no granted spell affordable after it. The kill waited until turn 8.
+
+**Rule:** the grant lasts this turn only, and a flashback cast pays the card's cost. Its value this turn is therefore the granted spells the mana left after it can pay for.
+
+**Fix (`ai/ev_evaluator._enumerate_this_turn_signals`):**
+- Part 1 (`adffcc3`): signal 16 counts only the affordable granted spells. The goldfish did not move.
+- Part 2 (`5fa015d`): the grant is tagged a cantrip for the chain projections (`card_database`), so the chain-continuation signal (10) still fired whenever a cost reducer was in play. A grant now keeps only signals 16 and 17.
+
+**Class:** 8 pool cards print a graveyard flashback grant, below the class-size rule. This is not a new path: it tightens the precondition of the one existing gate (signal 16).
+
+**Tests:** 4 (`tests/test_a_flashback_grant_is_worth_the_granted_spells_it_leaves_mana_for.py`), 3 red first. Two older tests asserted the defect and were restated:
+- the Past in Flames signal fixture gave 5 mana, which paid none of its 2-cost fuel after the grant; it now has 6;
+- the "hold the closer for next turn's Past in Flames chain" test survived only through the false signal on an uncastable grant. A cross-turn closer hold is the falsified unit MA. It now asserts that an unpayable grant adds nothing to the closer's hold.
+
+**Effect, Storm goldfish (n=30, on the play) against GYF:**
+
+| | GYF | PFG |
+|---|---|---|
+| Kills | 27 | 28 |
+| Lost to decking | 3 | 2 |
+| Kills by turn 7 | 16 | 17 |
+| Kills by turn 8 | 18 | 20 |
+| Median kill turn | 7 | 7 |
+
+**Pins:** digest: 2 of 27 games change (Azorius Control vs Ruby Storm s58500, games 1 and 2), with the same winner. The anchor is green. The arm will be measured together with the next combo-speed unit.
