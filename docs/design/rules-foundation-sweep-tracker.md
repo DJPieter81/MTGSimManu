@@ -13105,3 +13105,10 @@ The reanimator decks' remaining slowness lies elsewhere:
 | Instant Reanimator, after | 1 / 5 / 9 / 12 | 8 |
 
 **Measured:** `blk-post`, all 26 rows at n=20 Bo3. It carries the madness, coin-flip, legend-rule and blink units merged since `rn-post`. Pending.
+
+## `blk-post`: madness, coin flip, legend rule, blink deferral (2026-11-08)
+
+All 26 rows at n=20 Bo3 (`21d9122`) against `rn-post`: 650 cells, **0 violations** (the madness finding is gone; 545 findings).
+- No deck moves beyond noise: Instant Reanimator 37.5 → 40.8 (+3.3), Goryo's 36.4 → 37.9 (+1.5), Jeskai Blink 49.1 → 50.6 (+1.5), Ruby Storm 40.0 → 37.8 (−2.2).
+- Storm's drop is within one standard error, but it now sits just below its band [40, 55]. Watch it in the next arm.
+- **All four units are kept** (MT, FL, LGR, BLK).
