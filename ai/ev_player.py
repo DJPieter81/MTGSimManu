@@ -4821,7 +4821,10 @@ class EVPlayer:
         # Reanimate: target the best creature card the spell may return
         if 'reanimate' in tags:
             me = game.players[self.player_idx]
-            gy_creatures = self._reanimation_candidates(game, spell, me)
+            # A second copy of a legend we control returns nothing that
+            # stays (CR 704.5j): the same filter the main phase applies.
+            gy_creatures = self._filter_legend_rule(
+                me, self._reanimation_candidates(game, spell, me))
             if gy_creatures:
                 best = max(gy_creatures,
                            key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
