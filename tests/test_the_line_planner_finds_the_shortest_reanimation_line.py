@@ -94,3 +94,13 @@ def test_a_random_discard_is_not_a_fill(card_db):
     g = _game(card_db, 4,
               hand=["Burning Inquiry", "Persist", "Archon of Cruelty"])
     assert best_line(g, 0) is None
+
+
+def test_the_line_to_the_bigger_threat_beats_a_cheaper_line(card_db):
+    """Reanimation is worth what it returns: Persist on the 7/7 flier, not
+    the cheaper Unearth on the 3-mana creature."""
+    g = _game(card_db, 3, hand=["Unearth", "Persist"],
+              graveyard=["Abhorrent Oculus", "Archon of Cruelty"])
+    line = best_line(g, 0)
+    assert _names(line) == ["Persist"]
+    assert line.payoff.name == "Archon of Cruelty"

@@ -37,7 +37,9 @@ def audit(deck: str, n: int, seed0: int, side: str = "play") -> dict:
         if getattr(game.players[self.player_idx], "deck_name", "") == deck:
             line = best_line(game, self.player_idx)
         chosen = real(self, game, *a, **kw)
-        if line is not None and line.completes == THIS_TURN:
+        if (line is not None and line.completes == THIS_TURN
+                and not (chosen and chosen[0] == "play_land")):
+            # A land drop first is compatible with any line.
             card = chosen[1] if chosen else None
             agree = card is line.first
             seen["agree" if agree else "disagree"] += 1

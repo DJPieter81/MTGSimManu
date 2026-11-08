@@ -21,7 +21,9 @@ docs/proposals/2026-11-08_card_interaction_graph_and_line_planner.md):
   candidates`).
 
 A line's cost is the AI's cost estimate of each play
-(`effective_cmc.chain_cost`). A line the mana available now pays is a line
+(`effective_cmc.chain_cost`). Lines are ranked by the turn they complete,
+then by the threat they return (`ev_evaluator.creature_threat_value`),
+then by cost. A line the mana available now pays is a line
 for this turn. A line whose first play is paid now is a line that
 completes next turn. The planner is read-only: it decides nothing. Its
 first consumer is the audit that measures how often the main phase's
@@ -136,5 +138,12 @@ def best_line(game: Any, player_idx: int) -> Optional[Line]:
                                   THIS_TURN if total <= mana else NEXT_TURN))
     if not lines:
         return None
-    return min(lines, key=lambda ln: (ln.completes, ln.cost, len(ln.plays),
-                                      -(ln.payoff.template.cmc or 0)))
+    # A reanimation is worth what it returns: among the lines completing
+    # soonest, the biggest threat (the AI's own measure,
+    # `ev_evaluator.creature_threat_value`), then the cheapest.
+    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+    snap = snapshot_from_game(game, player_idx)
+    threat = {id(ln.payoff): creature_threat_value(ln.payoff, snap)
+              for ln in lines}
+    return min(lines, key=lambda ln: (ln.completes, -threat[id(ln.payoff)],
+                                      ln.cost, len(ln.plays)))
