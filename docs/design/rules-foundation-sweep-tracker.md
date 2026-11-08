@@ -13080,3 +13080,28 @@ The reanimator decks' remaining slowness lies elsewhere:
 - mulligans to 5;
 - land-light keeps;
 - a shock land entered tapped while a 2-mana fill was in hand.
+
+## Unit BLK: a blink that would forfeit an attack waits for the second main phase (AI; CR 400.7; 2026-11-08)
+
+**Source:** Goryo's goldfish s70000, turn 4. Ephemerate on the hasty reanimated Atraxa scored −4.09 before combat and was cast, losing 7 damage. The charge's original case (Jeskai Blink vs Broodscale s50000) was also cast, at −0.03.
+
+**Rule:**
+- A blink returns a new, summoning-sick object, so cast in the first main phase it costs the returned creature's attack this turn.
+- After combat the same blink costs nothing more.
+- The charge was only a score, and the play-value floor let small negatives through. A blink with a positive charge is now deferred in MAIN1 and cast in MAIN2.
+- One owner of the charge: `_main1_blink_forfeit_charge`. The score subtracts it, and the deferral reads it.
+
+**Tests:** 2 (1 red first); 55 related tests pass.
+
+**Pins:** anchor green. Digest: 2 of 28 games change turn counts, with the same winners. Re-recorded.
+
+**Goldfish (n=20), within noise:**
+
+| | Kills by turn 5 / 6 / 7 / 8 | Median kill turn |
+|---|---|---|
+| Goryo's, before | 1 / 3 / 7 / 8 | 11 |
+| Goryo's, after | 2 / 4 / 7 / 8 | 11 |
+| Instant Reanimator, before | 1 / 6 / 11 / 14 | 7 |
+| Instant Reanimator, after | 1 / 5 / 9 / 12 | 8 |
+
+**Measured:** `blk-post`, all 26 rows at n=20 Bo3. It carries the madness, coin-flip, legend-rule and blink units merged since `rn-post`. Pending.
