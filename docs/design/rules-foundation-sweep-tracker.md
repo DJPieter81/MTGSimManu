@@ -13360,3 +13360,29 @@ Measured by the turn the deck goes off, the combo gap to real play (turns 3–5)
 - **Amulet Titan 42.8 → 38.3 (−4.5).** Its cells move 10–35 points: a pact is no longer free.
 - Every other deck is within ±1.0. Ruby Storm 37.8 → 38.0 is still under its [40, 55] band. Goryo's 37.9 → 37.2.
 - Amulet's drop is the rules-correct price of the pact. Do not tune the gate back; the Scapeshift lead above is the remaining AI loss.
+
+## Unit PE: a pay-to-enter-untapped payment prices every spell it enables (AI; 2026-11-08)
+
+**Symptom:** a Storm vs Boros Bo3 replay (s50500, game 1, which Boros won on turn 6). On turn 2 Storm fetched Sacred Foundry tapped rather than paying 2 life, so Ral, Monsoon Mage (its turn-2 cost reducer) waited until turn 3.
+
+**Rule:** a payment that makes a land enter untapped is worth the best spell it alone makes castable this turn.
+
+**Defect:** the payment decision (`AICallbacks.decide_optional_cost`) packed the enabled spells cheapest-first into one combination. Two spells of equal cost compete for the same slot, so only one was priced:
+- Manamorphose was priced, as a net-zero cast;
+- Ral was never priced;
+- the payment was declined.
+
+Priced by hand, paying and casting Ral scored −0.907 against −0.95 for declining.
+
+**Class:** every pay-life-to-enter-untapped land (shocks, and the Hall of Storm Giants–style "pay N life" class): any turn with two or more equal-cost spells enabled.
+
+**Fix:** besides the packed combination, each spell the payment alone makes castable is its own pay-then-cast variant.
+
+**Test:** `tests/test_untapped_payment_buys_the_spell_it_enables.py::test_each_spell_the_payment_enables_is_priced_not_only_one_packing`, red first.
+
+**Pins:**
+- Anchor refreshed: 7 entries, 6 turn-only.
+- 1 winner flip, Jeskai Blink vs 4c Omnath s50000, replayed old and new. Jeskai now pays 2 life on turn 2 to cast Phelia on curve where it fetched the shock tapped, and wins on turn 8 instead of losing on turn 12. Accepted as correct play.
+- Digest re-recorded: 18 game records change, 2 of them winner flips from the same shock-payment change.
+
+**Measured:** Storm goldfish n=40 unchanged (kill 7, go-off 6). A goldfish never pressures Storm, so the turn-2 reducer only matters against a clock. The field arm `pe-post` measures it.

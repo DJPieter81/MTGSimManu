@@ -33,15 +33,15 @@
       "deck1": "Jeskai Blink",
       "deck2": "4c Omnath",
       "seed": 50000,
-      "winner": "4c Omnath",
-      "turns": 12
+      "winner": "Jeskai Blink",
+      "turns": 8
     },
     {
       "deck1": "Goryo's Vengeance",
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 5
+      "turns": 4
     },
     {
       "deck1": "Pinnacle Affinity",
@@ -62,7 +62,7 @@
       "deck2": "Boros Energy",
       "seed": 50000,
       "winner": "Boros Energy",
-      "turns": 7
+      "turns": 6
     },
     {
       "deck1": "Boros Energy",
@@ -104,7 +104,7 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 7
+      "turns": 9
     },
     {
       "deck1": "4/5c Control",
@@ -118,7 +118,7 @@
       "deck2": "Azorius Control (WST v2)",
       "seed": 50500,
       "winner": "Azorius Control (WST)",
-      "turns": 27
+      "turns": 29
     },
     {
       "deck1": "Instant Reanimator",
@@ -132,7 +132,7 @@
       "deck2": "Boros Energy",
       "seed": 51000,
       "winner": "Boros Energy",
-      "turns": 6
+      "turns": 11
     },
     {
       "deck1": "Instant Reanimator",
@@ -174,7 +174,7 @@
       "deck2": "Azorius Blink",
       "seed": 53000,
       "winner": "Grixis Reanimator",
-      "turns": 9
+      "turns": 11
     },
     {
       "deck1": "Hollow One",

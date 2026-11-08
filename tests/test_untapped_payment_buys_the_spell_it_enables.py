@@ -83,3 +83,32 @@ def test_payment_buys_the_marginal_spell_not_a_single_spells_cost(card_db):
     # give the shock a red-capable sibling so colours are reachable
     cb = AICallbacks()
     assert cb.decide_optional_cost(game, 0, _offer(game, shock)) is True
+
+
+def test_each_spell_the_payment_enables_is_priced_not_only_one_packing(
+        card_db, monkeypatch):
+    """Two two-drops on one untapped land: the payment enables either one
+    (not both). The packing that fits the budget keeps only one of them, so
+    the other -- a cost reducer here -- was never priced and the payment
+    was declined. Each spell the payment alone enables is its own pay
+    variant."""
+    import ai.decision_kernel as dk
+    game, shock = _game(card_db)
+    game.players[0].deck_name = "Ruby Storm"
+    for c in game.players[0].battlefield:
+        if c.name == "Plains":
+            game.players[0].battlefield.remove(c)
+    _card(game, card_db, "Mountain", 0, "battlefield").tapped = False
+    _card(game, card_db, "Manamorphose", 0, "hand")
+    _card(game, card_db, "Ral, Monsoon Mage // Ral, Leyline Prodigy", 0, "hand")
+    seen = []
+    real = dk.best_choice
+
+    def spy(g, idx, arch, choices, **kw):
+        seen.extend(c.name for c in choices)
+        return real(g, idx, arch, choices, **kw)
+    monkeypatch.setattr(dk, "best_choice", spy)
+    AICallbacks().decide_optional_cost(game, 0, _offer(game, shock))
+    casts = {n.split("-> cast ")[1] for n in seen if "-> cast " in n}
+    assert {"Manamorphose",
+            "Ral, Monsoon Mage // Ral, Leyline Prodigy"} <= casts, seen

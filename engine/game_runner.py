@@ -221,7 +221,17 @@ class AICallbacks(GameCallbacks):
             # Without the payment: this turn's untapped colours only.
             without = {id(sp) for sp in _fits(needs.total_mana,
                                               needs.existing_colors)}
-            for spell in _fits(needs.total_mana + 1, reachable):
+            # The packing keeps one combination; spells of equal cost
+            # compete for the same slot, so each spell the payment alone
+            # makes castable is priced too -- otherwise the one the packing
+            # dropped is never weighed.
+            packed = _fits(needs.total_mana + 1, reachable)
+            alone = [sp for cmc, sp, colours in candidates
+                     if colours <= reachable and cmc <= needs.total_mana + 1
+                     and not (colours <= needs.existing_colors
+                              and cmc <= needs.total_mana)]
+            offered = list({id(sp): sp for sp in packed + alone}.values())
+            for spell in offered:
                 if id(spell) in without:
                     continue
 
