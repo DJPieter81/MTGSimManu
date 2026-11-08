@@ -5,8 +5,8 @@
    "name": "Boros Energy",
    "archetype": "aggro",
    "meta_share": 5.0,
-   "flat_wr": 71.9,
-   "weighted_wr": 73.2,
+   "flat_wr": 72.0,
+   "weighted_wr": 76.0,
    "tier": "T1",
    "band": [
     50.0,
@@ -15,7 +15,7 @@
    "band_verdict": "above",
    "band_provenance": "CLAUDE.md post-sim pipeline EXPECTED dict — Modern's #1 meta share, positive field expectation.",
    "best": "Azorius Control",
-   "worst": "Eldrazi Tron",
+   "worst": "Pinnacle Affinity",
    "detail": {
     "mvp_casts": [
      {
@@ -90,8 +90,8 @@
    "name": "Jeskai Blink",
    "archetype": "tempo",
    "meta_share": 0.5,
-   "flat_wr": 51.0,
-   "weighted_wr": 52.4,
+   "flat_wr": 51.2,
+   "weighted_wr": 53.9,
    "tier": "T2",
    "band": [
     45.0,
@@ -175,8 +175,8 @@
    "name": "Ruby Storm",
    "archetype": "combo",
    "meta_share": 4.0,
-   "flat_wr": 12.9,
-   "weighted_wr": 14.5,
+   "flat_wr": 18.4,
+   "weighted_wr": 19.5,
    "tier": "T4",
    "band": [
     40.0,
@@ -184,8 +184,8 @@
    ],
    "band_verdict": "below",
    "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Ruby Storm 49.2% at 2.8% share; MTGO window 46% (n=260). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
-   "best": "Eldrazi Ramp",
-   "worst": "Azorius Control (WST)",
+   "best": "4/5c Control",
+   "worst": "Dimir Midrange",
    "detail": {
     "mvp_casts": [
      {
@@ -260,17 +260,17 @@
    "name": "Affinity",
    "archetype": "aggro",
    "meta_share": 6.0,
-   "flat_wr": 40.0,
-   "weighted_wr": 36.0,
-   "tier": "T4",
+   "flat_wr": 47.6,
+   "weighted_wr": 44.2,
+   "tier": "T3",
    "band": [
     50.0,
     65.0
    ],
    "band_verdict": "below",
    "band_provenance": "User meta judgment 2026-07-08: Affinity plays as a Tier-1 deck in the July 2026 meta — band raised to the Tier-1 shape (same class as Eldrazi Tron). Supersedes the 'capped by universal SB artifact hate' [45-60] prior; the Bo3 SB-hate cap is real but does not push a Tier-1 deck below the Tier-1 band. The Azorius-vs-Affinity matchup probe is unchanged: 90-10 vs near-even remains a genuine control-interaction divergence at any tier.",
-   "best": "Ruby Storm",
-   "worst": "Rakdos Aggro",
+   "best": "Boros Ponza",
+   "worst": "Azorius Control (WST)",
    "detail": {
     "mvp_casts": [
      {
@@ -345,8 +345,8 @@
    "name": "Eldrazi Tron",
    "archetype": "ramp",
    "meta_share": 5.0,
-   "flat_wr": 74.1,
-   "weighted_wr": 66.8,
+   "flat_wr": 72.6,
+   "weighted_wr": 65.3,
    "tier": "T1",
    "band": [
     40.0,
@@ -354,7 +354,7 @@
    ],
    "band_verdict": "above",
    "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Eldrazi Tron 45.5% at 3.8% share; earlier events 47.4% (US/China RCs) and 59% (July tracker, n=110, wide CI). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
-   "best": "Azorius Control (WST v2)",
+   "best": "4/5c Control",
    "worst": "Pinnacle Affinity",
    "detail": {
     "mvp_casts": [
@@ -430,17 +430,17 @@
    "name": "Amulet Titan",
    "archetype": "combo",
    "meta_share": 7.0,
-   "flat_wr": 45.5,
-   "weighted_wr": 40.0,
+   "flat_wr": 44.0,
+   "weighted_wr": 38.2,
    "tier": "T4",
    "band": [
     45.0,
     60.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "band_provenance": "User meta review 2026-07-09 (Tier-1 sweep): 4.8% July meta share = Tier 1 in real Modern; replaces the default [30-70]. Sim currently far below (16.1) — the P0 gap is larger than the default band admitted; see docs/diagnostics/2026-07-06_amulet_titan_root_cause.md.",
    "best": "Ruby Storm",
-   "worst": "Boros Energy",
+   "worst": "Pinnacle Affinity",
    "detail": {
     "mvp_casts": [
      {
@@ -515,8 +515,8 @@
    "name": "Goryo's Vengeance",
    "archetype": "combo",
    "meta_share": 0.5,
-   "flat_wr": 37.6,
-   "weighted_wr": 36.4,
+   "flat_wr": 34.2,
+   "weighted_wr": 33.1,
    "tier": "T4",
    "band": [
     30.0,
@@ -600,8 +600,8 @@
    "name": "Domain Zoo",
    "archetype": "aggro",
    "meta_share": 3.0,
-   "flat_wr": 70.5,
-   "weighted_wr": 72.3,
+   "flat_wr": 74.2,
+   "weighted_wr": 76.1,
    "tier": "T1",
    "band": [
     45.0,
@@ -609,8 +609,8 @@
    ],
    "band_verdict": "above",
    "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Domain Zoo 51.1% at 4.5% share; MTGO Challenges 53% (n=744). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
-   "best": "Creatures Toolbox",
-   "worst": "Grixis Reanimator",
+   "best": "Amulet Titan",
+   "worst": "Pinnacle Affinity",
    "detail": {
     "mvp_casts": [
      {
@@ -685,8 +685,8 @@
    "name": "Living End",
    "archetype": "combo",
    "meta_share": 3.0,
-   "flat_wr": 57.2,
-   "weighted_wr": 55.6,
+   "flat_wr": 59.0,
+   "weighted_wr": 58.9,
    "tier": "T2",
    "band": [
     30.0,
@@ -695,7 +695,7 @@
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
    "best": "Creatures Toolbox",
-   "worst": "Eldrazi Tron",
+   "worst": "Domain Zoo",
    "detail": {
     "mvp_casts": [
      {
@@ -770,9 +770,9 @@
    "name": "Izzet Prowess",
    "archetype": "aggro",
    "meta_share": 5.0,
-   "flat_wr": 55.9,
-   "weighted_wr": 58.2,
-   "tier": "T2",
+   "flat_wr": 59.0,
+   "weighted_wr": 61.5,
+   "tier": "T1",
    "band": [
     50.0,
     65.0
@@ -855,9 +855,9 @@
    "name": "Dimir Midrange",
    "archetype": "midrange",
    "meta_share": 3.0,
-   "flat_wr": 53.3,
-   "weighted_wr": 51.6,
-   "tier": "T2",
+   "flat_wr": 50.8,
+   "weighted_wr": 49.3,
+   "tier": "T3",
    "band": [
     45.0,
     60.0
@@ -865,7 +865,7 @@
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline EXPECTED dict — interactive midrange, near-even-to-positive field.",
    "best": "Ruby Storm",
-   "worst": "4/5c Control",
+   "worst": "Azorius Control (WST v2)",
    "detail": {
     "mvp_casts": [
      {
@@ -940,8 +940,8 @@
    "name": "4c Omnath",
    "archetype": "midrange",
    "meta_share": 0.5,
-   "flat_wr": 53.6,
-   "weighted_wr": 43.4,
+   "flat_wr": 50.2,
+   "weighted_wr": 40.1,
    "tier": "T3",
    "band": [
     30.0,
@@ -1025,8 +1025,8 @@
    "name": "4/5c Control",
    "archetype": "control",
    "meta_share": 0.5,
-   "flat_wr": 47.7,
-   "weighted_wr": 41.4,
+   "flat_wr": 49.6,
+   "weighted_wr": 42.2,
    "tier": "T3",
    "band": [
     30.0,
@@ -1034,7 +1034,7 @@
    ],
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
-   "best": "Ruby Storm",
+   "best": "Creatures Toolbox",
    "worst": "Eldrazi Tron",
    "detail": {
     "mvp_casts": [
@@ -1110,8 +1110,8 @@
    "name": "Azorius Control (WST)",
    "archetype": "control",
    "meta_share": 0.0,
-   "flat_wr": 46.5,
-   "weighted_wr": 44.2,
+   "flat_wr": 45.8,
+   "weighted_wr": 43.7,
    "tier": "T3",
    "band": [
     30.0,
@@ -1190,16 +1190,16 @@
    "name": "Azorius Control (WST v2)",
    "archetype": "control",
    "meta_share": 0.0,
-   "flat_wr": 55.3,
-   "weighted_wr": 53.1,
-   "tier": "T2",
+   "flat_wr": 50.8,
+   "weighted_wr": 48.1,
+   "tier": "T3",
    "band": [
     30.0,
     70.0
    ],
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
-   "best": "Ruby Storm",
+   "best": "Izzet Prowess",
    "worst": "Eldrazi Tron",
    "detail": {
     "mvp_casts": [
@@ -1270,17 +1270,17 @@
    "name": "Pinnacle Affinity",
    "archetype": "aggro",
    "meta_share": 0.5,
-   "flat_wr": 59.7,
-   "weighted_wr": 56.5,
-   "tier": "T2",
+   "flat_wr": 72.0,
+   "weighted_wr": 70.0,
+   "tier": "T1",
    "band": [
     30.0,
     70.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "above",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
-   "best": "Ruby Storm",
-   "worst": "Boros Energy",
+   "best": "Goryo's Vengeance",
+   "worst": "Azorius Control (WST v2)",
    "detail": {
     "mvp_casts": [
      {
@@ -1355,8 +1355,8 @@
    "name": "Azorius Control",
    "archetype": "control",
    "meta_share": 7.0,
-   "flat_wr": 40.5,
-   "weighted_wr": 30.0,
+   "flat_wr": 35.4,
+   "weighted_wr": 25.0,
    "tier": "T4",
    "band": [
     30.0,
@@ -1364,7 +1364,7 @@
    ],
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
-   "best": "Boros Ponza",
+   "best": "Ruby Storm",
    "worst": "Boros Energy",
    "detail": {
     "mvp_casts": [
@@ -1440,9 +1440,9 @@
    "name": "Instant Reanimator",
    "archetype": "combo",
    "meta_share": 2.0,
-   "flat_wr": 40.8,
-   "weighted_wr": 40.7,
-   "tier": "T3",
+   "flat_wr": 38.8,
+   "weighted_wr": 39.3,
+   "tier": "T4",
    "band": [
     45.0,
     60.0
@@ -1525,8 +1525,8 @@
    "name": "Boros Ponza",
    "archetype": "midrange",
    "meta_share": 0.5,
-   "flat_wr": 28.3,
-   "weighted_wr": 23.4,
+   "flat_wr": 27.8,
+   "weighted_wr": 22.4,
    "tier": "T4",
    "band": [
     30.0,
@@ -1535,7 +1535,7 @@
    "band_verdict": "below",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
    "best": "Ruby Storm",
-   "worst": "Eldrazi Tron",
+   "worst": "Jeskai Blink",
    "detail": {
     "mvp_casts": [
      {
@@ -1610,16 +1610,16 @@
    "name": "Eldrazi Ramp",
    "archetype": "midrange",
    "meta_share": 0.5,
-   "flat_wr": 53.5,
-   "weighted_wr": 46.7,
-   "tier": "T3",
+   "flat_wr": 54.4,
+   "weighted_wr": 50.1,
+   "tier": "T2",
    "band": [
     30.0,
     70.0
    ],
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
-   "best": "Boros Ponza",
+   "best": "Ruby Storm",
    "worst": "Eldrazi Tron",
    "detail": {
     "mvp_casts": [
@@ -1695,8 +1695,8 @@
    "name": "Broodscale Bloodchief",
    "archetype": "midrange",
    "meta_share": 13.0,
-   "flat_wr": 59.5,
-   "weighted_wr": 54.4,
+   "flat_wr": 58.6,
+   "weighted_wr": 51.0,
    "tier": "T2",
    "band": [
     45.0,
@@ -1705,7 +1705,7 @@
    "band_verdict": "in",
    "band_provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Broodscale Combo 54.8% at 17.3% share; MTGO window 51% (n=677). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
    "best": "Boros Ponza",
-   "worst": "Domain Zoo",
+   "worst": "Pinnacle Affinity",
    "detail": {
     "mvp_casts": [
      {
@@ -1780,8 +1780,8 @@
    "name": "Creatures Toolbox",
    "archetype": "combo",
    "meta_share": 4.0,
-   "flat_wr": 25.5,
-   "weighted_wr": 23.5,
+   "flat_wr": 20.8,
+   "weighted_wr": 20.1,
    "tier": "T4",
    "band": [
     30.0,
@@ -1790,7 +1790,7 @@
    "band_verdict": "below",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
    "best": "Ruby Storm",
-   "worst": "Domain Zoo",
+   "worst": "Eldrazi Tron",
    "detail": {
     "mvp_casts": [
      {
@@ -1865,9 +1865,9 @@
    "name": "Grixis Reanimator",
    "archetype": "combo",
    "meta_share": 0.5,
-   "flat_wr": 59.6,
-   "weighted_wr": 59.0,
-   "tier": "T2",
+   "flat_wr": 57.0,
+   "weighted_wr": 61.8,
+   "tier": "T1",
    "band": [
     30.0,
     70.0
@@ -1875,7 +1875,7 @@
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
    "best": "Creatures Toolbox",
-   "worst": "Azorius Control (WST v2)",
+   "worst": "Azorius Control",
    "detail": {
     "mvp_casts": [
      {
@@ -1950,8 +1950,8 @@
    "name": "Azorius Blink",
    "archetype": "aggro",
    "meta_share": 3.0,
-   "flat_wr": 46.1,
-   "weighted_wr": 38.4,
+   "flat_wr": 44.2,
+   "weighted_wr": 36.0,
    "tier": "T4",
    "band": [
     30.0,
@@ -1959,7 +1959,7 @@
    ],
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
-   "best": "Ruby Storm",
+   "best": "Azorius Control (WST)",
    "worst": "Boros Energy",
    "detail": {
     "mvp_casts": [
@@ -2035,8 +2035,8 @@
    "name": "Hollow One",
    "archetype": "combo",
    "meta_share": 0.5,
-   "flat_wr": 28.5,
-   "weighted_wr": 30.2,
+   "flat_wr": 27.8,
+   "weighted_wr": 25.6,
    "tier": "T4",
    "band": [
     30.0,
@@ -2045,7 +2045,7 @@
    "band_verdict": "below",
    "band_provenance": "CLAUDE.md post-sim pipeline default — any registered deck outside 30-70 field WR is a structural outlier, not a tuning issue.",
    "best": "Ruby Storm",
-   "worst": "Izzet Prowess",
+   "worst": "Affinity",
    "detail": {
     "mvp_casts": [
      {
@@ -2120,8 +2120,8 @@
    "name": "Rakdos Aggro",
    "archetype": "aggro",
    "meta_share": 13.0,
-   "flat_wr": 59.3,
-   "weighted_wr": 62.8,
+   "flat_wr": 58.0,
+   "weighted_wr": 62.3,
    "tier": "T1",
    "band": [
     40.0,
@@ -2129,7 +2129,7 @@
    ],
    "band_verdict": "above",
    "band_provenance": "Real-world match win rate, MTGMeta tracker (mtgmeta.com, retrieved via web search 2026-11-08): Rakdos Aggro 48.7% over 269 matches at 4.5% share; Rakdos Delirium 57.1% at 1.4% share at the 2026 Fall Regional Championships (small sample). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta').",
-   "best": "Ruby Storm",
+   "best": "Creatures Toolbox",
    "worst": "Azorius Control (WST v2)",
    "detail": null
   }
@@ -2138,11 +2138,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 65.0,
    "band": [
     45.0,
     60.0
@@ -2253,11 +2253,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 90.0,
    "band": [
     40.0,
     55.0
@@ -2368,11 +2368,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 47,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 78.3,
+   "wr": 80.0,
    "band": [
     50.0,
     65.0
@@ -2489,16 +2489,16 @@
   {
    "deck": "Boros Energy",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 45.0,
    "band": [
     45.0,
     60.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Eldrazi Tron favored at 60-40. Mid-speed games (8.9t avg). Polarized — 60% sweeps. 2 comebacks in 10 matches.",
     "avg_turns": 8.9,
@@ -2613,11 +2613,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 90.0,
    "band": [
     45.0,
     60.0
@@ -2732,11 +2732,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 55,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 91.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -2849,8 +2849,8 @@
   {
    "deck": "Boros Energy",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
    "wr": 55.0,
@@ -2970,16 +2970,16 @@
   {
    "deck": "Boros Energy",
    "opp": "Living End",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 60.0,
    "band": [
     40.0,
     55.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "above",
    "detail": {
     "insight": "Living End crushes this at 80-20. Mid-speed games (7.2t avg).",
     "avg_turns": 7.2,
@@ -3089,11 +3089,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 80.0,
    "band": [
     45.0,
     60.0
@@ -3208,11 +3208,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 80.0,
    "band": [
     45.0,
     60.0
@@ -3333,11 +3333,11 @@
   {
    "deck": "Boros Energy",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -3449,8 +3449,8 @@
   {
    "deck": "Boros Energy",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
    "wr": 85.0,
@@ -3568,11 +3568,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 34,
-   "draws": 1,
+   "n": 20,
+   "wins": 12,
+   "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -3684,11 +3684,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -3800,11 +3800,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -3918,11 +3918,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 59,
-   "draws": 1,
+   "n": 20,
+   "wins": 20,
+   "draws": 0,
    "aborted": 0,
-   "wr": 98.3,
+   "wr": 100.0,
    "band": [
     45.0,
     60.0
@@ -4037,11 +4037,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 85.0,
    "band": [
     50.0,
     65.0
@@ -4152,11 +4152,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 53,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 88.3,
+   "wr": 90.0,
    "band": [
     40.0,
     60.0
@@ -4271,11 +4271,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -4383,8 +4383,8 @@
   {
    "deck": "Boros Energy",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
    "wr": 70.0,
@@ -4495,11 +4495,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -4607,11 +4607,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -4719,11 +4719,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -4831,11 +4831,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 58,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 96.7,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -4943,11 +4943,11 @@
   {
    "deck": "Boros Energy",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -4955,11 +4955,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 35.0,
    "band": [
     40.0,
     55.0
@@ -5070,11 +5070,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 80.0,
    "band": [
     50.0,
     65.0
@@ -5189,11 +5189,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 70.0,
    "band": [
     40.0,
     55.0
@@ -5315,11 +5315,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 10,
-   "draws": 2,
+   "n": 20,
+   "wins": 2,
+   "draws": 1,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 10.0,
    "band": [
     35.0,
     50.0
@@ -5434,11 +5434,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 40.0,
    "band": [
     35.0,
     50.0
@@ -5553,11 +5553,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -5665,11 +5665,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -5782,11 +5782,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Living End",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -5899,16 +5899,16 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 35.0,
    "band": [
     40.0,
     55.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "Izzet Prowess dominates at 70-30. Mid-speed games (7.7t avg). Polarized — 90% sweeps.",
     "avg_turns": 7.7,
@@ -6014,11 +6014,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -6126,11 +6126,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -6238,11 +6238,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -6350,9 +6350,9 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 33,
-   "draws": 4,
+   "n": 20,
+   "wins": 11,
+   "draws": 1,
    "aborted": 0,
    "wr": 55.0,
    "band": null,
@@ -6462,11 +6462,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 22,
-   "draws": 6,
+   "n": 20,
+   "wins": 13,
+   "draws": 1,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -6574,11 +6574,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -6697,11 +6697,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 41,
-   "draws": 2,
+   "n": 20,
+   "wins": 13,
+   "draws": 1,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -6809,11 +6809,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 65.0,
    "band": [
     50.0,
     65.0
@@ -6924,9 +6924,9 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 57,
-   "draws": 1,
+   "n": 20,
+   "wins": 19,
+   "draws": 0,
    "aborted": 0,
    "wr": 95.0,
    "band": null,
@@ -7036,11 +7036,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -7148,11 +7148,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -7260,11 +7260,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -7372,11 +7372,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -7484,11 +7484,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -7596,11 +7596,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -7708,11 +7708,11 @@
   {
    "deck": "Jeskai Blink",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -7720,11 +7720,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 15.0,
    "band": [
     45.0,
     60.0
@@ -7835,11 +7835,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 25.0,
    "band": [
     35.0,
     50.0
@@ -7954,11 +7954,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 10.0,
    "band": [
     45.0,
     60.0
@@ -8069,11 +8069,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 25.0,
    "band": [
     30.0,
     45.0
@@ -8184,11 +8184,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 30.0,
    "band": [
     40.0,
     60.0
@@ -8299,11 +8299,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 4,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 6.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -8411,11 +8411,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 15.0,
    "band": [
     50.0,
     65.0
@@ -8530,11 +8530,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Living End",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 20.0,
    "band": [
     50.0,
     65.0
@@ -8645,11 +8645,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 35.0,
    "band": [
     50.0,
     65.0
@@ -8764,11 +8764,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 2,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 3.3,
+   "wr": 0.0,
    "band": [
     35.0,
     45.0
@@ -8885,11 +8885,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -9001,16 +9001,16 @@
   {
    "deck": "Ruby Storm",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 50.0,
    "band": [
     35.0,
     50.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Ruby Storm crushes this at 80-20. Mid-speed games (7.1t avg). 3 comebacks in 10 matches.",
     "avg_turns": 7.1,
@@ -9124,7 +9124,7 @@
   {
    "deck": "Ruby Storm",
    "opp": "Azorius Control (WST)",
-   "n": 60,
+   "n": 20,
    "wins": 0,
    "draws": 0,
    "aborted": 0,
@@ -9241,11 +9241,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
+   "n": 20,
    "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 1.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -9357,11 +9357,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 3,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 5.0,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -9469,11 +9469,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 7,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 10.0,
    "band": [
     40.0,
     55.0
@@ -9590,11 +9590,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 0.0,
    "band": [
     45.0,
     60.0
@@ -9709,11 +9709,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 20.0,
    "band": [
     40.0,
     60.0
@@ -9828,11 +9828,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -9940,11 +9940,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -10052,11 +10052,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -10164,11 +10164,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -10279,11 +10279,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -10391,11 +10391,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -10503,11 +10503,11 @@
   {
    "deck": "Ruby Storm",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 7,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -10515,11 +10515,11 @@
   {
    "deck": "Affinity",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 30.0,
    "band": [
     35.0,
     50.0
@@ -10636,11 +10636,11 @@
   {
    "deck": "Affinity",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 40.0,
    "band": [
     45.0,
     60.0
@@ -10762,11 +10762,11 @@
   {
    "deck": "Affinity",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 65.0,
    "band": [
     40.0,
     55.0
@@ -10877,11 +10877,11 @@
   {
    "deck": "Affinity",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 30.0,
    "band": [
     35.0,
     50.0
@@ -10996,16 +10996,16 @@
   {
    "deck": "Affinity",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 70.0,
    "band": [
     45.0,
     60.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "above",
    "detail": {
     "insight": "Affinity dominates at 70-30. Mid-speed games (8.2t avg). Polarized — 80% sweeps.",
     "avg_turns": 8.2,
@@ -11115,11 +11115,11 @@
   {
    "deck": "Affinity",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -11230,11 +11230,11 @@
   {
    "deck": "Affinity",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 30.0,
    "band": [
     45.0,
     60.0
@@ -11345,16 +11345,16 @@
   {
    "deck": "Affinity",
    "opp": "Living End",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 50.0,
    "band": [
     50.0,
     65.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Affinity favored at 60-40. Mid-speed games (8.4t avg). Competitive — 80% go to G3. 3 comebacks in 10 matches.",
     "avg_turns": 8.4,
@@ -11460,11 +11460,11 @@
   {
    "deck": "Affinity",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 35.0,
    "band": [
     45.0,
     60.0
@@ -11581,16 +11581,16 @@
   {
    "deck": "Affinity",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 45.0,
    "band": [
     45.0,
     60.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Dimir Midrange favored at 60-40. Mid-speed games (7.7t avg). 2 comebacks in 10 matches.",
     "avg_turns": 7.7,
@@ -11706,11 +11706,11 @@
   {
    "deck": "Affinity",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -11818,16 +11818,16 @@
   {
    "deck": "Affinity",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 60.0,
    "band": [
     45.0,
     60.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "4/5c Control crushes this at 80-20. Grindy (11.2t avg). 3 comebacks in 10 matches.",
     "avg_turns": 11.2,
@@ -11939,9 +11939,9 @@
   {
    "deck": "Affinity",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 12,
-   "draws": 3,
+   "n": 20,
+   "wins": 4,
+   "draws": 1,
    "aborted": 0,
    "wr": 20.0,
    "band": null,
@@ -12051,11 +12051,11 @@
   {
    "deck": "Affinity",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 16,
-   "draws": 1,
+   "n": 20,
+   "wins": 5,
+   "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -12163,11 +12163,11 @@
   {
    "deck": "Affinity",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -12275,16 +12275,16 @@
   {
    "deck": "Affinity",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 45.0,
    "band": [
     45.0,
     55.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Even matchup at 50-50. Grindy (12.5t avg). 2 comebacks in 10 matches.",
     "avg_turns": 12.5,
@@ -12396,11 +12396,11 @@
   {
    "deck": "Affinity",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 65.0,
    "band": [
     50.0,
     65.0
@@ -12511,11 +12511,11 @@
   {
    "deck": "Affinity",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 85.0,
    "band": [
     40.0,
     55.0
@@ -12633,11 +12633,11 @@
   {
    "deck": "Affinity",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -12749,11 +12749,11 @@
   {
    "deck": "Affinity",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -12868,11 +12868,11 @@
   {
    "deck": "Affinity",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -12980,11 +12980,11 @@
   {
    "deck": "Affinity",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -13096,11 +13096,11 @@
   {
    "deck": "Affinity",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -13214,11 +13214,11 @@
   {
    "deck": "Affinity",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -13326,11 +13326,11 @@
   {
    "deck": "Affinity",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -13338,11 +13338,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 50.0,
    "band": [
     40.0,
     55.0
@@ -13462,8 +13462,8 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
    "wr": 85.0,
@@ -13581,11 +13581,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 80.0,
    "band": [
     55.0,
     70.0
@@ -13696,8 +13696,8 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
    "wr": 70.0,
@@ -13815,11 +13815,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 75.0,
    "band": [
     40.0,
     55.0
@@ -13930,11 +13930,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -14042,16 +14042,16 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 35.0,
    "band": [
     40.0,
     55.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "Domain Zoo dominates at 67-33. Grindy (12.2t avg). 2 comebacks in 9 matches.",
     "avg_turns": 12.2,
@@ -14157,11 +14157,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Living End",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 55.0,
    "band": [
     40.0,
     60.0
@@ -14276,11 +14276,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 55.0,
    "band": [
     55.0,
     70.0
@@ -14391,11 +14391,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 80.0,
    "band": [
     50.0,
     65.0
@@ -14506,11 +14506,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -14618,11 +14618,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 58,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 96.7,
+   "wr": 100.0,
    "band": [
     50.0,
     65.0
@@ -14739,11 +14739,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 55,
-   "draws": 4,
+   "n": 20,
+   "wins": 19,
+   "draws": 1,
    "aborted": 0,
-   "wr": 91.7,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -14846,11 +14846,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 59,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 98.3,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -14958,11 +14958,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15074,11 +15074,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 52,
-   "draws": 5,
+   "n": 20,
+   "wins": 18,
+   "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 90.0,
    "band": [
     50.0,
     65.0
@@ -15195,11 +15195,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 90.0,
    "band": [
     40.0,
     60.0
@@ -15310,11 +15310,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 59,
+   "n": 20,
+   "wins": 19,
    "draws": 1,
    "aborted": 0,
-   "wr": 98.3,
+   "wr": 95.0,
    "band": [
     40.0,
     60.0
@@ -15431,11 +15431,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 44,
-   "draws": 1,
+   "n": 20,
+   "wins": 15,
+   "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15543,11 +15543,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15655,11 +15655,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15767,11 +15767,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15879,11 +15879,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 44,
-   "draws": 1,
+   "n": 20,
+   "wins": 13,
+   "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15995,11 +15995,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -16107,11 +16107,11 @@
   {
    "deck": "Eldrazi Tron",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -16119,11 +16119,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 20.0,
    "band": [
     40.0,
     55.0
@@ -16238,11 +16238,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 55.0,
    "band": [
     50.0,
     65.0
@@ -16357,11 +16357,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 75.0,
    "band": [
     40.0,
     60.0
@@ -16472,11 +16472,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 25.0,
    "band": [
     40.0,
     55.0
@@ -16591,11 +16591,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 25.0,
    "band": [
     45.0,
     60.0
@@ -16706,11 +16706,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -16818,11 +16818,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 25.0,
    "band": [
     40.0,
     55.0
@@ -16936,16 +16936,16 @@
   {
    "deck": "Amulet Titan",
    "opp": "Living End",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 45.0,
    "band": [
     40.0,
     60.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Even matchup at 50-50. Grindy (10.0t avg). Polarized — 60% sweeps. 2 comebacks in 10 matches.",
     "avg_turns": 10.0,
@@ -17051,11 +17051,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 50.0,
    "band": [
     40.0,
     55.0
@@ -17169,16 +17169,16 @@
   {
    "deck": "Amulet Titan",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 45.0,
    "band": [
     55.0,
     70.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "Dimir Midrange crushes this at 90-10. Mid-speed games (8.1t avg). Polarized — 60% sweeps. 2 comebacks in 10 matches.",
     "avg_turns": 8.1,
@@ -17289,11 +17289,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -17405,11 +17405,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 45.0,
    "band": [
     50.0,
     65.0
@@ -17525,11 +17525,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -17641,11 +17641,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -17757,11 +17757,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -17873,16 +17873,16 @@
   {
    "deck": "Amulet Titan",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 65.0,
    "band": [
     50.0,
     65.0
    ],
-   "band_verdict": "above",
+   "band_verdict": "in",
    "detail": {
     "insight": "Amulet Titan favored at 60-40. Grindy (14.3t avg). Polarized — 70% sweeps.",
     "avg_turns": 14.3,
@@ -17991,11 +17991,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 55.0,
    "band": [
     40.0,
     60.0
@@ -18109,8 +18109,8 @@
   {
    "deck": "Amulet Titan",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
    "wr": 65.0,
@@ -18224,11 +18224,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18336,11 +18336,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18443,11 +18443,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18555,11 +18555,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18670,11 +18670,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18786,11 +18786,11 @@
   {
    "deck": "Amulet Titan",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18901,8 +18901,8 @@
   {
    "deck": "Amulet Titan",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
    "wr": 25.0,
@@ -18913,11 +18913,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19030,11 +19030,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19142,11 +19142,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19254,11 +19254,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19369,11 +19369,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19481,11 +19481,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19593,8 +19593,8 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
    "wr": 15.0,
@@ -19705,11 +19705,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Living End",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19817,11 +19817,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19929,11 +19929,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 10.0,
    "band": [
     35.0,
     50.0
@@ -20054,11 +20054,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20166,11 +20166,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20278,11 +20278,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20390,11 +20390,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20502,11 +20502,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 7,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20617,11 +20617,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20729,11 +20729,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20841,11 +20841,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20957,11 +20957,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21069,11 +21069,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21181,11 +21181,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21293,11 +21293,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21405,11 +21405,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21517,11 +21517,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21629,11 +21629,11 @@
   {
    "deck": "Goryo's Vengeance",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -21641,11 +21641,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 70.0,
    "band": [
     40.0,
     55.0
@@ -21762,11 +21762,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -21879,11 +21879,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 55,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 91.7,
+   "wr": 90.0,
    "band": [
     35.0,
     50.0
@@ -21998,11 +21998,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 80.0,
    "band": [
     40.0,
     55.0
@@ -22113,8 +22113,8 @@
   {
    "deck": "Domain Zoo",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
    "wr": 65.0,
@@ -22228,11 +22228,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 100.0,
    "band": [
     45.0,
     60.0
@@ -22346,11 +22346,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 90.0,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -22458,11 +22458,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Living End",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -22574,11 +22574,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 65.0,
    "band": [
     40.0,
     55.0
@@ -22689,11 +22689,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -22811,11 +22811,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -22923,11 +22923,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -23039,11 +23039,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 39,
-   "draws": 1,
+   "n": 20,
+   "wins": 11,
+   "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -23151,11 +23151,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 30,
-   "draws": 1,
+   "n": 20,
+   "wins": 13,
+   "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -23263,8 +23263,8 @@
   {
    "deck": "Domain Zoo",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
    "wr": 50.0,
@@ -23375,11 +23375,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 53,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 88.3,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -23493,11 +23493,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 90.0,
+   "wr": 95.0,
    "band": [
     45.0,
     60.0
@@ -23608,11 +23608,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -23720,11 +23720,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -23832,8 +23832,8 @@
   {
    "deck": "Domain Zoo",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
    "wr": 70.0,
@@ -23944,8 +23944,8 @@
   {
    "deck": "Domain Zoo",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 60,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
    "wr": 100.0,
@@ -24056,11 +24056,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -24168,11 +24168,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -24284,11 +24284,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -24396,11 +24396,11 @@
   {
    "deck": "Domain Zoo",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -24408,16 +24408,16 @@
   {
    "deck": "Living End",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 65.0,
    "band": [
     45.0,
     60.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "above",
    "detail": {
     "insight": "",
     "avg_turns": 7.2,
@@ -24527,11 +24527,11 @@
   {
    "deck": "Living End",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -24644,8 +24644,8 @@
   {
    "deck": "Living End",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
    "wr": 75.0,
@@ -24759,11 +24759,11 @@
   {
    "deck": "Living End",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 65.0,
    "band": [
     35.0,
     50.0
@@ -24874,11 +24874,11 @@
   {
    "deck": "Living End",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 18,
-   "draws": 1,
+   "n": 20,
+   "wins": 7,
+   "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 35.0,
    "band": [
     40.0,
     60.0
@@ -24993,8 +24993,8 @@
   {
    "deck": "Living End",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
    "wr": 55.0,
@@ -25108,11 +25108,11 @@
   {
    "deck": "Living End",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -25220,11 +25220,11 @@
   {
    "deck": "Living End",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -25336,16 +25336,16 @@
   {
    "deck": "Living End",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 65.0,
    "band": [
     35.0,
     50.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "above",
    "detail": {
     "insight": "Izzet Prowess dominates at 70-30. Lightning fast (5.9t avg). 3 comebacks in 10 matches.",
     "avg_turns": 5.9,
@@ -25457,8 +25457,8 @@
   {
    "deck": "Living End",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
    "wr": 60.0,
@@ -25580,11 +25580,11 @@
   {
    "deck": "Living End",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -25699,11 +25699,11 @@
   {
    "deck": "Living End",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -25820,11 +25820,11 @@
   {
    "deck": "Living End",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -25938,11 +25938,11 @@
   {
    "deck": "Living End",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26056,11 +26056,11 @@
   {
    "deck": "Living End",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26168,11 +26168,11 @@
   {
    "deck": "Living End",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26286,16 +26286,16 @@
   {
    "deck": "Living End",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 65.0,
    "band": [
     40.0,
     55.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "above",
    "detail": {
     "insight": "Even matchup at 50-50. Mid-speed games (7.6t avg). 5 comebacks in 10 matches.",
     "avg_turns": 7.6,
@@ -26406,11 +26406,11 @@
   {
    "deck": "Living End",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26522,11 +26522,11 @@
   {
    "deck": "Living End",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26634,8 +26634,8 @@
   {
    "deck": "Living End",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
    "wr": 55.0,
@@ -26746,8 +26746,8 @@
   {
    "deck": "Living End",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
    "wr": 90.0,
@@ -26858,11 +26858,11 @@
   {
    "deck": "Living End",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26975,11 +26975,11 @@
   {
    "deck": "Living End",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -27087,11 +27087,11 @@
   {
    "deck": "Living End",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -27203,11 +27203,11 @@
   {
    "deck": "Living End",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -27215,11 +27215,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 30.0,
    "band": [
     40.0,
     55.0
@@ -27334,11 +27334,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 60.0,
    "band": [
     45.0,
     60.0
@@ -27449,11 +27449,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 53,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 88.3,
+   "wr": 80.0,
    "band": [
     35.0,
     50.0
@@ -27568,11 +27568,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 70.0,
    "band": [
     40.0,
     55.0
@@ -27689,11 +27689,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 40.0,
    "band": [
     30.0,
     45.0
@@ -27804,11 +27804,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 80.0,
    "band": [
     45.0,
     60.0
@@ -27922,11 +27922,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -28034,11 +28034,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 40.0,
    "band": [
     45.0,
     60.0
@@ -28149,16 +28149,16 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Living End",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 45.0,
    "band": [
     50.0,
     65.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "",
     "avg_turns": 5.9,
@@ -28270,11 +28270,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 60.0,
    "band": [
     45.0,
     60.0
@@ -28395,8 +28395,8 @@
   {
    "deck": "Izzet Prowess",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
    "wr": 75.0,
@@ -28507,11 +28507,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 85.0,
    "band": [
     45.0,
     60.0
@@ -28622,11 +28622,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 3,
    "draws": 1,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -28734,11 +28734,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -28846,11 +28846,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -28964,8 +28964,8 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
    "wr": 90.0,
@@ -29079,11 +29079,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 55.0,
    "band": [
     45.0,
     60.0
@@ -29194,16 +29194,16 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 70.0,
    "band": [
     40.0,
     60.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "above",
    "detail": {
     "insight": "Izzet Prowess favored at 60-40. Mid-speed games (7.0t avg). Polarized — 60% sweeps.",
     "avg_turns": 7.0,
@@ -29309,11 +29309,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -29421,11 +29421,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -29533,11 +29533,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 48,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 80.0,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -29645,11 +29645,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -29757,11 +29757,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -29869,11 +29869,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 57,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 95.0,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -29981,11 +29981,11 @@
   {
    "deck": "Izzet Prowess",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -29993,8 +29993,8 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
    "wr": 35.0,
@@ -30118,11 +30118,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -30230,11 +30230,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 59,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 98.3,
+   "wr": 100.0,
    "band": [
     55.0,
     65.0
@@ -30351,16 +30351,16 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 50.0,
    "band": [
     40.0,
     55.0
    ],
-   "band_verdict": "above",
+   "band_verdict": "in",
    "detail": {
     "insight": "",
     "avg_turns": 7.7,
@@ -30476,11 +30476,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 20,
-   "draws": 1,
+   "n": 20,
+   "wins": 4,
+   "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 20.0,
    "band": [
     35.0,
     50.0
@@ -30591,11 +30591,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 60.0,
    "band": [
     30.0,
     45.0
@@ -30711,8 +30711,8 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
    "wr": 85.0,
@@ -30836,11 +30836,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -30958,11 +30958,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Living End",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -31081,16 +31081,16 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 15.0,
    "band": [
     40.0,
     55.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "",
     "avg_turns": 6.8,
@@ -31206,11 +31206,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -31318,8 +31318,8 @@
   {
    "deck": "Dimir Midrange",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
    "wr": 30.0,
@@ -31430,11 +31430,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 24,
-   "draws": 4,
+   "n": 20,
+   "wins": 6,
+   "draws": 3,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -31542,11 +31542,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 18,
-   "draws": 3,
+   "n": 20,
+   "wins": 2,
+   "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -31654,11 +31654,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -31776,11 +31776,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 32,
-   "draws": 1,
+   "n": 20,
+   "wins": 11,
+   "draws": 2,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -31888,11 +31888,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 75.0,
    "band": [
     50.0,
     65.0
@@ -32003,11 +32003,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 47,
-   "draws": 2,
+   "n": 20,
+   "wins": 15,
+   "draws": 1,
    "aborted": 0,
-   "wr": 78.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -32115,11 +32115,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -32227,8 +32227,8 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
    "wr": 35.0,
@@ -32339,11 +32339,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -32451,11 +32451,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -32563,11 +32563,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -32675,8 +32675,8 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
    "wr": 90.0,
@@ -32787,11 +32787,11 @@
   {
    "deck": "Dimir Midrange",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -32799,11 +32799,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -32915,11 +32915,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33027,11 +33027,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 48,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 80.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33143,11 +33143,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33255,11 +33255,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33367,11 +33367,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33483,11 +33483,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33595,11 +33595,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33707,11 +33707,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Living End",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33826,11 +33826,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33938,11 +33938,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34050,11 +34050,11 @@
   {
    "deck": "4c Omnath",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34162,9 +34162,9 @@
   {
    "deck": "4c Omnath",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 54,
-   "draws": 1,
+   "n": 20,
+   "wins": 18,
+   "draws": 0,
    "aborted": 0,
    "wr": 90.0,
    "band": null,
@@ -34274,11 +34274,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 18,
    "draws": 1,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34386,11 +34386,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34498,11 +34498,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 11,
    "draws": 2,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34610,11 +34610,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34722,11 +34722,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 29,
-   "draws": 6,
+   "n": 20,
+   "wins": 7,
+   "draws": 5,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34834,11 +34834,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -34946,11 +34946,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -35058,11 +35058,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -35170,11 +35170,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -35282,11 +35282,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -35394,11 +35394,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -35506,11 +35506,11 @@
   {
    "deck": "4c Omnath",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -35518,11 +35518,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 15.0,
    "band": [
     40.0,
     55.0
@@ -35637,11 +35637,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -35749,16 +35749,16 @@
   {
    "deck": "4/5c Control",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 53,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 88.3,
+   "wr": 60.0,
    "band": [
     50.0,
     65.0
    ],
-   "band_verdict": "above",
+   "band_verdict": "in",
    "detail": {
     "insight": "",
     "avg_turns": 7.1,
@@ -35872,11 +35872,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": [
     40.0,
     55.0
@@ -35993,11 +35993,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 2,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 3.3,
+   "wr": 5.0,
    "band": [
     35.0,
     50.0
@@ -36114,11 +36114,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 50.0,
    "band": [
     35.0,
     50.0
@@ -36234,11 +36234,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -36346,11 +36346,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -36462,8 +36462,8 @@
   {
    "deck": "4/5c Control",
    "opp": "Living End",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
    "wr": 35.0,
@@ -36583,11 +36583,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 35.0,
    "band": [
     40.0,
     55.0
@@ -36698,11 +36698,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -36810,11 +36810,11 @@
   {
    "deck": "4/5c Control",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 25,
-   "draws": 1,
+   "n": 20,
+   "wins": 11,
+   "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -36922,11 +36922,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 42,
-   "draws": 1,
+   "n": 20,
+   "wins": 15,
+   "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37034,11 +37034,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 32,
-   "draws": 3,
+   "n": 20,
+   "wins": 14,
+   "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37146,11 +37146,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37264,11 +37264,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 24,
-   "draws": 6,
+   "n": 20,
+   "wins": 12,
+   "draws": 1,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37376,11 +37376,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 45.0,
    "band": [
     50.0,
     65.0
@@ -37491,11 +37491,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 34,
-   "draws": 1,
+   "n": 20,
+   "wins": 12,
+   "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37603,11 +37603,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37715,11 +37715,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37827,11 +37827,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -37939,11 +37939,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38051,11 +38051,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38163,11 +38163,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38275,11 +38275,11 @@
   {
    "deck": "4/5c Control",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -38287,11 +38287,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38403,11 +38403,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 18,
-   "draws": 4,
+   "n": 20,
+   "wins": 8,
+   "draws": 1,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38515,8 +38515,8 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 60,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
    "wr": 100.0,
@@ -38632,11 +38632,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 40,
-   "draws": 2,
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38744,7 +38744,7 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Eldrazi Tron",
-   "n": 60,
+   "n": 20,
    "wins": 0,
    "draws": 1,
    "aborted": 0,
@@ -38851,11 +38851,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 33,
-   "draws": 2,
+   "n": 20,
+   "wins": 12,
+   "draws": 1,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -38967,11 +38967,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 49,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 81.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39079,11 +39079,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 8,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 13.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39191,11 +39191,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Living End",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39309,11 +39309,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39421,11 +39421,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 23,
-   "draws": 4,
+   "n": 20,
+   "wins": 7,
+   "draws": 2,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39533,11 +39533,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 5,
-   "draws": 4,
+   "n": 20,
+   "wins": 2,
+   "draws": 2,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39645,11 +39645,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39757,11 +39757,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 12,
-   "draws": 23,
+   "n": 20,
+   "wins": 5,
+   "draws": 6,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39869,11 +39869,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -39981,11 +39981,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 9,
-   "draws": 4,
+   "n": 20,
+   "wins": 2,
+   "draws": 1,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40093,11 +40093,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40205,11 +40205,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 55,
-   "draws": 2,
+   "n": 20,
+   "wins": 18,
+   "draws": 1,
    "aborted": 0,
-   "wr": 91.7,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40317,11 +40317,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 5,
-   "draws": 6,
+   "n": 20,
+   "wins": 4,
+   "draws": 2,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40429,11 +40429,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 2,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 3.3,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40541,11 +40541,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 53,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 88.3,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40648,11 +40648,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40760,11 +40760,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 14,
-   "draws": 5,
+   "n": 20,
+   "wins": 5,
+   "draws": 1,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -40872,9 +40872,9 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 45,
-   "draws": 1,
+   "n": 20,
+   "wins": 15,
+   "draws": 0,
    "aborted": 0,
    "wr": 75.0,
    "band": null,
@@ -40984,11 +40984,11 @@
   {
    "deck": "Azorius Control (WST)",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 14,
    "draws": 1,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -40996,11 +40996,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 35,
-   "draws": 1,
+   "n": 20,
+   "wins": 12,
+   "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41112,11 +41112,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 31,
-   "draws": 4,
+   "n": 20,
+   "wins": 9,
+   "draws": 5,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41224,11 +41224,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 59,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 98.3,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41340,11 +41340,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 39,
-   "draws": 1,
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41452,11 +41452,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 1,
-   "draws": 2,
+   "n": 20,
+   "wins": 0,
+   "draws": 1,
    "aborted": 0,
-   "wr": 1.7,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41564,11 +41564,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 12,
    "draws": 1,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41680,8 +41680,8 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
    "wr": 55.0,
@@ -41792,11 +41792,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 24,
-   "draws": 1,
+   "n": 20,
+   "wins": 7,
+   "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41904,11 +41904,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Living End",
-   "n": 60,
-   "wins": 34,
-   "draws": 0,
+   "n": 20,
+   "wins": 11,
+   "draws": 1,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42022,11 +42022,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 56,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 93.3,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42134,9 +42134,9 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 42,
-   "draws": 6,
+   "n": 20,
+   "wins": 14,
+   "draws": 1,
    "aborted": 0,
    "wr": 70.0,
    "band": null,
@@ -42246,11 +42246,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 23,
-   "draws": 2,
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42358,11 +42358,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42470,11 +42470,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 25,
-   "draws": 11,
+   "n": 20,
+   "wins": 9,
+   "draws": 4,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42582,11 +42582,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42694,11 +42694,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 14,
-   "draws": 11,
+   "n": 20,
+   "wins": 2,
+   "draws": 5,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42806,11 +42806,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42918,9 +42918,9 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 54,
-   "draws": 3,
+   "n": 20,
+   "wins": 18,
+   "draws": 2,
    "aborted": 0,
    "wr": 90.0,
    "band": null,
@@ -43030,11 +43030,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 9,
-   "draws": 7,
+   "n": 20,
+   "wins": 2,
+   "draws": 4,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43142,11 +43142,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 7,
-   "draws": 2,
+   "n": 20,
+   "wins": 1,
+   "draws": 1,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43254,11 +43254,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 90.0,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43366,11 +43366,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43478,9 +43478,9 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 12,
-   "draws": 4,
+   "n": 20,
+   "wins": 4,
+   "draws": 2,
    "aborted": 0,
    "wr": 20.0,
    "band": null,
@@ -43590,8 +43590,8 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
    "wr": 90.0,
@@ -43702,11 +43702,11 @@
   {
    "deck": "Azorius Control (WST v2)",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 47,
-   "draws": 1,
+   "n": 20,
+   "wins": 15,
+   "draws": 0,
    "aborted": 0,
-   "wr": 78.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -43714,11 +43714,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43832,11 +43832,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43955,8 +43955,8 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
    "wr": 90.0,
@@ -44067,11 +44067,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44179,11 +44179,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44295,11 +44295,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44411,11 +44411,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 49,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 81.7,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44526,11 +44526,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44638,11 +44638,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Living End",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44750,11 +44750,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44868,11 +44868,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -44990,11 +44990,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45102,11 +45102,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45220,11 +45220,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 28,
-   "draws": 1,
+   "n": 20,
+   "wins": 12,
+   "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45332,11 +45332,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 26,
-   "draws": 1,
+   "n": 20,
+   "wins": 7,
+   "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45444,11 +45444,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 38,
-   "draws": 2,
+   "n": 20,
+   "wins": 19,
+   "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45562,11 +45562,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45674,11 +45674,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 54,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 90.0,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45793,11 +45793,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -45909,11 +45909,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46028,11 +46028,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 47,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 78.3,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46140,11 +46140,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46256,11 +46256,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46374,11 +46374,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46486,11 +46486,11 @@
   {
    "deck": "Pinnacle Affinity",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -46498,11 +46498,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 2,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 3.3,
+   "wr": 0.0,
    "band": [
     40.0,
     55.0
@@ -46617,11 +46617,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 19,
-   "draws": 0,
+   "n": 20,
+   "wins": 3,
+   "draws": 1,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46729,11 +46729,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 54,
-   "draws": 2,
+   "n": 20,
+   "wins": 19,
+   "draws": 0,
    "aborted": 0,
-   "wr": 90.0,
+   "wr": 95.0,
    "band": [
     45.0,
     60.0
@@ -46850,16 +46850,16 @@
   {
    "deck": "Azorius Control",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 25,
-   "draws": 3,
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 45.0,
    "band": [
     45.0,
     55.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "",
     "avg_turns": 12.5,
@@ -46971,11 +46971,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 6,
-   "draws": 5,
+   "n": 20,
+   "wins": 0,
+   "draws": 3,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 0.0,
    "band": [
     35.0,
     50.0
@@ -47092,11 +47092,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 4,
    "draws": 1,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 20.0,
    "band": [
     35.0,
     50.0
@@ -47210,11 +47210,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -47322,11 +47322,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -47440,8 +47440,8 @@
   {
    "deck": "Azorius Control",
    "opp": "Living End",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
    "wr": 30.0,
@@ -47558,11 +47558,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 8,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 13.3,
+   "wr": 15.0,
    "band": [
     40.0,
     55.0
@@ -47673,11 +47673,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 25,
-   "draws": 0,
+   "n": 20,
+   "wins": 9,
+   "draws": 1,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -47785,11 +47785,11 @@
   {
    "deck": "Azorius Control",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 9,
-   "draws": 2,
+   "n": 20,
+   "wins": 6,
+   "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -47897,11 +47897,11 @@
   {
    "deck": "Azorius Control",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 29,
-   "draws": 6,
+   "n": 20,
+   "wins": 7,
+   "draws": 2,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48009,11 +48009,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 42,
-   "draws": 7,
+   "n": 20,
+   "wins": 13,
+   "draws": 4,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48121,11 +48121,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 33,
-   "draws": 12,
+   "n": 20,
+   "wins": 12,
+   "draws": 7,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48233,11 +48233,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 19,
-   "draws": 1,
+   "n": 20,
+   "wins": 1,
+   "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48351,11 +48351,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 25,
-   "draws": 3,
+   "n": 20,
+   "wins": 8,
+   "draws": 1,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 40.0,
    "band": [
     50.0,
     65.0
@@ -48466,11 +48466,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 56,
-   "draws": 3,
+   "n": 20,
+   "wins": 19,
+   "draws": 0,
    "aborted": 0,
-   "wr": 93.3,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48578,11 +48578,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 16,
-   "draws": 7,
+   "n": 20,
+   "wins": 1,
+   "draws": 2,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48690,11 +48690,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 8,
-   "draws": 10,
+   "n": 20,
+   "wins": 1,
+   "draws": 4,
    "aborted": 0,
-   "wr": 13.3,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48802,11 +48802,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -48914,11 +48914,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -49026,11 +49026,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 28,
-   "draws": 3,
+   "n": 20,
+   "wins": 7,
+   "draws": 2,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -49138,11 +49138,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -49250,11 +49250,11 @@
   {
    "deck": "Azorius Control",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -49262,11 +49262,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 7,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 20.0,
    "band": [
     35.0,
     50.0
@@ -49377,8 +49377,8 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
    "wr": 50.0,
@@ -49492,11 +49492,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 57,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 95.0,
+   "wr": 90.0,
    "band": [
     40.0,
     55.0
@@ -49611,16 +49611,16 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 30.0,
    "band": [
     35.0,
     50.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "",
     "avg_turns": 10.0,
@@ -49726,11 +49726,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 15.0,
    "band": [
     40.0,
     60.0
@@ -49841,11 +49841,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 45.0,
    "band": [
     40.0,
     60.0
@@ -49959,11 +49959,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -50071,11 +50071,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 25.0,
    "band": [
     40.0,
     55.0
@@ -50186,11 +50186,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Living End",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": [
     45.0,
     60.0
@@ -50306,11 +50306,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 50.0,
    "band": [
     40.0,
     55.0
@@ -50421,8 +50421,8 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
    "wr": 10.0,
@@ -50536,11 +50536,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -50648,16 +50648,16 @@
   {
    "deck": "Instant Reanimator",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 30.0,
    "band": [
     35.0,
     50.0
    ],
-   "band_verdict": "in",
+   "band_verdict": "below",
    "detail": {
     "insight": "",
     "avg_turns": 10.8,
@@ -50763,8 +50763,8 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 7,
    "draws": 1,
    "aborted": 0,
    "wr": 35.0,
@@ -50875,11 +50875,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -50987,8 +50987,8 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
    "wr": 15.0,
@@ -51099,11 +51099,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 40,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 55.0,
    "band": [
     35.0,
     50.0
@@ -51214,16 +51214,16 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 40.0,
    "band": [
     40.0,
     60.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "Boros Ponza crushes this at 100-0. Grindy (9.4t avg). Polarized — 70% sweeps.",
     "avg_turns": 9.4,
@@ -51329,11 +51329,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -51441,11 +51441,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -51553,11 +51553,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -51665,11 +51665,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -51777,11 +51777,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -51889,11 +51889,11 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -52001,8 +52001,8 @@
   {
    "deck": "Instant Reanimator",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
    "wr": 20.0,
@@ -52013,11 +52013,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 3,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 5.0,
+   "wr": 10.0,
    "band": [
     40.0,
     60.0
@@ -52132,11 +52132,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 3,
+   "n": 20,
+   "wins": 0,
    "draws": 2,
    "aborted": 0,
-   "wr": 5.0,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -52244,11 +52244,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 53,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 88.3,
+   "wr": 70.0,
    "band": [
     40.0,
     60.0
@@ -52363,11 +52363,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 7,
-   "draws": 1,
+   "n": 20,
+   "wins": 0,
+   "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 0.0,
    "band": [
     45.0,
     60.0
@@ -52485,7 +52485,7 @@
   {
    "deck": "Boros Ponza",
    "opp": "Eldrazi Tron",
-   "n": 60,
+   "n": 20,
    "wins": 0,
    "draws": 0,
    "aborted": 0,
@@ -52606,8 +52606,8 @@
   {
    "deck": "Boros Ponza",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
    "wr": 25.0,
@@ -52721,11 +52721,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -52837,11 +52837,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -52949,11 +52949,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Living End",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53065,11 +53065,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 28,
-   "draws": 1,
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 45.0,
    "band": [
     40.0,
     60.0
@@ -53180,11 +53180,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 8,
-   "draws": 3,
+   "n": 20,
+   "wins": 5,
+   "draws": 0,
    "aborted": 0,
-   "wr": 13.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53292,11 +53292,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 23,
-   "draws": 5,
+   "n": 20,
+   "wins": 6,
+   "draws": 4,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53404,11 +53404,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 19,
-   "draws": 1,
+   "n": 20,
+   "wins": 8,
+   "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53516,11 +53516,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 5,
-   "draws": 6,
+   "n": 20,
+   "wins": 3,
+   "draws": 1,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53628,11 +53628,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 4,
-   "draws": 3,
+   "n": 20,
+   "wins": 2,
+   "draws": 1,
    "aborted": 0,
-   "wr": 6.7,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53740,11 +53740,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 1,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 1.7,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53859,11 +53859,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 0,
-   "draws": 4,
+   "n": 20,
+   "wins": 1,
+   "draws": 2,
    "aborted": 0,
-   "wr": 0.0,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -53971,16 +53971,16 @@
   {
    "deck": "Boros Ponza",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 60.0,
    "band": [
     40.0,
     60.0
    ],
-   "band_verdict": "above",
+   "band_verdict": "in",
    "detail": {
     "insight": "",
     "avg_turns": 9.4,
@@ -54086,11 +54086,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 2,
-   "draws": 2,
+   "n": 20,
+   "wins": 1,
+   "draws": 1,
    "aborted": 0,
-   "wr": 3.3,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -54198,7 +54198,7 @@
   {
    "deck": "Boros Ponza",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
+   "n": 20,
    "wins": 0,
    "draws": 0,
    "aborted": 0,
@@ -54310,11 +54310,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 44,
-   "draws": 1,
+   "n": 20,
+   "wins": 14,
+   "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -54422,11 +54422,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 33,
-   "draws": 2,
+   "n": 20,
+   "wins": 12,
+   "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -54534,11 +54534,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -54646,8 +54646,8 @@
   {
    "deck": "Boros Ponza",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
    "wr": 60.0,
@@ -54758,11 +54758,11 @@
   {
    "deck": "Boros Ponza",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 13,
-   "draws": 3,
+   "n": 20,
+   "wins": 4,
+   "draws": 1,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -54770,8 +54770,8 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
    "wr": 30.0,
@@ -54882,11 +54882,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -54994,11 +54994,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 49,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 81.7,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55106,11 +55106,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55222,11 +55222,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 5,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 8.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55334,8 +55334,8 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
    "wr": 50.0,
@@ -55446,11 +55446,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55558,11 +55558,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55670,11 +55670,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Living End",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55782,11 +55782,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -55894,11 +55894,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56006,11 +56006,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56118,8 +56118,8 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
    "wr": 70.0,
@@ -56230,11 +56230,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 49,
-   "draws": 4,
+   "n": 20,
+   "wins": 17,
+   "draws": 2,
    "aborted": 0,
-   "wr": 81.7,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56342,11 +56342,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 38,
-   "draws": 10,
+   "n": 20,
+   "wins": 11,
+   "draws": 4,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56454,11 +56454,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56570,11 +56570,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 40,
-   "draws": 6,
+   "n": 20,
+   "wins": 13,
+   "draws": 2,
    "aborted": 0,
-   "wr": 66.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56682,8 +56682,8 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
    "wr": 50.0,
@@ -56794,11 +56794,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 56,
-   "draws": 1,
+   "n": 20,
+   "wins": 18,
+   "draws": 2,
    "aborted": 0,
-   "wr": 93.3,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -56906,11 +56906,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57018,11 +57018,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57130,11 +57130,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57242,11 +57242,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57354,8 +57354,8 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
    "wr": 70.0,
@@ -57466,11 +57466,11 @@
   {
    "deck": "Eldrazi Ramp",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -57478,11 +57478,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57590,11 +57590,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57702,11 +57702,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57814,11 +57814,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -57933,11 +57933,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58045,11 +58045,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58152,11 +58152,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58264,11 +58264,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58376,11 +58376,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Living End",
-   "n": 60,
-   "wins": 26,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 43.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58488,11 +58488,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58600,11 +58600,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58712,8 +58712,8 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
    "wr": 60.0,
@@ -58824,11 +58824,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -58936,11 +58936,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 52,
-   "draws": 2,
+   "n": 20,
+   "wins": 18,
+   "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59048,11 +59048,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59160,11 +59160,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59279,11 +59279,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 9,
    "draws": 3,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59391,11 +59391,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59503,11 +59503,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 59,
+   "n": 20,
+   "wins": 20,
    "draws": 0,
    "aborted": 0,
-   "wr": 98.3,
+   "wr": 100.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59615,11 +59615,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59727,11 +59727,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 43,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 71.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -59839,8 +59839,8 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
    "wr": 35.0,
@@ -59951,11 +59951,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60063,11 +60063,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 49,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 81.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60175,11 +60175,11 @@
   {
    "deck": "Broodscale Bloodchief",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -60187,8 +60187,8 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
    "wr": 20.0,
@@ -60299,11 +60299,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60411,11 +60411,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60523,11 +60523,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60635,11 +60635,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60747,11 +60747,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60859,11 +60859,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -60971,11 +60971,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 4,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 6.7,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61083,11 +61083,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Living End",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61195,11 +61195,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61307,11 +61307,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61419,11 +61419,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61531,11 +61531,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61643,11 +61643,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 8,
+   "n": 20,
+   "wins": 2,
    "draws": 1,
    "aborted": 0,
-   "wr": 13.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61750,11 +61750,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 4,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 6.7,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61862,11 +61862,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -61974,11 +61974,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 23,
-   "draws": 1,
+   "n": 20,
+   "wins": 7,
+   "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62086,11 +62086,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62198,11 +62198,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62310,11 +62310,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62422,11 +62422,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 11,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 18.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62534,11 +62534,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62646,8 +62646,8 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 9,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
    "wr": 15.0,
@@ -62758,11 +62758,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62870,11 +62870,11 @@
   {
    "deck": "Creatures Toolbox",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -62882,11 +62882,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -62994,11 +62994,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63106,8 +63106,8 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
    "wr": 85.0,
@@ -63221,11 +63221,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63337,11 +63337,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63449,11 +63449,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 44,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 73.3,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63564,11 +63564,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63676,8 +63676,8 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
    "wr": 55.0,
@@ -63788,11 +63788,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Living End",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63905,11 +63905,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64017,11 +64017,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64129,11 +64129,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64241,11 +64241,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 30,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64353,9 +64353,9 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 15,
-   "draws": 3,
+   "n": 20,
+   "wins": 5,
+   "draws": 1,
    "aborted": 0,
    "wr": 25.0,
    "band": null,
@@ -64465,11 +64465,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 13,
-   "draws": 2,
+   "n": 20,
+   "wins": 5,
+   "draws": 1,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64577,11 +64577,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 35,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 58.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64693,11 +64693,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 4,
    "draws": 1,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64805,11 +64805,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 41,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 68.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64917,11 +64917,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65029,11 +65029,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 37,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 61.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65141,11 +65141,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65253,11 +65253,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 56,
+   "n": 20,
+   "wins": 19,
    "draws": 0,
    "aborted": 0,
-   "wr": 93.3,
+   "wr": 95.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65365,11 +65365,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65477,11 +65477,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 48,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 80.0,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65589,11 +65589,11 @@
   {
    "deck": "Grixis Reanimator",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -65601,11 +65601,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 7,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65713,11 +65713,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 31,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65825,11 +65825,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 55,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 91.7,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -65937,11 +65937,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 28,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 46.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66055,11 +66055,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 17,
-   "draws": 1,
+   "n": 20,
+   "wins": 3,
+   "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66171,11 +66171,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66287,11 +66287,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 38,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 63.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66399,11 +66399,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66515,11 +66515,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Living End",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66627,11 +66627,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66739,11 +66739,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66851,11 +66851,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 17,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 28.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66963,11 +66963,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67075,11 +67075,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 50,
-   "draws": 1,
+   "n": 20,
+   "wins": 17,
+   "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67187,11 +67187,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 45,
-   "draws": 4,
+   "n": 20,
+   "wins": 16,
+   "draws": 2,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67299,11 +67299,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67417,11 +67417,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 31,
-   "draws": 3,
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
    "aborted": 0,
-   "wr": 51.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67529,11 +67529,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67641,11 +67641,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 36,
+   "n": 20,
+   "wins": 8,
    "draws": 1,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67753,11 +67753,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 34,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 56.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -67865,8 +67865,8 @@
   {
    "deck": "Azorius Blink",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
    "wr": 30.0,
@@ -67977,11 +67977,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68089,8 +68089,8 @@
   {
    "deck": "Azorius Blink",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
    "wr": 30.0,
@@ -68201,11 +68201,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68313,11 +68313,11 @@
   {
    "deck": "Azorius Blink",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -68325,11 +68325,11 @@
   {
    "deck": "Hollow One",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68437,11 +68437,11 @@
   {
    "deck": "Hollow One",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68549,11 +68549,11 @@
   {
    "deck": "Hollow One",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68661,11 +68661,11 @@
   {
    "deck": "Hollow One",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 21,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68773,11 +68773,11 @@
   {
    "deck": "Hollow One",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68885,11 +68885,11 @@
   {
    "deck": "Hollow One",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 16,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 26.7,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69000,11 +69000,11 @@
   {
    "deck": "Hollow One",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69112,11 +69112,11 @@
   {
    "deck": "Hollow One",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69224,11 +69224,11 @@
   {
    "deck": "Hollow One",
    "opp": "Living End",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69340,11 +69340,11 @@
   {
    "deck": "Hollow One",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 4,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 6.7,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69452,11 +69452,11 @@
   {
    "deck": "Hollow One",
    "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 7,
+   "n": 20,
+   "wins": 1,
    "draws": 0,
    "aborted": 0,
-   "wr": 11.7,
+   "wr": 5.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69564,11 +69564,11 @@
   {
    "deck": "Hollow One",
    "opp": "4c Omnath",
-   "n": 60,
-   "wins": 18,
+   "n": 20,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69676,11 +69676,11 @@
   {
    "deck": "Hollow One",
    "opp": "4/5c Control",
-   "n": 60,
-   "wins": 12,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69788,11 +69788,11 @@
   {
    "deck": "Hollow One",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 10,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 16.7,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -69900,11 +69900,11 @@
   {
    "deck": "Hollow One",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70012,11 +70012,11 @@
   {
    "deck": "Hollow One",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 6,
+   "n": 20,
+   "wins": 0,
    "draws": 0,
    "aborted": 0,
-   "wr": 10.0,
+   "wr": 0.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70124,11 +70124,11 @@
   {
    "deck": "Hollow One",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70236,11 +70236,11 @@
   {
    "deck": "Hollow One",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 13,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 21.7,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70348,11 +70348,11 @@
   {
    "deck": "Hollow One",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 23,
+   "n": 20,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 38.3,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70460,11 +70460,11 @@
   {
    "deck": "Hollow One",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 24,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70572,11 +70572,11 @@
   {
    "deck": "Hollow One",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 15,
+   "n": 20,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 15.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70684,11 +70684,11 @@
   {
    "deck": "Hollow One",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 22,
+   "n": 20,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 36.7,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70796,11 +70796,11 @@
   {
    "deck": "Hollow One",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 8,
+   "n": 20,
+   "wins": 2,
    "draws": 0,
    "aborted": 0,
-   "wr": 13.3,
+   "wr": 10.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -70908,11 +70908,11 @@
   {
    "deck": "Hollow One",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -71020,11 +71020,11 @@
   {
    "deck": "Hollow One",
    "opp": "Rakdos Aggro",
-   "n": 60,
-   "wins": 14,
+   "n": 20,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 23.3,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71032,11 +71032,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Boros Energy",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71044,11 +71044,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Jeskai Blink",
-   "n": 60,
-   "wins": 25,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 41.7,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71056,11 +71056,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Ruby Storm",
-   "n": 60,
-   "wins": 52,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 86.7,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71068,11 +71068,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Affinity",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71080,11 +71080,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Eldrazi Tron",
-   "n": 60,
-   "wins": 19,
-   "draws": 1,
+   "n": 20,
+   "wins": 7,
+   "draws": 0,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71092,11 +71092,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Amulet Titan",
-   "n": 60,
-   "wins": 50,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 83.3,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71104,8 +71104,8 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Goryo's Vengeance",
-   "n": 60,
-   "wins": 45,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
    "wr": 75.0,
@@ -71116,11 +71116,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Domain Zoo",
-   "n": 60,
-   "wins": 20,
+   "n": 20,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 33.3,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71128,11 +71128,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Living End",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71140,44 +71140,8 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Izzet Prowess",
-   "n": 60,
-   "wins": 26,
-   "draws": 0,
-   "aborted": 0,
-   "wr": 43.3,
-   "band": null,
-   "band_verdict": "",
-   "detail": null
-  },
-  {
-   "deck": "Rakdos Aggro",
-   "opp": "Dimir Midrange",
-   "n": 60,
-   "wins": 34,
-   "draws": 0,
-   "aborted": 0,
-   "wr": 56.7,
-   "band": null,
-   "band_verdict": "",
-   "detail": null
-  },
-  {
-   "deck": "Rakdos Aggro",
-   "opp": "4c Omnath",
-   "n": 60,
-   "wins": 38,
-   "draws": 0,
-   "aborted": 0,
-   "wr": 63.3,
-   "band": null,
-   "band_verdict": "",
-   "detail": null
-  },
-  {
-   "deck": "Rakdos Aggro",
-   "opp": "4/5c Control",
-   "n": 60,
-   "wins": 27,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
    "wr": 45.0,
@@ -71187,12 +71151,48 @@
   },
   {
    "deck": "Rakdos Aggro",
+   "opp": "Dimir Midrange",
+   "n": 20,
+   "wins": 9,
+   "draws": 0,
+   "aborted": 0,
+   "wr": 45.0,
+   "band": null,
+   "band_verdict": "",
+   "detail": null
+  },
+  {
+   "deck": "Rakdos Aggro",
+   "opp": "4c Omnath",
+   "n": 20,
+   "wins": 12,
+   "draws": 0,
+   "aborted": 0,
+   "wr": 60.0,
+   "band": null,
+   "band_verdict": "",
+   "detail": null
+  },
+  {
+   "deck": "Rakdos Aggro",
+   "opp": "4/5c Control",
+   "n": 20,
+   "wins": 8,
+   "draws": 0,
+   "aborted": 0,
+   "wr": 40.0,
+   "band": null,
+   "band_verdict": "",
+   "detail": null
+  },
+  {
+   "deck": "Rakdos Aggro",
    "opp": "Azorius Control (WST)",
-   "n": 60,
-   "wins": 19,
+   "n": 20,
+   "wins": 6,
    "draws": 1,
    "aborted": 0,
-   "wr": 31.7,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71200,11 +71200,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Azorius Control (WST v2)",
-   "n": 60,
-   "wins": 12,
-   "draws": 2,
+   "n": 20,
+   "wins": 5,
+   "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71212,11 +71212,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Pinnacle Affinity",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71224,11 +71224,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Azorius Control",
-   "n": 60,
-   "wins": 47,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 78.3,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71236,11 +71236,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Instant Reanimator",
-   "n": 60,
-   "wins": 46,
+   "n": 20,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 76.7,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71248,11 +71248,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Boros Ponza",
-   "n": 60,
-   "wins": 39,
+   "n": 20,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71260,11 +71260,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Eldrazi Ramp",
-   "n": 60,
-   "wins": 32,
+   "n": 20,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 53.3,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71272,8 +71272,8 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Broodscale Bloodchief",
-   "n": 60,
-   "wins": 33,
+   "n": 20,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
    "wr": 55.0,
@@ -71284,11 +71284,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Creatures Toolbox",
-   "n": 60,
-   "wins": 51,
+   "n": 20,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 85.0,
+   "wr": 90.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71296,11 +71296,11 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Grixis Reanimator",
-   "n": 60,
-   "wins": 29,
+   "n": 20,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 48.3,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": null
@@ -71308,8 +71308,8 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Azorius Blink",
-   "n": 60,
-   "wins": 42,
+   "n": 20,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
    "wr": 70.0,
@@ -71320,33 +71320,33 @@
   {
    "deck": "Rakdos Aggro",
    "opp": "Hollow One",
-   "n": 60,
-   "wins": 48,
+   "n": 20,
+   "wins": 17,
    "draws": 0,
    "aborted": 0,
-   "wr": 80.0,
+   "wr": 85.0,
    "band": null,
    "band_verdict": "",
    "detail": null
   }
  ],
  "provenance": {
-  "generated": "2026-11-07T17:39:41.377659",
-  "commit": "0d9fedb",
+  "generated": "2026-11-08T10:50:33.764458",
+  "commit": "44d8103",
   "format": "bo3",
-  "n_per_pair": 60,
-  "total_matches": 19500,
+  "n_per_pair": 20,
+  "total_matches": 6500,
   "seed_start": 50000,
   "seed_step": 500,
-  "draws": 338,
+  "draws": 131,
   "aborted": 0,
-  "rules_audit_violations": 6,
-  "command": "tools/resumable_matrix.py -n 60 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/2026-11-07-n60_seed.jsonl"
+  "rules_audit_violations": 0,
+  "command": "tools/resumable_matrix.py -n 20 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/lsb-post_seed.jsonl"
  },
  "calibration": {
-  "decks_in_band": 16,
+  "decks_in_band": 14,
   "decks_total": 26,
-  "matchups_in_band": 32,
+  "matchups_in_band": 33,
   "matchups_total": 142
  },
  "replays": [
@@ -72502,10 +72502,10 @@
    },
    "codebase": {
     "engine_modules": 74,
-    "engine_lines": 70970,
+    "engine_lines": 71027,
     "ai_modules": 89,
-    "ai_lines": 47889,
-    "test_files": 825
+    "ai_lines": 47978,
+    "test_files": 828
    }
   },
   "trace": {
@@ -74685,6 +74685,16 @@
      "cr": [],
      "date": "2026-11-08",
      "ai": true
+    },
+    {
+     "code": "OD",
+     "rule": "a cast that draws more than its caster's library holds loses the game",
+     "cr": [
+      "121.4",
+      "704.5b"
+     ],
+     "date": "2026-11-08",
+     "ai": true
     }
    ],
    "choices": [
@@ -74907,12 +74917,12 @@
     "engine/optional_costs.py": 462,
     "engine/rules_audit.py": 114,
     "ai/ev_player.py": 5449,
-    "ai/ev_evaluator.py": 3881,
+    "ai/ev_evaluator.py": 3895,
     "ai/clock.py": 1050,
     "ai/turn_planner.py": 1317,
     "ai/bhi.py": 830,
     "ai/gameplan.py": 1125,
-    "ai/resolution_choices.py": 251,
+    "ai/resolution_choices.py": 268,
     "ai/modal.py": 320,
     "ai/damage_targets.py": 276,
     "ai/permanent_threat.py": 411,
