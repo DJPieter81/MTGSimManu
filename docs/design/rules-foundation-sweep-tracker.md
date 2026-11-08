@@ -13243,3 +13243,33 @@ It is compared with the turn of the first returner cast.
 Several of those mulligans ended in a 5-card keep that is worse than the hand thrown back: a 1-land R+T+F (70008, 70013) or a hand with no returner (70001, 70007).
 
 **Lead:** the mulligan rule tests each hand against a fixed coverage bar, so it ships a 7 or a 6 that misses one role piece and then keeps a 5 that misses more. The decision the rule should make is a comparison: the expected kill turn of this hand against the expected kill turn of a random smaller hand. That is the same "turns to the payoff" currency the oracle and planner v2 need, so the mulligan belongs in that unit. Do not build it as a separate threshold change. Not built here.
+
+## Combo speed: where the goldfish turns go (measurement only, 2026-11-08)
+
+**Hypothesis falsified: the mulligan rule costs combo decks turns.** Same seeds 70000–70039 (n=40, on the play), comparing the policy as it is with every opening 7 forced as a keep:
+
+| Deck | Mulligan rule as is | Every 7 kept |
+|---|---|---|
+| Goryo's | median kill 9.0, mean 9.45 (mulligans in 33 games) | median 9.5, mean 9.57 |
+| Ruby Storm | median 7, mean 8.57 | median 8, mean 8.88 |
+| Amulet Titan | median 7, mean 7.53 | median 7, mean 7.67 |
+
+The policy is at least as fast for all three. **Do not rebuild the mulligan to chase goldfish speed.** The previous section's keep census describes the draws, not a defect in the rule.
+
+**Goryo's: the AI takes a reanimation line when one exists.** Per-turn trace over 20 games (`best_line` at each main phase, plus returner, target and lands):
+- **No line, from the draws:**
+  - 1–2 lands for 5–6 turns (70001, 70006, 70008, 70013, 70016), with the 3-mana dig spell uncastable;
+  - no returner for 5–8 turns (70002, 70010, 70017, 70019);
+  - Unburial Rites (5 mana) as the only returner on 3 lands (70005);
+  - Archon of Cruelty, a non-legend, as the only target for Goryo's Vengeance.
+- **From a line to the kill takes 2–4 more turns.** A Goryo's-returned creature is exiled at end of turn unless blinked, and a 7/7 lifelinker needs three swings. So the goldfish "kill turn" counts the attack turns after the deck goes off. Real-world reports of a turn 3–5 Goryo's mostly mean the go-off turn.
+
+**Storm (12 dumped games): turns are lost to land stalls and to dig waste, not to a missed lethal.**
+- Land stalls: 70002 played no land on turns 3–5.
+- Dig waste: impulse-exiled cards (rituals held by the storm hold, a Past in Flames) expire. In 70000 turn 5, Past in Flames was cast from an expiring exile with nothing in the graveyard to flash back; it scored −0.01, a correct "use it or lose it" with no loss.
+
+**What this narrows:**
+- planner v2's value-aware objective is needed for **dig timing**: the cards an impulse dig exiles are worth only the ones the chain of this turn or the next can use;
+- it is not needed for mulligans or the reanimation lines.
+
+A **go-off turn metric** (the first turn the payoff is on the battlefield, or the closer resolves) beside the kill turn would make the combo comparison to real-world numbers honest. That is a tooling lead for `tools/goldfish.py`.
