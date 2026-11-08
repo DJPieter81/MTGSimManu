@@ -227,6 +227,8 @@ class EVSnapshot(BaseModel):
     opp_evasion_power: Numeric = 0
     # Cards drawn this turn
     cards_drawn_this_turn: Numeric = 0
+    # Cards left in my library; None when unknown (a hand-built snapshot).
+    my_library: Optional[int] = None
     # Expected power contribution from recurring-trigger tokens over the
     # permanent's expected residency. NOT an on-board quantity; this is
     # a forward projection credited by `_project_spell` for cards whose
@@ -452,6 +454,7 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         opp_gy_creatures=count_gy_creatures(opp.graveyard),
         my_energy=me.energy_counters,
         cards_drawn_this_turn=me.cards_drawn_this_turn,
+        my_library=len(me.library),
         archetype_subtype=archetype_subtype,
     )
 
@@ -3365,7 +3368,18 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     # event against us; it sits at the established game-ending
     # sentinel (-LETHAL_THREAT) regardless of any value the spell
     # would otherwise generate (seed 60101: suicide-by-cantrip).
-    if projected.my_life <= 0 < snap.my_life:
+    # A cast that draws more cards than its caster's library holds loses
+    # the game as surely (CR 121.4, 704.5b): the same floor.
+    # Only the draws the spell's own resolution makes count: the typed count
+    # (`draw_projection.projected_draws`; None for a permanent, whose draws
+    # are abilities it may never use).
+    overdraws = False
+    if game is not None:
+        from ai.draw_projection import projected_draws
+        _me = game.players[player_idx]
+        _draws = projected_draws(card, _me.hand)
+        overdraws = _draws is not None and _draws > len(_me.library)
+    if projected.my_life <= 0 < snap.my_life or overdraws:
         from ai.scoring_constants import LETHAL_THREAT
         _cur = evaluate_board(snap, archetype, dk)
         if not detailed:

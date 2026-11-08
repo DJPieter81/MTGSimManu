@@ -12623,3 +12623,26 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
   - Broodscale Bloodchief [45, 60] (was the default)
   - Rakdos Aggro [40, 55] (was the default)
 - **Real data confirms all three outliers are roughly 50% decks.** The sim is about 33 pp low on Storm and about 23-30 pp high on Tron and Zoo. On these bands the n=60 matrix (`check_calibration.py`) also has Broodscale (61.7) and Rakdos Aggro (59.2) above band. The site was rebuilt with the new bands.
+
+## Unit OD: a cast that draws more than its caster's library holds loses the game (AI; CR 121.4, 704.5b; 2026-11-08)
+
+**Source:** Ruby Storm vs Living End s56500. Real-world baselines put Storm near 50%, so the hunt moved to Storm's losses against decks that barely interact.
+- On turn 4 Storm chained more than 20 spells and drew from 46 cards down to 22.
+- On turn 5 it kept casting digs with a Wish in hand, and lost by casting a Manamorphose with no card left to draw. Wish into Grapeshot would have dealt exactly lethal.
+
+**Rule:** a player who attempted to draw from an empty library loses at the next state-based check. A spell whose own resolution draws more cards than its caster's library holds is therefore a game-ending cast. It sits at the lethal-to-self floor (`-LETHAL_THREAT`) beside unit DT's draw-tax floor.
+- Only the draws the spell's resolution makes count: the typed count `draw_projection.projected_draws`, which is None for a permanent, whose draws are abilities.
+- `EVSnapshot.my_library` carries the library size.
+- **Not built:** "an empty library is dead next turn" (`am_dead_next`). It changed nothing in the replay, and it read every library-less test fixture (11 files) as a dying player. Recorded as a lead.
+
+**Tests:** 5 (3 red before). One older fixture now has a library to draw from.
+
+**Pins:**
+- Digest: 1 of 27 games changes. 4c Omnath vs Ruby Storm s57500 flips to Storm (turn 8): Storm no longer casts a Twinned Vision from an empty library. Replayed; legal.
+- The anchor is unchanged.
+
+**Effect:**
+- s56500 is now a Storm win: it holds the last Manamorphose, then casts Wish into Grapeshot (13 copies) for exactly 14.
+- Game 1 against Living End over 16 seeds: 6/16 → 7/16.
+
+**Measured:** `od-post`, Ruby Storm's row (pending).
