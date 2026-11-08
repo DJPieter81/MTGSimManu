@@ -12543,3 +12543,23 @@ Unit MF's display lead. `EVPlayer._log_block_assignments` printed each creature 
   - The solver needs a deck's own cards valued in the same currency as its opponent-facing clauses: what a dig is worth to the deck's plan against this opponent, beside what a hand attack takes from that opponent. That is a design unit of its own.
   - The gameplan roles also drive live play (`combo_calc.card_combo_role`), so updating them is a measured change too.
 - **Decision rule, stated before the run:** proceed to the default flip only if Storm's row improves beyond one standard error (~2 pp) and no guard row falls beyond one.
+
+## Unit OWN: a main-deck card is worth at least its own impact to the sideboard solver (AI; 2026-11-08)
+
+**Source:** `sbh-post`. Under `SB_SOLVER=new`, Ruby Storm cut four Hex Magic and a Twinned Vision for Thoughtseize and Fatal Push against every opponent, and its row fell 15.8 → 8.4. The solver valued main cards only by opponent-facing clauses, so a deck's own plan cards scored 0 and were cut first.
+
+**Principle:** a card in a deck is worth to that deck at least what the solver says it is worth to take from that deck (`_card_impact`, the hand-attack clause's measure). A sideboard card comes in only when its value in the matchup beats that. Sideboard cards keep their matchup value, since that is the reason they would come in.
+
+**Fix:** `plan_sideboard` scores main cards at `max(sb_value, _card_impact)`. The gameplan-roles update and role protection (noted above) are not needed.
+
+**Effect on Storm's plans:**
+- 3-5 swaps per matchup: Twinned Vision and Artist's Talent go first; Hex Magic is kept against creature decks.
+- Thoughtseize still comes in against control.
+- Across all decks against three opponents, 230 swaps over 75 pairings; 13 pairings swap nothing.
+
+**Tests:** 6, of which 4 were red before.
+
+**Pins:** the solver is opt-in, so the digest is byte-identical.
+
+**Measured:** `own-post` (`SB_SOLVER=new`; rows Ruby Storm, Dimir Midrange, Goryo's Vengeance, Boros Energy, Azorius Control; n=20) against `sbh-post` and the no-solver baselines (pending).
+- **Decision rule, stated before the run:** the solver becomes the default only if Storm's row beats its no-solver baseline (15.8) beyond one standard error (~2 pp) and no guard row falls beyond one.
