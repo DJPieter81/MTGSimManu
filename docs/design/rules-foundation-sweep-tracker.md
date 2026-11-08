@@ -12649,3 +12649,64 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 - Row mean 15.8 (`tc2-post`) → 18.0 (+2.2, about one standard error).
 - The highest Storm row this session and the first move in the right direction, but not yet beyond noise.
 - Storm's real-world win rate is ~49% (band [40, 55]). The remaining gap is large, so the hunt continues from Storm's losses against low-interaction decks.
+
+## Unit LSB: a sideboard counterspell is chosen by what it counters, not by a deck name (sideboarding; 2026-11-08)
+
+**Source:** the Storm diagnostic's game-2 lead. Ruby Storm went 5/12 in game 1 against Domain Zoo, then 0/12 in game 2. Zoo's sideboard plan brought in three Mystical Dispute.
+- The default sideboarder (`engine/sideboard_manager.sideboard`, `SB_SOLVER` unset) brought counterspells in by the opponent's deck NAME:
+  - "storm", "living end", "goryo" or "titan" gave the "vs combo" rule;
+  - "energy", "zoo", "prowess" or "affinity" gave the "vs aggro" rule.
+- Against red Storm that boarded a three-mana soft counter into a deck of one- and two-mana spells.
+
+**Rule:** a counterspell answers a spell efficiently when it can target it (`counter_target_kind`) at an effective cost no greater than that spell's mana value.
+- The effective cost is the counter's printed cost, less a `target_cost_reduction` whose colour condition the spell meets, or 0 with a free alternative cost (`alternate_exile_color`).
+- It comes in when most of the opponent's nonland spells are ones it answers efficiently (`counter_answers_most`). Both name-keyed rules are gone.
+
+**Tests:** 6 (`tests/test_a_sideboard_counterspell_is_chosen_by_what_it_counters.py`).
+
+**Pins:**
+- 29 of 650 pairwise plans change:
+  - Dispute leaves the plans of Zoo, Dimir, Azorius, 4/5c, Jeskai and both Reanimator decks against Ruby Storm.
+  - Dispute arrives in blue mirrors.
+  - Force of Negation leaves Omnath's and WST's plans against Living End, whose spells are mostly creatures.
+- Digest: one game moves, the post-board Azorius Control vs Ruby Storm s58500 g2, whose plan lost +3 Dispute. The winner is unchanged.
+- The anchor is green.
+
+**Measured:** `lsb-post` (`ffc0ad6`), all 26 rows at n=20 Bo3: 650 cells, 0 violations (547 findings, against 548 in `mo2-post`). Both test chunks pass on `ffc0ad6`, `tests/invariants/` included (5664 + 2837).
+- Against `mo2-post`, no deck moves beyond about one standard error except Ruby Storm (13.4 → 18.4). Most of that gain is unit OD, which landed between the two arms.
+- Against `od-post`, Storm's row is 18.0 → 18.4, and 19 of its 25 cells are identical. Domain Zoo 10 → 15, Azorius Control 5 → 10, 4/5c 40 → 50; Jeskai 30 → 25, Grixis Reanimator 15 → 10.
+- The largest cell swings follow the rule: Dispute now comes in for blue mirrors (Jeskai Blink vs WST v2 30 → 65; 4/5c Control vs WST v2 60 → 95).
+- **Kept.** It removes a deck-name gate, and no deck moved beyond noise without an explanation.
+- **Not the cure for Storm's game 2.** Dispute's removal barely moves Storm's row, so the post-board collapse has another cause. Recorded as an open lead in the Storm diagnostic.
+
+## Unit HL: a land search takes the haste land that converts this turn's attack (AI; CR 701.19a, 702.10; 2026-11-08)
+
+**Source:** the field-gap diagnostic. Amulet Titan's goldfish has a median kill turn of 8. In s70002, Primeval Titan resolves on turn 4 and fetches Simic Growth Chamber + Urza's Saga beside a summoning-sick Titan, and does the same on turn 5. Hanweir Battlements stays in the library, and the kill comes on turn 7.
+
+**Rule:** which lands a search finds is its searcher's choice (CR 701.19a). A land whose own ability grants haste is worth, on top of its land value, the attack it converts this turn. That holds when:
+- it is the searcher's precombat main phase;
+- the searcher has a sick attacker whose attack improves its clock;
+- no haste land is already in play or in the batch;
+- the land will be untapped;
+- its activation's mana is within reach.
+
+**Regression:** unit TU (`884c585`) retired the engine's name-keyed Titan handler, which held exactly this preference. The AI's one land valuation (`_choose_land_delivery`) never took it over, and the typed field `grants_haste_activation` was parsed but read by nothing.
+
+**Fix (`ai/activation_ev.py`, `ai/resolution_choices.py`):**
+- `haste_grant_gain` is the one valuation of a haste grant: `combat_clock` under the race gates, capped at the one combat step haste advances. It is extracted from the activation scorer, which now calls it.
+- `_choose_land_delivery` ranks a haste land by that gain, between the bounce penalty and the land-drop score.
+- `pick_cards` passes the put instruction's "tapped" (`_search_puts_tapped`).
+- No new constants and no names.
+
+**Class:** 183 pool cards print "gains haste until end of turn". Hanweir Battlements (Amulet Titan) and Arena of Glory (Boros Energy, Jeskai Blink, 4/5c Control) are in registered lists.
+
+**Tests:** 7 (`tests/test_a_land_search_takes_the_haste_land_that_converts_this_turns_attack.py`), all red first:
+- the watcher case and the untapped case;
+- four cases where the land valuation's own pick stands: a tapped put with no watcher, no sick attacker, a haste land already in play, after combat;
+- the real path: Titan's own enter search.
+
+**Pins:** digest byte-identical (27 games); the anchor is green; 290 neighbouring tests pass.
+
+**Effect:** Amulet goldfish (n=30, play, s70000): median kill turn 8 → 7; kills by turn 7 rise from 14/30 to 17/30.
+
+**Measured:** `hl-post`, n=20 Bo3, rows for the decks that carry the class: Amulet Titan, Boros Energy, Jeskai Blink, 4/5c Control. Pending.

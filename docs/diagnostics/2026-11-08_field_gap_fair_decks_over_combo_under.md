@@ -5,7 +5,7 @@ priority: secondary
 session: 2026-11-08
 depends_on: [docs/diagnostics/2026-11-07_ruby_storm_draw_tax_root_cause.md, tools/calibration_bands.json]
 tags: [ai, calibration, amulet, tron, zoo, goldfish, leads]
-summary: "Meta-weighted, the sim puts Domain Zoo at 72, Eldrazi Tron 67, Rakdos Aggro 63 against real-world 51, 45.5, 49; Broodscale matches (54 vs 55). Goldfish speed shows the fair decks are SLOWER than real play (Boros median kill turn 6, Zoo 7), while Amulet Titan kills on turn 8. The inflation is the combo and control decks underperforming. Two mechanisms named from replays, not built: a land search ignores a delivered land's same-turn ability (Primeval Titan never fetches the haste land), and the non-active player gets no priority in the upkeep (a held Silence never stops the turn's big cast)."
+summary: "(Lead 1 built as unit HL: Amulet goldfish median kill turn 8 -> 7.) Meta-weighted, the sim puts Domain Zoo at 72, Eldrazi Tron 67, Rakdos Aggro 63 against real-world 51, 45.5, 49; Broodscale matches (54 vs 55). Goldfish speed shows the fair decks are SLOWER than real play (Boros median kill turn 6, Zoo 7), while Amulet Titan kills on turn 8. The inflation is the combo and control decks underperforming. Two mechanisms named from replays, not built: a land search ignores a delivered land's same-turn ability (Primeval Titan never fetches the haste land), and the non-active player gets no priority in the upkeep (a held Silence never stops the turn's big cast)."
 ---
 
 # Field gap: the fair decks are not too fast, the combo decks are too slow
@@ -35,7 +35,7 @@ Weighting barely moves the fair decks: they beat the decks people actually play,
 
 The fair decks are not over-fast; if anything they are slow. Their excess win rate is therefore what the other decks fail to do: combo kills too late, and control does not stop the cast that matters.
 
-## Lead 1 (named, not built): a land search ignores what the delivered land does this turn
+## Lead 1 (built as unit HL): a land search ignored what the delivered land does this turn
 
 - **Replay:** goldfish s70002. Primeval Titan resolves on turn 4 and fetches Simic Growth Chamber + Urza's Saga; the second Titan on turn 5 does the same. Hanweir Battlements (haste) stays in the library. The kill comes on turn 7, three turns after the first Titan.
 - **Where it diverges:** the land search asks the land-drop scorer (`ai/activation_ev._choose_land_delivery` → `EVPlayer._score_land`). That scorer values colours, Tron sets, landfall and the gameplan's `land_priorities`. It never values a land's activated ability that is usable this turn and would grant haste to a creature that can then attack.
@@ -50,3 +50,6 @@ The fair decks are not over-fast; if anything they are slow. Their excess win ra
 
 ## Measured context
 - Azorius Control vs Eldrazi Tron at n=10 Bo3: matches 0/10; games 1 2/10, games 2 0/10, games 3 0/3.
+
+## Lead 1 built (unit HL, 2026-11-08)
+- A regression from unit TU: the retired engine handler preferred the haste land, and the AI's land valuation never took that preference over. Built as unit HL (tracker); Amulet goldfish median kill turn 8 → 7. The `hl-post` arm measures the decks that carry the class.

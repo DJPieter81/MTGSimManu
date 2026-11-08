@@ -154,3 +154,8 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
   - a counterspell clause that prices a conditional tax counter by the opponent's mana and colours, not by the deck's name;
   - and the own-plan question (unit OWN, reverted).
 - **Until that lands,** the legacy table's Storm rules decide Storm's post-board games.
+
+## Unit LSB measured: Dispute was not the cause of the game-2 collapse (2026-11-08)
+- Unit LSB removed the deck-name counterspell rule; Mystical Dispute no longer enters any plan against Ruby Storm.
+- `lsb-post` against `od-post`: Storm's row is 18.0 → 18.4, and 19 of 25 cells are identical (Domain Zoo 10 → 15).
+- The post-board collapse therefore has another cause. Next: replay a post-board game against Zoo at a seed where game 1 was won and game 2 lost, and find the first point where Storm's play diverges.
