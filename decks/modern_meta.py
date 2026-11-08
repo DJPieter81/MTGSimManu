@@ -53,34 +53,34 @@ from typing import Dict, List, Tuple
 # subject to this session's mtgjson.com egress block) and registered
 # below.
 METAGAME_SHARES = {
-    # Nov 2026 refresh — mtgtop8.com Modern metagame breakdown (top 20,
-    # retrieved 2026-11-01 via tools/fetch_tier1_decklists.py;
-    # data/tier1_decklists/2026-11-01/DIFF_REPORT.md). Buckets mapped to
-    # registered decks by card overlap: UR Aggro -> Izzet Prowess, UrzaTron
-    # -> Eldrazi Tron, Dimir Control -> Dimir Midrange, Boros Aggro -> Boros
-    # Energy, 4/5c Aggro -> Domain Zoo, UW Control -> Azorius Control,
-    # Blink -> Azorius Blink; "Reanimator" (2%) is Instant Reanimator by
-    # overlap (43/60) and adds to its own 2%. Registered decks absent from
-    # the top 20 carry a 0.5% residual; the two WST lists stay at 0.
-    # Rakdos Aggro (15%) has no registered match (at most 16/60) and is
-    # registered as its own deck.
-    # Unregistered top-20 buckets: Red Deck Wins 2%, Mono Black Aggro 1%,
-    # Landless 1%, Allosaurus Combo 1%. Raw percentages.
-    "Rakdos Aggro": 15.0,
-    "Broodscale Bloodchief": 14.0,
-    "Affinity": 7.0,
+    # Nov 8 2026 refresh — mtgtop8.com Modern metagame breakdown (top 16,
+    # retrieved 2026-11-08 via tools/fetch_tier1_decklists.py on GitHub
+    # Actions; data/tier1_decklists/2026-11-08/DIFF_REPORT.md). Buckets
+    # mapped to registered decks by card overlap, as on 2026-11-01 (each
+    # re-checked: UW Control -> Azorius Control 0.98, UrzaTron -> Eldrazi
+    # Tron 0.87, UR Aggro -> Izzet Prowess 0.75, Boros Aggro -> Boros Energy
+    # 0.93, 4/5c Aggro -> Domain Zoo 0.57, Dimir Control -> Dimir Midrange
+    # 0.50, Blink -> Azorius Blink 0.73, Reanimator -> Instant Reanimator
+    # 0.67). Registered decks absent from the top 16 carry a 0.5% residual;
+    # the two WST lists stay at 0. Unregistered top-16 bucket: Jeskai
+    # Aggro 2% (overlap Boros Energy 0.65 / Jeskai Blink 0.57, ambiguous,
+    # left unmapped). Creatures Toolbox's current mtgtop8 build overlaps
+    # the registered list only 0.25 (a different build). Raw percentages.
+    "Rakdos Aggro": 13.0,
+    "Broodscale Bloodchief": 13.0,
     "Azorius Control": 7.0,
-    "Boros Energy": 6.0,
-    "Amulet Titan": 6.0,
+    "Amulet Titan": 7.0,
+    "Affinity": 6.0,
     "Izzet Prowess": 5.0,
-    "Domain Zoo": 5.0,
-    "Eldrazi Tron": 4.0,
-    "Instant Reanimator": 4.0,
-    "Creatures Toolbox": 3.0,
-    "Ruby Storm": 3.0,
+    "Boros Energy": 5.0,
+    "Eldrazi Tron": 5.0,
+    "Creatures Toolbox": 4.0,
+    "Ruby Storm": 4.0,
+    "Azorius Blink": 3.0,
+    "Domain Zoo": 3.0,
+    "Dimir Midrange": 3.0,
     "Living End": 3.0,
-    "Azorius Blink": 2.0,
-    "Dimir Midrange": 2.0,
+    "Instant Reanimator": 2.0,
     "Eldrazi Ramp": 0.5,
     "Boros Ponza": 0.5,
     "Hollow One": 0.5,

@@ -4,9 +4,9 @@
   {
    "name": "Boros Energy",
    "archetype": "aggro",
-   "meta_share": 6.0,
+   "meta_share": 5.0,
    "flat_wr": 71.9,
-   "weighted_wr": 73.0,
+   "weighted_wr": 73.2,
    "tier": "T1",
    "band": [
     50.0,
@@ -91,7 +91,7 @@
    "archetype": "tempo",
    "meta_share": 0.5,
    "flat_wr": 51.0,
-   "weighted_wr": 52.7,
+   "weighted_wr": 52.4,
    "tier": "T2",
    "band": [
     45.0,
@@ -174,9 +174,9 @@
   {
    "name": "Ruby Storm",
    "archetype": "combo",
-   "meta_share": 3.0,
+   "meta_share": 4.0,
    "flat_wr": 12.9,
-   "weighted_wr": 14.2,
+   "weighted_wr": 14.5,
    "tier": "T4",
    "band": [
     40.0,
@@ -259,9 +259,9 @@
   {
    "name": "Affinity",
    "archetype": "aggro",
-   "meta_share": 7.0,
+   "meta_share": 6.0,
    "flat_wr": 40.0,
-   "weighted_wr": 34.3,
+   "weighted_wr": 36.0,
    "tier": "T4",
    "band": [
     50.0,
@@ -344,9 +344,9 @@
   {
    "name": "Eldrazi Tron",
    "archetype": "ramp",
-   "meta_share": 4.0,
+   "meta_share": 5.0,
    "flat_wr": 74.1,
-   "weighted_wr": 65.9,
+   "weighted_wr": 66.8,
    "tier": "T1",
    "band": [
     50.0,
@@ -429,9 +429,9 @@
   {
    "name": "Amulet Titan",
    "archetype": "combo",
-   "meta_share": 6.0,
+   "meta_share": 7.0,
    "flat_wr": 45.5,
-   "weighted_wr": 38.2,
+   "weighted_wr": 40.0,
    "tier": "T4",
    "band": [
     45.0,
@@ -516,7 +516,7 @@
    "archetype": "combo",
    "meta_share": 0.5,
    "flat_wr": 37.6,
-   "weighted_wr": 35.6,
+   "weighted_wr": 36.4,
    "tier": "T4",
    "band": [
     30.0,
@@ -599,9 +599,9 @@
   {
    "name": "Domain Zoo",
    "archetype": "aggro",
-   "meta_share": 5.0,
+   "meta_share": 3.0,
    "flat_wr": 70.5,
-   "weighted_wr": 71.8,
+   "weighted_wr": 72.3,
    "tier": "T1",
    "band": [
     50.0,
@@ -686,7 +686,7 @@
    "archetype": "combo",
    "meta_share": 3.0,
    "flat_wr": 57.2,
-   "weighted_wr": 54.0,
+   "weighted_wr": 55.6,
    "tier": "T2",
    "band": [
     30.0,
@@ -771,7 +771,7 @@
    "archetype": "aggro",
    "meta_share": 5.0,
    "flat_wr": 55.9,
-   "weighted_wr": 56.6,
+   "weighted_wr": 58.2,
    "tier": "T2",
    "band": [
     50.0,
@@ -854,9 +854,9 @@
   {
    "name": "Dimir Midrange",
    "archetype": "midrange",
-   "meta_share": 2.0,
+   "meta_share": 3.0,
    "flat_wr": 53.3,
-   "weighted_wr": 50.8,
+   "weighted_wr": 51.6,
    "tier": "T2",
    "band": [
     45.0,
@@ -941,7 +941,7 @@
    "archetype": "midrange",
    "meta_share": 0.5,
    "flat_wr": 53.6,
-   "weighted_wr": 42.0,
+   "weighted_wr": 43.4,
    "tier": "T3",
    "band": [
     30.0,
@@ -1026,8 +1026,8 @@
    "archetype": "control",
    "meta_share": 0.5,
    "flat_wr": 47.7,
-   "weighted_wr": 40.0,
-   "tier": "T4",
+   "weighted_wr": 41.4,
+   "tier": "T3",
    "band": [
     30.0,
     70.0
@@ -1111,7 +1111,7 @@
    "archetype": "control",
    "meta_share": 0.0,
    "flat_wr": 46.5,
-   "weighted_wr": 43.7,
+   "weighted_wr": 44.2,
    "tier": "T3",
    "band": [
     30.0,
@@ -1191,7 +1191,7 @@
    "archetype": "control",
    "meta_share": 0.0,
    "flat_wr": 55.3,
-   "weighted_wr": 53.3,
+   "weighted_wr": 53.1,
    "tier": "T2",
    "band": [
     30.0,
@@ -1271,7 +1271,7 @@
    "archetype": "aggro",
    "meta_share": 0.5,
    "flat_wr": 59.7,
-   "weighted_wr": 54.6,
+   "weighted_wr": 56.5,
    "tier": "T2",
    "band": [
     30.0,
@@ -1356,7 +1356,7 @@
    "archetype": "control",
    "meta_share": 7.0,
    "flat_wr": 40.5,
-   "weighted_wr": 28.7,
+   "weighted_wr": 30.0,
    "tier": "T4",
    "band": [
     30.0,
@@ -1439,10 +1439,10 @@
   {
    "name": "Instant Reanimator",
    "archetype": "combo",
-   "meta_share": 4.0,
+   "meta_share": 2.0,
    "flat_wr": 40.8,
-   "weighted_wr": 39.2,
-   "tier": "T4",
+   "weighted_wr": 40.7,
+   "tier": "T3",
    "band": [
     45.0,
     60.0
@@ -1526,7 +1526,7 @@
    "archetype": "midrange",
    "meta_share": 0.5,
    "flat_wr": 28.3,
-   "weighted_wr": 23.2,
+   "weighted_wr": 23.4,
    "tier": "T4",
    "band": [
     30.0,
@@ -1611,7 +1611,7 @@
    "archetype": "midrange",
    "meta_share": 0.5,
    "flat_wr": 53.5,
-   "weighted_wr": 46.3,
+   "weighted_wr": 46.7,
    "tier": "T3",
    "band": [
     30.0,
@@ -1694,9 +1694,9 @@
   {
    "name": "Broodscale Bloodchief",
    "archetype": "midrange",
-   "meta_share": 14.0,
+   "meta_share": 13.0,
    "flat_wr": 59.5,
-   "weighted_wr": 52.6,
+   "weighted_wr": 54.4,
    "tier": "T2",
    "band": [
     30.0,
@@ -1779,9 +1779,9 @@
   {
    "name": "Creatures Toolbox",
    "archetype": "combo",
-   "meta_share": 3.0,
+   "meta_share": 4.0,
    "flat_wr": 25.5,
-   "weighted_wr": 22.8,
+   "weighted_wr": 23.5,
    "tier": "T4",
    "band": [
     30.0,
@@ -1866,7 +1866,7 @@
    "archetype": "combo",
    "meta_share": 0.5,
    "flat_wr": 59.6,
-   "weighted_wr": 58.2,
+   "weighted_wr": 59.0,
    "tier": "T2",
    "band": [
     30.0,
@@ -1949,9 +1949,9 @@
   {
    "name": "Azorius Blink",
    "archetype": "aggro",
-   "meta_share": 2.0,
+   "meta_share": 3.0,
    "flat_wr": 46.1,
-   "weighted_wr": 37.0,
+   "weighted_wr": 38.4,
    "tier": "T4",
    "band": [
     30.0,
@@ -2036,7 +2036,7 @@
    "archetype": "combo",
    "meta_share": 0.5,
    "flat_wr": 28.5,
-   "weighted_wr": 29.0,
+   "weighted_wr": 30.2,
    "tier": "T4",
    "band": [
     30.0,
@@ -2119,9 +2119,9 @@
   {
    "name": "Rakdos Aggro",
    "archetype": "aggro",
-   "meta_share": 15.0,
+   "meta_share": 13.0,
    "flat_wr": 59.3,
-   "weighted_wr": 61.7,
+   "weighted_wr": 62.8,
    "tier": "T1",
    "band": [
     30.0,
@@ -71332,7 +71332,7 @@
  ],
  "provenance": {
   "generated": "2026-11-07T17:39:41.377659",
-  "commit": "ea5025f",
+  "commit": "8190a2d",
   "format": "bo3",
   "n_per_pair": 60,
   "total_matches": 19500,
@@ -72502,10 +72502,10 @@
    },
    "codebase": {
     "engine_modules": 74,
-    "engine_lines": 70823,
-    "ai_modules": 88,
-    "ai_lines": 47628,
-    "test_files": 815
+    "engine_lines": 70970,
+    "ai_modules": 89,
+    "ai_lines": 47889,
+    "test_files": 825
    }
   },
   "trace": {
@@ -73360,7 +73360,7 @@
      "key": "zone_mutation",
      "label": "Raw zone writes",
      "counts": "`card.zone = ...` outside the zone-transfer funnel",
-     "now": 33,
+     "now": 32,
      "rule": "may only fall",
      "file": "tools/zone_mutation_baseline.json"
     },
@@ -73528,6 +73528,7 @@
      "603.2/ordinal_cast",
      "603.2/step_trigger_once",
      "603.4/step_trigger_intervening_if",
+     "605.1a/mana_source_offered",
      "605.3a/sacrifice_mana_cost_paid",
      "606/loyalty_clause_resolved",
      "608.2/damage_upgrade",
@@ -73559,6 +73560,7 @@
      "701.8a/destroyed",
      "701.8a/destroyed_each",
      "701.9a/discarded",
+     "702.126a/improvise_pays_once",
      "702.180a/exiled",
      "702.21a/ward_paid",
      "702.33/kicked_cost_paid",
@@ -73571,6 +73573,7 @@
      "704.5b/empty_library",
      "704.5f/lethal_damage",
      "704.5f/zero_toughness",
+     "707.10/copy_resolves_on_its_own",
      "707.10c/copy_targets",
      "708.2a/face_down",
      "712.8/face_colours",
@@ -73616,12 +73619,12 @@
      {
       "chapter": "6",
       "name": "Spells, abilities and effects",
-      "count": 39
+      "count": 40
      },
      {
       "chapter": "7",
       "name": "Additional rules",
-      "count": 32
+      "count": 34
      }
     ]
    },
@@ -74598,6 +74601,90 @@
      ],
      "date": "2026-11-07",
      "ai": false
+    },
+    {
+     "code": "ST",
+     "rule": "a Saga that exiles itself and returns transformed returns as its back face",
+     "cr": [
+      "714.2b",
+      "712",
+      "400.7"
+     ],
+     "date": "2026-11-07",
+     "ai": false
+    },
+    {
+     "code": "DT",
+     "rule": "a projected draw is priced at what the opponent's draw triggers take",
+     "cr": [],
+     "date": "2026-11-07",
+     "ai": true
+    },
+    {
+     "code": "SY",
+     "rule": "a storm copy is put on the stack and resolves on its own",
+     "cr": [
+      "702.40a",
+      "707.10",
+      "707.12",
+      "704.3",
+      "608.2b"
+     ],
+     "date": "2026-11-07",
+     "ai": false
+    },
+    {
+     "code": "CD",
+     "rule": "a spell's own damage counts toward what its copies must deal",
+     "cr": [],
+     "date": "2026-11-07",
+     "ai": true
+    },
+    {
+     "code": "MO",
+     "rule": "a mana source the payment can tap is one source list, and an artifact pays one way, not two",
+     "cr": [
+      "605.1a",
+      "702.98",
+      "702.126a"
+     ],
+     "date": "2026-11-07",
+     "ai": false
+    },
+    {
+     "code": "RR",
+     "rule": "a chain is started on digs only when today reaches more than holding",
+     "cr": [],
+     "date": "2026-11-07",
+     "ai": true
+    },
+    {
+     "code": "TC",
+     "rule": "a tutor that reaches a payoff closes the chain as that payoff, and a ritual is held when the reachable damage chain cannot kill",
+     "cr": [],
+     "date": "2026-11-07",
+     "ai": true
+    },
+    {
+     "code": "PR",
+     "rule": "payoff reach through digs is weighed, not assumed",
+     "cr": [],
+     "date": "2026-11-08",
+     "ai": true
+    },
+    {
+     "code": "SBH",
+     "rule": "the sideboard solver values hand disruption; the oracle solver is measured as the sideboarder",
+     "cr": [],
+     "date": "2026-11-08",
+     "ai": true
+    },
+    {
+     "code": "OWN",
+     "rule": "a main-deck card is worth at least its own impact to the sideboard solver",
+     "cr": [],
+     "date": "2026-11-08",
+     "ai": true
     }
    ],
    "choices": [
@@ -74708,7 +74795,7 @@
     },
     {
      "method": "choose_copy_targets",
-     "asks": "The targets for a copy of the spell `item` (CR 707.10c: its controller may choose new ones), with `remaining` copies, this one included, still to be made; None keeps the original's targets.",
+     "asks": "The targets for `copies` copies of the spell `item`, made together (CR 707.10c: their controller may choose new ones): one entry per copy, None for a copy that keeps the original's targets; None for all of them.",
      "by": "ai",
      "answers": [
       "ai.damage_targets.copy_targets"
@@ -74807,7 +74894,7 @@
     "engine/effect_conditions.py": 620,
     "engine/clause_resolver.py": 1049,
     "engine/card_effects.py": 2519,
-    "engine/game_state.py": 1222,
+    "engine/game_state.py": 1219,
     "engine/target_solver.py": 1583,
     "engine/damage.py": 347,
     "engine/zone_manager.py": 796,
@@ -74820,14 +74907,14 @@
     "engine/optional_costs.py": 462,
     "engine/rules_audit.py": 114,
     "ai/ev_player.py": 5449,
-    "ai/ev_evaluator.py": 3872,
+    "ai/ev_evaluator.py": 3881,
     "ai/clock.py": 1050,
     "ai/turn_planner.py": 1317,
     "ai/bhi.py": 830,
     "ai/gameplan.py": 1125,
     "ai/resolution_choices.py": 251,
     "ai/modal.py": 320,
-    "ai/damage_targets.py": 264,
+    "ai/damage_targets.py": 276,
     "ai/permanent_threat.py": 411,
     "ai/scoring_constants.py": 5759,
     "run_meta.py": 1810,

@@ -12592,3 +12592,18 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 - **The priors do not support moving the bands toward the sim.** The bands are left unchanged, and the gaps stay the sim's to explain.
 - **Most of these priors are drafts.** They carry `needs_user_review` (archetype-logic, 2026-07-09). Real-world matchup win-rate data would settle them, but no such source is reachable from the session; mtgtop8 gives shares, not win rates.
 - **Shares refreshed** in `data/tier1_decklists/2026-11-08/` (not yet applied to `METAGAME_SHARES`): Rakdos Aggro 13, Broodscale Bloodchief 13, UW Control 7, Amulet Titan 7, Affinity 6, Ruby Storm 4.
+
+## Metagame shares refreshed 2026-11-08
+- **Source:** mtgtop8's top 16, fetched on GitHub Actions (`d8aba28`, `data/tier1_decklists/2026-11-08/`). The mapping to registered decks was re-checked by card overlap and is unchanged from 2026-11-01.
+- **New shares:**
+  - Rakdos Aggro 13, Broodscale Bloodchief 13
+  - Azorius Control 7, Amulet Titan 7
+  - Affinity 6
+  - Izzet Prowess 5, Boros Energy 5, Eldrazi Tron 5
+  - Creatures Toolbox 4, Ruby Storm 4
+  - Azorius Blink 3, Domain Zoo 3, Dimir Midrange 3, Living End 3
+  - Instant Reanimator 2
+  - every other registered deck 0.5; the two WST lists stay at 0
+- **Not mapped:** Jeskai Aggro 2% (ambiguous: overlap 0.65 with Boros Energy, 0.57 with Jeskai Blink).
+- **Flagged:** the current mtgtop8 Creatures Toolbox build overlaps the registered list only 0.25.
+- **Pins:** `decks/metagame.json` mirrors the shares, and the site was rebuilt (`build_dashboard.py --merge`, the n=60 matrix). Games are unchanged; shares only weight results.
