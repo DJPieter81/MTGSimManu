@@ -12825,3 +12825,50 @@ Asked to re-derive the field bands for the three far outliers, I derived each de
 | Median kill turn | 7 | 7 |
 
 **Pins:** digest: 2 of 27 games change (Azorius Control vs Ruby Storm s58500, games 1 and 2), with the same winner. The anchor is green. The arm will be measured together with the next combo-speed unit.
+
+## Combo-speed census (2026-11-08)
+
+Goldfish, n=20, on the play, s70000. Kills by turn are cumulative.
+
+| Deck | Median kill turn | Kills by turn 4 / 5 / 6 | Real-world kill turn |
+|---|---|---|---|
+| Amulet Titan | 7.0 | 0 / 0 / 5 | 3–4 |
+| Broodscale Bloodchief | 7.0 | 0 / 0 / 8 | 3–4 |
+| Creatures Toolbox | 7.0 | 1 / 4 / 7 | 4–5 |
+| Goryo's Vengeance | 11.5 | 0 / 0 / 0 | 3–5 |
+| Grixis Reanimator | 7.0 | 0 / 0 / 3 | 2–4 |
+| Hollow One | 7.0 | 1 / 1 / 7 | 3–4 |
+| Instant Reanimator | 7.5 | 0 / 1 / 5 | 2–4 |
+| Living End | 6.5 | 0 / 5 / 10 | 3–4 |
+| Ruby Storm (after GYF and PFG; n=30) | 7.0 | 2 / 4 / 9 | 4 |
+
+Every combo deck kills about three turns late. Each deck's replays name a few specific choices, listed as leads below.
+
+## Unit HAS: a hand attack is aimed at its caster only when binning has value (AI; 2026-11-08)
+
+**Source:** Grixis Reanimator goldfish s70001, turn 4. The hand held Thoughtseize, Cling to Dust and Fatal Push, with no creature. Thoughtseize targeted its own hand ("bin the reanimation target") and discarded Cling to Dust. In the Goryo's goldfish, its self-Thoughtseizes discarded Leyline of Sanctity and Ephemerate.
+
+**Rule:** a "target player discards" spell aimed at its caster is worth the bin it makes for the caster's graveyard plan (`_self_fill_value`), and nothing more.
+- The target choice compared that value with the opponent-side denial (`hand_denial_value`). The denial is net of the average-card credit, so it is negative when the opponent's hand holds nothing worth taking, and a self-fill value of 0 beat it.
+- The caster's hand is now chosen only when the self-fill value is positive and beats the denial.
+
+**Deck config, found by the same test:** Grixis Reanimator's gameplan was a stub.
+- Its "payoff" was the reanimation target (Archon of Cruelty), not the reanimation spells, and it declared no graveyard fill goal. Every graveyard-plan reader (self-binning, the discard-outlet targets, reanimation readiness) therefore saw no plan, and the self-fill value was 0 even with Archon and Persist in hand.
+- It now declares the plan Instant Reanimator and Goryo's declare: FILL_RESOURCE graveyard 1 (mana value 7 or more), then EXECUTE_PAYOFF with Persist and Emperor of Bones.
+
+**Tests:** 2 (`tests/test_a_hand_attack_is_aimed_at_its_caster_only_to_bin_something.py`):
+- with nothing to bin, the caster is not targeted (red first);
+- a returnable creature with Persist in hand is still binned from the caster's hand. This test passed before only through the negative denial; it passes now through a real self-fill value.
+
+**Goldfish (n=20):** Grixis Reanimator kills by turn 6 rise 3 → 4; Instant Reanimator 5 → 6; Goryo's median 11.5 → 11.0. All three are small gains.
+
+**Pins:**
+- Digest: 1 of 27 games changes (Creatures Toolbox vs Grixis Reanimator s56000), with the same winner.
+- Anchor: one winner flip, Grixis Reanimator vs Azorius Blink s53000, now an Azorius Blink win. Replayed exactly as the anchor runs it, and legal: Faithless Looting bins Archon on turn 3, but the AI casts Emperor of Bones over Persist on turn 4, then Abhorrent Oculus, whose "exile six cards from your graveyard" cost takes Archon on turn 5. The anchor is refreshed.
+
+**Leads, not built:**
+- **A cost that exiles the plan's own graveyard resource is a cost.** The exile picker (`pick_cost_exile`) already takes resources last. The cast decision does not charge for a graveyard with no other cards to give.
+- **A ready reanimation spell before a 2-drop:** Persist with Archon in the graveyard, against Emperor of Bones.
+- **Goryo's sequencing:**
+  - Ephemerate cast before combat on a hasty reanimated creature gives up its attack;
+  - Goryo's reanimates a second copy of a legendary creature it already controls (legend rule, CR 704.5j).

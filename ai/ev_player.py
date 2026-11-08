@@ -4587,7 +4587,12 @@ class EVPlayer:
             from ai.hand_denial import hand_denial_value
             me = game.players[self.player_idx]
             self_value = self._self_fill_value(spell, snap, me)
-            if self_value > hand_denial_value(t, game, self.player_idx, snap):
+            # Only a bin worth something is a reason to hit our own hand:
+            # the denial value is net of the average-card credit, so it is
+            # negative when the opponent holds nothing worth taking, and a
+            # zero self-fill would otherwise beat it.
+            if self_value > 0 and self_value > hand_denial_value(
+                    t, game, self.player_idx, snap):
                 self._last_target_reason = (
                     "own hand — bin the reanimation target")
                 return [PLAYER_TARGET_SELF]
