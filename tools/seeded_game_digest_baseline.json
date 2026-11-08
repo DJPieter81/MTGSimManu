@@ -1,5 +1,5 @@
 {
-  "combined": "4a86e15520b2be442b3f1fe5e5147258daec3825c368ec13e38d019678f97910",
+  "combined": "1ccf0353312ebfc06f8b142a6ecf03c0293ac0ba4fe313ec7becc417518ea899",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -69,9 +69,9 @@
       "winner": "Izzet Prowess"
     },
     "bo1|Instant Reanimator|Boros Ponza|55000": {
-      "lines": 1033,
-      "sha256": "529979a62f724575e145114ab9c750de940631f234b8f75fa53d23bb288a1679",
-      "turns": 15,
+      "lines": 928,
+      "sha256": "f724f9af213ebc5b3e4d4717047130aec84eec14cdb14948f48e7b2c3d85715e",
+      "turns": 13,
       "winner": "Boros Ponza"
     },
     "bo1|Jeskai Blink|4c Omnath|51500": {
@@ -87,8 +87,8 @@
       "winner": "Jeskai Blink"
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
-      "lines": 745,
-      "sha256": "47f73907cf9d0fb9afe4512b5113407cbeafce0d515474674f42f454d27b6545",
+      "lines": 741,
+      "sha256": "9331dbdf6af27b82754e5706d0b942baea686f61a88d552ae321ff0489d57593",
       "turns": 10,
       "winner": "4/5c Control"
     },

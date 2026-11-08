@@ -810,6 +810,12 @@ class EVPlayer:
                 play.counter_pct = info['counter_pct']
                 play.removal_pct = info['removal_pct']
                 play.no_signal = bool(info.get('deferral', False))
+                # A blink that would forfeit an attack now is the same
+                # blink after combat for no attack: it waits for MAIN2.
+                if not play.no_signal and self._main1_blink_forfeit_charge(
+                        play.card, game, game.players[self.player_idx],
+                        snap) > 0:
+                    play.no_signal = True
 
         # Sort by EV, pick the best
         candidates.sort(key=lambda p: p.ev, reverse=True)
@@ -1794,30 +1800,9 @@ class EVPlayer:
         # loop re-enumerates the blink in Main 2 (game_runner MAIN2 →
         # _execute_main_phase), where the rider credit below prices
         # keeping the body.
-        if ('blink' in tags and (t.is_instant or t.is_sorcery)
-                and game is not None
-                and getattr(game, 'active_player', None) == self.player_idx
-                and 'MAIN1' in str(getattr(game, 'current_phase', ''))):
-            presumed = list(self._pending_eot_exile_riders(game))
-            _seen = {c.instance_id for c in presumed}
-            presumed += [
-                c for c in me.creatures
-                if c.instance_id not in _seen
-                and 'etb_value' in getattr(c.template, 'tags', set())]
-            # The creature the blink will actually return — the same
-            # choice the engine's blink handler makes — is charged too:
-            # a temporarily-hasty attacker (Dash, a haste grant) with no
-            # ETB and no rider loses its attack exactly as a presumed
-            # target does (CR 400.7).
-            _actual = self._presumed_reset_target(me, snap)
-            if _actual is not None and all(
-                    c.instance_id != _actual.instance_id for c in presumed):
-                presumed.append(_actual)
-            charges = [self._forfeited_attack_charge(c, snap)
-                       for c in presumed
-                       if self._blink_would_forfeit_attack(c)]
-            if charges:
-                ev -= max(charges)  # swing first, blink post-combat
+        _forfeit = self._main1_blink_forfeit_charge(card, game, me, snap)
+        if _forfeit > 0:
+            ev -= _forfeit  # swing first, blink post-combat
 
         # ── Blink clears a live pending EOT-exile detriment (CR 400.7) ──
         # A delayed "exile it at the beginning of the next end step"
@@ -5054,6 +5039,37 @@ class EVPlayer:
                     == entry_seq):
                 riders.append(card)
         return riders
+
+    def _main1_blink_forfeit_charge(self, card, game, me, snap) -> float:
+        """The attack a blink cast in our own first main phase forfeits
+        (CR 400.7: it returns a new, summoning-sick object), or 0. The
+        creatures it may return: a pending end-of-turn-exile rider, an
+        ETB-value creature, and the one the engine's blink handler
+        actually returns (`_presumed_reset_target`). The one owner of the
+        charge: the score subtracts it, and the main phase defers a blink
+        while it is positive, because the second main phase of the same
+        turn does the same blink for no attack."""
+        t = card.template
+        tags = getattr(t, 'tags', set()) or set()
+        if not ('blink' in tags and (t.is_instant or t.is_sorcery)
+                and game is not None
+                and getattr(game, 'active_player', None) == self.player_idx
+                and 'MAIN1' in str(getattr(game, 'current_phase', ''))):
+            return 0.0
+        presumed = list(self._pending_eot_exile_riders(game))
+        _seen = {c.instance_id for c in presumed}
+        presumed += [
+            c for c in me.creatures
+            if c.instance_id not in _seen
+            and 'etb_value' in getattr(c.template, 'tags', set())]
+        _actual = self._presumed_reset_target(me, snap)
+        if _actual is not None and all(
+                c.instance_id != _actual.instance_id for c in presumed):
+            presumed.append(_actual)
+        charges = [self._forfeited_attack_charge(c, snap)
+                   for c in presumed
+                   if self._blink_would_forfeit_attack(c)]
+        return max(charges) if charges else 0.0
 
     def _blink_would_forfeit_attack(self, card) -> bool:
         """True iff ``card`` can attack THIS turn and a blink would
