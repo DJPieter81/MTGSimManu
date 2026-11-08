@@ -119,3 +119,15 @@ Traced on Storm's turn 4 of the same replay (trace global turn 7), with the cand
 - **The other new list** (event 93268) runs the same 37 spells with a slightly different mana base and sideboard (Veil of Summer, Nature's Claim, no Thoughtseize).
 - **So the list is not the cause of Storm's gap.**
 - **Storm's metagame share is 4%.** The registry's seven "gaps" in `DIFF_REPORT.md` are name differences already mapped on 2026-11-01: UW Control → Azorius Control, UrzaTron → Eldrazi Tron, Dimir Control → Dimir Midrange, and so on.
+
+## Real-world baseline and the next mechanism (2026-11-08)
+- **Real-world win rates (web search):** Ruby Storm 49.2% at the 2026 Fall Regional Championships, and 46% on MTGO (n=260). Storm's band [40, 55] stands (`debe4bb`), and the sim (13-16) is about 33 pp low.
+- **The calibration report's worst pairs are Storm against low-interaction decks,** where the real-world priors favour Storm: Domain Zoo 8.0 (prior 50-65), Izzet Prowess 15.0 (50-65), Living End 16.5 (50-65). So the gap is not mainly opponent interaction.
+- **Against Living End, game 1 only** (16 seeds; `storm_stats.py`): Storm wins 6 of 16 (37.5%). Its kills land on turns 5-11. The legacy sideboard table changes nothing in this pairing, so the Bo3 cell (16.5) is the per-game weakness compounded, not sideboarding.
+- **The mechanism seen** (s56500, turn 4): Storm goes off for a chain of more than 20 spells (Hex Magic, Past in Flames, flashbacks, three digs) and never finds a finisher.
+  - The main deck has none: its only routes are 2 Wish, and the chain dug through a large part of the library without finding either.
+  - In 6 of the 16 games Storm never cast a finisher.
+- **Next question:** how real Ruby Storm closes a turn like this. Candidates, not yet checked:
+  - its other kill routes (Ral, Leyline Prodigy's damage; a Past in Flames that rebuys Wish);
+  - whether the sim's Wish reaches every sideboard finisher;
+  - the mulligan's Wish-access keep rule.
