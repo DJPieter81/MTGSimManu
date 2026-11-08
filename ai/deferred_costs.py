@@ -22,11 +22,20 @@ from __future__ import annotations
 from typing import Any, List
 
 
+def _loss_costs_of(sub: Any) -> List[Any]:
+    """The mana costs a delayed sub-ability's host pays on pain of its
+    controller losing the game."""
+    from engine.effect_spec import Verb, iter_specs
+    from ai.unless_value import _loses_the_game
+    return [pay.payload.thaw().mana for pay in iter_specs(sub.host.specs)
+            if pay.verb is Verb.PAY
+            and any(_loses_the_game(o) for o in pay.otherwise)]
+
+
 def deferred_loss_costs(template: Any) -> List[Any]:
     """The mana costs (`ManaCost`) the spell commits its caster to pay at a
     later step on pain of losing the game, in printed order."""
     from engine.effect_spec import SubAbilityKind, Verb, iter_specs
-    from ai.unless_value import _loses_the_game
     effects = getattr(template, "effects", None)
     host = effects.spell(0) if effects is not None else None
     if host is None:
@@ -34,21 +43,40 @@ def deferred_loss_costs(template: Any) -> List[Any]:
     out = []
     for s in iter_specs(host.specs):
         sub = s.payload if s.verb is Verb.CREATE_TRIGGER else None
-        if sub is None or sub.kind is not SubAbilityKind.DELAYED:
-            continue
-        for pay in iter_specs(sub.host.specs):
-            if pay.verb is Verb.PAY and any(_loses_the_game(o)
-                                            for o in pay.otherwise):
-                out.append(pay.payload.thaw().mana)
+        if sub is not None and sub.kind is SubAbilityKind.DELAYED:
+            out += _loss_costs_of(sub)
     return out
+
+
+def pending_loss_costs(game: Any, player_idx: int) -> List[Any]:
+    """The pay-or-lose costs already waiting for the player in the one
+    delayed-trigger queue (CR 603.7): the spells it cast before."""
+    out = []
+    for t in game.delayed_triggers.pending:
+        sub = getattr(getattr(t, "effect", None), "keywords", {}).get("sub")
+        if t.controller == player_idx and sub is not None:
+            out += _loss_costs_of(sub)
+    return out
+
+
+def _total(costs: List[Any]) -> Any:
+    """One mana cost paying every cost in `costs` (their pips summed)."""
+    from engine.mana import ManaCost
+    fields = ("generic", "white", "blue", "black", "red", "green",
+              "colorless")
+    return ManaCost(**{f: sum(getattr(c, f) for c in costs) for f in fields})
 
 
 def deferred_costs_payable(game: Any, player_idx: int, card: Any) -> bool:
     """Will every cost the spell defers on pain of losing the game be
-    payable at its controller's next upkeep (see the module docstring)?"""
+    payable at its controller's next upkeep, beside the ones already
+    pending (see the module docstring)?"""
     costs = deferred_loss_costs(card.template)
     if not costs:
         return True
+    # Every such cost already pending is paid at the same upkeep from the
+    # same board: the spell is payable only beside them (their sum).
+    costs = [_total(pending_loss_costs(game, player_idx) + costs)]
     from engine.cast_manager import CastManager
     player = game.players[player_idx]
     board = list(player.battlefield)

@@ -13336,3 +13336,21 @@ Amulet's turn-7 goldfish median was partly a rules defect.
 | Digs held | 8 | 9.00 | 7 |
 
 Casting digs on building turns is right. The cards they exile that expire are not what costs Storm turns. **Do not build a dig-deferral rule.**
+
+## Goldfish go-off turn, and the pay-or-lose gate summed (2026-11-08)
+
+**Tooling:** `tools/goldfish.py` now reports a **go-off turn** beside the kill turn: the first turn the deck resolves a payoff its gameplan names (the EXECUTE_PAYOFF goal's payoff role), cast or put onto the battlefield. Real-world combo speed is quoted as that turn. Tested in `tests/test_goldfish_tool.py`.
+
+| Deck (goldfish n=40, s70000, on the play) | Kills | Median kill | Went off | Median go-off |
+|---|---|---|---|---|
+| Ruby Storm | 37 | 7 | 37 | 6 |
+| Amulet Titan (after the gate fix below) | 39 | 7 | 36 | 5.5 |
+| Goryo's Vengeance | 40 | 9 | 40 | 6 |
+| Grixis Reanimator | 40 | 7 | 38 | 5 |
+| Living End | 40 | 8 | 31 | 4 |
+
+Measured by the turn the deck goes off, the combo gap to real play (turns 3–5) is about 1–2 turns, not the 3–5 the kill turn suggested. Living End's 9 non-go-off games are kills without a cast of its named payoff (Shardless Agent): it cascaded by another route.
+
+**Unit LG follow-up (AI):** the pay-or-lose gate checked each pact on its own cost. Two pacts are paid at the same upkeep from the same board, so a second pact is cast only when the sum of every pending pay-or-lose cost (read from the one delayed-trigger queue) and its own is payable (`ai/deferred_costs.pending_loss_costs`). The test was red without the sum. Amulet goldfish n=40 went from 38 to 39 kills.
+
+**Lead, not built:** a pending pact can still be made unpayable by a later play of the same turn. In 70028, Scapeshift sacrificed the lands that made {G}{G} and fetched lands that do not. The land-delivery choice (`ai/activation_ev._choose_land_delivery`) and the sacrifice choice should keep the pending pay-or-lose costs payable. 1 game in 40.

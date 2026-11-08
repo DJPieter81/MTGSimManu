@@ -249,3 +249,15 @@ def test_a_spell_with_no_deferred_cost_is_unaffected(card_db):
     titan = _add(game, card_db, "Primeval Titan", 0, "hand")
     assert deferred_loss_costs(titan.template) == []
     assert deferred_costs_payable(game, 0, titan)
+
+
+def test_a_second_deferred_cost_is_payable_only_beside_the_one_pending(
+        card_db):
+    """Two pacts are paid at the same upkeep from the same board: four
+    Forests pay one {2}{G}{G}, not two."""
+    from ai.deferred_costs import deferred_costs_payable
+    game, pact = _pact_in_hand(card_db, 4)
+    assert deferred_costs_payable(game, 0, pact)
+    _cast(game, card_db, PACT)                   # one pact now pending
+    second = _add(game, card_db, PACT, 0, "hand")
+    assert not deferred_costs_payable(game, 0, second)

@@ -32,3 +32,47 @@ def test_a_run_with_no_kill_has_no_median():
     s = goldfish.summarise([{"won": False, "turns": 10, "how": "mill"}])
     assert s["kills"] == 0 and s["median_kill_turn"] is None
     assert s["kills_by_turn"] == {}
+
+
+# ── The go-off turn ────────────────────────────────────────────────────
+# A combo deck "goes off" the turn it resolves the payoff its gameplan
+# names (the EXECUTE_PAYOFF goal's payoff role): a reanimation spell, a
+# storm closer, a Titan. Real-world combo speed is reported as that turn,
+# while the kill can come turns later (a reanimated creature still has to
+# attack), so the goldfish reports both.
+
+_LOG = [
+    "T1 P1: Play Swamp",
+    "T2 P1: Cast Faithful Mending (WU)",
+    "T3 P2: Cast Payoff Spell (1B)",            # the other player's cast
+    "T4 P1: Cast Payoff Spell (1B)",
+    "T5 P1: Cast Payoff Spell (1B)",
+]
+
+
+def test_the_go_off_turn_is_the_first_turn_the_deck_casts_a_payoff():
+    assert goldfish.go_off_turn(_LOG, {"Payoff Spell"}) == 4
+
+
+def test_a_payoff_put_onto_the_battlefield_without_a_cast_goes_off_too():
+    log = ["T2 P1: Play Forest",
+           "T3: Payoff Creature moved library -> battlefield (search)"]
+    assert goldfish.go_off_turn(log, {"Payoff Creature"}) == 3
+
+
+def test_a_game_with_no_payoff_has_no_go_off_turn():
+    assert goldfish.go_off_turn(_LOG, {"Something Else"}) is None
+    assert goldfish.go_off_turn(_LOG, set()) is None
+
+
+def test_the_summary_reports_the_median_go_off_turn():
+    rows = [{"won": True, "turns": 7, "how": "damage", "go_off": 4},
+            {"won": True, "turns": 6, "how": "damage", "go_off": 3},
+            {"won": False, "turns": 9, "how": "mill", "go_off": None}]
+    s = goldfish.summarise(rows)
+    assert s["went_off"] == 2 and s["median_go_off_turn"] == 3.5
+
+
+def test_a_combo_gameplan_names_its_payoffs():
+    assert "Grapeshot" in goldfish.payoff_names("Ruby Storm")
+    assert "Primeval Titan" in goldfish.payoff_names("Amulet Titan")

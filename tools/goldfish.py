@@ -18,7 +18,11 @@ main-phase decision of the goldfished deck (its scored candidates) into
 the dumped logs.
 
 The summary prints, per side: kills, losses by how (an empty library is
-"mill"), kills by each turn, and the median kill turn.
+"mill"), kills by each turn, and the median kill turn -- and the median
+go-off turn: the first turn the deck resolves a payoff its gameplan names
+(the EXECUTE_PAYOFF goal's payoff role: a reanimation spell, a storm
+closer, a Titan). Real-world combo speed is reported as that turn; the
+kill can come turns later (a reanimated creature still has to attack).
 """
 from __future__ import annotations
 
@@ -26,6 +30,7 @@ import argparse
 import json
 import os
 import random
+import re
 import statistics
 import sys
 from collections import Counter
@@ -64,6 +69,33 @@ def _traced_main(deck_name):
     EVPlayer.decide_main_phase = traced
 
 
+def payoff_names(deck_name):
+    """The cards the deck's gameplan names as its payoffs (the
+    EXECUTE_PAYOFF goal's payoff role); empty with no gameplan."""
+    from ai.gameplan import GoalType, get_gameplan
+    gp = get_gameplan(deck_name)
+    if gp is None:
+        return set()
+    return {name for g in gp.goals if g.goal_type is GoalType.EXECUTE_PAYOFF
+            for name in g.card_roles.get("payoffs", ())}
+
+
+# The goldfished deck is player 1 in the log. A payoff goes off when its
+# player casts it or it is put onto the battlefield (a search, a return).
+_CAST_RE = re.compile(r"^T(\d+) P1: Cast (.+?)(?: \(.*\))?$")
+_ENTER_RE = re.compile(r"^T(\d+): (.+?) moved \w+ -> battlefield")
+
+
+def go_off_turn(log, payoffs):
+    """The first turn the goldfished deck resolves one of `payoffs`; None
+    when it never does."""
+    for line in log:
+        m = _CAST_RE.match(line) or _ENTER_RE.match(line)
+        if m and m.group(2) in payoffs:
+            return int(m.group(1))
+    return None
+
+
 def run(deck_name, n, seed0, side, out=None, dump=None, trace=False):
     os.environ["MTG_LLM_DECISION_SCORER_OFFLINE"] = "1"
     import logging
@@ -80,6 +112,11 @@ def run(deck_name, n, seed0, side, out=None, dump=None, trace=False):
     deck = MODERN_DECKS[deck_name]
     runner = GameRunner(CardDatabase())
     first = 0 if side == "play" else 1
+    payoffs = payoff_names(deck_name)
+    seen = {}
+
+    def keep(game, ais):
+        seen["game"] = game
     if dump:
         os.makedirs(dump, exist_ok=True)
     rows = []
@@ -93,10 +130,11 @@ def run(deck_name, n, seed0, side, out=None, dump=None, trace=False):
                                 {GOLDFISH_LAND: DECK_SIZE},
                                 deck1_sideboard=deck.get("sideboard", {}),
                                 forced_first_player=first,
-                                verbose=bool(dump))
+                                verbose=bool(dump), start_hook=keep)
             row = {"seed": seed, "side": side, "won": g.winner == 0,
                    "turns": g.turns, "how": g.win_condition,
-                   "mulligans": g.mulligan_count[0]}
+                   "mulligans": g.mulligan_count[0],
+                   "go_off": go_off_turn(seen["game"].log, payoffs)}
             rows.append(row)
             if sink:
                 sink.write(json.dumps(row) + "\n")
@@ -118,9 +156,12 @@ def summarise(rows):
     if kills:
         for t in range(min(kills), max(kills) + 1):
             by_turn[t] = sum(1 for k in kills if k <= t)
+    offs = sorted(r["go_off"] for r in rows if r.get("go_off") is not None)
     return {"games": len(rows), "kills": len(kills), "losses": dict(losses),
             "kills_by_turn": by_turn,
-            "median_kill_turn": statistics.median(kills) if kills else None}
+            "median_kill_turn": statistics.median(kills) if kills else None,
+            "went_off": len(offs),
+            "median_go_off_turn": statistics.median(offs) if offs else None}
 
 
 def main(argv=None):
