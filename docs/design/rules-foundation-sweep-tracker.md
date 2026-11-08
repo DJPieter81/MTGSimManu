@@ -13386,3 +13386,16 @@ Priced by hand, paying and casting Ral scored −0.907 against −0.95 for decli
 - Digest re-recorded: 18 game records change, 2 of them winner flips from the same shock-payment change.
 
 **Measured:** Storm goldfish n=40 unchanged (kill 7, go-off 6). A goldfish never pressures Storm, so the turn-2 reducer only matters against a clock. The field arm `pe-post` measures it.
+
+**`pe-post`** (n=20 Bo3, full field, against `lg2-post`):
+- 0 violations (546 findings).
+- 465 cells changed: a shock decision early in a game reshuffles every later random draw.
+- Deck moves:
+  - Rakdos Aggro +4.9 (57.0 → 61.9) and WST −3.5 (47.0 → 43.5) are the largest.
+  - **Ruby Storm 38.0 → 35.7 (−2.3)**, about 1.5 standard errors at this n.
+  - Every other deck is within ±3.
+- Storm's aggro cells move both ways (Boros column 10 → 20, Rakdos column 20 → 5, Zoo row 15 → 25, Zoo column 15 → 5).
+
+**Reading:** PE corrects a decision that was demonstrably wrong (an unpriced spell), but at n=20 it does not move Storm out of noise. Storm's band gap is not this decision. Keep PE (it is the correct pricing); do not chase Storm's number with it.
+
+**Next for Storm:** its worst cells are now the disruption decks (Dimir Midrange 15, WST 10–15). Replay those before any further Storm change.
