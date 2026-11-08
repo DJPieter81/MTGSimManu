@@ -797,10 +797,10 @@ class OracleTextParser:
             if 'cantrip' not in tags:
                 tags.add('cantrip')
 
-        # Past in Flames: grants flashback = virtual card advantage
-        if 'each instant and sorcery card in your graveyard gains flashback' in text:
-            tags.add('cantrip')  # treat as card draw for AI purposes
-            tags.add('card_advantage')
+        # A graveyard-wide flashback grant draws no card: it is not a
+        # cantrip. What it enables is read where it is cast -- the granted
+        # spells the mana left pays for (ai.ev_evaluator signal 16) and the
+        # graveyard cards a turn plan may cast (ai.playable_cards).
 
         # Pay-life-draw activated abilities (e.g., Griselbrand: "Pay 7 life: Draw seven cards")
         # Detected from oracle text pattern: "pay N life: draw"

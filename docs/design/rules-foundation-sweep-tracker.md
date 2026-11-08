@@ -12906,3 +12906,19 @@ Goryo's (11), Instant Reanimator (7) and Living End (6.5) are unchanged: their r
   - Refreshed.
 
 **Measured:** `rn-post`, all 26 rows at n=20 Bo3. It also carries PFG. Pending.
+
+## Repayment: the graveyard flashback grant is no longer tagged a cantrip (2026-11-08)
+
+**What was local:** unit PFG part 2 filtered the same-turn signals of a graveyard-wide flashback grant. It worked around a hack in `engine/card_database.py`: "Past in Flames: grants flashback = virtual card advantage" added the `cantrip` and `card_advantage` tags. Those tags fired the chain-continuation signal and counted the grant as chain fuel in 22 readers.
+
+**Fix (foundational):**
+- The hack is removed: a grant draws no card.
+- What it enables is read where it is cast:
+  - signal 16 counts the granted spells the mana left pays for (PFG part 1);
+  - `ai.playable_cards` lists the graveyard cards a turn plan may cast (GYF).
+- The PFG part 2 filter, which existed only because of the hack, is deleted. One path remains.
+
+**Measured:**
+- Storm goldfish (n=30, on the play) against PFG: kills 28 → 29, decking 2 → 1, median 7, kills by turn 8 20 → 20. No regression.
+- 579 storm, combo, chain, flashback and tag tests pass. The anchor is green.
+- Digest: 4 Storm games change. Azorius Control vs Ruby Storm s58500 game 1 flips to Storm: a legal Grapeshot kill on turn 22. That adds a game 3. Re-recorded.
