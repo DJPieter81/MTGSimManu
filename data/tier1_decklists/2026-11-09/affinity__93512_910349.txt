@@ -1,0 +1,35 @@
+// Affinity — mtgtop8 event=93512 deck=910349
+4 Fiery Islet
+2 Island
+2 Shivan Reef
+3 Spirebluff Canal
+1 Steam Vents
+4 Urza's Saga
+4 Kappa Cannoneer
+4 Pinnacle Emissary
+2 Galvanic Blast
+2 Metallic Rebuke
+3 Preordain
+1 Sink into Stupor
+3 Claws of Gix
+4 Engineered Explosives
+4 Mishra's Bauble
+4 Mox Opal
+1 Pithing Needle
+1 Shadowspear
+1 Skateboard
+4 Tormod's Crypt
+4 Weapons Manufacturing
+2 Welding Jar
+
+Sideboard
+2 Blood Moon
+3 Consign to Memory
+1 Disruptor Flute
+1 Galvanic Blast
+1 Mystical Dispute
+2 Obsidian Charmaw
+2 Strix Serenade
+1 Swan Song
+1 Vexing Bauble
+1 Whipflare

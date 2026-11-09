@@ -1,0 +1,31 @@
+// UrzaTron — mtgtop8 event=93492 deck=910196
+4 Eldrazi Temple
+2 Swamp
+4 Ugin's Labyrinth
+4 Urza's Mine
+4 Urza's Power Plant
+4 Urza's Tower
+3 Devourer of Destiny
+4 Glaring Fleshraker
+2 Sire of Seven Deaths
+4 Thought-Knot Seer
+3 Dismember
+4 Kozilek's Command
+4 Expedition Map
+4 Karn, the Great Creator
+4 Mind Stone
+2 The Echoverse Fulcrum
+4 Ugin, Eye of the Storms
+
+Sideboard
+1 Cityscape Leveler
+2 Cursed Totem
+3 Disruptor Flute
+1 Ensnaring Bridge
+1 Grafdigger's Cage
+1 Karn, Argent Defender
+1 Liquimetal Coating
+1 The Echoverse Fulcrum
+1 Tormod's Crypt
+2 Trinisphere
+1 Walking Ballista

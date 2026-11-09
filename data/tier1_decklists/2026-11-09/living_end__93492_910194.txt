@@ -1,0 +1,41 @@
+// Living End — mtgtop8 event=93492 deck=910194
+1 Breeding Pool
+1 Flooded Grove
+1 Forest
+1 Hedge Maze
+1 Island
+1 Mistrise Village
+4 Misty Rainforest
+1 Overgrown Tomb
+1 Sunken Ruins
+1 Swamp
+1 Undercity Sewers
+1 Underground Mortuary
+1 Watery Grave
+1 Colossal Skyturtle
+1 Disciple of Freyalise
+4 Endurance
+1 Formidable Speaker
+4 Generous Ent
+1 Halo Forager
+4 Overlord of the Balemurk
+4 Seasoned Cryomancer
+4 Shardless Agent
+4 Subtlety
+2 Troll of Khazad-dûm
+4 Wistfulness
+2 Flare of Denial
+4 Force of Negation
+3 Living End
+1 Sink into Stupor
+
+Sideboard
+1 Ashiok, Dream Render
+1 Culling Ritual
+1 Dismember
+1 Force of Vigor
+1 Foundation Breaker
+2 Inevitable Betrayal
+3 Leyline of the Void
+1 Murderous Rider
+4 Mystical Dispute

@@ -1,0 +1,31 @@
+// Rakdos Aggro — mtgtop8 event=93512 deck=910359
+1 Arid Mesa
+3 Blood Crypt
+4 Bloodstained Mire
+4 Marsh Flats
+1 Mountain
+1 Raucous Theater
+2 Swamp
+1 Verdant Catacombs
+4 Dark Matter Manipulator
+4 Detective's Phoenix
+4 Fear of Missing Out
+4 Moonshadow
+4 Nethergoyf
+4 Stitcher's Supplier
+4 Street Wraith
+1 Troll of Khazad-dûm
+4 Flare of Malice
+2 Lightning Bolt
+4 Thoughtseize
+4 Mishra's Bauble
+
+Sideboard
+2 Blood Moon
+2 Fatal Push
+2 Glistening Deluge
+1 Ingot Chewer
+2 Inquisition of Kozilek
+2 Meltdown
+2 Nihil Spellbomb
+2 Ob Nixilis, the Adversary

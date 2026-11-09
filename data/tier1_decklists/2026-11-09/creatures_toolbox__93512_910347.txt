@@ -1,0 +1,42 @@
+// Creatures Toolbox — mtgtop8 event=93512 deck=910347
+2 Boseiju, Who Endures
+3 City of Brass
+1 Dryad Arbor
+1 Forest
+1 Godless Shrine
+1 Lush Portico
+1 Misty Rainforest
+2 Overgrown Tomb
+1 Stomping Ground
+1 Temple Garden
+4 Verdant Catacombs
+4 Windswept Heath
+2 Ajani, Nacatl Pariah
+3 Carrion Feeder
+4 Cauldron Familiar
+2 Delighted Halfling
+1 Explosive Prodigy
+4 Gilded Goose
+1 Haywire Mite
+3 Orcish Bowmasters
+4 Samwise Gamgee
+1 Yawgmoth, Thran Physician
+3 Young Wolf
+4 Chord of Calling
+4 Birthing Ritual
+2 Goblin Bombardment
+
+Sideboard
+1 Abrupt Decay
+1 Fatal Push
+2 Force of Vigor
+1 Gaddock Teeg
+1 Grist, the Hunger Tide
+1 High Noon
+1 Masked Vandal
+1 Prismatic Ending
+1 Surgical Extraction
+1 Tamiyo's Safekeeping
+2 Thoughtseize
+1 Vexing Bauble
+1 Voice of Victory

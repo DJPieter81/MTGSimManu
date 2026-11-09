@@ -1,0 +1,36 @@
+// Creatures Toolbox — mtgtop8 event=93492 deck=910187
+2 Boseiju, Who Endures
+2 Dryad Arbor
+3 Forest
+1 Lush Portico
+1 Stomping Ground
+2 Temple Garden
+2 Verdant Catacombs
+4 Windswept Heath
+4 Wooded Foothills
+4 Badgermole Cub
+4 Birds of Paradise
+1 Craterhoof Behemoth
+4 Delighted Halfling
+3 Fiend Artisan
+3 Formidable Speaker
+1 Kiki-Jiki, Mirror Breaker
+3 Shang-Chi, Master of Kung Fu
+2 Village Bell-Ringer
+2 Chord of Calling
+4 Green Sun's Zenith
+4 Nature's Rhythm
+4 Leyline of Abundance
+
+Sideboard
+1 Collector Ouphe
+2 Crystal Barricade
+1 Elesh Norn, Mother of Machines
+2 Endurance
+3 Force of Vigor
+1 Gaddock Teeg
+1 Guerrilla Gorilla
+1 Jennifer Walters
+1 Kraul Harpooner
+1 Sanctifier en-Vec
+1 Yasharn, Implacable Earth
