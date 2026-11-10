@@ -13428,3 +13428,35 @@ The caster's plan was never read, so no weight would fix this. The fix is ordina
 - Anchor: 1 winner flip, Instant Reanimator vs Dimir Midrange s51000, replayed old and new. Reanimator's turn-2 Thoughtseize now takes Counterspell instead of Psychic Frog, and Reanimator wins on turn 10 instead of losing. Accepted.
 - Digest byte-identical.
 - Storm vs Dimir, same 4 Bo3 seeds: 1 game won of 8 → 2 of 9 (s51000 0–2 → 1–2).
+
+## Keep quality: a 1-land seven, by deck (gameplan data; 2026-11-10)
+
+**Evidence:**
+- Storm vs Dimir s51000 g2: Storm kept a 1-land seven on the play and missed land drops on turns 2–3.
+- Storm goldfish census (n=60, dumped):
+
+| Kept hand | Games | Median go-off turn | Median kill turn |
+|---|---|---|---|
+| 1 land | 13 | 8.5 | 10 |
+| 2 lands | 17 | 6 | 7 |
+| 3 lands | 13 | 6 | 7 |
+| Mulliganed | 14 | 7 | 8.5 |
+
+**Arms** (goldfish n=60, paired s70000; `mulligan_min_lands` floor 1 → 2, patched in memory):
+
+| Deck | Go-off median | Mean kill (capped at 15) | Games mulliganed |
+|---|---|---|---|
+| Goryo's Vengeance | 6 → **5** | 8.93 → 8.62 | 49 → 50 |
+| Grixis Reanimator | 5 → **4** | 6.68 → 6.42 | 7 → 18 |
+| Ruby Storm | 7 → 7 | 8.53 → 8.43 (kills 57 → 55) | 14 → 21 |
+| Hollow One | 5 → 5 | 6.98 → 6.83 | 8 → 24 |
+| Living End | 4 → 4 | 8.38 → 8.48 | 21 → 33 |
+| Creatures Toolbox | 6 → 6 | 6.67 → 6.82 | 6 → 14 |
+
+**Applied (data):** `mulligan_min_lands` 1 → 2 for Goryo's Vengeance and Grixis Reanimator, each with a `_mulligan_min_lands_doc` field (registered in `tools/check_gameplan_consistency.py`).
+
+The reanimators have no cheap card that finds a land, so a 1-lander stalls. Decks whose cheap cards dig for lands (Living End's cyclers) and Storm do not gain, so they are unchanged.
+
+**Pins:** anchor turn-only (Goryo's vs Prowess 4 → 5, Grixis vs Azorius Blink 11 → 12). Digest byte-identical.
+
+**Lead (generic, not built):** a 1-land seven is kept when its cheap cards find a land (land cycling, a fetch-search, a cantrip within the first turn's mana). That would replace the per-deck floor with a rule read from the hand. Build it only if the field arm shows the floor matters.

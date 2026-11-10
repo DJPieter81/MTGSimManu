@@ -41,7 +41,7 @@
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 4
+      "turns": 5
     },
     {
       "deck1": "Pinnacle Affinity",
@@ -174,7 +174,7 @@
       "deck2": "Azorius Blink",
       "seed": 53000,
       "winner": "Grixis Reanimator",
-      "turns": 11
+      "turns": 12
     },
     {
       "deck1": "Hollow One",
