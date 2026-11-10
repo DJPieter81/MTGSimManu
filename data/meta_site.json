@@ -175,7 +175,7 @@
    "name": "Ruby Storm",
    "archetype": "combo",
    "meta_share": 4.0,
-   "flat_wr": 35.8,
+   "flat_wr": 36.0,
    "weighted_wr": 34.6,
    "tier": "T4",
    "band": [
@@ -260,8 +260,8 @@
    "name": "Affinity",
    "archetype": "aggro",
    "meta_share": 6.0,
-   "flat_wr": 44.2,
-   "weighted_wr": 42.1,
+   "flat_wr": 44.6,
+   "weighted_wr": 42.3,
    "tier": "T3",
    "band": [
     50.0,
@@ -270,7 +270,7 @@
    "band_verdict": "below",
    "band_provenance": "User meta judgment 2026-07-08: Affinity plays as a Tier-1 deck in the July 2026 meta — band raised to the Tier-1 shape (same class as Eldrazi Tron). Supersedes the 'capped by universal SB artifact hate' [45-60] prior; the Bo3 SB-hate cap is real but does not push a Tier-1 deck below the Tier-1 band. The Azorius-vs-Affinity matchup probe is unchanged: 90-10 vs near-even remains a genuine control-interaction divergence at any tier.",
    "best": "Boros Ponza",
-   "worst": "Grixis Reanimator",
+   "worst": "Boros Energy",
    "detail": {
     "mvp_casts": [
      {
@@ -345,7 +345,7 @@
    "name": "Eldrazi Tron",
    "archetype": "ramp",
    "meta_share": 5.0,
-   "flat_wr": 69.6,
+   "flat_wr": 69.8,
    "weighted_wr": 62.3,
    "tier": "T1",
    "band": [
@@ -515,8 +515,8 @@
    "name": "Goryo's Vengeance",
    "archetype": "combo",
    "meta_share": 0.5,
-   "flat_wr": 40.0,
-   "weighted_wr": 35.7,
+   "flat_wr": 39.4,
+   "weighted_wr": 35.8,
    "tier": "T4",
    "band": [
     30.0,
@@ -600,7 +600,7 @@
    "name": "Domain Zoo",
    "archetype": "aggro",
    "meta_share": 3.0,
-   "flat_wr": 73.6,
+   "flat_wr": 73.8,
    "weighted_wr": 76.4,
    "tier": "T1",
    "band": [
@@ -686,7 +686,7 @@
    "archetype": "combo",
    "meta_share": 3.0,
    "flat_wr": 56.8,
-   "weighted_wr": 55.2,
+   "weighted_wr": 55.1,
    "tier": "T2",
    "band": [
     30.0,
@@ -855,16 +855,16 @@
    "name": "Dimir Midrange",
    "archetype": "midrange",
    "meta_share": 3.0,
-   "flat_wr": 50.2,
-   "weighted_wr": 49.9,
-   "tier": "T3",
+   "flat_wr": 50.8,
+   "weighted_wr": 50.2,
+   "tier": "T2",
    "band": [
     45.0,
     60.0
    ],
    "band_verdict": "in",
    "band_provenance": "CLAUDE.md post-sim pipeline EXPECTED dict — interactive midrange, near-even-to-positive field.",
-   "best": "Ruby Storm",
+   "best": "Instant Reanimator",
    "worst": "4c Omnath",
    "detail": {
     "mvp_casts": [
@@ -1110,8 +1110,8 @@
    "name": "Azorius Control (WST)",
    "archetype": "control",
    "meta_share": 0.0,
-   "flat_wr": 38.6,
-   "weighted_wr": 34.4,
+   "flat_wr": 39.2,
+   "weighted_wr": 34.5,
    "tier": "T4",
    "band": [
     30.0,
@@ -1190,8 +1190,8 @@
    "name": "Azorius Control (WST v2)",
    "archetype": "control",
    "meta_share": 0.0,
-   "flat_wr": 50.4,
-   "weighted_wr": 50.8,
+   "flat_wr": 50.0,
+   "weighted_wr": 50.6,
    "tier": "T2",
    "band": [
     30.0,
@@ -1270,8 +1270,8 @@
    "name": "Pinnacle Affinity",
    "archetype": "aggro",
    "meta_share": 0.5,
-   "flat_wr": 71.4,
-   "weighted_wr": 68.2,
+   "flat_wr": 71.6,
+   "weighted_wr": 68.3,
    "tier": "T1",
    "band": [
     30.0,
@@ -1440,8 +1440,8 @@
    "name": "Instant Reanimator",
    "archetype": "combo",
    "meta_share": 2.0,
-   "flat_wr": 42.2,
-   "weighted_wr": 46.5,
+   "flat_wr": 42.6,
+   "weighted_wr": 46.7,
    "tier": "T3",
    "band": [
     45.0,
@@ -1865,8 +1865,8 @@
    "name": "Grixis Reanimator",
    "archetype": "combo",
    "meta_share": 0.5,
-   "flat_wr": 68.2,
-   "weighted_wr": 66.7,
+   "flat_wr": 69.0,
+   "weighted_wr": 67.5,
    "tier": "T1",
    "band": [
     30.0,
@@ -9242,10 +9242,10 @@
    "deck": "Ruby Storm",
    "opp": "Azorius Control (WST v2)",
    "n": 20,
-   "wins": 6,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -12397,10 +12397,10 @@
    "deck": "Affinity",
    "opp": "Instant Reanimator",
    "n": 20,
-   "wins": 10,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 55.0,
    "band": [
     50.0,
     65.0
@@ -12981,10 +12981,10 @@
    "deck": "Affinity",
    "opp": "Grixis Reanimator",
    "n": 20,
-   "wins": 3,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 15.0,
+   "wr": 20.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -15768,10 +15768,10 @@
    "deck": "Eldrazi Tron",
    "opp": "Grixis Reanimator",
    "n": 20,
-   "wins": 5,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19706,10 +19706,10 @@
    "deck": "Goryo's Vengeance",
    "opp": "Living End",
    "n": 20,
-   "wins": 7,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -19930,10 +19930,10 @@
    "deck": "Goryo's Vengeance",
    "opp": "Dimir Midrange",
    "n": 20,
-   "wins": 4,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 25.0,
    "band": [
     35.0,
     50.0
@@ -20279,10 +20279,10 @@
    "deck": "Goryo's Vengeance",
    "opp": "Azorius Control (WST)",
    "n": 20,
-   "wins": 10,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -20730,10 +20730,10 @@
    "deck": "Goryo's Vengeance",
    "opp": "Instant Reanimator",
    "n": 20,
-   "wins": 8,
+   "wins": 9,
    "draws": 0,
    "aborted": 0,
-   "wr": 40.0,
+   "wr": 45.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -24057,10 +24057,10 @@
    "deck": "Domain Zoo",
    "opp": "Grixis Reanimator",
    "n": 20,
-   "wins": 6,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 35.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -25109,10 +25109,10 @@
    "deck": "Living End",
    "opp": "Goryo's Vengeance",
    "n": 20,
-   "wins": 7,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -26287,10 +26287,10 @@
    "deck": "Living End",
    "opp": "Instant Reanimator",
    "n": 20,
-   "wins": 6,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 25.0,
    "band": [
     40.0,
     55.0
@@ -31889,10 +31889,10 @@
    "deck": "Dimir Midrange",
    "opp": "Instant Reanimator",
    "n": 20,
-   "wins": 15,
+   "wins": 18,
    "draws": 0,
    "aborted": 0,
-   "wr": 75.0,
+   "wr": 90.0,
    "band": [
     50.0,
     65.0
@@ -40649,10 +40649,10 @@
    "deck": "Azorius Control (WST)",
    "opp": "Grixis Reanimator",
    "n": 20,
-   "wins": 9,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -41681,10 +41681,10 @@
    "deck": "Azorius Control (WST v2)",
    "opp": "Goryo's Vengeance",
    "n": 20,
-   "wins": 11,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -42807,10 +42807,10 @@
    "deck": "Azorius Control (WST v2)",
    "opp": "Instant Reanimator",
    "n": 20,
-   "wins": 14,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 70.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -43367,10 +43367,10 @@
    "deck": "Azorius Control (WST v2)",
    "opp": "Grixis Reanimator",
    "n": 20,
-   "wins": 12,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -46141,10 +46141,10 @@
    "deck": "Pinnacle Affinity",
    "opp": "Grixis Reanimator",
    "n": 20,
-   "wins": 10,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 50.0,
+   "wr": 55.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -49612,15 +49612,15 @@
    "deck": "Instant Reanimator",
    "opp": "Affinity",
    "n": 20,
-   "wins": 6,
+   "wins": 7,
    "draws": 0,
    "aborted": 0,
-   "wr": 30.0,
+   "wr": 35.0,
    "band": [
     35.0,
     50.0
    ],
-   "band_verdict": "below",
+   "band_verdict": "in",
    "detail": {
     "insight": "",
     "avg_turns": 10.0,
@@ -49960,10 +49960,10 @@
    "deck": "Instant Reanimator",
    "opp": "Goryo's Vengeance",
    "n": 20,
-   "wins": 12,
+   "wins": 13,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 65.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -50422,10 +50422,10 @@
    "deck": "Instant Reanimator",
    "opp": "Dimir Midrange",
    "n": 20,
-   "wins": 5,
+   "wins": 4,
    "draws": 0,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 20.0,
    "band": [
     35.0,
     50.0
@@ -50876,10 +50876,10 @@
    "deck": "Instant Reanimator",
    "opp": "Azorius Control (WST v2)",
    "n": 20,
-   "wins": 7,
+   "wins": 8,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 40.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63338,10 +63338,10 @@
    "deck": "Grixis Reanimator",
    "opp": "Eldrazi Tron",
    "n": 20,
-   "wins": 11,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -63789,10 +63789,10 @@
    "deck": "Grixis Reanimator",
    "opp": "Living End",
    "n": 20,
-   "wins": 13,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64018,10 +64018,10 @@
    "deck": "Grixis Reanimator",
    "opp": "Dimir Midrange",
    "n": 20,
-   "wins": 13,
+   "wins": 16,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 80.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -64806,10 +64806,10 @@
    "deck": "Grixis Reanimator",
    "opp": "Instant Reanimator",
    "n": 20,
-   "wins": 13,
+   "wins": 14,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 70.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -71331,8 +71331,8 @@
   }
  ],
  "provenance": {
-  "generated": "2026-11-08T22:08:37.638433",
-  "commit": "1480d17",
+  "generated": "2026-11-10T20:38:04.891269",
+  "commit": "774a700",
   "format": "bo3",
   "n_per_pair": 20,
   "total_matches": 6500,
@@ -71341,12 +71341,12 @@
   "draws": 114,
   "aborted": 0,
   "rules_audit_violations": 0,
-  "command": "tools/resumable_matrix.py -n 20 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/pe-post_seed.jsonl"
+  "command": "tools/resumable_matrix.py -n 20 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/ha-post_seed.jsonl"
  },
  "calibration": {
   "decks_in_band": 15,
   "decks_total": 26,
-  "matchups_in_band": 39,
+  "matchups_in_band": 40,
   "matchups_total": 142
  },
  "replays": [
@@ -72504,8 +72504,8 @@
     "engine_modules": 74,
     "engine_lines": 71576,
     "ai_modules": 93,
-    "ai_lines": 49217,
-    "test_files": 844
+    "ai_lines": 49262,
+    "test_files": 845
    }
   },
   "trace": {
@@ -74815,6 +74815,15 @@
      "cr": [],
      "date": "2026-11-08",
      "ai": true
+    },
+    {
+     "code": "HA",
+     "rule": "a hand attack whose caster has a payoff to resolve takes the card that would stop it",
+     "cr": [
+      "701.9b"
+     ],
+     "date": "2026-11-08",
+     "ai": true
     }
    ],
    "choices": [
@@ -75037,7 +75046,7 @@
     "engine/optional_costs.py": 462,
     "engine/rules_audit.py": 114,
     "ai/ev_player.py": 5482,
-    "ai/ev_evaluator.py": 3916,
+    "ai/ev_evaluator.py": 3943,
     "ai/clock.py": 1050,
     "ai/turn_planner.py": 1317,
     "ai/bhi.py": 830,
