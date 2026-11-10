@@ -13460,3 +13460,9 @@ The reanimators have no cheap card that finds a land, so a 1-lander stalls. Deck
 **Pins:** anchor turn-only (Goryo's vs Prowess 4 → 5, Grixis vs Azorius Blink 11 → 12). Digest byte-identical.
 
 **Lead (generic, not built):** a 1-land seven is kept when its cheap cards find a land (land cycling, a fetch-search, a cantrip within the first turn's mana). That would replace the per-deck floor with a rule read from the hand. Build it only if the field arm shows the floor matters.
+
+**`ha-post`** (n=20 Bo3, full field, against `pe-post`):
+- 0 violations (543 findings).
+- Only 25 cells changed: a combo caster's hand attack meeting a counterspell is rare in the field.
+- Every deck within ±0.7. Storm 35.7 → 35.8, Goryo's 39.7 → 39.1, Instant Reanimator 42.6 → 42.5.
+- HA is kept as the correct pick. It does not move Storm's band.
