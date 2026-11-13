@@ -13466,3 +13466,11 @@ The reanimators have no cheap card that finds a land, so a 1-lander stalls. Deck
 - Only 25 cells changed: a combo caster's hand attack meeting a counterspell is rare in the field.
 - Every deck within ±0.7. Storm 35.7 → 35.8, Goryo's 39.7 → 39.1, Instant Reanimator 42.6 → 42.5.
 - HA is kept as the correct pick. It does not move Storm's band.
+
+**`ml-post`** (n=20 Bo3, full field, against `ha-post`; the reanimators' land floor 1 → 2):
+- 0 violations (549 findings).
+- **Goryo's Vengeance 39.1 → 42.7 (+3.6).**
+- Grixis Reanimator 71.0 → 70.0 (−1.0).
+- Every other deck within ±0.9. Storm 35.8 is unchanged and still under its band.
+
+The floor is the first change this stretch to move a combo deck in the field beyond noise.
