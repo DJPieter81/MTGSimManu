@@ -13516,3 +13516,10 @@ Strategy:
 - No exception for a lethal turn.
 - The response path is ungated (latent).
 - The engine's upkeep offer checks quantity, not colour.
+
+**PE follow-up (review round 2), built:** a spell counts as enabled by an "enters untapped" payment only if the one castability owner (`GameState.can_cast`) accepts it with the paying land untapped. A spell it accepts without the payment counts only as the packing's marginal case.
+- The payment offer now carries its land (`OptionalCost.source_id`).
+- Fixes the colour-set check: two pips of one colour, hybrid, Phyrexian, mana from creatures and rocks.
+- Tests: Counterspell off Island + Sacred Foundry, and Burning-Tree Emissary off Island + Sacred Foundry, are neither offered nor paid for. Both red first.
+- Anchor turn-only (Instant Reanimator vs Dimir s51000, 10 → 8); digest re-recorded (3 games, same winners).
+- **Not built:** the payment's life priced against burn in hand, and "skip" credited with next turn's cast. Ral's own value (the motivating case declines without a board) is a primitive's calibration, recorded, not tuned.

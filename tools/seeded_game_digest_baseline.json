@@ -1,5 +1,5 @@
 {
-  "combined": "3b4fe894caa3238413cb4a7a8c0d73788e29a8b66fd121850342bf2523bd709a",
+  "combined": "a9bfc44508e63efd0b68dc1338e30ec69b278860da61bbb36a2a6e0f898bc58c",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -87,9 +87,9 @@
       "winner": "Jeskai Blink"
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
-      "lines": 607,
-      "sha256": "5aedd9156030d1713b0be857ee4c7ea8914752e560e49c6566a8f9d9a150779c",
-      "turns": 8,
+      "lines": 741,
+      "sha256": "9331dbdf6af27b82754e5706d0b942baea686f61a88d552ae321ff0489d57593",
+      "turns": 10,
       "winner": "4/5c Control"
     },
     "bo1|Ruby Storm|Dimir Midrange|50500": {
@@ -118,7 +118,7 @@
     },
     "bo3|Boros Energy|Domain Zoo|58000|g2": {
       "lines": 494,
-      "sha256": "78bfe2042f9273b13124d7f11900f4c84378dec068eddcf5ac685aa18065247f",
+      "sha256": "e77a6bff1e755c46ff32b9b4c647c0b4ffedb48c150c55c0ca3485efc07fba40",
       "turns": 7,
       "winner": "Boros Energy"
     },
@@ -147,8 +147,8 @@
       "winner": "Dimir Midrange"
     },
     "bo3|Living End|Dimir Midrange|59000|g3": {
-      "lines": 596,
-      "sha256": "e39d86b20efbcde080de63a657a7767405161b7aaed92435a1c0e8fd8905c737",
+      "lines": 588,
+      "sha256": "079caf06b650f33fddf083104110c1f1bd5696e83eae9b8c087436998b388f8f",
       "turns": 8,
       "winner": "Living End"
     }

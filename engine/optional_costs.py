@@ -122,6 +122,7 @@ def parse_optional_costs(card: "CardInstance",
                 effect=effect,
                 apply_to_game=_to_game,
                 apply_to_snap=_to_snap,
+                source_id=getattr(card, "instance_id", None),
             ))
 
     return out

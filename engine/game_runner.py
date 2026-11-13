@@ -231,6 +231,27 @@ class AICallbacks(GameCallbacks):
                      and not (colours <= needs.existing_colors
                               and cmc <= needs.total_mana)]
             offered = list({id(sp): sp for sp in packed + alone}.values())
+            # The colour sets above are a budget, not a castability test
+            # (two pips of one colour, hybrid and Phyrexian pips, a
+            # creature's mana): every offered spell must be one the one
+            # castability owner, `GameState.can_cast`, accepts with the
+            # paying land untapped -- and a spell it accepts without the
+            # payment is the packing's marginal case only.
+            land = (game.get_card_by_id(opt.source_id)
+                    if opt.source_id is not None else None)
+
+            def _castable(spell, untapped):
+                if land is None:
+                    return True
+                was = land.tapped
+                land.tapped = not untapped
+                try:
+                    return game.can_cast(player_idx, spell)
+                finally:
+                    land.tapped = was
+            offered = [sp for sp in offered if _castable(sp, True)
+                       and (id(sp) in {id(p) for p in packed}
+                            or not _castable(sp, False))]
             for spell in offered:
                 if id(spell) in without:
                     continue

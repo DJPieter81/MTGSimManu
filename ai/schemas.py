@@ -85,6 +85,10 @@ class OptionalCost(BaseModel):
     # "unless" cost (CR 118.12), whose instruction happens unless paid.
     # None: declining leaves the position as it is.
     skip_to_snap: Optional[Callable[..., Any]] = None
+    # The permanent whose payment this is (its instance id), when the
+    # payment is a property of one card: an "enters untapped" payment is
+    # its land's. None when the payment belongs to no single card.
+    source_id: Optional[int] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
