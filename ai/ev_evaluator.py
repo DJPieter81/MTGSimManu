@@ -3885,25 +3885,8 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
     return score
 
 
-def stops_a_payoff(card: "CardInstance", payoffs) -> bool:
-    """Can `card` counter one of `payoffs` -- a counter whose printed spell
-    kind admits it (`target_solver.spell_matches`, the one owner of that
-    match)? A conditional or mana-value-bound counter counts when its kind
-    admits the payoff: the caster cannot rely on the condition failing."""
-    from engine.effect_spec import Verb, iter_specs
-    from engine.target_solver import spell_matches
-    effects = getattr(card.template, "effects", None)
-    if effects is None or not payoffs:
-        return False
-    return any(s.verb is Verb.COUNTER and s.target is not None
-               and any(spell_matches(s.target, p) for p in payoffs)
-               for h in effects.walk(include_sub=False)
-               for s in iter_specs(h.specs))
-
-
 def choose_card_to_strip(hand: List["CardInstance"], snap: EVSnapshot,
-                          opp_gameplan=None,
-                          caster_payoffs=()) -> Optional["CardInstance"]:
+                          opp_gameplan=None) -> Optional["CardInstance"]:
     """Pick the card a Thoughtseize-style discard spell should take
     from the victim's hand. Lands are excluded (Thoughtseize reads
     "nonland card"). Returns None if the hand is empty or contains
@@ -3911,12 +3894,7 @@ def choose_card_to_strip(hand: List["CardInstance"], snap: EVSnapshot,
     typically "reveal hand, take nothing", but engines that ignore
     the nonland clause may still pass any card back through here).
 
-    Order:
-      0. A card that can counter one of the caster's payoffs
-         (`caster_payoffs`, the spells its plan resolves to win): it is
-         the card that stops the win, so it goes before any threat that
-         only clocks the caster (the caller has already taken an
-         imminent attacker when the caster is about to die).
+    Tie-break order:
       1. Highest threat score from `score_card_for_opponent_strip`.
       2. Highest printed CMC (legacy fallback — preserves the old
          behaviour when nothing carries a meaningful score).
@@ -3928,16 +3906,11 @@ def choose_card_to_strip(hand: List["CardInstance"], snap: EVSnapshot,
     if not nonland:
         return None
     scored = [
-        (stops_a_payoff(c, caster_payoffs),
-         score_card_for_opponent_strip(c, snap, opp_gameplan),
+        (score_card_for_opponent_strip(c, snap, opp_gameplan),
          getattr(c.template, 'cmc', 0) or 0,
          idx, c)
         for idx, c in enumerate(nonland)
     ]
-    def _rank(row):
-        # Stops a payoff, then highest score, then highest CMC, then
-        # earliest in hand.
-        stops, score, cmc, idx, _card = row
-        return (not stops, -score, -cmc, idx)
-    *_, card = min(scored, key=_rank)
-    return card
+    # Highest score, then highest CMC, then earliest index.
+    scored.sort(key=lambda x: (-x[0], -x[1], x[2]))
+    return scored[0][3]  # magic-allow: 4-tuple accessor — (score, cmc, idx, CARD); the card is at index 3

@@ -13474,3 +13474,45 @@ The reanimators have no cheap card that finds a land, so a 1-lander stalls. Deck
 - Every other deck within ±0.9. Storm 35.8 is unchanged and still under its band.
 
 The floor is the first change this stretch to move a combo deck in the field beyond noise.
+
+## Adversarial review round 2: units LG, PE, HA (2026-11-13)
+
+**Setup:** six independent reviewers, one comprehensive-rules lens and one strategy lens per unit. Each was given the commits and tests, not my conclusions, and told to refute.
+
+**HA: REFUTED (rules) and PARTLY REFUTED (strategy). Reverted.**
+
+Rules defects:
+- `stops_a_payoff` read only the spell kind (`target_solver.spell_matches`), not colour or mana-value bounds. Spell Snare "stopped" Primeval Titan; Disdainful Stroke "stopped" Goryo's Vengeance.
+- Payoffs whose win is a trigger (storm copies, cascade) or not a cast (cycling) cannot be stopped by countering the spell.
+
+Strategy defects:
+- A type-based "counters first" key beats cards that matter more: postboard Rest in Peace, Leyline of the Void, Drannith Magistrate, a real threat over a soft counter (Mystical Dispute).
+
+The principled rule prices each card in one currency: for a counter, the chance it is cast on the combo turn and whether it can be paid through; for a threat, the turns-to-lethal change (`ai/clock.py`); for hate, the share of payoffs it shuts off. **Not built. Do not re-land a lexicographic key.**
+
+**Found by the HA review, a real rules defect:** "each player / each opponent discards a card" (Chooser.PARTICIPANT, e.g. Liliana of the Veil) routed the victim's own choice through the caster's strip ranking (`execute_discard` passes `self_discard=False`). CR 701.9b: the discarding player chooses. Its own unit follows.
+
+**PE: PARTLY REFUTED (rules and strategy).**
+
+Rules:
+- The colour check compared sets, not pips: {W}{W} counted as one white source; hybrid pips were invisible (it paid 2 life for an uncastable Burning-Tree Emissary); Phyrexian pips were hard colour; mana creatures' and rocks' colours were missing.
+- These are inherited from the packed path, but PE widened them.
+- Fix: a spell is enabled by the payment iff the engine's own `can_cast` says no now and yes with the land untapped.
+
+Strategy:
+- The motivating Ral decision is pinned only by one replay; the new test checks the offer, not the decision.
+- Inherited and not built here: the 2 life is priced against board power only, not burn in hand; "skip" gets no credit for casting the spell next turn.
+
+**LG: PARTLY REFUTED (rules and strategy).** Holds: who pays, declining, colour failure, which upkeep, the token spells, draws.
+
+Rules:
+- Pact of Negation, Slaughter Pact and Intervention Pact still resolve through the legacy path with no delayed trigger. None is in a registered deck.
+- `end_game` ignores "can't lose" (Platinum Angel).
+- The delayed trigger resolves inline, not on the stack (pre-existing queue design).
+
+Strategy:
+- The gate leaves out the creature the pact fetches (a Pact for Dryad Arbor off three Forests is refused).
+- Nothing re-checks a pending pact against later plays (the Scapeshift lead).
+- No exception for a lethal turn.
+- The response path is ungated (latent).
+- The engine's upkeep offer checks quantity, not colour.
