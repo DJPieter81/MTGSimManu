@@ -13523,3 +13523,19 @@ Strategy:
 - Tests: Counterspell off Island + Sacred Foundry, and Burning-Tree Emissary off Island + Sacred Foundry, are neither offered nor paid for. Both red first.
 - Anchor turn-only (Instant Reanimator vs Dimir s51000, 10 → 8); digest re-recorded (3 games, same winners).
 - **Not built:** the payment's life priced against burn in hand, and "skip" credited with next turn's cast. Ral's own value (the motivating case declines without a board) is a primitive's calibration, recorded, not tuned.
+
+## Unit DC: a player an instruction tells to discard chooses its own card (rules; CR 701.9b; 2026-11-13)
+
+**Found by the rules review of HA.** The discard executor (`engine/effect_executors.execute_discard`) passed `self_discard=False` for every discarder but the ability's controller. So "each opponent discards a card" routed the opponent's own choice through the caster's strip ranking, and the opponent threw away its best card.
+
+**Rule:** CR 701.9b, the player discarding chooses, unless the instruction says otherwise. Every shape the executor runs (`discard_supported`: CONTROLLER acting as the controller, or PARTICIPANT) is the discarder's own choice.
+
+**Class:** 232 pool cards print "<players> discard(s) N card(s)".
+
+**Fix:** `_discarder_chooses` returns the discarder's own choice.
+
+**Auditor:** `701.9b/discarder_chooses`, restated from the instruction's chooser. It fires with the defect restored and is silent when the rule holds.
+
+**Test:** `tests/test_a_player_told_to_discard_chooses_its_own_card.py`, red first. A flooded hand against "each opponent discards a card" now discards an Island, not its Counterspell.
+
+**Pins:** anchor and digest unchanged (no registered-deck game reaches this executor in the pinned seeds).

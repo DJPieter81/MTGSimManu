@@ -1535,8 +1535,10 @@ def execute_discard(ctx: Resolution, s: EffectSpec,
             hand = list(game.players[player].hand)
             if not hand:
                 break
+            own = _discarder_chooses(ctx, s, player)
+            _audit_discard_chooser(game, s, own)
             card = game.callbacks.choose_discard(
-                game, player, hand, self_discard=player == ctx.controller)
+                game, player, hand, self_discard=own)
             if card is None or all(card is not c for c in hand):
                 card = hand[0]
             game.discard_card(player, card, cause=cause)
@@ -1544,6 +1546,28 @@ def execute_discard(ctx: Resolution, s: EffectSpec,
             discarded.append(handle_of(card))
         per_player.append((player, tuple(discarded)))
     return Outcome(any(d for _p, d in per_player), dict(per_player))
+
+
+def _discarder_chooses(ctx: Resolution, s: EffectSpec, player: int) -> bool:
+    """CR 701.9b: the discarding player chooses the card -- every shape
+    this executor runs is "<players> discard(s)", the discarder's own
+    choice (`discard_supported`), whoever controls the ability."""
+    return True
+
+
+def _audit_discard_chooser(game: Any, s: EffectSpec, own: bool) -> None:
+    """Rules audit (CR 701.9b), restated from the instruction's chooser: a
+    discard its discarder chooses (CONTROLLER acting as the controller, or
+    PARTICIPANT, each named player for themselves) is offered to the
+    discarder as its own choice. Observation only."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    discarder_picks = s.chooser in (Chooser.CONTROLLER, Chooser.PARTICIPANT)
+    _audit_check("701.9b/discarder_chooses", own == discarder_picks,
+                 f"discard chooser {s.chooser.value}: offered as "
+                 f"{'own' if own else 'another player'}'s choice",
+                 game=game)
 
 
 def _audit_discarded(game: Any, player: int, card: Any) -> None:
