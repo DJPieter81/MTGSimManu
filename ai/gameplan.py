@@ -774,7 +774,9 @@ class GoalEngine:
             if (not should_advance
                     and next_goal_idx < len(self.gameplan.goals)):
                 next_payoffs = self.gameplan.goals[next_goal_idx].card_roles.get('payoffs', set())
-                has_payoff = any(c.name in next_payoffs for c in me.hand)
+                from ai.playable_cards import playable_cards
+                has_payoff = any(c.name in next_payoffs
+                                 for c in playable_cards(game, player_idx))
                 half_target = max(1, target // 2)
                 if (has_payoff and self.turns_in_goal >= GENERIC_GOAL_TIMEOUT_TURNS
                         and resource_progress >= half_target):
@@ -896,7 +898,10 @@ def generic_combo_readiness(game, player_idx: int, engine: "GoalEngine"):
     """
     me = game.players[player_idx]
     goal = engine.current_goal
-    hand_names = {c.name for c in me.hand}
+    # The cards the plan can play: the hand and the exiled cards a
+    # permission names (`ai.playable_cards`).
+    from ai.playable_cards import playable_cards
+    hand_names = {c.name for c in playable_cards(game, player_idx)}
     bf_names = {c.name for c in me.battlefield}
 
     # Check payoff availability

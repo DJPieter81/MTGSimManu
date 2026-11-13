@@ -188,7 +188,7 @@ class TestGameplanLoader:
         from decks.gameplan_loader import load_gameplan
         plan = load_gameplan("Dimir Midrange")
         assert "Thoughtseize" in plan.mulligan_keys
-        assert "Orcish Bowmasters" in plan.mulligan_keys
+        assert "Psychic Frog" in plan.mulligan_keys  # a card the current list plays
 
 
 class TestCallbacks:

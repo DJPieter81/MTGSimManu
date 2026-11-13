@@ -22,8 +22,9 @@ These tests pin the rule, not the cards:
     gain life, opp draws lose life)
 
 The rule-phrased test names describe the mechanic, never the card. The
-test fixtures use real card names so the classifier-tag lookup
-succeeds, but the assertion targets the mechanic boundary.
+fixtures carry printed text: the engine reads the impulse effect from it
+(the effect dispatcher's card-flow family: the cards go to exile with a
+permission to play them, unit I), never from a classifier tag.
 """
 from __future__ import annotations
 
@@ -46,10 +47,8 @@ def _make_classified_card(game: GameState, name: str, controller: int,
                           oracle_text: str, zone: str,
                           card_types: list,
                           on_battlefield: bool = False) -> CardInstance:
-    """Build a real-named CardInstance so the classifier-tag lookup
-    succeeds. `oracle_text` matches what the trigger fan-out parses
-    for the numerical amount; the dispatch is by tag, the amount is
-    parsed targetedly."""
+    """Build a real-named CardInstance with the printed `oracle_text`
+    the engine reads its effects from."""
     tmpl = CardTemplate(
         name=name,
         card_types=card_types,
@@ -77,16 +76,17 @@ def _make_classified_card(game: GameState, name: str, controller: int,
 
 
 def _put_bowmasters(game: GameState, controller: int) -> CardInstance:
-    """Bowmasters-shape opp-draw damage source. Classifier carries
-    `Tag.ON_DRAW_DAMAGE` for the real card name."""
+    """Bowmasters-shape opp-draw damage source, with its printed text:
+    the draw fan-out reads the trigger from the text, not a tag."""
     return _make_classified_card(
         game,
         name="Orcish Bowmasters",
         controller=controller,
         oracle_text=(
-            "Whenever an opponent draws a card, except the first one "
-            "they draw in each of their draw steps, this creature deals "
-            "1 damage to that player."
+            "Flash\nWhen this creature enters and whenever an opponent "
+            "draws a card except the first one they draw in each of "
+            "their draw steps, this creature deals 1 damage to any "
+            "target. Then amass Orcs 1."
         ),
         zone="battlefield",
         card_types=[CardType.CREATURE],
@@ -95,14 +95,15 @@ def _put_bowmasters(game: GameState, controller: int) -> CardInstance:
 
 
 def _put_sheoldred(game: GameState, controller: int) -> CardInstance:
-    """Sheoldred-shape on-draw life-swing. Classifier carries
-    `Tag.ON_OPP_DRAW_LIFE_LOSS` and `Tag.ON_OWN_DRAW_LIFE_GAIN`."""
+    """Sheoldred-shape on-draw life swing, with its printed text (two
+    abilities, two paragraphs): the draw fan-out reads both triggers
+    from the text, not from tags."""
     return _make_classified_card(
         game,
         name="Sheoldred, the Apocalypse",
         controller=controller,
         oracle_text=(
-            "Whenever you draw a card, you gain 2 life. "
+            "Deathtouch\nWhenever you draw a card, you gain 2 life.\n"
             "Whenever an opponent draws a card, they lose 2 life."
         ),
         zone="battlefield",
@@ -198,11 +199,13 @@ def test_impulse_reveal_with_two_bowmasters_deals_zero_self_damage():
     )
 
 
-def test_play_cap_x_impulse_reveals_cap_and_fires_zero_draw_triggers():
+def test_a_capped_impulse_is_never_a_draw():
     """Rule: the play-cap X sub-shape ('exile the top X … you may
-    play up to TWO of those cards') is impulse-reveal for the CAP —
-    never a draw. The old per-card handler drew 2 through
-    `draw_cards` and re-fired Bowmasters for exactly this shape."""
+    play up to TWO of those cards') is never a draw: it fires no draw
+    trigger and puts no card into hand. The old per-card handler drew 2
+    through `draw_cards` and re-fired Bowmasters for exactly this shape.
+    Its capped permission is not modelled yet, so the spell is refused
+    whole (it exiles nothing) rather than approximated."""
     game = _fresh_game()
     revealer, opp = 0, 1
     _put_bowmasters(game, controller=opp)
@@ -232,30 +235,27 @@ def test_play_cap_x_impulse_reveals_cap_and_fires_zero_draw_triggers():
 
     assert game.players[revealer].life == life_before, (
         "play-cap impulse must NOT fire on-draw damage triggers")
-    # cap of two revealed as playable (dst approximation: hand)
-    assert len(game.players[revealer].hand) == hand_before + 2
+    assert len(game.players[revealer].hand) == hand_before
+    assert game.players[revealer].cards_drawn_this_turn == 5
 
 
-def _deck_pool_tagged_impulse_spells():
-    """Every registered-deck instant/sorcery carrying the
-    IMPULSE_DRAW verdict — the durable per-card regression surface.
-    The coverage gate (tools/check_classifier_coverage.py) guarantees
-    this list can never silently shrink relative to the deck pool."""
-    import json
-    from pathlib import Path
-    from tools.check_classifier_coverage import collect_deck_pool_oracles
-    cache = json.loads(
-        (Path(__file__).resolve().parent.parent / "decks" / "gameplans" /
-         "_oracle_classifier.json").read_text())["cards"]
+def _deck_pool_impulse_spells():
+    """Every registered-deck instant/sorcery whose parsed spell exiles
+    the top of its controller's library (`ai.predicates.is_impulse_draw`)
+    -- the durable per-card regression surface, read from the cards'
+    text."""
+    from ai.predicates import is_impulse_draw
+    from decks.modern_meta import MODERN_DECKS
     from tests._card_db_cache import shared_card_database
     db = shared_card_database()
+    names = sorted({n for deck in MODERN_DECKS.values()
+                    for zone in ("mainboard", "sideboard")
+                    for n in (deck.get(zone) or {})})
     out = []
-    for name in collect_deck_pool_oracles():
-        entry = cache.get(name)
-        if not entry or "IMPULSE_DRAW" not in entry.get("tags", []):
-            continue
+    for name in names:
         tmpl = db.get_card(name)
-        if tmpl and (tmpl.is_instant or tmpl.is_sorcery):
+        if tmpl and (tmpl.is_instant or tmpl.is_sorcery) \
+                and is_impulse_draw(tmpl):
             out.append((name, tmpl.oracle_text))
     return out
 
@@ -263,7 +263,7 @@ def _deck_pool_tagged_impulse_spells():
 import pytest
 
 
-@pytest.mark.parametrize("name,oracle", _deck_pool_tagged_impulse_spells())
+@pytest.mark.parametrize("name,oracle", _deck_pool_impulse_spells())
 def test_every_registered_impulse_spell_fires_zero_draw_triggers(
         name, oracle):
     """Data-driven: each REAL impulse spell in the registered deck

@@ -12,13 +12,14 @@ them shares the oracle template "Madness {cost} (reminder)".
 Tests are phrased on the mechanic, never on a card:
   - parser: madness cost parsed from oracle, {0} is a real (free) cost
   - load: CardTemplate.madness_cost populated at load time
-  - discard replacement: a discarded madness card is exiled, cast for its
+  - discard replacement: a discarded madness card is exiled under its
+    madness trigger; when the trigger resolves the card is cast for its
     madness cost when affordable, and resolves (creature → battlefield)
   - discard replacement: the madness cast pays the madness cost, not the
     printed mana cost
   - fallback: an unaffordable or declined madness cast lands in the graveyard
-  - timing: the madness cast is made during resolution, so it ignores
-    sorcery-speed timing (CR 702.35c / 608.2g)
+  - timing: the madness cast is made while its trigger resolves, so it
+    ignores sorcery-speed timing (CR 702.35b / 608.2g)
   - negative: a non-madness discard never touches exile
   - every discard site (forced discard, cleanup hand-size discard) routes
     through the same funnel
@@ -188,8 +189,9 @@ class _DeclineOfferedCasts(DefaultCallbacks):
 
 class TestMadnessDiscardReplacement:
     def test_discarding_free_madness_card_exiles_then_casts_it(self):
-        """Madness {0}: the discard routes hand → exile, the card is cast for
-        {0} from exile, and the creature spell resolves onto the battlefield."""
+        """Madness {0}: the discard routes hand → exile under the madness
+        trigger; as the trigger resolves the card is cast for {0} from
+        exile, and the creature spell resolves onto the battlefield."""
         game = _make_game()
         p = game.players[0]
         card = _in_hand(game, _madness_creature_template(
@@ -199,7 +201,10 @@ class TestMadnessDiscardReplacement:
 
         assert card not in p.hand
         assert card not in p.graveyard
-        assert card.zone == "stack" and not game.stack.is_empty, (
+        assert card.zone == "exile" and not game.stack.is_empty, (
+            "the discard exiles the card under its madness trigger")
+        game.resolve_stack()                     # the madness trigger
+        assert card.zone == "stack", (
             "madness cast must put the card on the stack from exile")
         _resolve_all(game)
         assert card in p.battlefield and card.zone == "battlefield"
@@ -231,6 +236,7 @@ class TestMadnessDiscardReplacement:
             ManaCost(generic=1, red=1), ManaCost(red=1), "{R}"))
 
         game.discard_card(0, card, cause="discard")
+        _resolve_all(game)                       # the madness trigger
 
         assert game.stack.is_empty
         assert card in p.graveyard and card.zone == "graveyard"
@@ -246,13 +252,14 @@ class TestMadnessDiscardReplacement:
             ManaCost(generic=1, red=1), ManaCost(), "{0}"))
 
         game.discard_card(0, card, cause="discard")
+        _resolve_all(game)                       # the madness trigger
 
         assert game.stack.is_empty
         assert card in p.graveyard and card.zone == "graveyard"
         assert card not in p.exile
 
     def test_madness_cast_ignores_sorcery_timing(self):
-        """The madness cast happens while the reflexive trigger resolves, so
+        """The madness cast happens while the madness trigger resolves, so
         a creature discarded on the OPPONENT's turn is still cast (CR 608.2g)."""
         game = _make_game(active=1)
         game.current_phase = Phase.MAIN1
@@ -287,6 +294,8 @@ class TestMadnessDiscardReplacement:
         card = _in_hand(game, _madness_creature_template(
             ManaCost(generic=1, red=1), ManaCost(red=1), "{R}"))
         game.discard_card(0, card, cause="discard")
+        assert not getattr(card, "_madness_pending", False)
+        _resolve_all(game)                       # the madness trigger
         assert card in p.graveyard
         assert not getattr(card, "_madness_pending", False)
 
@@ -309,8 +318,9 @@ class TestDiscardSitesUseFunnel:
 
     def test_cleanup_hand_size_discard_offers_madness(self):
         """Discarding to maximum hand size is a discard event too (CR 514.1);
-        the madness spell goes on the stack and resolves before the turn ends
-        (CR 514.3a)."""
+        the madness trigger goes on the stack, players receive priority, and
+        it -- and the madness spell it casts -- resolve before another
+        cleanup step begins (CR 514.3a)."""
         game = _make_game()
         game.current_phase = Phase.CLEANUP
         p = game.players[0]
@@ -322,10 +332,12 @@ class TestDiscardSitesUseFunnel:
             ManaCost(generic=4, red=1), ManaCost(), "{0}"))
         assert len(p.hand) == MAX_HAND_SIZE + 1
 
-        game.cleanup_step()
+        assert game.cleanup_step() is False      # the step ends: priority
 
         assert len(p.hand) == MAX_HAND_SIZE
-        assert game.stack.is_empty, "cleanup must resolve the madness cast (CR 514.3a)"
+        _resolve_all(game)
+        assert game.cleanup_step() is True       # another cleanup step
+        assert game.stack.is_empty, "the madness cast resolves before the turn ends (CR 514.3a)"
         assert card in p.battlefield
 
 

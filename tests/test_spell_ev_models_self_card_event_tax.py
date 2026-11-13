@@ -86,6 +86,10 @@ def _snap(game, life=20):
 def test_real_draw_spell_projection_subtracts_per_draw_tax():
     game = _fresh_game()
     _bowmasters(game); _bowmasters(game)
+    # A library to draw from: an empty one makes even the healthy cast a
+    # loss (test_a_cast_that_draws_more_than_the_library_holds_...).
+    for _ in range(5):
+        _card(game, "Filler", "", zone="library")
     spell = _card(game, "Manamorphose",
                   "Add two mana in any combination of colors.\n"
                   "Draw a card.")
@@ -134,6 +138,10 @@ def test_cast_ev_vetoes_lethal_to_self():
     below the same cast at healthy life."""
     game = _fresh_game()
     _bowmasters(game); _bowmasters(game)
+    # A library to draw from: an empty one makes even the healthy cast a
+    # loss (test_a_cast_that_draws_more_than_the_library_holds_...).
+    for _ in range(5):
+        _card(game, "Filler", "", zone="library")
     spell = _card(game, "Manamorphose",
                   "Add two mana in any combination of colors.\n"
                   "Draw a card.")

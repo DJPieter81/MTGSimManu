@@ -1,0 +1,41 @@
+// Dimir Control — mtgtop8 event=91251 deck=893027
+1 Darkslick Shores
+1 Flooded Strand
+1 Gloomlake Verge
+3 Island
+2 Marsh Flats
+1 Otawara, Soaring City
+4 Polluted Delta
+1 Scalding Tarn
+1 Swamp
+2 Undercity Sewers
+3 Watery Grave
+1 Murktide Regent
+3 Orcish Bowmasters
+4 Psychic Frog
+4 Quantum Riddler
+3 Subtlety
+2 Tamiyo, Inquisitive Student
+2 Wan Shi Tong, Librarian
+2 Consign to Memory
+2 Counterspell
+1 Drown in the Loch
+4 Fatal Push
+3 Force of Negation
+1 Sheoldred's Edict
+2 Sink into Stupor
+1 Spell Snare
+4 Thoughtseize
+1 Kaito, Bane of Nightmares
+
+Sideboard
+2 Consign to Memory
+2 Engineered Explosives
+2 Harbinger of the Seas
+1 Kaito, Bane of Nightmares
+2 Mystical Dispute
+2 Nihil Spellbomb
+1 Requiting Hex
+1 Sheoldred's Edict
+1 Stern Scolding
+1 Toxic Deluge

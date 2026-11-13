@@ -99,6 +99,27 @@ def combat_clock(power: int, opp_life: int,
     return max(1.0, math.ceil(opp_life / effective_power))
 
 
+def unblocked_combat_damage(creature) -> int:
+    """The combat damage an attacking creature deals the player it attacks
+    when nothing blocks it: its power, in each combat damage step it deals
+    damage in -- both steps for double strike (CR 702.4b, 510.4). Read
+    from the creature's current keywords (granted ones included); a
+    simulated creature's keywords are their names. Never negative. The one
+    owner of this number for every survival, race and lethal read."""
+    power = max(0, int(getattr(creature, 'power', 0) or 0))
+    keywords = getattr(creature, 'keywords', None) or ()
+    from engine.cards import Keyword
+    double = (Keyword.DOUBLE_STRIKE in keywords
+              or Keyword.DOUBLE_STRIKE.value in keywords)
+    return power * (2 if double else 1)
+
+
+def unblocked_reach(creatures) -> int:
+    """The combat damage these attacking creatures deal the player they
+    attack when none is blocked (`unblocked_combat_damage`, summed)."""
+    return sum(unblocked_combat_damage(c) for c in creatures)
+
+
 def life_as_resource(life: int, incoming_power: int) -> float:
     """Value of life total expressed as turns of survival.
 
@@ -756,6 +777,20 @@ def loyalty_pool_value(activations: float, snap: "EVSnapshot") -> float:
 # Position value — the unified board evaluation
 # ─────────────────────────────────────────────────────────────
 
+WIN_POSITION = 100.0
+"""The position value of a won game — the sentinel `position_value`
+returns once the opponent's life is 0 (and its negation for a lost one).
+Every "what is a projected kill worth" credit measures against it through
+`win_swing`, so no scorer carries its own copy of the number."""
+
+
+def win_swing(snap: "EVSnapshot") -> float:
+    """What converting this position into a win is worth: the distance from
+    the current `position_value` to the won sentinel. One owner for every
+    lethal-line credit (the Storm chain, the assembly-state line search)."""
+    return max(0.0, WIN_POSITION - position_value(snap))
+
+
 def position_value(snap: "EVSnapshot") -> float:
     """Unified board evaluation. Replaces 4 archetype-specific evaluators.
 
@@ -774,9 +809,9 @@ def position_value(snap: "EVSnapshot") -> float:
     """
     # Dead check
     if snap.my_life <= 0:
-        return -100.0
+        return -WIN_POSITION
     if snap.opp_life <= 0:
-        return 100.0
+        return WIN_POSITION
 
     # Combat clocks — use on-board power only. Persistent (recurring-
     # trigger) tokens are credited further below as an additive
@@ -830,6 +865,11 @@ def position_value(snap: "EVSnapshot") -> float:
 
     mana_diff = snap.my_mana - snap.opp_mana
     mana_value = mana_clock_impact(snap) * max(0, mana_diff)
+    # Mana engines (ai/mana_engine): next turn's extra mana, at the same
+    # per-mana rate, discounted by the share of future turns we get.
+    engine_diff = snap.my_engine_mana - snap.opp_engine_mana
+    mana_value += (mana_clock_impact(snap) * max(0.0, engine_diff)
+                   * snap.urgency_factor)
 
     # Survival margin: how comfortable is my life total?
     survival = life_as_resource(snap.my_life, snap.opp_power)

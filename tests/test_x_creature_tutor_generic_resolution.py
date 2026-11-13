@@ -145,7 +145,10 @@ def test_a_library_search_shuffles_and_fires_search_triggers():
     game.rng.shuffle = lambda seq: (shuffled.append(len(seq)),
                                     real_shuffle(seq))[1]
 
-    _resolve_spell(game, "Nature's Rhythm", 6)
+    # X=2 delivers Steel Overseer, a creature that makes no search of its
+    # own: a delivered Primeval Titan's enter trigger is a second search
+    # (unit TU), counted as one too.
+    _resolve_spell(game, "Nature's Rhythm", 2)
 
     assert fired == [0], (
         f"the search must fire the library-search trigger for the searcher; "

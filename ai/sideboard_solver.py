@@ -225,6 +225,69 @@ def _clause_counterspell(template: "CardTemplate",
     return target_density * avg_cmc * PERMANENT_VALUE_WINDOW
 
 
+def _card_impact(t: "CardTemplate") -> float:
+    """What one opposing card is worth, in the solver's own measures: a
+    creature its threat (`_avg_creature_threat`), any other spell its mana
+    value over the residency window (the counterspell clause's measure of a
+    spell's impact). A land is worth nothing to take."""
+    if t.is_land:
+        return 0.0
+    if t.is_creature:
+        return _avg_creature_threat([t])
+    return (t.cmc or 0) * PERMANENT_VALUE_WINDOW
+
+
+def _expected_best_in_hand(values: List[float], deck_size: int,
+                           hand: int) -> float:
+    """E[the best of `values` present in a `hand`-card draw from a deck of
+    `deck_size` cards], 0 when none is present: each value, highest first,
+    is the best present exactly when it is drawn and every higher one is
+    not -- C(N - i, H - 1) / C(N, H) for the i-th highest (hypergeometric)."""
+    from math import comb
+    total = comb(deck_size, hand) if 0 < hand <= deck_size else 0
+    if not total:
+        return 0.0
+    ordered = sorted(values, reverse=True)
+    return sum(v * comb(deck_size - i, hand - 1) / total
+               for i, v in enumerate(ordered, start=1)
+               if hand - 1 <= deck_size - i)
+
+
+def _clause_hand_disruption(attack: Optional[dict],
+                            opp_templates: List["CardTemplate"]) -> float:
+    """Value of a targeted hand attack (`CardTemplate.hand_attack_data`):
+    the card it takes from a starting hand drawn from the opponent's deck
+    (CR 103.4, `STARTING_HAND_SIZE`).
+
+    What it may take is the engine's own reading of the choose clause
+    (`oracle_resolver._targeted_discard_candidates`); a card's worth is
+    `_card_impact`. The chooser picks which: the caster the best card
+    present (`_expected_best_in_hand`), a random discard the mean card,
+    the victim its least valuable card (most often a land, worth nothing).
+    Each further card discarded (`count`) is valued the same."""
+    if not attack or not opp_templates:
+        return 0.0
+    from types import SimpleNamespace
+    from ai.scoring_constants import STARTING_HAND_SIZE
+    from engine.oracle_resolver import _targeted_discard_candidates
+    clause = (attack.get('choose_clause') or 'a card').lower()
+    takeable = [w.template for w in _targeted_discard_candidates(
+        [SimpleNamespace(template=t) for t in opp_templates], clause)]
+    values = [_card_impact(t) for t in takeable]
+    if not values:
+        return 0.0
+    count = attack.get('count') or 1
+    chooser = attack.get('chooser')
+    if chooser == 'caster':
+        per_card = _expected_best_in_hand(values, len(opp_templates),
+                                          STARTING_HAND_SIZE)
+    elif chooser == 'random':
+        per_card = sum(values) / len(opp_templates)
+    else:
+        per_card = min(_card_impact(t) for t in opp_templates)
+    return per_card * count
+
+
 def _clause_protection_color(oracle: str,
                               opp_templates: List["CardTemplate"],
                               card_body_power: int = 0) -> float:
@@ -455,6 +518,8 @@ def sb_value(template: "CardTemplate",
     value += _clause_gy_hate(template, opp_templates, opp_gameplan)
     value += _clause_permanent_type_removal(template, opp_templates)
     value += _clause_spell_chain_hate(template, opp_templates)
+    value += _clause_hand_disruption(
+        getattr(template, 'hand_attack_data', None), opp_templates)
 
     return value
 

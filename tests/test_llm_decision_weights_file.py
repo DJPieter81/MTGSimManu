@@ -114,10 +114,15 @@ def test_a_live_result_is_found_by_the_scorers_own_cache_lookup(tmp_path, monkey
     from pydantic_ai.models.test import TestModel
     from ai import llm_cache
     from ai.llm_agents import build_agent
+    from ai.llm_models import FALLBACK_MODELS
     cache_dir = tmp_path / "cache_llm"
     monkeypatch.setattr(llm_cache, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(llm_cache, "CACHE_DB", cache_dir / "responses.sqlite")
     monkeypatch.delenv("MTG_LLM_DECISION_SCORER_OFFLINE", raising=False)
+    # The language-model path (canonical output shape); the decision-
+    # model path is pinned by the next test.
+    monkeypatch.setenv("MTG_LLM_MODEL_DECISION_SCORER",
+                       FALLBACK_MODELS["decision_scorer"])
     monkeypatch.setattr(scorer, "_WEIGHTS_FILE", tmp_path / "absent.json")
     scorer._reset_weights_file_cache()
     agent = build_agent("decision_scorer")
@@ -133,6 +138,38 @@ def test_a_live_result_is_found_by_the_scorers_own_cache_lookup(tmp_path, monkey
             "the live result is not under the key the scorer reads back")
         row = scorer._try_cache_row("ramp", scorer.CTX_TRON_MANA_ADVANTAGE)
         assert row is not None and row.rationale == "test model"
+    finally:
+        scorer._reset_weights_file_cache()
+
+
+def test_a_decision_model_pick_is_read_back_as_the_canonical_weight_row(
+    tmp_path, monkeypatch,
+):
+    """On a decision model the scorer asks for a pick on the weight grid;
+    the cache stores that pick, and every reader — the live call, the
+    cache lookup, the warm's export — gets the canonical
+    `DecisionScoringWeights` row back, under the same key."""
+    from pydantic_ai.models.test import TestModel
+    from ai import llm_cache
+    from ai.llm_agents import build_agent
+    from ai.llm_models import DEFAULT_MODELS
+    from ai.llm_schemas import DecisionScoringWeights
+    jev = DEFAULT_MODELS["decision_scorer"]
+    cache_dir = tmp_path / "cache_llm"
+    monkeypatch.setattr(llm_cache, "CACHE_DIR", cache_dir)
+    monkeypatch.setattr(llm_cache, "CACHE_DB", cache_dir / "responses.sqlite")
+    monkeypatch.delenv("MTG_LLM_DECISION_SCORER_OFFLINE", raising=False)
+    monkeypatch.setenv("MTG_LLM_MODEL_DECISION_SCORER", jev)
+    monkeypatch.setattr(scorer, "_WEIGHTS_FILE", tmp_path / "absent.json")
+    scorer._reset_weights_file_cache()
+    agent = build_agent("decision_scorer")
+    monkeypatch.setattr(scorer, "_get_agent", lambda: agent)
+    try:
+        with agent.override(model=TestModel(custom_output_args={"weight": "4.5"})):
+            assert scorer.weight("ramp", scorer.CTX_TRON_MANA_ADVANTAGE) == 4.5
+        assert scorer._try_cache_only("ramp", scorer.CTX_TRON_MANA_ADVANTAGE) == 4.5
+        row = scorer._try_cache_row("ramp", scorer.CTX_TRON_MANA_ADVANTAGE)
+        assert isinstance(row, DecisionScoringWeights) and row.weight == 4.5
     finally:
         scorer._reset_weights_file_cache()
 

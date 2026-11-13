@@ -239,27 +239,27 @@ def test_storm_ritual_under_ruby_medallion_projects_cheaper(
     less mana than its printed CMC.
 
     Ruby Medallion reads "Red spells you cast cost {1} less to cast."
-    Lightning Bolt is {R} (CMC 1).  Under Medallion the projection
-    must spend `max(0, 1 - 1) = 0` mana — leaving `my_mana`
-    unchanged from the source snapshot.  This is the same audit
-    finding for Storm rituals (Manamorphose / Desperate Ritual /
-    Pyretic Ritual all project at full printed cost without M9)."""
+    Reckless Impulse is {1}{R} (CMC 2).  Under Medallion the projection
+    must spend 2 - 1 = 1 mana. The reduction reaches the generic
+    component only (CR 601.2f), so a {R} spell would still spend 1.
+    This is the same audit finding for Storm rituals (Manamorphose /
+    Desperate Ritual / Pyretic Ritual all project at full printed cost
+    without M9)."""
     from ai.ev_evaluator import _project_spell
 
     _put_in_play(fresh_game, card_db, "Ruby Medallion", controller=0)
-    card = _make_card_in_hand(card_db, "Lightning Bolt")
+    card = _make_card_in_hand(card_db, "Reckless Impulse")
 
     projected = _project_spell(
         card, base_snap, game=fresh_game, player_idx=0
     )
 
-    # Lightning Bolt is {R}; under Ruby Medallion `effective_cmc`
-    # returns max(0, 1 - 1) = 0.  Post-cast mana = base_snap.my_mana
-    # (10) - 0 = 10.
-    expected_mana = base_snap.my_mana - 0
+    # Reckless Impulse is {1}{R}; under Ruby Medallion `effective_cmc`
+    # returns 2 - 1 = 1.  Post-cast mana = base_snap.my_mana (10) - 1.
+    expected_mana = base_snap.my_mana - 1
     assert projected.my_mana == expected_mana, (
         f"A color-matching cost reducer on the battlefield must "
-        f"discount the projected mana spend.  Lightning Bolt under "
+        f"discount the projected mana spend.  Reckless Impulse under "
         f"Ruby Medallion: my_mana={projected.my_mana}, "
         f"expected={expected_mana}."
     )

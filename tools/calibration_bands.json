@@ -723,10 +723,10 @@
     {
       "deck": "Eldrazi Tron",
       "expected_wr": [
-        50,
-        65
+        40,
+        55
       ],
-      "provenance": "CLAUDE.md post-sim pipeline EXPECTED dict \u2014 big-mana prison/beatdown, solidly positive vs the field."
+      "provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Eldrazi Tron 45.5% at 3.8% share; earlier events 47.4% (US/China RCs) and 59% (July tracker, n=110, wide CI). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta')."
     },
     {
       "deck": "Jeskai Blink",
@@ -742,15 +742,15 @@
         40,
         55
       ],
-      "provenance": "CLAUDE.md post-sim pipeline EXPECTED dict \u2014 high-variance combo, hated by SB interaction in Bo3."
+      "provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Ruby Storm 49.2% at 2.8% share; MTGO window 46% (n=260). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta')."
     },
     {
       "deck": "Domain Zoo",
       "expected_wr": [
-        50,
-        65
+        45,
+        60
       ],
-      "provenance": "CLAUDE.md post-sim pipeline EXPECTED dict \u2014 efficient aggro with reach, positive field expectation."
+      "provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Domain Zoo 51.1% at 4.5% share; MTGO Challenges 53% (n=744). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta')."
     },
     {
       "deck": "Izzet Prowess",
@@ -783,6 +783,22 @@
         60
       ],
       "provenance": "User meta review 2026-07-09 (Tier-1 sweep): 4.9% July meta share = Tier 1 by representation; replaces the default [30-70]. Sim 33.1 is now honestly below band \u2014 an admitted under-performer, not 'in band by default'."
+    },
+    {
+      "deck": "Rakdos Aggro",
+      "expected_wr": [
+        40,
+        55
+      ],
+      "provenance": "Real-world match win rate, MTGMeta tracker (mtgmeta.com, retrieved via web search 2026-11-08): Rakdos Aggro 48.7% over 269 matches at 4.5% share; Rakdos Delirium 57.1% at 1.4% share at the 2026 Fall Regional Championships (small sample). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta')."
+    },
+    {
+      "deck": "Broodscale Bloodchief",
+      "expected_wr": [
+        45,
+        60
+      ],
+      "provenance": "Real-world match win rate, 2026 Fall Regional Championships (magic.gg 'Metagame Mentor: Modern Developments at Five 2026 Fall Regional Championships', retrieved via web search 2026-11-08): Broodscale Combo 54.8% at 17.3% share; MTGO window 51% (n=677). Band = real WR +/- 7.5 pp, rounded to the nearest 5 (user request 2026-11-08: 'find appropriate WRs on new meta')."
     }
   ],
   "default_field_band": {

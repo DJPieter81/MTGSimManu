@@ -60,6 +60,8 @@ _EXCLUDED = {
     # Resolution-fallback layer (read oracle at resolve time as the generic
     # fallback; being migrated to typed fields — see the module docstring).
     "engine/oracle_resolver.py",
+    # The clause owner the resolver's branches moved into (same layer).
+    "engine/clause_resolver.py",
     "engine/triggers.py",
     "engine/spell_resolution.py",
     # Rules-audit census: a DIAGNOSTIC that looks for keyword WORDS in
@@ -70,6 +72,9 @@ _EXCLUDED = {
 }
 
 _ORACLE_ATTRS = {"oracle_text", "oracle"}
+# A method returning a card's oracle text: the face a permanent shows
+# (CardInstance._effective_oracle_text, CR 712.8e).
+_ORACLE_METHODS = {"_effective_oracle_text"}
 _ORACLE_PARAMS = {"oracle", "oracle_text", "oracle_lower", "oracle_l"}
 _SUBSTR_METHODS = {"count", "find", "index", "rfind", "rindex", "startswith",
                    "endswith"}
@@ -79,7 +84,8 @@ _RE_FUNCS = {"search", "findall", "match", "fullmatch", "sub", "subn",
 
 def _reads_oracle_attr(node: ast.AST) -> bool:
     for n in ast.walk(node):
-        if isinstance(n, ast.Attribute) and n.attr in _ORACLE_ATTRS:
+        if isinstance(n, ast.Attribute) and (n.attr in _ORACLE_ATTRS
+                                             or n.attr in _ORACLE_METHODS):
             return True
     return False
 
@@ -112,6 +118,8 @@ def _is_oracle_expr(node: ast.AST, tainted: set[str]) -> bool:
     if isinstance(node, ast.Attribute) and node.attr in _ORACLE_ATTRS:
         return True
     if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+        if node.func.attr in _ORACLE_METHODS:
+            return True
         return _is_oracle_expr(node.func.value, tainted)
     if isinstance(node, ast.BoolOp):
         return any(_is_oracle_expr(v, tainted) for v in node.values)

@@ -57,3 +57,15 @@ def test_no_new_hardcoded_card_names():
             f"Abstraction contract violation:\n{msg}\n\n"
             f"See CLAUDE.md ABSTRACTION CONTRACT for fix options."
         )
+
+
+def test_no_new_legacy_effect_parser_debt():
+    """Ratchet (design doc 2026-09-29 section 13): the legacy per-shape
+    effect parsers, runtime oracle reads in resolution handlers, legacy
+    quirk predicates and tolerated residue codes may only fall
+    (tools/check_effect_parsers.py; the pool-wide count (f) runs in its
+    own CI step after the card DB is assembled)."""
+    script = ROOT / "tools" / "check_effect_parsers.py"
+    result = subprocess.run([sys.executable, str(script)],
+                            capture_output=True, text=True, cwd=ROOT)
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()

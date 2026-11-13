@@ -80,29 +80,276 @@
   },
   "input": {
     "deck_name": "Boros Energy",
-    "mainboard": {
-      "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger": 4,
-      "Arena of Glory": 3,
-      "Arid Mesa": 4,
-      "Blood Moon": 1,
-      "Dalkovan Encampment": 1,
-      "Elegant Parlor": 2,
-      "Galvanic Discharge": 4,
-      "Goblin Bombardment": 3,
-      "Guide of Souls": 4,
-      "Marsh Flats": 3,
-      "Mountain": 1,
-      "Ocelot Pride": 4,
-      "Phlage, Titan of Fire's Fury": 4,
-      "Plains": 2,
-      "Ragavan, Nimble Pilferer": 4,
-      "Ranger-Captain of Eos": 1,
-      "Sacred Foundry": 3,
-      "Seasoned Pyromancer": 3,
-      "The Legend of Roku": 1,
-      "Thraben Charm": 2,
-      "Voice of Victory": 2,
-      "Windswept Heath": 4
-    }
+    "cards": [
+      {
+        "name": "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [],
+        "types": [
+          "Legendary",
+          "Creature"
+        ],
+        "oracle_excerpt": "When Ajani enters, create a 2/1 white Cat Warrior creature t",
+        "db_miss": false
+      },
+      {
+        "name": "Arena of Glory",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped unless you control a Mountain. {T}: ",
+        "db_miss": false
+      },
+      {
+        "name": "Arid Mesa",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Blood Moon",
+        "quantity": 1,
+        "cmc": 3,
+        "flags": [],
+        "types": [
+          "Enchantment"
+        ],
+        "oracle_excerpt": "Nonbasic lands are Mountains.",
+        "db_miss": false
+      },
+      {
+        "name": "Dalkovan Encampment",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped unless you control a Swamp or a Moun",
+        "db_miss": false
+      },
+      {
+        "name": "Elegant Parlor",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {R} or {W}.) This land enters tapped.",
+        "db_miss": false
+      },
+      {
+        "name": "Galvanic Discharge",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Choose target creature or planeswalker. You get {E}{E}{E} (t",
+        "db_miss": false
+      },
+      {
+        "name": "Goblin Bombardment",
+        "quantity": 3,
+        "cmc": 2,
+        "flags": [
+          "removal"
+        ],
+        "types": [
+          "Enchantment"
+        ],
+        "oracle_excerpt": "Sacrifice a creature: This enchantment deals 1 damage to any",
+        "db_miss": false
+      },
+      {
+        "name": "Guide of Souls",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "Whenever another creature you control enters, you gain 1 lif",
+        "db_miss": false
+      },
+      {
+        "name": "Marsh Flats",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      },
+      {
+        "name": "Mountain",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Basic",
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {R}.)",
+        "db_miss": false
+      },
+      {
+        "name": "Ocelot Pride",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "First strike, lifelink Ascend (If you control ten or more pe",
+        "db_miss": false
+      },
+      {
+        "name": "Phlage, Titan of Fire's Fury",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [],
+        "types": [],
+        "oracle_excerpt": "",
+        "db_miss": false
+      },
+      {
+        "name": "Plains",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Basic",
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {W}.)",
+        "db_miss": false
+      },
+      {
+        "name": "Ragavan, Nimble Pilferer",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Legendary",
+          "Creature"
+        ],
+        "oracle_excerpt": "Whenever Ragavan deals combat damage to a player, create a T",
+        "db_miss": false
+      },
+      {
+        "name": "Ranger-Captain of Eos",
+        "quantity": 1,
+        "cmc": 3,
+        "flags": [
+          "card_draw",
+          "tutor"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "When this creature enters, you may search your library for a",
+        "db_miss": false
+      },
+      {
+        "name": "Sacred Foundry",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {R} or {W}.) As this land enters, you may pay 2 li",
+        "db_miss": false
+      },
+      {
+        "name": "Seasoned Pyromancer",
+        "quantity": 3,
+        "cmc": 3,
+        "flags": [
+          "card_draw"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "When this creature enters, discard two cards, then draw two ",
+        "db_miss": false
+      },
+      {
+        "name": "The Legend of Roku",
+        "quantity": 1,
+        "cmc": 4,
+        "flags": [
+          "ramp",
+          "card_draw"
+        ],
+        "types": [
+          "Enchantment"
+        ],
+        "oracle_excerpt": "(As this Saga enters and after your draw step, add a lore co",
+        "db_miss": false
+      },
+      {
+        "name": "Thraben Charm",
+        "quantity": 2,
+        "cmc": 2,
+        "flags": [
+          "removal",
+          "combo_payoff",
+          "modal",
+          "instant_speed"
+        ],
+        "types": [
+          "Instant"
+        ],
+        "oracle_excerpt": "Choose one — • Thraben Charm deals damage equal to twice the",
+        "db_miss": false
+      },
+      {
+        "name": "Voice of Victory",
+        "quantity": 2,
+        "cmc": 2,
+        "flags": [],
+        "types": [
+          "Creature"
+        ],
+        "oracle_excerpt": "Mobilize 2 (Whenever this creature attacks, create two tappe",
+        "db_miss": false
+      },
+      {
+        "name": "Windswept Heath",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [
+          "tutor"
+        ],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}, Pay 1 life, Sacrifice this land: Search your library fo",
+        "db_miss": false
+      }
+    ]
   }
 }

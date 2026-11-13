@@ -1,0 +1,37 @@
+// Instant Reanimator — mtgtop8 event=92860 deck=905427
+1 Breeding Pool
+1 Island
+1 Otawara, Soaring City
+1 Overgrown Tomb
+4 Polluted Delta
+1 Swamp
+1 Undercity Sewers
+4 Urza's Saga
+2 Watery Grave
+4 Emry, Lurker of the Loch
+2 Griselbrand
+1 Haywire Mite
+4 Tamiyo, Inquisitive Student
+1 Yomiji, Who Bars the Way
+4 Goryo's Vengeance
+4 Malevolent Rumble
+1 Sink into Stupor
+1 Agatha's Soul Cauldron
+2 Blood Fountain
+3 Grinding Station
+4 Mishra's Bauble
+3 Mox Amber
+4 Mox Opal
+3 Sewer-veillance Cam
+1 Skateboard
+1 Soul-Guide Lantern
+1 The Underworld Cookbook
+
+Sideboard
+3 Consign to Memory
+2 Fatal Push
+2 Metallic Rebuke
+1 Pithing Needle
+3 Psychic Frog
+2 Quantum Riddler
+2 Thoughtseize

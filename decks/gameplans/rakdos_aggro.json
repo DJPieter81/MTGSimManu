@@ -1,0 +1,64 @@
+{
+  "deck_name": "Rakdos Aggro",
+  "archetype": "aggro",
+  "goals": [
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy creatures on curve",
+      "card_roles": {
+        "enablers": [
+          "Dark Matter Manipulator",
+          "Mishra's Bauble",
+          "Street Wraith",
+          "Fear of Missing Out",
+          "Thoughtseize"
+        ],
+        "payoffs": [
+          "Nethergoyf",
+          "Moonshadow",
+          "Detective's Phoenix",
+          "Troll of Khazad-dûm"
+        ],
+        "interaction": [
+          "Fatal Push",
+          "Lightning Bolt",
+          "Unholy Heat",
+          "Thoughtseize"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack aggressively, remove blockers",
+      "card_roles": {
+        "interaction": [
+          "Fatal Push",
+          "Lightning Bolt",
+          "Unholy Heat"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close the game with damage"
+    }
+  ],
+  "mulligan_keys": [
+    "Nethergoyf",
+    "Moonshadow",
+    "Dark Matter Manipulator",
+    "Fear of Missing Out",
+    "Thoughtseize",
+    "Lightning Bolt",
+    "Fatal Push"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "reactive_only": [],
+  "always_early": [
+    "Dark Matter Manipulator",
+    "Mishra's Bauble",
+    "Moonshadow",
+    "Nethergoyf"
+  ]
+}

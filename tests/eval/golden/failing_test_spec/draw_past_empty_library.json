@@ -1,0 +1,19 @@
+{
+  "source": "landed rules unit a2cfdba (CR 121.4, 704.5b); its test file is the naming rule's output",
+  "input": {
+    "hypothesis": {
+      "observed_symptom": "Combo player kept casting draw spells as its library ran out and lost to a draw from an empty library while holding a castable finisher tutor",
+      "suspected_subsystem": "ai.ev_evaluator",
+      "failing_test_rule": "a cast that draws more than the library holds loses the game",
+      "confidence": 0.9
+    },
+    "conventions": "Tests live in tests/test_<rule>.py and use the session `card_db` fixture; a test builds a GameState directly, names cards only as fixture carriers, and asserts the mechanic. Red before the fix, green after."
+  },
+  "expected": {
+    "test_file": "tests/test_a_cast_that_draws_more_than_the_library_holds_loses_the_game.py",
+    "rule_name": "a cast that draws more than the library holds loses the game",
+    "fixture_setup": "Caster's main phase with lands to cast a spell whose resolution draws cards, and a library holding fewer cards than the spell draws (zero cards in the base case).",
+    "assertion": "The spell's play EV sits at the game-ending floor (minus the lethal-threat value); with a library large enough for every draw, it scores above it.",
+    "expected_status_before_fix": "fail"
+  }
+}

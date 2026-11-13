@@ -91,6 +91,68 @@ def is_draw_engine(card: "CardInstance") -> bool:
     return bool(DRAW_ENGINE_TAGS & getattr(card.template, 'tags', set()))
 
 
+def spell_draws(template) -> bool:
+    """Casting the spell makes its controller draw (CR 121.1): a DRAW in
+    the spell's typed effects with no other drawer printed, whatever the
+    count's wording ("draw four cards", "draw that many cards"). Read from
+    the parsed spell, never a substring list. An impulse draw is no draw
+    (CR 121.1c; `is_impulse_draw`), and a permanent's later ability is not
+    what casting it draws."""
+    from engine.effect_spec import Verb, iter_specs
+    effects = getattr(template, 'effects', None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    return any(s.verb is Verb.DRAW and s.actor is None
+               for s in iter_specs(host.specs))
+
+
+def is_impulse_draw(template) -> bool:
+    """The spell exiles the top of its controller's library (an impulse
+    draw: "exile the top N cards of your library ... you may play those
+    cards"). Its cards go to exile, never into the hand, so it is no draw
+    (CR 121.1c) and no on-draw trigger counts it. Read from the parsed
+    spell (the effect grammar's library-position exile), never a tag."""
+    from engine.effect_spec import Verb, iter_specs
+    effects = getattr(template, 'effects', None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    return any(s.verb is Verb.EXILE
+               and (getattr(s.filter, 'zone', None),
+                    getattr(s.filter, 'owner', None),
+                    getattr(s.filter, 'position', None))
+               == ('library', 'you', 'top')
+               for s in iter_specs(host.specs))
+
+
+def impulse_cards_held(host) -> int:
+    """The cards an impulse-draw host -- an EXILE of the top N cards of its
+    controller's own library and a permission to play them -- lets the
+    controller play past this turn: N when the permission outlasts the
+    turn ("until the end of your next turn"), 0 when it ends this turn
+    (cards that expire at cleanup are not held, `ai.playable_cards`) or
+    the host is no impulse draw with a printed count. Read from the typed
+    host, never a tag."""
+    from engine.effect_model import DurationKind
+    from engine.effect_spec import AmountKind, Verb, iter_specs
+    if host is None:
+        return 0
+    specs = list(iter_specs(host.specs))
+    exiles = [s for s in specs if s.verb is Verb.EXILE
+              and (getattr(s.filter, 'zone', None),
+                   getattr(s.filter, 'owner', None),
+                   getattr(s.filter, 'position', None))
+              == ('library', 'you', 'top')]
+    if len(exiles) != 1 or exiles[0].amount is None \
+            or exiles[0].amount.kind is not AmountKind.LITERAL:
+        return 0
+    lasting = any(s.verb is Verb.CONTINUOUS and s.duration is not None
+                  and s.duration.kind is DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN
+                  for s in specs)
+    return int(exiles[0].amount.n or 0) if lasting else 0
+
+
 def is_storm_payoff(card: "CardInstance") -> bool:
     """Card is a chain-payoff finisher — its effect scales with the
     storm count or its damage/token output ends the chain.
@@ -164,50 +226,77 @@ _GRAVEYARD_SIZE_SCALINGS: frozenset[str] = frozenset(
     {'graveyard', 'delirium', 'tarmogoyf'})
 
 
-def _reveals_graveyard_size_consumer(player) -> bool:
-    """Has this player revealed a card that turns graveyard SIZE into
-    value (delve, delirium, a graveyard-scaling body)?
+def _consumes_graveyard_size(template) -> bool:
+    """Does this card turn graveyard SIZE into value? Delve, delirium and
+    a graveyard-scaling body read it; a cost that exiles cards from its
+    owner's graveyard spends it -- an activated ability's (CR 602.2b, the
+    typed `exile_from_graveyard_cards`) and an escape's other cards (CR
+    702.138a)."""
+    if (getattr(template, 'has_delve', False)
+            or getattr(template, 'has_delirium', False)
+            or getattr(template, 'power_scales_with', '')
+            in _GRAVEYARD_SIZE_SCALINGS
+            or getattr(template, 'escape_exile_count', 0)):
+        return True
+    return any(getattr(getattr(a, 'cost', None),
+                       'exile_from_graveyard_cards', 0)
+               for a in getattr(template, 'activated_abilities', None) or ())
 
-    Only PUBLIC zones are consulted — their battlefield and their own
-    graveyard. Their hand is hidden and guessing at it would be a belief
-    model, which is `ai.bhi`'s job, not a predicate's.
+
+def _graveyard_consumers(zones) -> "tuple[bool, bool]":
+    """(size_matters, recursion) over the cards of `zones`: does any turn
+    graveyard size into value (`_consumes_graveyard_size`), and does any
+    put a card from a graveyard onto the battlefield?
+
+    For an opponent the zones are PUBLIC ones -- their battlefield and
+    their own graveyard; a reanimation spell already sitting in their
+    graveyard is evidence the deck plays them. Their hand is hidden, and
+    guessing at it would be a belief model, which is `ai.bhi`'s job, not
+    a predicate's.
     """
-    for zone in (player.battlefield, player.graveyard):
-        for card in zone:
-            t = card.template
-            if (getattr(t, 'has_delve', False)
-                    or getattr(t, 'has_delirium', False)
-                    or getattr(t, 'power_scales_with', '')
-                    in _GRAVEYARD_SIZE_SCALINGS):
-                return True
-    return False
-
-
-def _reveals_reanimation(player) -> bool:
-    """Has this player revealed a way to put a card from a graveyard onto
-    the battlefield? Public zones only, same reason as above — a
-    reanimation spell already sitting in their graveyard is evidence the
-    deck plays them.
-    """
-    for zone in (player.battlefield, player.graveyard):
-        for card in zone:
-            if getattr(card.template, 'reanimates_from_graveyard', False):
-                return True
-    return False
+    cards = [card for zone in zones for card in zone]
+    return (any(_consumes_graveyard_size(c.template) for c in cards),
+            any(getattr(c.template, 'reanimates_from_graveyard', False)
+                for c in cards))
 
 
 def _castable_from_graveyard(template) -> bool:
     """Does this card's own printed permission let it be cast from the
-    graveyard? Flashback (CR 702.33), Escape (CR 702.139) and Unearth
-    (CR 702.83) each need no second card, so a graveyard holding one is
-    live no matter what else its owner has.
+    graveyard? Flashback (CR 702.34), Escape (CR 702.138), Unearth (CR
+    702.84) and Harmonize (CR 702.180) each need no second card, so a
+    graveyard holding one is live no matter what else its owner has.
     """
     from engine.cards import Keyword
 
     return bool(getattr(template, 'flashback_cost', None) is not None
                 or getattr(template, 'escape_cost', None) is not None
+                or getattr(template, 'harmonize_cost', None) is not None
                 or Keyword.UNEARTH in (getattr(template, 'keywords', None)
                                        or set()))
+
+
+def is_graveyard_resource_itself(template, recursion: bool) -> bool:
+    """Is this card, in its owner's graveyard, a resource there by itself
+    (tiers 1 and 2 of `graveyard_fuel`): castable from the graveyard by its
+    own permission, or a creature its owner can reanimate?"""
+    return bool(_castable_from_graveyard(template)
+                or (recursion and template.is_creature))
+
+
+def _is_graveyard_fuel(template, size_matters: bool,
+                       recursion: bool) -> bool:
+    """The three tiers of `graveyard_fuel`, for one card."""
+    return bool(size_matters
+                or is_graveyard_resource_itself(template, recursion))
+
+
+def own_graveyard_consumers(game, owner_idx: int) -> "tuple[bool, bool]":
+    """(size_matters, recursion) as a player knows its own deck: read from
+    every zone it holds (its hand and library included -- the pilot knows
+    its decklist)."""
+    player = game.players[owner_idx]
+    return _graveyard_consumers((player.hand, player.library,
+                                 player.battlefield, player.graveyard))
 
 
 def graveyard_fuel(game, owner_idx: int) -> "list":
@@ -217,27 +306,53 @@ def graveyard_fuel(game, owner_idx: int) -> "list":
     Three tiers, each derived from printed card data:
 
     1. cards castable from the graveyard by their own permission
-       (flashback / escape / unearth) — live unconditionally;
+       (flashback / escape / unearth / harmonize) — live unconditionally;
     2. creature cards, once their owner has revealed a graveyard-to-
        battlefield recursion source (they are reanimation targets);
     3. every card, once their owner has revealed a consumer of graveyard
-       SIZE (delve / delirium / a graveyard-scaling body).
+       SIZE (delve / delirium / a graveyard-scaling body / a cost that
+       exiles cards from their graveyard).
 
     Returned as a list of instances rather than a count so a targeted
     exile can pick WHICH cards to hit. Order follows the graveyard.
     """
     player = game.players[owner_idx]
-    size_matters = _reveals_graveyard_size_consumer(player)
-    recursion = _reveals_reanimation(player)
+    size_matters, recursion = _graveyard_consumers(
+        (player.battlefield, player.graveyard))
+    return [card for card in player.graveyard
+            if _is_graveyard_fuel(card.template, size_matters, recursion)]
 
-    out = []
-    for card in player.graveyard:
-        t = card.template
-        if (size_matters
-                or _castable_from_graveyard(t)
-                or (recursion and t.is_creature)):
-            out.append(card)
-    return out
+
+def graveyard_fuel_share(game, viewer_idx: int, owner_idx: int) -> float:
+    """The expected share of the cards a mill moves from ``owner_idx``'s
+    library to their graveyard that are graveyard fuel to them (the tiers
+    of `graveyard_fuel`), as ``viewer_idx`` knows that library.
+
+    - Its own: the pilot knows its decklist, so the share is exact over
+      the library's cards (their order stays hidden), and its consumers
+      are read from every zone it holds.
+    - An opponent's: estimated from the cards they have revealed (their
+      battlefield and graveyard, tokens aside), the viewer's sample of
+      their deck, with the consumers that sample reveals.
+
+    0.0 when the viewer holds no sample.
+    """
+    player = game.players[owner_idx]
+    if viewer_idx == owner_idx:
+        sample = list(player.library)
+        known = own_graveyard_consumers(game, owner_idx)
+    else:
+        public = (player.battlefield, player.graveyard)
+        sample = [c for zone in public for c in zone
+                  if c.owner == owner_idx
+                  and not getattr(c, 'is_token', False)]
+        known = _graveyard_consumers(public)
+    if not sample:
+        return 0.0
+    size_matters, recursion = known
+    fuel = sum(1 for c in sample
+               if _is_graveyard_fuel(c.template, size_matters, recursion))
+    return fuel / len(sample)
 
 
 # ─── First-turn value (mulligan land-slack replacement) ─────────────
@@ -296,3 +411,77 @@ def hand_first_turn_value(cards: "Iterable[CardInstance]") -> int:
     """Sum of ``first_turn_value`` across a hand slice — used by
     the mulligan land-slack predicate."""
     return sum(first_turn_value(c) for c in cards)
+
+
+def is_land_option(card) -> bool:
+    """Can this card be played as a land: a land, or a modal double-faced
+    card with a land face (CR 712, 305.1)? The keep and the land drop both
+    count it."""
+    t = card.template
+    if getattr(t, "playable_land_face", None) is not None:
+        return True
+    return bool(getattr(t, "is_land", False))
+
+
+def bounces_a_land(card) -> bool:
+    """Does this land option's land return a land its controller controls
+    to its owner's hand as it enters -- a bounce land (its own text,
+    typed at load as `etb_return_land`)?"""
+    t = card.template
+    face = getattr(t, "playable_land_face", None) or t
+    return bool(getattr(face, "etb_return_land", False))
+
+
+def staying_lands(cards, battlefield=()) -> list:
+    """The land options among `cards` that stay on the battlefield once
+    played: the keep's and the land drop's land count.
+
+    A bounce land ("When this land enters, return a land you control to
+    its owner's hand") returns itself when it is the only land its
+    controller controls. So it stays only beside another land: one already
+    on `battlefield`, or a land among `cards` that is no bounce land.
+    Without such a land, none of the bounce lands among `cards` stays."""
+    lands = [c for c in cards if is_land_option(c)]
+    anchored = (any(getattr(c.template, "is_land", False) for c in battlefield)
+                or any(not bounces_a_land(c) for c in lands))
+    return lands if anchored else []
+
+
+def graveyard_target_removal(host):
+    """``(slot, by_name)`` when a typed host's resolution removes from its
+    graveyard the card chosen for its target ``slot`` -- the target a
+    spell aimed at a graveyard card needs to stay legal (CR 608.2b): an
+    exile of that target (``by_name`` False), or a search of its owner's
+    zones, the graveyard among them, for the cards sharing its name, then
+    "exile them" (``by_name`` True: every card of that name in that
+    graveyard goes too). None for any other host."""
+    from engine.effect_spec import Ref, RefKind, Verb, iter_specs
+    if host is None:
+        return None
+    targets = list(getattr(host, "targets", ()) or ())
+    specs = list(iter_specs(getattr(host, "specs", ()) or ()))
+
+    def graveyard_slot(k) -> bool:
+        return isinstance(k, int) and k < len(targets) \
+            and targets[k].zone == "graveyard"
+
+    exiled = {s.ref.index for s in specs
+              if s.verb is Verb.EXILE and isinstance(s.ref, Ref)
+              and s.ref.kind is RefKind.RESULT}
+    for s in specs:
+        if s.verb is Verb.EXILE and graveyard_slot(s.target_slot):
+            return s.target_slot, False
+        f = s.filter
+        if s.verb is not Verb.SEARCH or f is None or s.seq not in exiled \
+                or "graveyard" not in (getattr(f, "zones", ()) or ()):
+            continue
+        named, owner = f.named, f.owner
+        if isinstance(named, Ref) and named.kind is RefKind.TARGET \
+                and graveyard_slot(named.index) \
+                and isinstance(owner, Ref) \
+                and owner.kind is RefKind.OWNER_OF \
+                and isinstance(owner.of, Ref) \
+                and owner.of.kind is RefKind.TARGET \
+                and owner.of.index == named.index:
+            return named.index, True
+    return None

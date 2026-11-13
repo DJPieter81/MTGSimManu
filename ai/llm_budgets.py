@@ -56,16 +56,29 @@ from ai.llm_models import LLMTask
 # are cheap and bounded, so $1/month is plenty.  Generative tasks
 # (synth_gameplan, diagnose_replay) get $5/month — sized for monthly
 # deck-list re-runs (16 decks × ~$0.06/call × a couple of cycles).
+#
+# 2026-11 tier refresh (`ai.llm_models`): a cap is a monthly CALL
+# allowance expressed in dollars, so when a task moves tier its cap is
+# scaled by the price ratio of the new default to the old one — the
+# same number of calls fits, no more, no fewer.  handler_audit and
+# failing_test_spec moved from the previous Haiku generation to the
+# current Opus tier (4x list on both input and output): $1 → $4.
+# synth_gameplan and diagnose_replay moved from the previous Sonnet
+# generation's list rate to the current Opus tier (4/3x): $5 → $6.67.
+# classify_oracle moved to the current Sonnet tier (2x): $20 → $40.
+# audit_doc_freshness and decision_scorer moved to tiers that list
+# below their old defaults, so their caps stand.
 DEFAULT_BUDGETS_USD: dict[LLMTask, float] = {
-    "synth_gameplan":      5.00,
-    "diagnose_replay":     5.00,
+    "synth_gameplan":      6.67,
+    "diagnose_replay":     6.67,
     "audit_doc_freshness": 1.00,
-    "handler_audit":       1.00,
-    "failing_test_spec":   1.00,
+    "handler_audit":       4.00,
+    "failing_test_spec":   4.00,
     # classify_oracle runs over the full 21k-card Modern pool offline;
-    # cap covers a from-scratch full rebuild on Haiku 4.5 plus headroom
-    # for re-runs after prompt-version bumps.  Per-call cost is ~$0.005.
-    "classify_oracle":     20.00,
+    # cap covers a from-scratch full rebuild plus headroom for re-runs
+    # after prompt-version bumps (sized on the previous Haiku
+    # generation at ~$0.005 per call, then scaled 2x for the tier move).
+    "classify_oracle":     40.00,
     # Phase 1 refactor (PR #402): ~16 decks × ~8 contexts × ~500 tokens
     # per call.  First-time warm ≈ 64K input + ~8K output ≈ $0.20-$1.00.
     # After warm, every call is a cache hit ($0).  $2 ceiling.

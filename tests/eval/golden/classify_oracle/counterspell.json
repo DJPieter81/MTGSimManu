@@ -1,0 +1,13 @@
+{
+  "source": "expected tags = decks/gameplans/_oracle_classifier.json",
+  "input": {
+    "name": "Counterspell",
+    "mana_cost": "{U}{U}",
+    "type_line": "Instant",
+    "oracle_text": "Counter target spell."
+  },
+  "expected": {
+    "card_name": "Counterspell",
+    "tags": []
+  }
+}

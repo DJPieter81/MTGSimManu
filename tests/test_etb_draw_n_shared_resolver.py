@@ -189,7 +189,10 @@ class TestGenericResolverCoversRegisteredHandlers:
 
     @pytest.mark.parametrize("card_name,expected_draw", [
         ("Omnath, Locus of Creation", 1),
-        ("Quantum Riddler", 1),
+        # Its own static draw replacement applies to its enter draw: with
+        # one or fewer cards in hand, one draw draws two (CR 614.1a, unit
+        # DRW). The fixture's hand is empty.
+        ("Quantum Riddler", 2),
         ("Thought Monitor", 2),
     ])
     def test_real_card_draws_via_generic_path_alone(

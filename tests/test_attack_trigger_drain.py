@@ -7,8 +7,10 @@ Cruelty's attack half did nothing — a large slice of the payoff.
 
 Rule under test: on attack, the defending opponent sacrifices a
 creature/planeswalker, discards a card, and loses N life; the attacker's
-controller draws a card and gains N life. N parsed from oracle. Generic
-"enters or attacks" repeated trigger; no card names in the resolver.
+controller draws a card and gains N life. Generic "enters or attacks"
+repeated trigger; no card names in the resolver. Since unit ED-T the attack
+carrier performs it from the typed host as attackers are declared (the
+legacy oracle branch is retired), so the tests declare the attack.
 """
 from __future__ import annotations
 
@@ -54,8 +56,8 @@ def test_archon_attack_drains_opponent_and_refuels_controller(card_db):
     opp_hand_before = len(opp.hand)
     me_hand_before = len(me.hand)
 
-    from engine.oracle_resolver import resolve_attack_trigger
-    resolve_attack_trigger(game, archon, 0)
+    from engine.combat_manager import CombatManager
+    CombatManager().declare_attackers(game, [archon], 0)
 
     assert opp.life == 17, f"opponent should lose 3 life; got {opp.life}"
     assert me.life == 23, f"controller should gain 3 life; got {me.life}"
@@ -79,7 +81,7 @@ def test_attack_drain_no_targets_is_safe(card_db):
     archon = _mk(game, card_db, "Archon of Cruelty", 0, "battlefield")
     _mk(game, card_db, "Forest", 0, "library")
 
-    from engine.oracle_resolver import resolve_attack_trigger
-    resolve_attack_trigger(game, archon, 0)
+    from engine.combat_manager import CombatManager
+    CombatManager().declare_attackers(game, [archon], 0)
     assert opp.life == 17
     assert me.life == 23

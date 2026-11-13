@@ -49,6 +49,7 @@ DECK_ARCHETYPES = {
     "Grixis Reanimator":  ArchetypeStrategy.COMBO,
     "Azorius Blink":      ArchetypeStrategy.AGGRO,
     "Hollow One":         ArchetypeStrategy.COMBO,
+    "Rakdos Aggro":       ArchetypeStrategy.AGGRO,
 }
 
 

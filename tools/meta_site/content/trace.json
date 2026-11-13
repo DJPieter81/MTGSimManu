@@ -1,0 +1,806 @@
+{
+ "commit": "8726c47",
+ "cards": [
+  {
+   "card": "Primeval Titan",
+   "oracle": "Trample\nWhenever this creature enters or attacks, you may search your library for up to two land cards, put them onto the battlefield tapped, then shuffle.",
+   "hosts": [
+    {
+     "kind": "KEYWORD",
+     "index": 0,
+     "text": "trample",
+     "head": null,
+     "keywords": [
+      "trample"
+     ],
+     "specs": [],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": []
+     }
+    },
+    {
+     "kind": "TRIGGERED",
+     "index": 1,
+     "text": "whenever ~ enters or attacks, you may search your library for up to two land cards, put them onto the battlefield tapped, then shuffle.",
+     "head": {
+      "raw": "whenever ~ enters or attacks",
+      "events": [
+       "SELF_ENTERS",
+       "SELF_ATTACKS"
+      ],
+      "typed": [
+       "attack"
+      ],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "SEARCH",
+       "raw": "you may search your library for up to two land cards",
+       "fields": [
+        [
+         "actor",
+         "you (its controller)"
+        ],
+        [
+         "finds",
+         "\"up to two land cards\" (zone library; types land)"
+        ],
+        [
+         "amount",
+         "up to 2"
+        ],
+        [
+         "choice",
+         "optional (you may)"
+        ]
+       ],
+       "executor": {
+        "name": "_search_dispatch",
+        "supports": true
+       },
+       "then": [
+        {
+         "seq": 1,
+         "verb": "MOVE",
+         "raw": "put them onto the battlefield tapped",
+         "fields": [
+          [
+           "actor",
+           "you (its controller)"
+          ],
+          [
+           "to",
+           "battlefield tapped"
+          ],
+          [
+           "reads",
+           "result of #0"
+          ],
+          [
+           "flags",
+           "may_scope"
+          ]
+         ],
+         "executor": {
+          "name": "execute_move",
+          "supports": true
+         }
+        },
+        {
+         "seq": 2,
+         "verb": "SHUFFLE",
+         "raw": "shuffle",
+         "fields": [
+          [
+           "actor",
+           "you (its controller)"
+          ],
+          [
+           "flags",
+           "may_scope"
+          ]
+         ],
+         "executor": {
+          "name": "execute_shuffle",
+          "supports": true
+         }
+        }
+       ]
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "enter",
+        "family": "card_flow"
+       },
+       {
+        "carrier": "attack",
+        "family": "attack_trigger"
+       }
+      ]
+     }
+    }
+   ],
+   "why": "One host, two carriers: the enter and the attack carrier both take it. The search finds what its description admits, the searcher chooses (the AI by its one land valuation), and the land-entry owner puts the lands onto the battlefield tapped."
+  },
+  {
+   "card": "Abhorrent Oculus",
+   "oracle": "As an additional cost to cast this spell, exile six cards from your graveyard.\nFlying\nAt the beginning of each opponent's upkeep, manifest dread. (Look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)",
+   "hosts": [
+    {
+     "kind": "ADDITIONAL_COST",
+     "index": 0,
+     "text": "as an additional cost to cast ~, exile six cards from your graveyard.",
+     "head": null,
+     "keywords": [],
+     "specs": [],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": []
+     }
+    },
+    {
+     "kind": "KEYWORD",
+     "index": 1,
+     "text": "flying",
+     "head": null,
+     "keywords": [
+      "flying"
+     ],
+     "specs": [],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": []
+     }
+    },
+    {
+     "kind": "TRIGGERED",
+     "index": 2,
+     "text": "at the beginning of each opponent's upkeep, manifest dread.",
+     "head": {
+      "raw": "at the beginning of each opponent's upkeep",
+      "events": [
+       "BEGINNING_OF"
+      ],
+      "typed": [
+       "step_event"
+      ],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "KEYWORD_ACTION",
+       "raw": "manifest dread",
+       "fields": [
+        [
+         "creates",
+         "keyword action: manifest dread"
+        ]
+       ],
+       "executor": {
+        "name": "execute_keyword_action",
+        "supports": true
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "step",
+        "family": "step_trigger"
+       }
+      ]
+     }
+    }
+   ],
+   "why": "A beginning-of-step trigger whose keyword action puts a card onto the battlefield face down: a 2/2 with no name, colour or text, which is the card itself again once it leaves (CR 701.62a, 708.2a, 708.9). The step carrier takes it now that the keyword executor performs manifest dread."
+  },
+  {
+   "card": "Static Prison",
+   "oracle": "When this enchantment enters, exile target nonland permanent an opponent controls until this enchantment leaves the battlefield. You get {E}{E} (two energy counters).\nAt the beginning of your first main phase, sacrifice this enchantment unless you pay {E}.",
+   "hosts": [
+    {
+     "kind": "TRIGGERED",
+     "index": 0,
+     "text": "when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield. you get {e}{e}.",
+     "head": {
+      "raw": "when ~ enters",
+      "events": [
+       "SELF_ENTERS"
+      ],
+      "typed": [],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "EXILE",
+       "raw": "exile target nonland permanent an opponent controls until ~ leaves the battlefield",
+       "fields": [
+        [
+         "target",
+         "target nonland permanent an opponent controls"
+        ],
+        [
+         "lasts",
+         "until leaves"
+        ]
+       ],
+       "executor": {
+        "name": "execute_exile",
+        "supports": true
+       }
+      },
+      {
+       "seq": 1,
+       "verb": "PLAYER_COUNTERS",
+       "raw": "you get {e}{e}",
+       "fields": [
+        [
+         "actor",
+         "you (its controller)"
+        ],
+        [
+         "creates",
+         "counters: energy, energy"
+        ]
+       ],
+       "executor": {
+        "name": "execute_player_counters",
+        "supports": true
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "enter",
+        "family": "enter_exile"
+       }
+      ]
+     }
+    },
+    {
+     "kind": "TRIGGERED",
+     "index": 1,
+     "text": "at the beginning of your first main phase, sacrifice ~ unless you pay {e}.",
+     "head": {
+      "raw": "at the beginning of your first main phase",
+      "events": [
+       "BEGINNING_OF"
+      ],
+      "typed": [
+       "step_event"
+      ],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "SACRIFICE",
+       "raw": "sacrifice ~",
+       "fields": [
+        [
+         "reads",
+         "self"
+        ],
+        [
+         "if",
+         "unless you pay {e}"
+        ]
+       ],
+       "executor": {
+        "name": "execute_sacrifice",
+        "supports": true
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "step",
+        "family": "step_trigger"
+       }
+      ]
+     }
+    }
+   ],
+   "why": "An exile that lasts until the enchantment leaves (CR 610.3), energy given as player counters (CR 122.1), and a beginning-of-step sacrifice that its controller avoids by paying an \"unless\" cost (CR 118.12)."
+  },
+  {
+   "card": "Territorial Kavu",
+   "oracle": "Domain — Territorial Kavu's power and toughness are each equal to the number of basic land types among lands you control.\nWhenever this creature attacks, choose one —\n• Discard a card. If you do, draw a card.\n• Exile up to one target card from a graveyard.",
+   "hosts": [
+    {
+     "kind": "STATIC",
+     "index": 0,
+     "text": "domain - ~'s power and toughness are each equal to the number of basic land types among lands you control.",
+     "head": null,
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "UNMODELLED",
+       "raw": "~'s power and toughness are each equal to the number of basic land types among lands you control",
+       "fields": [
+        [
+         "creates",
+         "not modelled at NO_LEMMA (lexicon.no_lemma)"
+        ]
+       ],
+       "executor": {
+        "name": "",
+        "supports": false
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": []
+     }
+    },
+    {
+     "kind": "TRIGGERED",
+     "index": 1,
+     "text": "whenever ~ attacks, choose one -",
+     "head": {
+      "raw": "whenever ~ attacks",
+      "events": [
+       "SELF_ATTACKS"
+      ],
+      "typed": [
+       "attack"
+      ],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [],
+     "modes": [
+      {
+       "index": 0,
+       "text": "• discard a card. if you do, draw a card.",
+       "specs": [
+        {
+         "seq": 0,
+         "verb": "DISCARD",
+         "raw": "discard a card",
+         "fields": [
+          [
+           "finds",
+           "\"a card\" (zone hand)"
+          ],
+          [
+           "amount",
+           "literal 1"
+          ]
+         ],
+         "executor": {
+          "name": "execute_discard",
+          "supports": true
+         },
+         "then": [
+          {
+           "seq": 1,
+           "verb": "DRAW",
+           "raw": "draw a card",
+           "fields": [
+            [
+             "amount",
+             "literal 1"
+            ],
+            [
+             "flags",
+             "if_you_do"
+            ]
+           ],
+           "executor": {
+            "name": "execute_draw",
+            "supports": true
+           }
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "index": 1,
+       "text": "• exile up to one target card from a graveyard.",
+       "specs": [
+        {
+         "seq": 0,
+         "verb": "EXILE",
+         "raw": "exile up to one target card from a graveyard",
+         "fields": [
+          [
+           "target",
+           "target card from a graveyard"
+          ]
+         ],
+         "executor": {
+          "name": "execute_exile",
+          "supports": true
+         }
+        }
+       ]
+      }
+     ],
+     "choose": [
+      1,
+      1
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "attack",
+        "family": "attack_trigger"
+       }
+      ]
+     }
+    }
+   ],
+   "why": "A modal attack trigger: its controller chooses the mode as it is put on the stack, and each mode runs as a host of its own (CR 603.3c, 700.2). Its domain power is still read by the legacy characteristic-defining parser."
+  },
+  {
+   "card": "Unholy Heat",
+   "oracle": "Unholy Heat deals 2 damage to target creature or planeswalker.\nDelirium — Unholy Heat deals 6 damage instead if there are four or more card types among cards in your graveyard.",
+   "hosts": [
+    {
+     "kind": "SPELL",
+     "index": 0,
+     "text": "~ deals 2 damage to target creature or planeswalker.\ndelirium - ~ deals 6 damage instead if there are four or more card types among cards in your graveyard.",
+     "head": null,
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "DAMAGE",
+       "raw": "~ deals 2 damage to target creature or planeswalker",
+       "fields": [
+        [
+         "target",
+         "target creature or planeswalker"
+        ],
+        [
+         "amount",
+         "literal 2"
+        ]
+       ],
+       "executor": {
+        "name": "execute_damage",
+        "supports": true
+       }
+      },
+      {
+       "seq": 1,
+       "verb": "DAMAGE",
+       "raw": "~ deals 6 damage",
+       "fields": [
+        [
+         "target",
+         "target creature or planeswalker"
+        ],
+        [
+         "amount",
+         "literal 6"
+        ],
+        [
+         "if",
+         "if there are four or more card types among cards in your graveyard"
+        ],
+        [
+         "instead of",
+         "#0"
+        ]
+       ],
+       "executor": {
+        "name": "execute_damage",
+        "supports": true
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [
+       {
+        "carrier": "spell",
+        "family": "damage"
+       }
+      ]
+     }
+    }
+   ],
+   "why": "A spell whose second sentence replaces its first under a condition: the dispatcher runs the \"instead\" instruction at its victim's place when delirium holds."
+  },
+  {
+   "card": "Guide of Souls",
+   "oracle": "Whenever another creature you control enters, you gain 1 life and get {E} (an energy counter).\nWhenever you attack, you may pay {E}{E}{E}. When you do, put two +1/+1 counters and a flying counter on target attacking creature. It becomes an Angel in addition to its other types.",
+   "hosts": [
+    {
+     "kind": "TRIGGERED",
+     "index": 0,
+     "text": "whenever another creature you control enters, you gain 1 life and get {e}.",
+     "head": {
+      "raw": "whenever another creature you control enters",
+      "events": [
+       "OTHER_ENTERS"
+      ],
+      "typed": [],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "GAIN_LIFE",
+       "raw": "you gain 1 life",
+       "fields": [
+        [
+         "actor",
+         "you (its controller)"
+        ],
+        [
+         "amount",
+         "literal 1"
+        ]
+       ],
+       "executor": {
+        "name": "execute_gain_life",
+        "supports": true
+       }
+      },
+      {
+       "seq": 1,
+       "verb": "PLAYER_COUNTERS",
+       "raw": "get {e}",
+       "fields": [
+        [
+         "actor",
+         "you (its controller)"
+        ],
+        [
+         "creates",
+         "counters: energy"
+        ]
+       ],
+       "executor": {
+        "name": "execute_player_counters",
+        "supports": true
+       }
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": [],
+      "verdicts": []
+     }
+    },
+    {
+     "kind": "TRIGGERED",
+     "index": 1,
+     "text": "whenever you attack, you may pay {e}{e}{e}. when you do, put two +1/+1 counters and a flying counter on target attacking creature. it becomes an angel in addition to its other types.",
+     "head": {
+      "raw": "whenever you attack",
+      "events": [
+       "ATTACKS_OTHER"
+      ],
+      "typed": [
+       "attack"
+      ],
+      "intervening_if": false
+     },
+     "keywords": [],
+     "specs": [
+      {
+       "seq": 0,
+       "verb": "PAY",
+       "raw": "you may pay {e}{e}{e}",
+       "fields": [
+        [
+         "actor",
+         "you (its controller)"
+        ],
+        [
+         "creates",
+         "counters: energy, energy, energy"
+        ],
+        [
+         "choice",
+         "optional (you may)"
+        ]
+       ],
+       "executor": {
+        "name": "",
+        "supports": false
+       },
+       "then": [
+        {
+         "seq": 1,
+         "verb": "CREATE_TRIGGER",
+         "raw": "when you do, put two +1/+1 counters and a flying counter on target attacking creature",
+         "fields": [
+          [
+           "creates",
+           "reflexive trigger"
+          ],
+          [
+           "flags",
+           "reflexive"
+          ]
+         ],
+         "executor": {
+          "name": "sub-ability host",
+          "supports": true
+         }
+        }
+       ]
+      }
+     ],
+     "modes": [],
+     "choose": [
+      0,
+      0
+     ],
+     "route": {
+      "taken": [],
+      "carriers": [
+       "attack"
+      ],
+      "verdicts": [
+       {
+        "family": "attack_trigger",
+        "strict": false,
+        "executable": false
+       }
+      ]
+     }
+    }
+   ],
+   "why": "Fail closed. The attack host's \"you may pay {E}{E}{E}\" has no executor yet, so the attack carrier refuses the card and its legacy path runs. It is one of the census rows still open."
+  }
+ ],
+ "vocabulary": {
+  "verbs": 45,
+  "host_kinds": 14,
+  "amount_kinds": 14,
+  "condition_kinds": 10,
+  "strict_views": [
+   "attack_trigger",
+   "card_flow",
+   "cast_trigger",
+   "combat_damage_trigger",
+   "damage",
+   "draw_trigger",
+   "edict",
+   "enter_exile",
+   "pump_restrict",
+   "removal",
+   "stack_mana",
+   "step_trigger",
+   "tokens_counters",
+   "trigger",
+   "type_change"
+  ],
+  "executor_verbs": [
+   "ADD_MANA",
+   "CHOOSE",
+   "CONTINUOUS",
+   "CREATE_TOKEN",
+   "DAMAGE",
+   "DESTROY",
+   "DISCARD",
+   "DRAW",
+   "EXILE",
+   "GAIN_LIFE",
+   "KEYWORD_ACTION",
+   "LOSE_LIFE",
+   "MILL",
+   "MOVE",
+   "PLAYER_COUNTERS",
+   "PUT_COUNTERS",
+   "REVEAL",
+   "SACRIFICE",
+   "SEARCH",
+   "SHUFFLE",
+   "SURVEIL"
+  ],
+  "condition_evaluators": [
+   "HISTORY",
+   "OBJECT",
+   "STATE",
+   "UNLESS"
+  ],
+  "families": {
+   "damage": 3,
+   "card_flow": 12,
+   "tokens_counters": 6,
+   "edict": 1,
+   "removal": 4,
+   "cast_trigger": 17,
+   "step_trigger": 15,
+   "attack_trigger": 17,
+   "enter_exile": 17
+  },
+  "enter_families": [
+   "card_flow",
+   "tokens_counters",
+   "edict",
+   "enter_exile"
+  ],
+  "spell_families": [
+   "damage",
+   "card_flow",
+   "type_change",
+   "edict",
+   "tokens_counters"
+  ],
+  "sub_grammars": [
+   "amount",
+   "condition",
+   "dest",
+   "duration",
+   "filter",
+   "participant",
+   "payload",
+   "quantity",
+   "target"
+  ]
+ }
+}

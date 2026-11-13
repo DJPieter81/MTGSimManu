@@ -1,0 +1,937 @@
+{
+ "doc": "Activation costs where the grammar host (A7: parse_activation_cost over the printed head) differs from the legacy ActivatedAbility.cost, each classified; the seed of the step-18 equivalence allowlist. Only grammar_reads_more rows may appear.",
+ "rows": [
+  {
+   "key": "Action News Crew|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Adorned Crocodile|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Afterburner Expert|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Agent of Kotis|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Akoum Flameseeker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Alchemist's Assistant|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ambitious Farmhand // Seasoned Cathar|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Amonkhet Raceway|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Arashi, the Sky Asunder|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Arcane Investigator|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Argent Sphinx|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Arni Brokenbrow|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Atarka Beastbreaker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Atarka Pummeler|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Avishkar Raceway|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Axgard Braggart|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Bagel and Schmear|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Bagel and Schmear|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Balustrade Wurm|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Bamboo Grove Archer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Barbarian Ring|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Battershield Warrior|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Bitter Work|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Blazing Bomb|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Blink Dog|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Blitzball|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Bloodsoaked Champion|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Bloom Tender|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Boom Scholar|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Boommobile|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Boseiju, Who Endures|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Camera Launcher|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Candletrap|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Case of the Burning Masks|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Case of the Filched Falcon|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Case of the Stashed Skeleton|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Cephalid Coliseum|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Champion of Dusan|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Circle of Elders|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Clever Conjurer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Colossal Skyturtle|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Colossal Skyturtle|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Constrictor Sage|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Crater Elemental|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Crop Sigil|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Daily Bugle Building|2",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Dawnhart Mentor|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Death-Mask Duplicant|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Displacer Beast|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Draconautics Engineer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Draconautics Engineer|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Dragon Whisperer|2",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Dragon-Scarred Bear|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Dragonkin Berserker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Drana's Chosen|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Draugr Recruiter|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Duskwielder|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Eiganjo, Seat of the Empire|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Elvish Refueler|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Endrider Catalyzer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Eradicator Valkyrie|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fanatic of Rhonas|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Favor of Jukai|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fearless Liberator|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fearless Pup|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fiery Bombardment|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fifty Feet of Rope|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fifty Feet of Rope|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fifty Feet of Rope|2",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Fleshless Gladiator|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Gas Guzzler|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Gelatinous Cube|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghor-Clan Rampager|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghost-Lit Drifter|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghost-Lit Nourisher|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghost-Lit Raider|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghost-Lit Redeemer|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghost-Lit Stalker|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ghost-Lit Warder|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Glade Watcher|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Glitch Ghost Surveyor|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Goblin Surveyor|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Goldmaw Champion|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Govern the Guildless|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Greasewrench Goblin|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Greater Tanuki|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Greenbelt Guardian|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Guild Thief|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Guy in the Chair|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Hagi Mob|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Half-Elf Monk|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Hazard of the Dunes|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Herald of Hadar|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Hog-Monkey|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Horizon Seeker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Hour of Victory|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Howlsquad Heavy|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ironhoof Boar|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Jeong Jeong, the Deserter|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Jiwari, the Earth Aflame|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Jodah's Codex|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Jukai Preserver|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Keen Buccaneer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Keldon Megaliths|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Kheru Goldkeeper|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Kickoff Celebrations|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Kindly Stranger // Demon-Possessed Witch|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Kuldotha Phoenix|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Lasyd Prowler|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Leonin Surveyor|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Liliana the Repentant|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Loot, the Pathfinder|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Loot, the Pathfinder|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Loot, the Pathfinder|2",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Loxodon Surveyor|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Lurking Arynx|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "M.O.D.O.K.|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Mai, Jaded Edge|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Malakir Soothsayer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Marshals' Pathcruiser|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Mindspring Merfolk|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Mirrorshell Crab|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Mnemonic Sphere|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Moonsnare Prototype|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Mox Opal|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Munda's Vanguard|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Muraganda Raceway|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Mutant Surveyor|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Myr Welder|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Naga Fleshcrafter|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Nihilistic Glee|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ondu War Cleric|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Oswald Fiddlebender|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Otawara, Soaring City|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Pacesetter Paragon|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Paladin of Prahv|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Panoptic Mirror|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Perilous Snare|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Piercing Rays|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Plumes of Peace|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Pride of the Clouds|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Proclamation of Rebirth|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Prowcatcher Specialist|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Pyrewild Shaman|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Qarsi Revenant|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Radha's Firebrand|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Radioactive Spider|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Ragamuffyn|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rangers' Refueler|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Raving Visionary|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Reaper of Flight Moonsilver|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rebellious Captives|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Redshift, Rocketeer Chief|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Reinforced Ronin|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Repeating Barrage|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Reptil, Dinomorpher|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Reptil, Dinomorpher|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Resurrected Cultist|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Riverchurn Monument|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Roaring Earth|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rocketeer Boostbuggy|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rot-Curse Rakshasa|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rough Rhino Cavalry|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rubblebelt Maaka|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rubblehulk|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Rydia, Summoner of Mist|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sabotage Strategist|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sage of the Fang|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sagu Pummeler|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Saiba Trespassers|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Scab-Clan Charger|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Scorchwalker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shaman of Forgotten Ways|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shaman of the Great Hunt|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shifting Woodland|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shigeki, Jukai Visionary|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shinen of Fear's Chill|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shinen of Flight's Wings|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shinen of Fury's Fire|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shinen of Life's Roar|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Shinen of Stars' Light|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sigurd, Jarl of Ravensthorpe|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sinew Dancer|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sita Varma, Masked Racer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Skarrg Goliath|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Skinbrand Goblin|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Skirsdag High Priest|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Skyscribing|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Skyserpent Seeker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Skystreak Engineer|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Slaughterhorn|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Slick Imitator|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sokenzan, Crucible of Defiance|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Spawnbinder Mage|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Spirit en-Dal|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Stallion of Ashmouth|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Stampeding Scurryfoot|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Starting Column|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Steeling Stance|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Stegron the Dinosaur Man|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Stoneforge Acolyte|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sunbathing Rootwalla|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sunblade Samurai|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Sungold Sentinel|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Symbiote Spider-Man|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Takenuma, Abandoned Mire|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Terra, Magical Adept // Esper Terra|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "The Blackstaff of Waterdeep|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "The Seedcore|2",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "The Unbeatable Squirrel Girl|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Thought Shucker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Touch the Spirit Realm|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Towering Viewpoint|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Tuskeri Firewalker|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Twinshot Sniper|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Uchbenbak, the Great Mistake|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Usher of the Fallen|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Varragoth, Bloodsky Sire|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Vedalken Certarch|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Venat, Heart of Hydaelyn // Hydaelyn, the Mothercrystal|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Vengeful Devil|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Viashino Shanktail|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Wandering Goblins|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Wasteland Viper|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Whisperer of the Wilds|1",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Winter, Cursed Rider|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Wojek Apothecary|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Wojek Embermage|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Wrecking Ogre|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Writ of Passage|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Zada's Commando|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Zhur-Taa Swine|0",
+   "class": "grammar_reads_more"
+  },
+  {
+   "key": "Zulaport Chainmage|0",
+   "class": "grammar_reads_more"
+  }
+ ]
+}

@@ -15,16 +15,16 @@ Cost profile (Haiku 4.5, published 2026-07 rates — see
   * Full (~21k cards): ~$2-8.  Hard-capped at $20 via
     `ai.llm_budgets`; can be raised via `--budget-cap-usd`.
 
-Model policy:
-  * Routine incremental classification stays on the Haiku default.
-  * One-time COMMITTED-cache rebuilds (prompt-version bumps, full-DB
-    re-classification) should run on the strongest affordable model —
-    `MTG_LLM_MODEL_CLASSIFY_ORACLE=anthropic:claude-sonnet-5` or
-    better.  A single misclassification silently disables an engine
-    rule for every sim until the next audit (the 2026-07-05
-    Wrenn's Resolve / Tag.IMPULSE_DRAW incident class), so on a
-    build that is committed and then trusted for weeks, model quality
-    dominates the few-dollar cost delta.
+Model policy (2026-11): the default is the current Sonnet tier
+(`ai.llm_models.DEFAULT_MODELS`), one tier above pure extraction.  A
+single misclassification silently distorts AI scoring for every sim
+until the next audit (the 2026-07-05 Wrenn's Resolve /
+Tag.IMPULSE_DRAW incident class), so on a build that is committed and
+then trusted for weeks, model quality dominates the few-dollar cost
+delta.  Override per run with `MTG_LLM_MODEL_CLASSIFY_ORACLE` (e.g. to
+the Opus tier for a full rebuild, or to the decision model when
+re-measuring its rejected A/B).  The cost profile above predates the
+refresh; the Sonnet tier prices at twice that Haiku generation.
 
 Cache semantics:
   * Per-call responses go through `ai.llm_cache` (SHA-256 keyed by
@@ -71,6 +71,8 @@ if str(ROOT) not in sys.path:
 
 from ai.llm_agents import build_agent
 from ai.llm_budgets import select_budget_usd
+from ai.llm_inputs import OracleClassifyInput
+from ai.llm_schemas import decision_to_tags
 from ai.oracle_classifier import SCHEMA_VERSION, Tag
 
 
@@ -165,23 +167,10 @@ def build_classify_input(card: dict) -> str:
     payload is intentionally minimal — name, mana cost, type line,
     oracle text — so the prompt stays within the 4000-token cap and
     the cache key changes only when the inputs that matter change.
+
+    The typed `ai.llm_inputs.OracleClassifyInput` owns the format.
     """
-    name = card.get("name", "<unknown>")
-    mana = card.get("manaCost", "")
-    types = card.get("types", [])
-    subtypes = card.get("subtypes", [])
-    supertypes = card.get("supertypes", [])
-    type_line_parts = [" ".join(supertypes + types).strip()]
-    if subtypes:
-        type_line_parts.append("— " + " ".join(subtypes))
-    type_line = " ".join(p for p in type_line_parts if p)
-    oracle = card.get("text", "")
-    return (
-        f"name: {name}\n"
-        f"mana_cost: {mana}\n"
-        f"types: {type_line}\n"
-        f"oracle_text: {oracle}\n"
-    )
+    return OracleClassifyInput.from_mtgjson(card).render()
 
 
 # ─── Classification ──────────────────────────────────────────────────
@@ -224,7 +213,9 @@ def classify_one(
     user_prompt = build_classify_input(card)
     result = agent.run_sync(user_prompt)
     classification = result.output
-    tags = _coerce_tags(classification.tags, card.get("name", "<unknown>"))
+    raw = (classification.tags if hasattr(classification, "tags")
+           else decision_to_tags(classification))
+    tags = _coerce_tags(raw, card.get("name", "<unknown>"))
     sha = _oracle_sha(card.get("text", ""))
     return tags, sha
 

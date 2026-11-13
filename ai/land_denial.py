@@ -112,7 +112,7 @@ def _opponent_basic_replacement_colors(game: "GameState",
     return frozenset(colors)
 
 
-def _legal_opponent_land_targets(tmpl: "CardTemplate", game: "GameState",
+def _legal_opponent_land_targets(data: dict, game: "GameState",
                                  caster_idx: int) -> List["CardInstance"]:
     """Opponent-controlled lands this LD spell may usefully target.
 
@@ -126,7 +126,6 @@ def _legal_opponent_land_targets(tmpl: "CardTemplate", game: "GameState",
     from engine.cards import Keyword, Supertype
     from engine.target_solver import TargetRequirement, enumerate_legal_targets
 
-    data = tmpl.land_destruction_data or {}
     types = (frozenset({"artifact", "land"})
              if data.get('can_target_artifact') else frozenset({"land"}))
     req = TargetRequirement(zone="battlefield", types=types,
@@ -164,13 +163,22 @@ def _scarcity(land: "CardInstance", source_counts: Dict[str, int]) -> int:
 def choose_land_denial_target(tmpl: "CardTemplate", game: "GameState",
                               caster_idx: int,
                               snap: "EVSnapshot") -> Optional["CardInstance"]:
+    """A land-destruction spell's target (`choose_land_denial_target_for`
+    over its `land_destruction_data`)."""
+    return choose_land_denial_target_for(tmpl.land_destruction_data or {},
+                                         game, caster_idx, snap)
+
+
+def choose_land_denial_target_for(data: dict, game: "GameState",
+                                  caster_idx: int, snap: "EVSnapshot"
+                                  ) -> Optional["CardInstance"]:
     """Pick the opponent land whose loss maximizes their mana deficit:
     the scarcest color source.  Ties break toward the land producing
     more colors (fixing lands cover more of the curve), then lowest
     instance id for determinism.  Returns None when no affectable
-    opponent land exists.
+    opponent land exists.  `data` is the land-destruction shape.
     """
-    cands = _legal_opponent_land_targets(tmpl, game, caster_idx)
+    cands = _legal_opponent_land_targets(data, game, caster_idx)
     if not cands:
         return None
     counts = _opponent_color_sources(game, 1 - caster_idx)
@@ -183,16 +191,23 @@ def choose_land_denial_target(tmpl: "CardTemplate", game: "GameState",
 
 def land_denial_value(tmpl: "CardTemplate", game: "GameState",
                       caster_idx: int, snap: "EVSnapshot") -> float:
-    """EV of resolving this land-destruction spell against the chosen
-    (scarcest-source) target — tempo term + scarcity premium, both
-    derived from ai/clock primitives.  See module docstring for the
-    rule each term encodes.
+    """A land-destruction spell's EV (`land_denial_value_for` over its
+    `land_destruction_data`)."""
+    return land_denial_value_for(tmpl.land_destruction_data or {}, game,
+                                 caster_idx, snap)
+
+
+def land_denial_value_for(data: dict, game: "GameState", caster_idx: int,
+                          snap: "EVSnapshot") -> float:
+    """EV of destroying the chosen (scarcest-source) target with this
+    land-destruction shape — tempo term + scarcity premium, both derived
+    from ai/clock primitives.  See module docstring for the rule each term
+    encodes.
     """
     opp_idx = 1 - caster_idx
-    target = choose_land_denial_target(tmpl, game, caster_idx, snap)
+    target = choose_land_denial_target_for(data, game, caster_idx, snap)
     if target is None:
         return 0.0
-    data = tmpl.land_destruction_data or {}
     curve_top, pips = _opponent_unplayed_demand(game, opp_idx)
     counts = _opponent_color_sources(game, opp_idx)
     opp_lands = sum(1 for p in game.players[opp_idx].battlefield
@@ -201,15 +216,20 @@ def land_denial_value(tmpl: "CardTemplate", game: "GameState",
     # Tempo: one land-drop turn of delay per land they still needed to
     # reach their curve top.  Zero when flooded; zero when the rider
     # hands back a replacement basic (no land-count setback).
+    # The land's controller replaces it with a library basic under the
+    # replacement rider -- its own ("its controller may search") or every
+    # player's ("each player searches").
+    replaced = bool(data.get('rider_search_basic')
+                    or data.get('rider_each_player_search_basic'))
     constrained_turns = max(0, curve_top - opp_lands)
-    if data.get('rider_search_basic'):
+    if replaced:
         constrained_turns = 0
     tempo = mana_clock_impact(snap) * constrained_turns
 
     # Scarcity: pips of demanded colors the opponent can no longer
     # produce once this source is gone (and, under the replacement
     # rider, cannot restore with a library basic).
-    if data.get('rider_search_basic'):
+    if replaced:
         restorable = _opponent_basic_replacement_colors(game, opp_idx)
     else:
         restorable = frozenset()
@@ -224,6 +244,42 @@ def land_denial_value(tmpl: "CardTemplate", game: "GameState",
     premium = card_clock_impact(snap) * stranded_pips
 
     return tempo + premium
+
+
+def host_land_destruction_data(host) -> Optional[dict]:
+    """The land-destruction shape of a typed host whose first instruction
+    destroys a target land (the removal family's strict shape, unit LA):
+    its target's qualifiers and the basic-land searches after it, by the
+    land's controller, by each player or by you. None for any other
+    host."""
+    from engine.effect_model import Selector, SelectorKind
+    from engine.effect_spec import Ref, RefKind, Verb, iter_specs
+    specs = list(iter_specs(getattr(host, "specs", ()) or ()))
+    head = specs[0] if specs else None
+    if head is None or head.verb is not Verb.DESTROY or head.target is None \
+            or "land" not in head.target.types:
+        return None
+    req = head.target
+    data = {'can_target_artifact': "artifact" in req.types,
+            'nonbasic_only': req.supertype == "nonbasic",
+            'opponent_controls_only': req.owner_scope == "opponent",
+            'rider_search_basic': False,
+            'rider_search_basic_tapped': False,
+            'rider_each_player_search_basic': False,
+            'rider_you_search_basic': False,
+            'rider_damage': 0, 'rider_damage_nonbasic_only': False,
+            'rider_caster_draws': 0}
+    for s in specs[1:]:
+        if s.verb is not Verb.SEARCH:
+            continue
+        a = s.actor
+        if isinstance(a, Selector) and a.kind is SelectorKind.ALL_PLAYERS:
+            data['rider_each_player_search_basic'] = True
+        elif isinstance(a, Selector) and a.kind is SelectorKind.PLAYER:
+            data['rider_you_search_basic'] = True
+        elif isinstance(a, Ref) and a.kind is RefKind.CONTROLLER_OF:
+            data['rider_search_basic'] = True
+    return data
 
 
 def own_land_loss_value(game: "GameState", player_idx: int,

@@ -1,0 +1,38 @@
+// Broodscale Bloodchief — mtgtop8 event=93032 deck=906736
+2 Boseiju, Who Endures
+1 Cavern of Souls
+4 Eldrazi Temple
+6 Forest
+1 Gemstone Caverns
+1 Shifting Woodland
+3 Ugin's Labyrinth
+4 Urza's Saga
+1 Yavimaya, Cradle of Growth
+4 Basking Broodscale
+2 Devourer of Destiny
+4 Emrakul, the Promised End
+1 Haywire Mite
+1 Sire of Seven Deaths
+4 Sowing Mycospawn
+1 Walking Ballista
+4 Ancient Stirrings
+2 Dismember
+4 Kozilek's Command
+4 Malevolent Rumble
+3 Blade of the Bloodchief
+1 Soul-Guide Lantern
+1 Springleaf Drum
+1 Vexing Bauble
+
+Sideboard
+1 Bojuka Bog
+1 Dismember
+2 Disruptor Flute
+1 Gemstone Caverns
+1 Grafdigger's Cage
+2 Nature's Claim
+1 Shadowspear
+1 Sire of Seven Deaths
+3 Trinisphere
+1 Vexing Bauble
+1 Walking Ballista

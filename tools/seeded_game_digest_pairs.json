@@ -1,0 +1,27 @@
+{
+  "comment": "Seeded-game digest roster (docs/design/2026-09-29_clause_and_trigger_grammar.md, A42/F8). 16 Bo1 games and 4 Bo3 matches (sideboards passed, so post-sideboard games and sideboard cards are exercised). Seeds start at 50000 in steps of 500. Deck names are allowed here: this is a tools/ fixture, not engine/ or ai/ code. Amulet Titan vs Living End @ 50000 is deliberately absent: tests/test_wr_baseline_anchor.py records it as rarely per-process nondeterministic.",
+  "bo1": [
+    ["Boros Energy", "Affinity", 50000],
+    ["Ruby Storm", "Dimir Midrange", 50500],
+    ["Domain Zoo", "Eldrazi Tron", 51000],
+    ["Jeskai Blink", "4c Omnath", 51500],
+    ["Goryo's Vengeance", "Izzet Prowess", 52000],
+    ["Pinnacle Affinity", "4/5c Control", 52500],
+    ["Azorius Control", "Azorius Control (WST)", 53000],
+    ["Azorius Control (WST v2)", "Boros Energy", 53500],
+    ["Living End", "Jeskai Blink", 54000],
+    ["Amulet Titan", "Eldrazi Tron", 54500],
+    ["Instant Reanimator", "Boros Ponza", 55000],
+    ["Eldrazi Ramp", "Broodscale Bloodchief", 55500],
+    ["Creatures Toolbox", "Grixis Reanimator", 56000],
+    ["Azorius Blink", "Hollow One", 56500],
+    ["Dimir Midrange", "Domain Zoo", 57000],
+    ["4c Omnath", "Ruby Storm", 57500]
+  ],
+  "bo3": [
+    ["Boros Energy", "Domain Zoo", 58000],
+    ["Azorius Control", "Ruby Storm", 58500],
+    ["Living End", "Dimir Midrange", 59000],
+    ["Jeskai Blink", "Eldrazi Tron", 59500]
+  ]
+}

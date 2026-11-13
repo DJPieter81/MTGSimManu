@@ -782,9 +782,11 @@ NO_CAST_SENTINEL: int = 99  # magic-allow: rules-sentinel "uncastable", same sha
 
 
 # ─── Opp-static per-card-event self-damage projection (M1-AI) ──────
-# Mirror of engine/zone_transfer._ON_DRAW_HANDLERS so chain projection
-# (ai.ev_evaluator._estimate_combo_chain) and runtime resolution agree
-# by sharing the same (Tag, verb-regex) table. Extend in lock-step.
+# An AI hint for chain projection (ai.ev_evaluator._estimate_combo_chain):
+# per (Tag, verb-regex). The engine resolves draw triggers from their typed
+# heads (engine.effect_carrier.dispatch_draw_triggers) since unit D, for
+# every card of the class; this projection still sees the tagged sources
+# only (lead: derive it from the same typed heads).
 
 def _per_event_taxes_table():
     from ai.oracle_classifier import Tag

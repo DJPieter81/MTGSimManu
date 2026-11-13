@@ -1,0 +1,16 @@
+{
+  "source": "expected = ai/llm_decision_weights.json row; band = decision_scorer_v2.md per-context prior",
+  "input": {
+    "archetype": "ramp",
+    "context": "tron_mana_advantage"
+  },
+  "expected": {
+    "weight": 4.0
+  },
+  "bands": {
+    "weight": [
+      3.0,
+      5.0
+    ]
+  }
+}

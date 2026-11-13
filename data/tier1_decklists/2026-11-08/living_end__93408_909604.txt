@@ -1,0 +1,36 @@
+// Living End — mtgtop8 event=93408 deck=909604
+1 Breeding Pool
+1 Commercial District
+1 Forest
+1 Hedge Maze
+1 Island
+4 Misty Rainforest
+1 Sacred Foundry
+1 Steam Vents
+1 Stomping Ground
+1 Temple Garden
+1 Thundering Falls
+1 Colossal Skyturtle
+4 Endurance
+3 Generous Ent
+4 Oliphaunt
+4 Shardless Agent
+4 Street Wraith
+3 Striped Riverwinder
+4 Subtlety
+1 Waker of Waves
+4 Wistfulness
+4 Force of Negation
+3 Living End
+1 Sink into Stupor
+1 Valakut Awakening
+4 Violent Outburst
+1 Teferi, Time Raveler
+
+Sideboard
+3 Clarion Conqueror
+2 Force of Vigor
+2 Inevitable Betrayal
+4 Mystical Dispute
+2 Obsidian Charmaw
+2 Teferi, Time Raveler

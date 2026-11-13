@@ -1,0 +1,31 @@
+// Red Deck Wins — mtgtop8 event=91282 deck=893224
+2 Arena of Glory
+2 Arid Mesa
+1 Barbarian Ring
+4 Bloodstained Mire
+4 Inspiring Vantage
+3 Mountain
+2 Sacred Foundry
+2 Wooded Foothills
+4 Monastery Swiftspear
+4 Vexing Devil
+4 Boltwave
+4 Boros Charm
+4 Lava Spike
+3 Light Up the Stage
+4 Lightning Bolt
+3 Rift Bolt
+3 Searing Blaze
+3 Skewer the Critics
+4 Skullcrack
+
+Sideboard
+1 Alpine Moon
+2 Brotherhood's End
+1 Deflecting Palm
+3 Faerie Macabre
+2 Path to Exile
+1 Price of Freedom
+1 Rest in Peace
+2 Roiling Vortex
+2 Wear / Tear

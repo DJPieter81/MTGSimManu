@@ -94,6 +94,9 @@ class TestLandcyclingSearchesLibrary:
 
         success = game.activate_cycling(0, sojourner)
         assert success, "cycling should succeed — 2 Mountains pay {2}"
+        # The cycling ability resolves from the stack (CR 702.29a, 602.2).
+        while not game.stack.is_empty:
+            game.resolve_stack()
 
         hand_names = [c.name for c in game.players[0].hand]
         assert "Darksteel Citadel" in hand_names, (
@@ -134,6 +137,9 @@ class TestLandcyclingSearchesLibrary:
 
         success = game.activate_cycling(0, wraith)
         assert success, "Street Wraith cycles for 2 life"
+        # The cycling ability resolves from the stack (CR 702.29a, 602.2).
+        while not game.stack.is_empty:
+            game.resolve_stack()
 
         hand_names = [c.name for c in game.players[0].hand]
         # Plain cycling draws TOP of library → first-pushed = bolt is

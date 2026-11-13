@@ -17,6 +17,18 @@ from ai.combo_calc import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _mock_fuel_is_cast(monkeypatch):
+    """Mock cards carry none of the typed fields the main phase's
+    same-turn filter reads: every mock card here is a cast the main phase
+    makes. The filter itself (a hold never waits for a deferred cast) is
+    pinned on real cards in
+    tests/test_combo_holds_count_only_plays_the_ai_makes.py."""
+    from ai import ev_evaluator
+    monkeypatch.setattr(ev_evaluator, "cast_is_deferred",
+                        lambda *a, **k: False)
+
+
 # ─── Helpers ──────────────────────────────────────────────────
 
 def _make_snap(opp_life=20, my_mana=3, **kwargs):
@@ -46,6 +58,7 @@ class MockTemplate:
     tags: Set[str] = field(default_factory=set)
     keywords: Set[str] = field(default_factory=set)
     color_identity: Set = field(default_factory=set)
+    colors: Set = field(default_factory=set)
     has_flash: bool = False
     ritual_mana: Optional[tuple] = None
     domain_reduction: int = 0
@@ -54,6 +67,9 @@ class MockTemplate:
     toughness: Optional[int] = None
     x_cost_data: Optional[dict] = None
     deals_targeted_damage: bool = False
+    # The typed dig fields the ritual gate reads (`_digs_toward_closer`).
+    has_draw_effect: bool = False
+    is_tutor: bool = False
 
 
 @dataclass
@@ -299,7 +315,8 @@ class TestCardComboModifier:
         snap = _make_snap()
         me = type('', (), {'spells_cast_this_turn': 0, 'hand': [], 'library': [None]*30,
                            'graveyard': [], 'battlefield': []})()
-        game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True})()
+        game = type('', (), {'players': [me, me], 'can_cast': lambda *a: True,
+                             'active_player': 0})()
         mod = card_combo_modifier(card, a, snap, me, game, 0)
         assert mod < 0
 
@@ -500,10 +517,10 @@ class TestCardComboModifier:
         class _FakeChain:
             def __init__(self, dmg): self.storm_damage = dmg
         calls = {'count': 0}
-        def fake_find(hand, mana, medallions, payoff_names, storm):
+        def fake_find(hand, mana, payoff_names, storm, **kwargs):
             calls['count'] += 1
-            # First call (with): medallions+1 → 14 dmg
-            # Second call (without): medallions → 8 dmg
+            # First call (with): the reducer in play → 14 dmg
+            # Second call (without) → 8 dmg
             return [_FakeChain(14)] if calls['count'] == 1 else [_FakeChain(8)]
         monkeypatch.setattr('ai.combo_calc.find_all_chains', fake_find,
                              raising=False)

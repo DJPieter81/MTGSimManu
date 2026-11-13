@@ -102,7 +102,7 @@ def test_the_refresher_neutralises_the_deadline_like_the_test_does():
         "refresh_wr_baseline.py must neutralise the wall-clock deadline "
         "before replaying, exactly as the anchor test does"
     )
-    assert "_ANCHOR_TIMEOUT_SECONDS" in src, (
+    assert "SEEDED_REPLAY_TIMEOUT_SECONDS" in src, (
         "the refresher must import the anchor test's timeout constant rather "
         "than duplicating the value, so the writer and reader cannot diverge"
     )

@@ -114,6 +114,7 @@ class TestStormPiFFinisherRequiresGYAndMana:
         rituals -> Grapeshot for storm=6+. Ritual EV must be positive."""
         game = GameState(rng=random.Random(0))
         _setup_storm_t3(game, card_db, mountains=5)
+        game.players[1].life = 2  # a lethal spot: the chain kills this turn
 
         ritual = _add(game, card_db, "Desperate Ritual", controller=0,
                       zone="hand")
@@ -181,6 +182,7 @@ class TestStormPiFFinisherRequiresGYAndMana:
         has_pif path."""
         game = GameState(rng=random.Random(0))
         _setup_storm_t3(game, card_db, mountains=3)
+        game.players[1].life = 2  # a lethal spot: the chain kills this turn
 
         ritual = _add(game, card_db, "Desperate Ritual", controller=0,
                       zone="hand")

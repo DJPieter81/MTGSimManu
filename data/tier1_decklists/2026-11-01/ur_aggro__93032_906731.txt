@@ -1,0 +1,29 @@
+// UR Aggro — mtgtop8 event=93032 deck=906731
+3 Arid Mesa
+3 Bloodstained Mire
+1 Fiery Islet
+2 Mountain
+1 Sacred Foundry
+1 Scalding Tarn
+3 Steam Vents
+1 Thundering Falls
+3 Wooded Foothills
+4 Dragon's Rage Channeler
+4 Monastery Swiftspear
+4 Pompous Battlemage
+3 Boomerang Basics
+3 Expressive Iteration
+4 Lava Dart
+4 Lightning Bolt
+4 Preordain
+4 Cori-Steel Cutter
+4 Mishra's Bauble
+4 Stormchaser's Talent
+
+Sideboard
+4 Consign to Memory
+1 Expressive Iteration
+2 Meltdown
+3 Prismatic Ending
+2 Tormod's Crypt
+3 Unholy Heat

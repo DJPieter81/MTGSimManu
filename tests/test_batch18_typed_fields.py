@@ -12,10 +12,9 @@ tokens and Nettlecyst-class cards scale P/T with artifact count.
 has_surveil replaces 'surveil' in oracle in oracle_resolver.py —
 used to detect cast-trigger surveil effects on permanents.
 
-# Mechanic: coin-flip transform (rule, not a card)
-
-has_coin_flip replaces 'flip a coin' in oracle in oracle_resolver.py
-— used to dispatch the coin-flip transform variant.
+# Mechanic: coin-flip transform -- retired: "flip a coin" is an
+instruction of the effect grammar (CR 705; Verb.FLIP), so no typed flag
+gates a legacy handler.
 
 # Mechanic: mobilize keyword (rule, not a card)
 
@@ -50,7 +49,6 @@ import pytest
 from engine.oracle_parser import (
     parse_has_artifact_count_scaling,
     parse_has_surveil,
-    parse_has_coin_flip,
     parse_has_mobilize,
     parse_has_transform_effect,
     parse_has_instant_or_sorcery_reference,
@@ -106,27 +104,6 @@ class TestHasSurveil:
     def test_empty_oracle_is_false(self):
         assert parse_has_surveil("") is False
         assert parse_has_surveil(None) is False
-
-
-class TestHasCoinFlip:
-    """Pins the replacement of 'flip a coin' in oracle in oracle_resolver.py
-    — transform-on-coin-flip variant (Ral pattern)."""
-
-    def test_flip_a_coin_text(self):
-        assert parse_has_coin_flip(
-            "Flip a coin. If you win the flip, exile this permanent, "
-            "then return it to the battlefield transformed."
-        ) is True
-
-    def test_plain_transform_no_coin(self):
-        assert parse_has_coin_flip(
-            "If you've cast two or more instant and/or sorcery spells "
-            "this turn, exile this permanent, then return it transformed."
-        ) is False
-
-    def test_empty_oracle_is_false(self):
-        assert parse_has_coin_flip("") is False
-        assert parse_has_coin_flip(None) is False
 
 
 class TestHasMobilize:

@@ -285,9 +285,14 @@ def _try_cache_row(archetype: str, context: str) -> Optional[DecisionScoringWeig
     context)`` under the current model + prompt version, or ``None``.
     The export in ``tools/llm_cache_warm.py`` reads the whole row
     (weight, confidence, rationale); ``_try_cache_only`` reads the
-    weight."""
+    weight.
+
+    A decision model's row is stored in its decision shape (a pick on
+    the weight grid); it is decoded in that shape and returned as the
+    canonical ``DecisionScoringWeights`` (``canonical_output``)."""
     try:
         from ai import llm_cache
+        from ai.llm_agents import canonical_output, output_type_for
         from ai.llm_models import select_model
         from ai.llm_prompts import latest_version
         model = select_model("decision_scorer")
@@ -296,7 +301,18 @@ def _try_cache_row(archetype: str, context: str) -> Optional[DecisionScoringWeig
             "decision_scorer", model, version,
             _cache_input(archetype, context),
         )
-        return llm_cache.get_cached(key, DecisionScoringWeights)
+        # The model's own shape first.  `get_cached` returns None on a
+        # miss (one lookup — this runs in the sim loop) and raises when a
+        # row exists but does not validate as the shape asked for: only
+        # then is the canonical shape tried (a row stored canonically
+        # under this key, e.g. by a seeding tool).
+        from pydantic import ValidationError
+        try:
+            row = llm_cache.get_cached(
+                key, output_type_for("decision_scorer", model))
+        except ValidationError:
+            row = llm_cache.get_cached(key, DecisionScoringWeights)
+        return None if row is None else canonical_output("decision_scorer", row)
     except Exception:
         # Cache failures fall through to the LLM-call / fallback path.
         # We do not crash the sim on a cache I/O error.
@@ -380,16 +396,21 @@ def weight(
         agent = _get_agent()
         if agent is not None:
             try:
-                payload = _cache_input(deck_archetype, decision_context)
-                # Pass the SAME dict the cache lookup is keyed by: the
-                # cache wrapper keys the call by it and renders it to
-                # text for the model, so the live result is found by
-                # `_try_cache_only` on the next call (and by the warm's
-                # export). A string prompt was keyed as a raw string and
-                # never matched — every call went live, and the warm
-                # recorded 72 of 72 pairs as skipped (2026-09-12).
+                from ai.llm_agents import canonical_output
+                from ai.llm_inputs import DecisionScorerInput
+                payload = DecisionScorerInput(
+                    **_cache_input(deck_archetype, decision_context))
+                # Pass the typed input whose `model_dump()` IS the dict
+                # the cache lookup is keyed by: the cache wrapper keys the
+                # call by that structure and renders it for the model
+                # (`DecisionScorerInput.render`), so the live result is
+                # found by `_try_cache_only` on the next call (and by the
+                # warm's export). A string prompt was keyed as a raw
+                # string and never matched — every call went live, and
+                # the warm recorded 72 of 72 pairs as skipped (2026-09-12).
                 result = agent.run_sync(payload)
-                w = float(result.output.weight)
+                output = canonical_output("decision_scorer", result.output)
+                w = float(output.weight)
                 if _is_finite_float(w):
                     return w
             except Exception:
