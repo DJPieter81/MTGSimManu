@@ -417,7 +417,10 @@ def offer_unless_cost(game: "GameState", payer_idx: int, cost,
         def _to_game(g, p, n=energy):
             return g.players[p].spend_energy(n)
     else:
-        if player.available_mana_estimate < mana.cmc:
+        # Quantity AND colour, through the one mana-affordability check
+        # the casting path uses: a cost the payer cannot pay is not offered.
+        from engine.cast_manager import CastManager
+        if not CastManager.mana_payable(game, payer_idx, mana):
             return False
         descriptor = CostDescriptor(kind="mana", amount=mana.cmc)
 

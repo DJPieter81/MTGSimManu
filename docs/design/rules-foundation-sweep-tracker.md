@@ -13544,3 +13544,9 @@ Strategy:
 - 0 violations.
 - 178 cells changed.
 - Every deck within ±1.4 (Grixis Reanimator +1.4, Jeskai Blink +1.1). Storm, Goryo's and Amulet within ±0.4.
+
+**LG follow-ups (review round 2):**
+- **(c) built.** The "unless / pay or else" payment owner (`engine/optional_costs.offer_unless_cost`) offers a mana cost only when `CastManager.mana_payable` says it can be paid in quantity and colour, the check the casting path uses. Before, it read the mana total only (four Islands were asked about {2}{G}{G}). The outcome was already right (the payment failed and nothing was tapped); now the AI is never asked about a payment it cannot make. Test red first. Anchor and digest unchanged.
+- **(a) not built.** Counting the land a pact fetches: Summoner's Pact puts the card into the hand, not onto the battlefield. The gate could count it only by predicting a creature land (Dryad Arbor) found and played as this turn's land drop. That is a class below 10 cards.
+- **(b) open:** a later play that breaks a pending pact (Scapeshift). 1 game in 40 in goldfish.
+- **(d) open:** "can't lose".

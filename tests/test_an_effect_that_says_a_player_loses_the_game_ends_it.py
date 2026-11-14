@@ -261,3 +261,26 @@ def test_a_second_deferred_cost_is_payable_only_beside_the_one_pending(
     _cast(game, card_db, PACT)                   # one pact now pending
     second = _add(game, card_db, PACT, 0, "hand")
     assert not deferred_costs_payable(game, 0, second)
+
+
+def test_a_cost_its_payer_cannot_pay_in_colour_is_not_offered(card_db,
+                                                             monkeypatch):
+    """Four Islands cannot pay {2}{G}{G}: the payment owner offers only a
+    cost its payer can pay in quantity AND colour (CR 118.12; review
+    round 2: the offer read the mana total only)."""
+    from engine.game_runner import AICallbacks
+    asked = []
+    real = AICallbacks.decide_optional_cost
+
+    def spy(self, game, idx, opt):
+        asked.append(opt.name)
+        return real(self, game, idx, opt)
+    monkeypatch.setattr(AICallbacks, "decide_optional_cost", spy)
+    game = _game(card_db, 0)
+    game.callbacks = AICallbacks()
+    for _ in range(4):
+        _add(game, card_db, "Island", 0)
+    _cast(game, card_db, PACT)
+    _next_own_upkeep(game)
+    assert game.game_over and game.winner == 1
+    assert not [n for n in asked if n.startswith("unless:")], asked
