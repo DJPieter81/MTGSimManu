@@ -13550,3 +13550,20 @@ Strategy:
 - **(a) not built.** Counting the land a pact fetches: Summoner's Pact puts the card into the hand, not onto the battlefield. The gate could count it only by predicting a creature land (Dryad Arbor) found and played as this turn's land drop. That is a class below 10 cards.
 - **(b) open:** a later play that breaks a pending pact (Scapeshift). 1 game in 40 in goldfish.
 - **(d) open:** "can't lose".
+
+## Storm vs Azorius Control (WST): replays (2026-11-14)
+
+**Match:** Storm vs WST, 4 Bo3 seeds (50000–51500), WST won 8 games of 9.
+
+**s50000 g1 (WST wins on turn 6):** WST's plan is dedicated hate, and the rules in the log read correctly:
+- Sanctifier en-Vec on turn 2: protection from red, and it exiles red cards entering graveyards, so flashback dies;
+- March of Otherworldly Light at X=2 on Ruby Medallion;
+- Chalice of the Void at X=2 on turns 5 and 6, which counters every 2-mana spell. Most of Storm's rituals and digs cost 2.
+
+Storm's loss here is largely structural, not an AI error.
+
+**One AI choice:** Storm cracked fetch lands with Wan Shi Tong, Librarian on the battlefield ("whenever an opponent searches their library": a +1/+1 counter and a card). That fired 14 times in the 4 matches. Only 2 pool cards print it, below the class floor, so it is not built.
+
+**The wider mechanic (lead):** a player's action priced with the opponent's triggers it causes: "whenever an opponent casts / draws / searches / sacrifices …". That is the opponent-trigger cost of a play. Build it only with a census of how often it decides games.
+
+**Reading:** Storm's band gap against the counter and hate decks (Dimir 15, WST 10–15) is mostly matchup structure. It is not a decision defect found so far in replays.
