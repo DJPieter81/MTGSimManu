@@ -11,7 +11,9 @@ decision of one kind:
 - `land_search`: the lands a search delivers, one at a time (`ai.
   activation_ev._choose_land_delivery`);
 - `sideboard`: the default sideboarder's new main deck
-  (`engine.sideboard_manager.sideboard`).
+  (`engine.sideboard_manager.sideboard`);
+- `optional_cost`: whether the player pays an optional cost the engine
+  offers (`AICallbacks.decide_optional_cost`), True or False.
 
 Builders take the card database and return what the decision needs. Card
 names are fixture carriers; the label names the rule.
@@ -175,6 +177,26 @@ def titan_search_beside_an_untap_watcher(card_db):
     return g, lib
 
 
+# ── optional-cost positions ──────────────────────────────────────────────
+
+def shock_payment_that_buys_nothing_castable(card_db):
+    """A shock land enters beside an Island; the hand's only spell needs
+    {U}{U} and the shock makes no blue, so paying 2 life casts nothing
+    (adversarial review round 2: the enablement check compared colour
+    sets, not pips)."""
+    from engine.game_runner import AICallbacks
+    from engine.optional_costs import parse_optional_costs
+    g = _game("4/5c Control", "Boros Energy", turn=3)
+    g.callbacks = AICallbacks()
+    _add(g, card_db, "Island", "battlefield")
+    shock = _add(g, card_db, "Sacred Foundry", "battlefield")
+    shock.tapped = True                 # entering; the payment is offered
+    _add(g, card_db, "Counterspell", "hand")
+    _library(g, card_db, name="Island")
+    _library(g, card_db, name="Mountain", controller=1)
+    return g, parse_optional_costs(shock, trigger="etb")[0]
+
+
 # ── sideboard positions ──────────────────────────────────────────────────
 
 def zoo_boards_against_red_storm(card_db):
@@ -201,4 +223,6 @@ POSITIONS: Dict[str, Tuple[str, Callable[[Any], Any]]] = {
         ("land_search", titan_search_beside_an_untap_watcher),
     "zoo_boards_against_red_storm":
         ("sideboard", zoo_boards_against_red_storm),
+    "shock_payment_that_buys_nothing_castable":
+        ("optional_cost", shock_payment_that_buys_nothing_castable),
 }

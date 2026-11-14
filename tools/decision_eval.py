@@ -108,6 +108,9 @@ def observe(kind: str, built: Any) -> Any:
         from engine.sideboard_manager import sideboard
         new_main, _ = sideboard(dict(main), dict(side), me, opp)
         return {"before": main, "after": new_main}
+    if kind == "optional_cost":
+        game, opt = built
+        return bool(game.callbacks.decide_optional_cost(game, 0, opt))
     raise ValueError(f"unknown decision kind {kind!r}")
 
 
@@ -125,6 +128,8 @@ def judge(expect: Dict[str, Any], seen: Any) -> bool:
     if "not_added" in expect:
         card = expect["not_added"]
         return seen["after"].get(card, 0) <= seen["before"].get(card, 0)
+    if "pays" in expect:
+        return seen is expect["pays"]
     raise ValueError(f"unknown expectation {expect!r}")
 
 

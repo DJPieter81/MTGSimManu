@@ -200,6 +200,21 @@
           ]
         }
       }
+    },
+    {
+      "id": "shock_payment_that_buys_nothing_castable",
+      "family": "optional_cost",
+      "expect": {
+        "pays": false
+      },
+      "rule": "Paying life for a land to enter untapped buys only the spells it makes castable this turn (GameState.can_cast with the land untapped); a payment that makes nothing castable costs the life for no gain and is declined (PE follow-up).",
+      "source": "Adversarial review round 2 of unit PE: {U}{U} off an Island and a Sacred Foundry was offered and bought",
+      "evidence": {
+        "rules_forced": true,
+        "rules_forced_note": "Strictly dominated: paying leaves the same board and spells castable this turn (none: the shock makes no blue, and the hand holds only a {U}{U} spell) for 2 less life.",
+        "rollout": null,
+        "review": null
+      }
     }
   ],
   "_review_log": [
