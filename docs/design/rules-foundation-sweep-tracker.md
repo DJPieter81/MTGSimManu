@@ -13567,3 +13567,8 @@ Storm's loss here is largely structural, not an AI error.
 **The wider mechanic (lead):** a player's action priced with the opponent's triggers it causes: "whenever an opponent casts / draws / searches / sacrifices …". That is the opponent-trigger cost of a play. Build it only with a census of how often it decides games.
 
 **Reading:** Storm's band gap against the counter and hate decks (Dimir 15, WST 10–15) is mostly matchup structure. It is not a decision defect found so far in replays.
+
+**LG follow-ups, continued:**
+- **Response path built.** `ai/response.ResponseDecider._enumerate_response_candidates` reads the same deferred-cost gate as the main phase. Pact of Negation with no blue source for its upkeep payment is no response. Test red without the gate; anchor and digest unchanged.
+- **Three pacts on the legacy path: measured, not built.** 58 pool spells hold a delayed trigger and are not dispatched. 17 of those triggers are executable, among them Pact of Negation, Slaughter Pact and Intervention Pact. Creating the trigger generically after a legacy resolution would schedule Goryo's Vengeance's end-step exile twice: it is the one registered-deck card in the 17, and its legacy path schedules the exile itself. No registered deck plays the three pacts. Build when a family switch takes those hosts.
+- **"Can't lose / can't win": measured, not built.** 7 pool cards print "can't lose the game" and 7 print "can't win the game", about 12 distinct. No registered deck plays one. Type it at load (a static on the battlefield) and read it in `GameState.end_game` when a deck carries one.

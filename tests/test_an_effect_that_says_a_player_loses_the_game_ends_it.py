@@ -284,3 +284,23 @@ def test_a_cost_its_payer_cannot_pay_in_colour_is_not_offered(card_db,
     _next_own_upkeep(game)
     assert game.game_over and game.winner == 1
     assert not [n for n in asked if n.startswith("unless:")], asked
+
+
+def test_an_instant_with_an_unpayable_deferred_cost_is_no_response(card_db):
+    """The response path reads the same deferred-cost gate as the main
+    phase (review round 2): Pact of Negation with no blue source for its
+    {3}{U}{U} upkeep payment is not a response candidate."""
+    from ai.response import ResponseDecider
+    from engine.stack import StackItem, StackItemType
+    game = _game(card_db, 0)
+    for _ in range(3):
+        _add(game, card_db, "Forest", 0)
+    pact = _add(game, card_db, "Pact of Negation", 0, "hand")
+    bolt = _add(game, card_db, "Lightning Bolt", 1, "hand")
+    game.players[1].hand.remove(bolt)
+    bolt.zone = "stack"
+    item = StackItem(item_type=StackItemType.SPELL, source=bolt,
+                     controller=1, targets=[])
+    game.stack.push(item)
+    decider = ResponseDecider(player_idx=0)
+    assert pact not in decider._enumerate_response_candidates(game, item)

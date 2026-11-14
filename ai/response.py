@@ -104,7 +104,12 @@ class ResponseDecider:
                 candidate_sources.append(src)
                 seen_ids.add(src.instance_id)
                 continue
-            if game.can_cast(self.player_idx, src):
+            # A cost the spell defers to a later upkeep on pain of losing
+            # the game is part of its cost here too (CR 104.3c): the same
+            # gate the main phase uses (`ai.deferred_costs`).
+            from ai.deferred_costs import deferred_costs_payable
+            if game.can_cast(self.player_idx, src) and \
+                    deferred_costs_payable(game, self.player_idx, src):
                 # A response a cast-triggered counter would counter on cast
                 # is not a response to anything (the engine's predicate,
                 # under what the response's route spends: a pitched Force
