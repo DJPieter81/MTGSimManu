@@ -13539,3 +13539,8 @@ Strategy:
 **Test:** `tests/test_a_player_told_to_discard_chooses_its_own_card.py`, red first. A flooded hand against "each opponent discards a card" now discards an Island, not its Counterspell.
 
 **Pins:** anchor and digest unchanged (no registered-deck game reaches this executor in the pinned seeds).
+
+**`dc-post`** (n=20 Bo3, full field, against `ml-post`; HA reverted, PE castability via `can_cast`, unit DC):
+- 0 violations.
+- 178 cells changed.
+- Every deck within ±1.4 (Grixis Reanimator +1.4, Jeskai Blink +1.1). Storm, Goryo's and Amulet within ±0.4.
