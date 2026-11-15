@@ -1773,7 +1773,7 @@ def _project_token_bonus(oracle_l: str, snap: "EVSnapshot"
             # to push damage through. Binary derivation — no blend.
             if snap.my_power <= 0 or snap.opp_clock <= 1:
                 return 0.0
-            if snap.opp_creature_count == 0:
+            if snap.opp_creature_count == 0:  # owner-proxy-allow: no blockers, a combat question
                 return 1.0
             if snap.my_power > snap.opp_toughness:
                 return 1.0

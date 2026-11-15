@@ -1417,7 +1417,7 @@ class EVPlayer:
             if snap.am_dead_next:
                 ev += EVOKE_DESPERATE_BONUS
             elif 'removal' in tags and (
-                    snap.opp_creature_count == 0
+                    snap.opp_creature_count == 0  # owner-proxy-allow: no creature at all; legal targets read next
                     or _no_legal_creature_target(game, card,
                                                  self.player_idx)):
                 # Never evoke removal with no target -- counted among the
@@ -1742,7 +1742,7 @@ class EVPlayer:
         # standing in for "one card of expected value").  No sentinel
         # — if the wrath has independent positive EV (artifact destroy
         # mode, scry rider, etc.) it can still pass the threshold.
-        if 'board_wipe' in tags and snap.opp_creature_count == 0:
+        if 'board_wipe' in tags and snap.opp_creature_count == 0:  # owner-proxy-allow: a wipe does not target
             from ai.clock import mana_clock_impact
             waste_penalty = ((t.cmc or 0) * mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
                              + 1.0)  # +1 = card loss (EV unit)

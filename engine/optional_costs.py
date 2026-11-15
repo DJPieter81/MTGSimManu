@@ -218,6 +218,18 @@ def parse_counter_tax_cost(source_card: "CardInstance",
     )
 
 
+def _generic_mana_payable(game: "GameState", player_idx: int,
+                          amount: int) -> bool:
+    """Can the player pay {amount} generic mana now -- untapped sources AND
+    mana already in its pool (CR 106.4) -- through the one affordability
+    owner (`CastManager.mana_payable`)? Zero is always payable."""
+    if amount <= 0:
+        return True
+    from engine.cast_manager import CastManager
+    from engine.mana import ManaCost
+    return CastManager.mana_payable(game, player_idx, ManaCost(generic=amount))
+
+
 def offer_counter_tax(game: "GameState", source_card: "CardInstance",
                        targeted_card: "CardInstance") -> bool:
     """Ask `targeted_card`'s controller whether to pay `source_card`'s
@@ -234,7 +246,7 @@ def offer_counter_tax(game: "GameState", source_card: "CardInstance",
         return False
     targeted_player_idx = targeted_card.controller
     player = game.players[targeted_player_idx]
-    if player.available_mana_estimate < opt.cost.amount:
+    if not _generic_mana_payable(game, targeted_player_idx, opt.cost.amount):
         return False
     if not game.callbacks.decide_optional_cost(game, targeted_player_idx, opt):
         return False
@@ -367,7 +379,8 @@ def offer_ward_tax(game: "GameState", warded_card: "CardInstance",
         return False
     template = warded_card.template
     player = game.players[casting_player_idx]
-    if player.available_mana_estimate < (getattr(template, "ward_cost", 0) or 0):
+    if not _generic_mana_payable(game, casting_player_idx,
+                                 getattr(template, "ward_cost", 0) or 0):
         return False
     if player.life < (getattr(template, "ward_life_cost", 0) or 0):
         return False    # CR 119.4: life can be paid only from at least as much

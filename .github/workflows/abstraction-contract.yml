@@ -119,6 +119,14 @@ jobs:
         # X counters placed by a handler) lived in exactly such paths.
         run: python tools/check_single_owner.py
 
+      - name: Owner-proxy ratchet (blind-spot class B1)
+        # A question the engine owns once (targetability, tap colours,
+        # payability, entering) re-answered with a cheaper proxy: right
+        # on the common board, wrong at the edge. Six 2026-11 defects had
+        # this shape (docs/design/2026-11-15_root_cause_blindspot_analysis.md).
+        # Pins each proxy's count; it may only fall.
+        run: python tools/check_owner_proxies.py
+
       - name: Temporal-state ratchet (one read path, one clock)
         # Gates read rule-effect state through engine/rules_query.py and
         # every turn-boundary reset runs as an engine/turn_clock.py

@@ -834,7 +834,7 @@ class GameRunner:
                 card.summoning_sick = False
                 player.battlefield.append(card)
                 # Trigger ETB effects (Leyline of the Guildpact domain setup, etc.)
-                game.trigger_etb(card, p_idx)
+                game.trigger_etb(card, p_idx)  # owner-proxy-allow: begins the game on the battlefield (CR 103.6), no enter
                 game.log.append(
                     f"T0 P{p_idx+1}: {card.name} begins the game on the "
                     f"battlefield (leyline)")

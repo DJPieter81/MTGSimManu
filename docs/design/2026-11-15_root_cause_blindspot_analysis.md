@@ -136,7 +136,7 @@ And two standing steps:
 
 | Class | Count this stretch | Detector status |
 |---|---|---|
-| B1 proxy for an owned question | 6 | proxy counts measured (above); ratchet to build |
+| B1 proxy for an owned question | 6, plus 2 siblings found by the sweep | **ratchet built** (`tools/check_owner_proxies.py`, in CI); sweep done for target_count, mana_total_pay and enter_queue; tap_colours (31 reads in ai/) baselined, sweep open |
 | B2 partial implementation | 4 | clause-coverage census to build |
 | B3 wrong chooser or layer | 2 | engine-pick ratchet to build |
 | B4 valuation not in one currency | 2 | strategy-lens review (standing) |
@@ -148,3 +148,14 @@ And two standing steps:
 2. B5 colour-feasibility check (cheap; one known finding);
 3. B2 clause-coverage census (the largest payoff: 69 name-keyed handlers);
 4. B3 engine-pick ratchet.
+
+## Sweep log
+
+**2026-11-15, B1 owner-proxy sweep** (`tools/check_owner_proxies.py --list`):
+
+| Category | What the sweep found | Outcome |
+|---|---|---|
+| target_count | 4 hits, all legitimate: a blocker count in combat, a board wipe that does not target, "nothing at all to remove" with legal targets gated after it, the HX guard's "no creature at all" | annotated; baseline 0 |
+| mana_total_pay | **2 real siblings.** The counter-tax offer (Mana Leak, Spell Pierce …) and the ward-tax offer judged payment by untapped sources only, so a player with floating mana was never asked | routed through `CastManager.mana_payable` (`optional_costs._generic_mana_payable`); test red first; baseline 0 |
+| enter_queue | 1 hit, legitimate: a Leyline that begins the game on the battlefield does not enter (CR 103.6) | annotated; baseline 0 |
+| tap_colours | 31 reads of `produces_mana` in ai/ | baselined at 31; open sweep (many are colour-identity reads for planning, which are legitimate) |

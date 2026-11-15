@@ -356,7 +356,7 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
 
     # Removal ETBs (Solitude, Fury): check if opponent has creatures
     if 'removal' in tags and card.template.is_creature:
-        if not opp.creatures and not opp.battlefield:
+        if not opp.creatures and not opp.battlefield:  # owner-proxy-allow: nothing at all to remove; legal targets gated above
             return -BOARD_EVAL_HARD_VETO  # No targets to remove
         # Removal ETBs that heal the opponent (oracle: "gains life equal to its power")
         # are a poor trade when the target is small: 2 cards spent to exile a 1/1
