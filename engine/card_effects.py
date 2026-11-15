@@ -2162,6 +2162,18 @@ def phelia_attack(game, card, controller, targets=None, item=None):
         game._phelia_returns.append((target, target_owner, controller, card))
 
 
+def audit_enter_ran(game, card) -> None:
+    """Rules audit (CR 603.6a), restated from the auditor's own record of
+    the enter owner's runs: a permanent an effect put onto the battlefield
+    ran its enter effects. Observation only."""
+    from .rules_audit import enabled, check, enter_ran
+    if not enabled() or card.zone != "battlefield":
+        return
+    check("603.6a/entered_permanent_ran_enter", enter_ran(card),
+          f"{card.name} entered the battlefield without its enter effects",
+          game=game)
+
+
 @EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.END_STEP,
                            description="Return Phelia-exiled cards to battlefield")
 def phelia_end_step(game, card, controller, targets=None, item=None):
@@ -2192,8 +2204,11 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
             game.log.append(
                 f"T{game.display_turn}: "
                 f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
-            # Trigger ETB on return
-            game.trigger_etb(exiled_card, owner_idx)
+            # CR 603.6a: it entered, so its enter abilities trigger -- the
+            # one enter owner (the immediate blink path's too), not the
+            # template-only trigger queue.
+            game._handle_permanent_etb(exiled_card, owner_idx)
+            audit_enter_ran(game, exiled_card)
         # Oracle: "If it entered under your control, put a +1/+1 counter
         # on [the source]." True exactly when the card returns under the
         # source's controller's control — and only while the source is

@@ -33,8 +33,8 @@
       "deck1": "Jeskai Blink",
       "deck2": "4c Omnath",
       "seed": 50000,
-      "winner": "Jeskai Blink",
-      "turns": 8
+      "winner": "4c Omnath",
+      "turns": 10
     },
     {
       "deck1": "Goryo's Vengeance",
@@ -97,7 +97,7 @@
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
       "winner": "4c Omnath",
-      "turns": 7
+      "turns": 6
     },
     {
       "deck1": "Izzet Prowess",
@@ -111,7 +111,7 @@
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
       "winner": "4/5c Control",
-      "turns": 14
+      "turns": 13
     },
     {
       "deck1": "Azorius Control (WST)",
@@ -146,7 +146,7 @@
       "deck2": "Broodscale Bloodchief",
       "seed": 52000,
       "winner": "Broodscale Bloodchief",
-      "turns": 8
+      "turns": 7
     },
     {
       "deck1": "Creatures Toolbox",

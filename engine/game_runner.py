@@ -2214,14 +2214,18 @@ class GameRunner:
                         game, active, eligible=eligible,
                     )
                     if best:
-                        player.library.remove(best)
-                        best.zone = "battlefield"
-                        best.controller = active
-                        player.battlefield.append(best)
+                        # Through the zone funnel (CR 400.7: a new object),
+                        # then the one enter owner (CR 603.6a: its enter
+                        # abilities trigger), as every other entry does.
+                        game.zone_mgr.move_card(game, best, "library",
+                                                "battlefield",
+                                                controller_override=active)
                         best._game_state = game
                         game.log.append(f"T{game.display_turn} P{active+1}: "
                                         f"{card.name} tutors {best.name}")
-                        game.trigger_etb(best, active)
+                        game._handle_permanent_etb(best, active)
+                        from .card_effects import audit_enter_ran
+                        audit_enter_ran(game, best)
                     sagas_to_sacrifice.append(card)
 
             # --- Fable of the Mirror-Breaker (loot + transform) ---

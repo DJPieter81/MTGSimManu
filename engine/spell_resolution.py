@@ -701,6 +701,8 @@ class ResolutionManager:
         Living End) means no declared target; handlers fall back to
         oracle-driven pickers.
         """
+        from . import rules_audit
+        rules_audit.note_enter(card)            # CR 603.6a invariants read it
         template = card.template
 
         # Aura attachment (CR 303.4a): an Aura entering the battlefield

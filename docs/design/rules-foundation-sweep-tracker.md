@@ -13623,3 +13623,36 @@ Leyline makes every Zoo land every basic type, so Scion grants every Zoo creatur
 - **Rules:** a blinked permanent returned at end of turn (Phelia's return) does not re-trigger its enters ability (CR 603.6a): `game.trigger_etb` queues template abilities with `effect=None` and never runs the registered enter effect. Flickerwisp's own enter exiled nothing in 7 resolutions. Next rules unit.
 - **AI:** Omnath's Leyline Binding exiled a ground creature over the flier that killed it at 2 life (`ai/permanent_threat.py`).
 - **Remainder:** the rest of Zoo's edge looks like the real power of Leyline into Scion, which only sweepers or removing Leyline itself answer.
+
+## Unit EN: a permanent an effect puts onto the battlefield runs its enter effects (rules; CR 603.6a; 2026-11-15)
+
+**Found by the Domain Zoo diagnosis.** A Solitude blinked by Phelia came back and exiled nothing (4c Omnath s51500 g1 t8, at 2 life). Two entry paths called `trigger_etb`, which only queues template abilities, instead of the one enter owner `_handle_permanent_etb` that the immediate blink path uses:
+- Phelia's delayed return (`engine/card_effects.phelia_end_step`);
+- Urza's Saga's chapter III artifact tutor (`engine/game_runner.py`). It also wrote the zones by hand, outside the zone funnel.
+
+**Fix:** both route through the zone funnel and `_handle_permanent_etb`. The zone-mutation baseline goes from 32 to 30 (the two hand-written zone moves are gone).
+
+**Auditor:** `603.6a/entered_permanent_ran_enter`. The enter owner notes each entry in the auditor's own record (`rules_audit.note_enter`, observation only), and the entry paths check it. It fires with the defect restored and is silent when the rule holds.
+
+**Tests:** `tests/test_a_permanent_put_onto_the_battlefield_runs_its_enter_effects.py`, red first: a Phelia-returned Solitude now exiles.
+
+**Pins:**
+- Anchor: 1 winner flip, Jeskai Blink vs 4c Omnath s50000, replayed old against new. Jeskai warps Quantum Riddler and Phelia blinks it; the returned Riddler's "draw a card" enter trigger now fires (CR 603.6a), and the game diverges to an Omnath win. Accepted as rules-correct.
+- 3 turn-only entries.
+- Digest re-recorded.
+
+## Field diagnosis 2: Eldrazi Tron over-performance (2026-11-15)
+
+Independent agent; 27 replayed games against Boros Ponza, Hollow One and Amulet Titan.
+
+**Main driver: opponent errors.**
+- **Amulet:** the engine chooses which land a bounce land returns (`engine/land_manager.py`): tapped first, then fewest mana. It returned Urza's Saga 7 times and other bounce lands 11 times, and stalled Amulet on 2 lands. A strategic choice made in the engine, a violation of "engine enforces, AI chooses".
+- **Hollow One:** the decklist runs 4 Vengevine ({2}{G}{G}) with no green source, so the card is never cast. A data-validity defect.
+
+**Two Tron-side rules errors, about 2.5pp combined at most:**
+- Relic of Progenitus's activated "exile all graveyards, draw a card" is registered as an enter effect: free and repeatable on every entry (CR 602.2).
+- Eldrazi Temple's "spend only on Eldrazi" restriction is deliberately not enforced (CR 106.6; 26 illegal uses seen). Counterfactual: Tron 117/160 → 113/160.
+
+**Ruled out:** the Tron bonus, assembly speed, searches and costs.
+
+**Next:** Tron's largest excess (+31 to +55pp) is against the control decks; replay those next.

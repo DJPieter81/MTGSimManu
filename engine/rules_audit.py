@@ -33,6 +33,10 @@ _ENV_FLAG = "MTG_RULES_AUDIT"
 _findings: List[Dict[str, Any]] = []
 _census_seen: set = set()
 _context: Dict[str, Any] = {}
+# Permanents whose enter effects the one enter owner ran
+# (`ResolutionManager._handle_permanent_etb`), keyed by object identity
+# and battlefield entry -- read by the CR 603.6a invariants.
+_entered: set = set()
 
 
 def enabled() -> bool:
@@ -103,6 +107,23 @@ def reset() -> None:
     _findings.clear()
     _census_seen.clear()
     _context.clear()
+    _entered.clear()
+
+
+def _entry_key(card) -> tuple:
+    return (id(card), getattr(card, "battlefield_entry_seq", None))
+
+
+def note_enter(card) -> None:
+    """Record that the enter owner ran for `card`'s current battlefield
+    entry. Observation only; a no-op unless the auditor is on."""
+    if enabled():
+        _entered.add(_entry_key(card))
+
+
+def enter_ran(card) -> bool:
+    """Did the enter owner run for `card`'s current battlefield entry?"""
+    return _entry_key(card) in _entered
 
 
 def write_jsonl(findings: List[Dict[str, Any]], path: str) -> int:

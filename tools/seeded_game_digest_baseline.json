@@ -1,5 +1,5 @@
 {
-  "combined": "a9bfc44508e63efd0b68dc1338e30ec69b278860da61bbb36a2a6e0f898bc58c",
+  "combined": "8e68cc0239d57a897a9180d538b81bafcec5e8506d6df2185c9d501e4023dacb",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -75,8 +75,8 @@
       "winner": "Boros Ponza"
     },
     "bo1|Jeskai Blink|4c Omnath|51500": {
-      "lines": 718,
-      "sha256": "d53e3dbbffaaf5d28a0f2034da344be936d4b8616eb845220b1c30d4f868c6ea",
+      "lines": 747,
+      "sha256": "2b6ed8097fc5346cc861e7183ac614dae740697d3c5fa72ccf1ce309aec9ac5c",
       "turns": 10,
       "winner": "4c Omnath"
     },
@@ -88,7 +88,7 @@
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
       "lines": 741,
-      "sha256": "9331dbdf6af27b82754e5706d0b942baea686f61a88d552ae321ff0489d57593",
+      "sha256": "a41959ba694efd4101d79de1a0988f1ed0ec5871edeefd8d8432c8040bdd4e96",
       "turns": 10,
       "winner": "4/5c Control"
     },
@@ -123,15 +123,21 @@
       "winner": "Boros Energy"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g1": {
-      "lines": 785,
-      "sha256": "607775c48fb209d4bf933f4e5f73ec676d808efc0b84ddba6ea374d1c4bb3d9a",
+      "lines": 814,
+      "sha256": "5e5de6741afda2f341438e6da1fb1f347db5620c1eacfcf80a3af1268fcf6ddb",
       "turns": 11,
-      "winner": "Jeskai Blink"
+      "winner": "Eldrazi Tron"
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g2": {
-      "lines": 516,
-      "sha256": "222ee5a555ca7f4a90b24d976e5aa42e5dbe58b7d2c9768c248a6375fbb11730",
-      "turns": 7,
+      "lines": 431,
+      "sha256": "ea47358f56cce28f4fe862a19ce72c9c8d71f7d569833b656d2e88aa4482b8e3",
+      "turns": 6,
+      "winner": "Jeskai Blink"
+    },
+    "bo3|Jeskai Blink|Eldrazi Tron|59500|g3": {
+      "lines": 671,
+      "sha256": "9d4186820de237543b2e29b66955006dff45703afc9105fe13615fda58111318",
+      "turns": 10,
       "winner": "Jeskai Blink"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
@@ -153,5 +159,5 @@
       "winner": "Living End"
     }
   },
-  "n_games": 25
+  "n_games": 26
 }
