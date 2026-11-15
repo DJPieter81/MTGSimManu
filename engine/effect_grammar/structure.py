@@ -1250,6 +1250,30 @@ def _freeze_mode(ctx: _Ctx, b: _B, i: int) -> L1Host:
                   label=b.label)
 
 
+# CR 113.6k: an ability whose effect moves its own object out of a zone
+# functions only in that zone -- unless its trigger condition puts the
+# object into that zone ("when ~ dies, return ~ from your graveyard"), which
+# makes it a leaves-the-battlefield ability that looks back (CR 603.10a).
+_SELF_OUT_OF_GRAVEYARD = re.compile(r"(?<![\w~])~ from your graveyard\b")
+_HEAD_PUTS_INTO_GRAVEYARD = re.compile(
+    r"^(?:when|whenever) ~ (?:dies|is put into (?:a|your) graveyard)")
+
+
+def _home_zone(kind: HostKind, text: str, trigger, given: Optional[str]
+               ) -> str:
+    """The zone a host functions from (CR 113.6, 113.6k): what the builder
+    set (channel: the hand; a stack static), else the graveyard for a
+    triggered ability that moves its own card out of it, else the
+    battlefield."""
+    if given:
+        return given
+    if kind is HostKind.TRIGGERED and _SELF_OUT_OF_GRAVEYARD.search(text) \
+            and not _HEAD_PUTS_INTO_GRAVEYARD.match(
+                getattr(trigger, "raw", "") or text):
+        return "graveyard"
+    return "battlefield"
+
+
 def _host(ctx: _Ctx, first: _B, index: int, paragraphs, text, body,
           consumed, pending, unm, parts, modal: Optional[_B], flags,
           label: str) -> L1Host:
@@ -1264,7 +1288,8 @@ def _host(ctx: _Ctx, first: _B, index: int, paragraphs, text, body,
         if modal else (),
         modal.extra.get("choose", (0, 0)) if modal else (0, 0),
         -1, "", label, x.get("keywords", ()),
-        x.get("from_zone", "battlefield"), frozenset(flags),
+        _home_zone(first.kind, text, x.get("trigger"), x.get("from_zone")),
+        frozenset(flags),
         x.get("restrictions", ()))
 
 

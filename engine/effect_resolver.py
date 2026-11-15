@@ -233,7 +233,8 @@ def _host_executable(host: AbilityEffects, family: Optional[str],
     # choice's own check), never on its own.
     options = {id(a) for s in iter_specs(host.specs) if is_choice(s)
                for a in s.alternatives}
-    if not all(_spec_executable(s, family, by_seq)
+    home = getattr(host, "from_zone", "battlefield")
+    if not all(_spec_executable(s, family, by_seq, home)
                for s in iter_specs(host.specs) if id(s) not in options):
         return False
     return all(_host_executable(m, family, by_seq) for m in host.modes)
@@ -285,12 +286,14 @@ def chosen_option(s: EffectSpec, a: EffectSpec) -> EffectSpec:
 
 
 def _spec_executable(s: EffectSpec, family: Optional[str],
-                     by_seq: Mapping[int, EffectSpec]) -> bool:
+                     by_seq: Mapping[int, EffectSpec],
+                     home: str = "battlefield") -> bool:
     verb = s.verb
     if verb is Verb.UNMODELLED:
         return False
     if is_choice(s):
-        return all(_spec_executable(chosen_option(s, a), family, by_seq)
+        return all(_spec_executable(chosen_option(s, a), family, by_seq,
+                                    home)
                    for a in s.alternatives)
     executor = None
     if verb is Verb.CREATE_TRIGGER:
@@ -308,7 +311,14 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
         # An executor that binds only some shapes of its verb says which
         # (amount kinds, recipients, sources); any other shape is refused.
         supports = getattr(executor, "supports", None)
-        if supports is not None and not supports(s):
+        # A shape whose source zone the spec does not print but its host's
+        # home zone does ("return ~ from your graveyard", CR 113.6k) is
+        # read with the host's home (`supports_from`).
+        supports_from = getattr(executor, "supports_from", None)
+        if supports_from is not None:
+            if not supports_from(s, home):
+                return False
+        elif supports is not None and not supports(s):
             return False
         # A shape an executor runs only in the families whose switch has
         # been proven says which (`allowed_families`, None = any family).

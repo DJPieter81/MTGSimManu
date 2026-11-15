@@ -763,8 +763,8 @@
  },
  "gate_parity": {
   "legacy_fallback": 3076,
-  "new_path": 2619,
-  "pairs": 5695
+  "new_path": 2626,
+  "pairs": 5702
  },
  "templates": 22738,
  "totals": {

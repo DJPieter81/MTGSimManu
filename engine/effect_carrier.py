@@ -781,7 +781,7 @@ def dispatch_combat_damage_triggers(game: Any, dealer: Any, damaged: int, *,
     anything."""
     if not er.dispatch_enabled():
         return None
-    hosts = _face_hosts(dealer)
+    hosts = _homed_hosts(_face_hosts(dealer), "battlefield")
     plan = combat_damage_plan(hosts)
     if plan is None:
         _audit_unresolved_combat_damage_trigger(game, dealer, hosts)
@@ -915,6 +915,71 @@ def _face_hosts(card: Any) -> tuple:
     return faces[face]
 
 
+def _homed_hosts(hosts: Iterable[Any], zone: str) -> tuple:
+    """The hosts of an object in `zone` whose triggered abilities function
+    there (CR 113.6, 113.6k): a triggered ability works only from its home
+    zone (`AbilityEffects.from_zone`); every other kind of host is kept for
+    the carrier's own selection."""
+    from .effect_spec import HostKind
+    return tuple(h for h in hosts if h.kind is not HostKind.TRIGGERED
+                 or getattr(h, "from_zone", "battlefield") == zone)
+
+
+def _graveyard_homed(card: Any) -> bool:
+    """Does `card` print a triggered ability that functions from a
+    graveyard (CR 113.6k)? Memoised on the template against its parsed
+    effects, in the `_effects*` memo family."""
+    from .effect_spec import HostKind
+    template = getattr(card, "template", None)
+    if template is None:
+        return False
+    effects = getattr(template, "effects", None)
+    hit = getattr(template, "_effects_graveyard_homed", None)
+    if hit is not None and hit[0] is effects:
+        return hit[1]
+    out = any(h.kind is HostKind.TRIGGERED
+              and getattr(h, "from_zone", "battlefield") == "graveyard"
+              for face in (getattr(effects, "faces", None) or ())
+              for h in face)
+    try:
+        template._effects_graveyard_homed = (effects, out)
+    except AttributeError:       # a stand-in that takes no attribute
+        pass
+    return out
+
+
+def _trigger_sources(game: Any, idx: int):
+    """The objects of player `idx` whose triggered abilities can trigger
+    (CR 113.6, 113.6k): each permanent on the battlefield, then each card in
+    their graveyard that prints an ability homed there."""
+    yield from list(game.players[idx].battlefield)
+    for card in list(game.players[idx].graveyard):
+        if _graveyard_homed(card):
+            yield card
+
+
+def _ability_controller(src: Any) -> int:
+    """Who controls a triggered ability of `src` (CR 113.8): the permanent's
+    controller, or the owner of a card outside the battlefield."""
+    if getattr(src, "zone", "battlefield") == "battlefield":
+        return src.controller
+    return src.owner
+
+
+def _audit_home_zone(game: Any, src: Any, h: Any) -> None:
+    """CR 113.6k, restated from the raw fields: an ability put on the stack
+    triggered from the zone its host is homed in. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    home = getattr(h, "from_zone", "battlefield")
+    rules_audit.check("113.6k/ability_home_zone",
+                      getattr(src, "zone", None) == home,
+                      f"{getattr(src, 'name', src)}: triggered in "
+                      f"{getattr(src, 'zone', None)}, homed in {home}",
+                      game=game)
+
+
 def dispatch_draw_triggers(game: Any, drawer: int) -> bool:
     """The draw carrier (CR 603.2): each permanent's draw-triggered
     abilities whose typed head names this draw (`draw_matches`), resolved
@@ -932,20 +997,21 @@ def dispatch_draw_triggers(game: Any, drawer: int) -> bool:
     order = [p for p in range(len(game.players)) if p != ap] + [ap]
     event = er.TriggerEvent(player=drawer)
     for idx in order:
-        for src in list(game.players[idx].battlefield):
+        for src in _trigger_sources(game, idx):
             template = getattr(src, "template", None)
             if template is None or getattr(template, "is_loyalty_clause",
                                            False):
                 continue
-            hosts = _face_hosts(src)
+            hosts = _homed_hosts(_face_hosts(src), src.zone)
             plan = draw_plan(hosts)
-            controller = src.controller
+            controller = _ability_controller(src)
             if plan is None:
                 _audit_unresolved_draw_trigger(game, src, hosts, drawer)
                 continue
             for h, family in plan:
                 if not draw_matches(game, h.trigger.draw, controller, drawer):
                     continue
+                _audit_home_zone(game, src, h)
                 for part, chosen in put_on_stack(game, src, controller, h):
                     performed |= bool(er.resolve_ability(
                         game, er.handle_of(src), controller, part, chosen,
@@ -1073,7 +1139,7 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
             _audit_unresolved_cast_trigger(game, src, hosts, caster, spell)
             continue
         taken.add(src.instance_id)
-        controller = src.controller
+        controller = _ability_controller(src)
         for h, family in plan:
             fires = cast_matches(h.trigger.cast, controller, caster, spell,
                                  game.active_player)
@@ -1081,6 +1147,7 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
                                       caster, spell)
             if not fires:
                 continue
+            _audit_home_zone(game, src, h)
             for part, chosen in put_on_stack(game, src, controller, h):
                 triggered.append((src, er.handle_of(src), controller, part,
                                   family, chosen))
@@ -1105,12 +1172,12 @@ def _cast_trigger_plans(game: Any):
     ap = game.active_player
     order = [p for p in range(len(game.players)) if p != ap] + [ap]
     for idx in order:
-        for src in list(game.players[idx].battlefield):
+        for src in _trigger_sources(game, idx):
             template = getattr(src, "template", None)
             if template is None or getattr(template, "is_loyalty_clause",
                                            False):
                 continue
-            hosts = _face_hosts(src)
+            hosts = _homed_hosts(_face_hosts(src), src.zone)
             yield src, hosts, cast_plan(hosts)
 
 
@@ -1121,7 +1188,8 @@ def cast_taken(permanents: Iterable[Any]) -> frozenset:
     if not er.dispatch_enabled():
         return frozenset()
     return frozenset(p.instance_id for p in permanents
-                     if cast_plan(_face_hosts(p)) is not None)
+                     if cast_plan(_homed_hosts(_face_hosts(p), "battlefield"))
+                     is not None)
 
 
 def performed_cast_triggers(game: Any, caster: int, spell: Any) -> list:
@@ -1313,7 +1381,7 @@ def dispatch_step_triggers(game: Any, step: str) -> set:
     triggered = []
     order = [active] + [p for p in range(len(game.players)) if p != active]
     for idx in order:
-        for src in list(game.players[idx].battlefield):
+        for src in _trigger_sources(game, idx):
             template = getattr(src, "template", None)
             if template is None or getattr(template, "is_loyalty_clause",
                                            False):
@@ -1324,9 +1392,14 @@ def dispatch_step_triggers(game: Any, step: str) -> set:
             face = 1 if getattr(src, "is_transformed", False) \
                 and len(faces) > 1 else 0
             plan, hosts = faces[face]
+            homed = _homed_hosts(hosts, src.zone)
+            if len(homed) != len(hosts):
+                # CR 113.6k: only the abilities homed where the card is.
+                hosts = homed
+                plan = step_plan(hosts) if hosts else None
             if not hosts:
                 continue
-            controller = src.controller
+            controller = _ability_controller(src)
             if plan is None:
                 _audit_unresolved_step_trigger(game, src, hosts, step,
                                                controller, active)
@@ -1342,6 +1415,7 @@ def dispatch_step_triggers(game: Any, step: str) -> set:
                                            "as it triggers")
                 if not holds:
                     continue
+                _audit_home_zone(game, src, h)
                 for part, chosen in put_on_stack(game, src, controller, h):
                     triggered.append((src, er.handle_of(src), controller,
                                       part, family, chosen))
@@ -1640,6 +1714,12 @@ def dispatch_attack_triggers(game: Any, attackers: Sequence[Any],
     for idx in order:
         for src in list(game.players[idx].battlefield):
             plan, hosts = _shown_attack_face(src)
+            homed = _homed_hosts(hosts, "battlefield")
+            if len(homed) != len(hosts):
+                # CR 113.6k: a graveyard-homed ability does not function
+                # from the battlefield.
+                hosts = homed
+                plan = attack_plan(hosts) if hosts else None
             if not hosts:
                 continue
             controller = src.controller
@@ -2002,14 +2082,14 @@ def dispatch_zone_change_triggers(game: Any, moves: Tuple[Any, ...]) -> bool:
     ap = game.active_player
     order = [p for p in range(len(game.players)) if p != ap] + [ap]
     for idx in order:
-        for src in list(game.players[idx].battlefield):
+        for src in _trigger_sources(game, idx):
             template = getattr(src, "template", None)
             if template is None or getattr(template, "is_loyalty_clause",
                                            False):
                 continue
-            hosts = _face_hosts(src)
+            hosts = _homed_hosts(_face_hosts(src), src.zone)
             plan = zone_change_plan(hosts)
-            controller = src.controller
+            controller = _ability_controller(src)
             if plan is None:
                 _audit_unresolved_zone_change_trigger(game, src, hosts, moves)
                 continue
@@ -2024,6 +2104,7 @@ def dispatch_zone_change_triggers(game: Any, moves: Tuple[Any, ...]) -> bool:
                 event = er.TriggerEvent(
                     player=m0.to_player if z.direction == "into"
                     else m0.from_player)
+                _audit_home_zone(game, src, h)
                 for _ in range(times):
                     for part, chosen in put_on_stack(game, src, controller, h):
                         performed |= bool(er.resolve_ability(

@@ -13656,3 +13656,28 @@ Independent agent; 27 replayed games against Boros Ponza, Hollow One and Amulet 
 **Ruled out:** the Tron bonus, assembly speed, searches and costs.
 
 **Next:** Tron's largest excess (+31 to +55pp) is against the control decks; replay those next.
+
+## Unit GZ: an ability that moves its own card out of the graveyard works there (rules; CR 113.6k; 2026-11-15)
+
+Found by the B5 colour-feasibility sweep (`tools/check_colour_feasibility.py`), not by a replay. Hollow One's four Vengevines cannot be cast from its red-white mana. So they are only ever played through their own graveyard trigger, and that trigger never functioned.
+
+The five root-cause fields:
+1. **Symptom:** a card in a graveyard whose trigger returns it never returns. Examples: Silversmote Ghoul at its controller's end step after 3 life gained; an Eidolon on a multicoloured cast; Vengevine.
+2. **Root cause:** the grammar homed every triggered host on the battlefield (`from_zone`; only channel was homed in the hand), and every trigger carrier scanned only the battlefield. No executor had the "return ~ from your graveyard" shape either.
+3. **Blind-spot class:** B2, a partial implementation. **Why every check passed:** the census counts what the grammar refuses, and these hosts parse cleanly with the wrong home. The auditor had no invariant for "an ability functions from the zone it says". No field deck could cast the card any other way, so the deck simply never played it.
+4. **Generic detector:** the B5 check (built in the same stretch), plus the new auditor invariant `113.6k/ability_home_zone`.
+5. **Sweep:** 72 pool cards print a triggered self-return from the graveyard. This cut performs those on a step or cast head whose body and condition are executable: Silversmote Ghoul, Squee, the five Eidolons, and others. The rest are recorded below.
+
+**Built** (failing-test-first, `tests/test_an_ability_that_works_from_the_graveyard_triggers_there.py`, 15 tests; 8 red before the fix, the other 7 are negatives and guards):
+- **Grammar** (`effect_grammar/structure._home_zone`): a triggered host whose effect moves "~ from your graveyard" is homed in the graveyard. The exception is a head that puts the card there ("when ~ dies"), which is a look-back ability (CR 603.10a).
+- **Executor** (`effect_executors.self_return_from_graveyard`): the card leaves the graveyard through the zone funnel. Onto the battlefield it enters under the ability's controller, tapped if printed, and runs its enter effects through `_handle_permanent_etb`. A card no longer in the graveyard is a new object (CR 400.7).
+- **Shape gate:** the printed spec is identical to a battlefield self-bounce ("return ~ to your hand"). So executability reads the host's home (`supports_from(spec, home)`, threaded through `effect_resolver._spec_executable`). The strict trigger shapes admit it only for a graveyard-homed host (`effect_views._home_return`); a battlefield self-bounce stays refused, as before.
+- **Carriers:** the step, cast, draw and zone-change carriers read `_trigger_sources`: each permanent, then each graveyard card with a graveyard-homed trigger. Each reads only the hosts homed where the card is (`_homed_hosts`). The attack and combat-damage carriers drop graveyard-homed hosts of permanents. The ability's controller is the card's owner outside the battlefield (CR 113.8).
+- **Auditor:** `113.6k/ability_home_zone`. A triggered ability put on the stack triggered from its host's home zone, restated from the raw fields. It is tested both ways: silent on the rule, and firing when `_homed_hosts` is patched back to the defect.
+
+**Not built (recorded):**
+- Vengevine's "if it's the second creature spell you cast this turn" is an untyped ordinal condition. That is unit OC: an ordinal on the typed cast head, shared with the 44 "whenever you cast your Nth spell each turn" heads.
+- Arclight Phoenix, Darklight Phoenix and Rekindled Flame have intervening conditions that are not executable yet: a cast-history count, a deaths count, and an opponent's hand.
+- Bloodghast-style landfall has no dispatcher carrier yet (the landfall path is legacy).
+- Pay-to-return shapes ("you may pay {B}. If you do, return ~").
+- Graveyard- and hand-homed activated abilities (Seasoned Pyromancer's exile ability, Faerie Macabre, Waker of Waves): unit GZ-2.

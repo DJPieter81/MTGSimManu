@@ -764,6 +764,15 @@ def _search_part(s) -> bool:
         or searched_to_battlefield(s)
 
 
+def _home_return(h: AbilityEffects, s) -> bool:
+    """CR 113.6k: the return of a graveyard-homed host's own card from
+    there ("return ~ from your graveyard to ..."). The same printed spec on
+    a battlefield host is a self-bounce, which no carrier performs yet."""
+    from .effect_executors import self_return_from_graveyard
+    return getattr(h, "from_zone", "battlefield") == "graveyard" \
+        and self_return_from_graveyard(s)
+
+
 def strict_trigger(h: AbilityEffects) -> bool:
     """A typed TRIGGERED host with no intervening-if (stage T)."""
     return (h is not None and h.kind is HostKind.TRIGGERED
@@ -807,7 +816,8 @@ def strict_step_trigger(h: AbilityEffects) -> bool:
             h.trigger, intervening_if=None))
     return (_strict_host(bare, _STEP_TRIGGER_VERBS, conditions=True)
             and all((s.verb is not Verb.EXILE or _graveyard_target_exile(s))
-                    and _search_part(s) for s in iter_specs(h.specs)))
+                    and (_search_part(s) or _home_return(h, s))
+                    for s in iter_specs(h.specs)))
 
 
 # The body a typed trigger's carrier performs (units AK, CT.2): the verbs
@@ -890,7 +900,8 @@ def _strict_trigger_body(h: AbilityEffects, unbound: frozenset, *,
                 and not linked:
             return False
         if not (_search_part(s) or (self_flip
-                                    and self_return_transformed(s))):
+                                    and self_return_transformed(s))
+                or _home_return(h, s)):
             return False
     return True
 

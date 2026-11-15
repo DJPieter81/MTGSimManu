@@ -858,10 +858,57 @@ def _named_result(ctx: Resolution, s: EffectSpec) -> Any:
                  if x.seq == r.index), None)
 
 
+def self_return_from_graveyard(s: Any) -> bool:
+    """"Return ~ from your graveyard to the battlefield [tapped] / to your
+    hand": the ability's own card, from the graveyard its ability is homed
+    in (CR 113.6k), under the ability's controller. The spec does not say
+    where the card is; the host's home zone does, so the strict trigger
+    shapes admit it only for a host homed in the graveyard."""
+    d = s.dest
+    if not (s.verb is Verb.MOVE and _self_object(s.ref)
+            and _names_only_its_ref(s) and isinstance(d, Destination)
+            and d.controller == "default"):
+        return False
+    plain = dataclasses.replace(d, tapped=False)
+    return plain == Destination(zone="battlefield") \
+        or d == Destination(zone="hand")
+
+
+def _return_self_from_graveyard(ctx: Resolution, s: EffectSpec) -> Outcome:
+    """The source card leaves its graveyard through the zone funnel. Onto
+    the battlefield, it enters under the ability's controller (CR 110.2),
+    tapped if printed, and its enter effects run through the one enter owner
+    (CR 603.6a). A card no longer in the graveyard is a new object, which
+    the ability does not find (CR 400.7)."""
+    game = ctx.game
+    card = _source_object(ctx)
+    if card is None or card.zone != "graveyard":
+        return Outcome(False, {})
+    cause = f"{card.name} returns from the graveyard"
+    if s.dest.zone == "hand":
+        if not game.zone_mgr.move_card(game, card, "graveyard", "hand",
+                                       cause=cause):
+            return Outcome(False, {})
+        return Outcome(True, {ctx.controller: (handle_of(card),)})
+    if not game.zone_mgr.move_card(game, card, "graveyard", "battlefield",
+                                   cause=cause,
+                                   controller_override=ctx.controller):
+        return Outcome(False, {})
+    if s.dest.tapped:
+        card.tapped = True
+    game.log.append(f"T{game.display_turn} P{ctx.controller+1}: {cause}"
+                    f"{' tapped' if s.dest.tapped else ''}")
+    game._handle_permanent_etb(card, ctx.controller)
+    return Outcome(True, {ctx.controller: (handle_of(card),)})
+
+
 def execute_move(ctx: Resolution, s: EffectSpec,
                  actors: Tuple[int, ...]) -> Outcome:
     if self_return_transformed(s):
         return _return_self_transformed(ctx, s)
+    if getattr(ctx.ability, "from_zone", "") == "graveyard" \
+            and self_return_from_graveyard(s):
+        return _return_self_from_graveyard(ctx, s)
     named = _named_result(ctx, s)
     if getattr(named, "verb", None) is Verb.SEARCH \
             and (searched_to_battlefield(s) or searched_moved(s)):
@@ -879,6 +926,11 @@ execute_move.supports = (lambda s: _move_to_hand_supported(s)
                          or searched_moved(s)
                          or land_from_hand(s)
                          or revealed_to_hand(s))
+# The self-return from the graveyard is the same printed spec as a
+# battlefield self-bounce ("return ~ to your hand"); only the host's home
+# zone (CR 113.6k) tells them apart, so it is admitted for a host homed there.
+execute_move.supports_from = (lambda s, home: execute_move.supports(s) or (
+    home == "graveyard" and self_return_from_graveyard(s)))
 # A put of "it" / "them" binds an earlier instruction's result, and which
 # instruction decides what is put: the cards a SEARCH found, or the card a
 # REVEAL brought from outside the game. A result of any other instruction
