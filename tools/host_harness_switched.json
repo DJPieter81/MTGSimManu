@@ -4812,6 +4812,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Aurora Eidolon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Aven Wind Mage",
     "TRIGGERED:0:1"
    ],
@@ -4944,6 +4952,22 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Enigma Eidolon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Entropic Eidolon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
   },
   {
    "pair": [
@@ -5212,6 +5236,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Sandstorm Eidolon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Satyr Enchanter",
     "TRIGGERED:0:0"
    ],
@@ -5368,6 +5400,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Verdant Eidolon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
   },
   {
    "pair": [
@@ -17412,6 +17452,14 @@
   {
    "pair": [
     "step:dispatch",
+    "Squee, Goblin Nabob",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
+  },
+  {
+   "pair": [
+    "step:dispatch",
     "Staff of Nin",
     "TRIGGERED:0:0"
    ],
@@ -18709,11 +18757,6 @@
   ],
   [
    "cast:dispatch",
-   "Aurora Eidolon",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "cast:dispatch",
    "Cruel Witness",
    "TRIGGERED:0:1"
   ],
@@ -18726,16 +18769,6 @@
    "cast:dispatch",
    "Efficient Construction",
    "TRIGGERED:0:0"
-  ],
-  [
-   "cast:dispatch",
-   "Enigma Eidolon",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "cast:dispatch",
-   "Entropic Eidolon",
-   "TRIGGERED:0:1"
   ],
   [
    "cast:dispatch",
@@ -18794,11 +18827,6 @@
   ],
   [
    "cast:dispatch",
-   "Sandstorm Eidolon",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "cast:dispatch",
    "Sigil of the Empty Throne",
    "TRIGGERED:0:0"
   ],
@@ -18820,11 +18848,6 @@
   [
    "cast:dispatch",
    "Tura Kenner\u00fcd, Skyknight",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "cast:dispatch",
-   "Verdant Eidolon",
    "TRIGGERED:0:1"
   ],
   [
@@ -19710,11 +19733,6 @@
   [
    "step:dispatch",
    "Silversmote Ghoul",
-   "TRIGGERED:0:0"
-  ],
-  [
-   "step:dispatch",
-   "Squee, Goblin Nabob",
    "TRIGGERED:0:0"
   ],
   [

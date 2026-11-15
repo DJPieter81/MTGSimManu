@@ -466,12 +466,31 @@ def _activated(template, case: HostCase):
                 if a.index == case.key)
 
 
+def _trigger_home(template, case: HostCase) -> str:
+    """The zone a triggered case's host functions from (its `from_zone`,
+    CR 113.6k); the battlefield for every other case."""
+    from engine.effect_spec import HostKind
+    key = case.key
+    face, index = key if isinstance(key, tuple) else (None, key)
+    for f, hosts in enumerate(getattr(template.effects, "faces", ()) or ()):
+        if face is not None and f != face:
+            continue
+        for h in hosts:
+            if h.kind is HostKind.TRIGGERED and h.index == index:
+                return getattr(h, "from_zone", "battlefield")
+    return "battlefield"
+
+
 def legacy_place(game, template, case: HostCase):
     """Put the source where its legacy apply expects it: the stack for a
     spell or mode, the battlefield for an ability (a loyalty source with
     its printed loyalty, transformed for a back-face line)."""
     if case.kind in ("SPELL", "MODE"):
         return _add(game, template, CONTROLLER, "stack")
+    home = _trigger_home(template, case)
+    if home != "battlefield":
+        # CR 113.6k: an ability homed in a graveyard functions only there.
+        return _add(game, template, CONTROLLER, home)
     card = _add(game, template, CONTROLLER, "battlefield")
     if case.kind == "LOYALTY":
         if case.key[0] == 1:
