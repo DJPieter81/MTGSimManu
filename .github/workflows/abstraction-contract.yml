@@ -99,6 +99,14 @@ jobs:
           MTG_LLM_DECISION_SCORER_OFFLINE: "1"
         run: python tools/host_resolution_equivalence.py --switched --pool --check
 
+      - name: Deck colour feasibility (blind-spot class B5; needs the card DB)
+        # Every registered list pays for what it plays: a nonland card no
+        # mana source of its own list can cast is fixed or declared, with
+        # the reason it is played uncast, in
+        # tools/colour_feasibility_declared.json. Hard gate (no baseline);
+        # a stale declaration fails too.
+        run: python tools/check_colour_feasibility.py
+
       - name: Loyalty-dispatch ratchet (needs the assembled card DB)
         run: python tools/check_loyalty_dispatch.py
 

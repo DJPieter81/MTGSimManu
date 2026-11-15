@@ -1,0 +1,14 @@
+{
+  "_doc": "Cards a registered list plays that its own mana sources cannot cast, each with the reason it is played uncast. Hard gate: tools/check_colour_feasibility.py fails on an undeclared infeasible card and on a stale declaration. Blind-spot class B5 (docs/design/2026-11-15_root_cause_blindspot_analysis.md).",
+  "Goryo's Vengeance": {
+    "Atraxa, Grand Unifier": "reanimation target: put onto the battlefield by Goryo's Vengeance / Unburial Rites from the graveyard, never cast",
+    "Wear // Tear": "split card (CR 709): the Tear half costs {W}, which the list pays; the checker reads the first half's cost only (template carries one face)"
+  },
+  "Pinnacle Affinity": {
+    "Ethersworn Canonist": "paid by Spire of Industry's 'pay 1 life: any colour' ability -- ENGINE GAP unit MA: the parsed mana_units drop costed/conditional mana abilities, so in the sim Spire taps for {C} only and this card is uncastable"
+  },
+  "Hollow One": {
+    "Vengevine": "discarded and returned by its own graveyard trigger, never cast -- ENGINE GAP unit GZ: abilities that function from the graveyard (CR 113.6k) are homed on the battlefield and never trigger",
+    "Faerie Macabre": "used by its 'discard ~' ability from hand, never cast -- ENGINE GAP unit GZ: a hand-homed ability (CR 113.6k) is homed on the battlefield and cannot be activated"
+  }
+}

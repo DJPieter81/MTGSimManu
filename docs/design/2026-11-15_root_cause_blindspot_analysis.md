@@ -140,7 +140,7 @@ And two standing steps:
 | B2 partial implementation | 4 | clause-coverage census to build |
 | B3 wrong chooser or layer | 2 | engine-pick ratchet to build |
 | B4 valuation not in one currency | 2 | strategy-lens review (standing) |
-| B5 data validity | 1 | colour-feasibility check to build |
+| B5 data validity | 1 | **check built** (`tools/check_colour_feasibility.py`, hard gate in CI); its sweep surfaced two engine gaps (units GZ and MA, below) |
 | B6 measurement blind spot | all of the above | adversarial review and outlier diagnosis (standing) |
 
 **Build order for the detectors:**
@@ -159,3 +159,16 @@ And two standing steps:
 | mana_total_pay | **2 real siblings.** The counter-tax offer (Mana Leak, Spell Pierce …) and the ward-tax offer judged payment by untapped sources only, so a player with floating mana was never asked | routed through `CastManager.mana_payable` (`optional_costs._generic_mana_payable`); test red first; baseline 0 |
 | enter_queue | 1 hit, legitimate: a Leyline that begins the game on the battlefield does not enter (CR 103.6) | annotated; baseline 0 |
 | tap_colours | 31 reads of `produces_mana` in ai/ | baselined at 31; open sweep (many are colour-identity reads for planning, which are legitimate) |
+
+**2026-11-15, B5 colour-feasibility sweep** (`tools/check_colour_feasibility.py --list`). Five cards across three lists cannot be cast by their own list's mana. None is a plain list error. Two of them are engine gaps the check exposed:
+
+| Deck | Card | Why it is played uncast | Outcome |
+|---|---|---|---|
+| Goryo's Vengeance | Atraxa, Grand Unifier | reanimation target | declared |
+| Goryo's Vengeance | Wear // Tear | the Tear half costs {W}; the template carries one face's cost | declared (checker limit: split faces) |
+| Hollow One | Vengevine | returns itself from the graveyard | **engine gap, unit GZ** |
+| Hollow One | Faerie Macabre | its "discard ~" ability works from hand | **engine gap, unit GZ** |
+| Pinnacle Affinity | Ethersworn Canonist | paid by Spire of Industry's "pay 1 life: any colour" | **engine gap, unit MA** |
+
+- **Unit GZ (B2, partial implementation):** an ability whose cost or effect moves its own card out of a zone functions only from that zone (CR 113.6k). The grammar homes every such host on the battlefield, except channel (hand). The cast, step and activation carriers scan only the battlefield. So graveyard and hand abilities never function: Vengevine never returns, and Faerie Macabre is never activated. Why every check passed: the census counts what the grammar refuses, and these hosts parse cleanly with the wrong home. The rules auditor has no invariant for "an ability functions from the zone it says". Class: 112 pool cards return themselves from a graveyard; hand-homed activations come on top.
+- **Unit MA (B2, partial implementation):** a land's mana abilities with an additional cost, an activation condition or a spending restriction are left out of `mana_units` on purpose (`OracleTextParser.detect_land_mana_units`: "not always-available production"). So, for example, Spire of Industry taps for {C} only. Verified: with Spire and an artifact on the battlefield, `GameState.can_cast` refuses a {1}{W} spell. Class: 91 lands whose printed colours exceed their parsed units; 6 are in registered lists (Abstergo Entertainment, Cavern of Souls, Gemstone Caverns, Mystic Gate, Spire of Industry, The Mycosynth Gardens). Why every check passed: the payment owner is internally consistent, and nothing compares a land's units with its printed mana abilities.
