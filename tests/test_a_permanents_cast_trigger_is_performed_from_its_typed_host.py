@@ -97,10 +97,12 @@ def test_a_during_your_turn_head_is_typed_with_its_turn_rider(card_db):
                                        your_turn=True)
 
 
-@pytest.mark.parametrize("name", ["Cori-Steel Cutter"])
+@pytest.mark.parametrize("name", ["Zenith Chronicler"])
 def test_a_head_with_a_rider_the_table_does_not_read_is_left_untyped(card_db,
                                                                     name):
-    """"Your second spell each turn"."""
+    """"Their first multicolored spell each turn": an ordinal over a colour
+    kind, which the cast tally does not record (unit OC types the ordinal
+    over card-type kinds only)."""
     from engine.effect_spec import EventHint
     for h in card_db.get_card(name).effects.front():
         if h.trigger is not None and EventHint.SPELL_CAST in h.trigger.event_hints:

@@ -4788,6 +4788,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Aquatic Alchemist // Bubble Up",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Arasta of the Endless Web",
     "TRIGGERED:0:1"
    ],
@@ -4908,6 +4916,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Cosmogrand Zenith",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Crackling Cyclops",
     "TRIGGERED:0:0"
    ],
@@ -4968,6 +4984,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Equilibrium Adept",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
   },
   {
    "pair": [
@@ -5068,6 +5092,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Hearthborn Battler",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit OC: the same effect through the cast carrier; the log line reads the carrier's wording"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Herald of the Pantheon",
     "TRIGGERED:0:1"
    ],
@@ -5088,6 +5120,30 @@
     "TRIGGERED:0:0"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: a 1/1 Human token"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Howling Moon",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit OC (CR 603.2): an opponent's second spell triggers the head; the legacy ordinal path read only the caster's own permanents, so an opponent's cast never made the Wolf"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Jeskai Devotee",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Jori En, Ruin Diver",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit OC: the same effect through the cast carrier; the log line reads the carrier's wording"
   },
   {
    "pair": [
@@ -5116,10 +5172,34 @@
   {
    "pair": [
     "cast:dispatch",
+    "Lotho, Corrupt Shirriff",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit OC (CR 603.2): the whole printed body runs -- the life loss and the Treasure; the legacy ordinal token path made the Treasure only"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Mai, Scornful Striker",
     "TRIGGERED:0:1"
    ],
    "reason": "unit CT.2: the legacy cast branches performed nothing for this host; the cast carrier performs it as printed: the caster loses 2 life"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Malcolm, the Eyes",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Mangara, the Diplomat",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "unit OC: the same effect through the cast carrier; the log line reads the carrier's wording"
   },
   {
    "pair": [
@@ -5204,6 +5284,14 @@
   {
    "pair": [
     "cast:dispatch",
+    "Pyromancer's Assault",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
     "Ral, Monsoon Mage // Ral, Leyline Prodigy",
     "TRIGGERED:0:1"
    ],
@@ -5240,6 +5328,14 @@
     "TRIGGERED:0:1"
    ],
    "reason": "unit GZ (CR 113.6k): the ability is homed in its card's graveyard and the harness places the source there; the legacy path performed nothing for a graveyard card, so the switched carrier returns the card through the zone funnel (and the enter owner) where the legacy apply did nothing"
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Saruman the White",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "unit OC (CR 603.2): the ordinal cast head is typed and the cast carrier performs its printed body on the Nth spell; the legacy ordinal path had no typed effect for this card and performed nothing"
   },
   {
    "pair": [
@@ -5400,6 +5496,14 @@
     "TRIGGERED:0:0"
    ],
    "reason": "Unit CT: the cast carrier performs the typed cast-triggered draw (CR 601.2i, 603.2) when its head's caster casts a spell of the kind it names. The legacy cast resolver read no such shape for this card, so nothing happened."
+  },
+  {
+   "pair": [
+    "cast:dispatch",
+    "Vengevine",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "units OC and GZ (CR 603.2, 113.6k): the second creature spell of a turn returns the card from its graveyard; the legacy path refused the ordinal condition and performed nothing"
   },
   {
    "pair": [
@@ -18757,8 +18861,18 @@
   ],
   [
    "cast:dispatch",
+   "Clarion Spirit",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
    "Cruel Witness",
    "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Doomskar Oracle",
+   "TRIGGERED:0:0"
   ],
   [
    "cast:dispatch",
@@ -18837,6 +18951,11 @@
   ],
   [
    "cast:dispatch",
+   "Station Monitor",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "cast:dispatch",
    "Talrand, Sky Summoner",
    "TRIGGERED:0:0"
   ],
@@ -18848,6 +18967,11 @@
   [
    "cast:dispatch",
    "Tura Kenner\u00fcd, Skyknight",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "cast:dispatch",
+   "Wingblade Disciple",
    "TRIGGERED:0:1"
   ],
   [

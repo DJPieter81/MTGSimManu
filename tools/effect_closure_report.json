@@ -912,35 +912,42 @@
     "part": "mainboard",
     "step": "E2",
     "strict": true
+   },
+   {
+    "card": "Vengevine",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
    }
   ],
-  "executable": 103,
+  "executable": 120,
   "family": "cast_trigger",
   "hosts": {
-   "mainboard": 6,
-   "pool": 97,
+   "mainboard": 7,
+   "pool": 113,
    "sideboard": 0
   },
   "steps": {
-   "E1": 16,
-   "E2": 7,
-   "E3": 22,
-   "E4": 32,
-   "E5": 25,
+   "E1": 19,
+   "E2": 8,
+   "E3": 24,
+   "E4": 40,
+   "E5": 28,
    "none": 1
   },
-  "strict": 103,
+  "strict": 120,
   "sub_kinds": {},
   "verb_sets": {
-   "CONTINUOUS": 25,
-   "CREATE_TOKEN": 27,
-   "DAMAGE": 5,
+   "CONTINUOUS": 28,
+   "CREATE_TOKEN": 32,
+   "DAMAGE": 7,
    "DISCARD,DRAW": 2,
-   "DRAW": 15,
-   "EXILE": 2,
-   "GAIN_LIFE": 5,
+   "DRAW": 17,
+   "GAIN_LIFE": 6,
+   "KEYWORD_ACTION": 3,
    "LOSE_LIFE": 4,
-   "MOVE": 5,
+   "MOVE": 6,
    "SURVEIL": 3
   }
  },

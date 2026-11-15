@@ -650,10 +650,13 @@ class CastEvent:
     'creature', 'artifact', 'enchantment', 'colorless' or 'multicolored',
     read from the spell as it is cast. `your_turn`: "... during your turn"
     -- only a cast during the ability's controller's turn triggers it (CR
-    500.1: the active player's turn)."""
+    500.1: the active player's turn). `ordinal`: "your second spell each
+    turn" / "if it's the second creature spell you cast this turn" -- only
+    the caster's Nth spell of that kind this turn triggers it (0: any)."""
     caster: str
     spell: str = "any"
     your_turn: bool = False
+    ordinal: int = 0
 
 
 @dataclass(**_FROZEN)

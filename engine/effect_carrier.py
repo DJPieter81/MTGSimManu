@@ -1050,22 +1050,62 @@ CAST_FAMILY = "cast_trigger"
 
 
 def cast_matches(event: Any, controller: int, caster: int,
-                 spell: Any, active: int) -> bool:
+                 spell: Any, active: int, game: Any = None,
+                 projected: bool = False) -> bool:
     """Does `caster` casting `spell` trigger a head typed `event`
     (`effect_spec.CastEvent`) on a permanent `controller` controls? Who
     casts, relative to the controller, and what kind of spell, read from
     the spell as it is cast (CR 601.2i); a "during your turn" head only
     during the controller's own turn (`active`, the active player, CR
     500.1)."""
-    from .cards import CardType
     if event.your_turn and active != controller:
         return False
     if event.caster == "you" and caster != controller:
         return False
     if event.caster == "opponent" and caster == controller:
         return False
+    if not _spell_of_kind(spell, event.spell):
+        return False
+    # CR 603.2: an ordinal head names only the caster's Nth spell of its
+    # kind this turn; the tally already holds this cast (CR 601.2i).
+    # `projected`: asked before the cast is made, so the tally does not
+    # hold it yet.
+    if not event.ordinal:
+        return True
+    if game is None:
+        game = getattr(spell, "_game_state", None)
+    return (_casts_of_kind(game, caster, event.spell) + int(projected)
+            == event.ordinal)
+
+
+_TALLY_KINDS = {
+    "any": lambda types: True,
+    "noncreature": lambda types: "creature" not in types,
+    "creature": lambda types: "creature" in types,
+    "instant_or_sorcery": lambda types: bool(types & {"instant",
+                                                       "sorcery"}),
+    "artifact": lambda types: "artifact" in types,
+    "enchantment": lambda types: "enchantment" in types,
+}
+
+
+def _casts_of_kind(game: Any, caster: int, kind: str) -> int:
+    """How many spells of `kind` `caster` cast this turn, read from what
+    each was as it was cast (`PlayerState.spells_cast_this_turn_kinds`)."""
+    if game is None:
+        return 0
+    admits = _TALLY_KINDS.get(kind)
+    if admits is None:
+        return 0
+    return sum(1 for types, _sub in
+               game.players[caster].spells_cast_this_turn_kinds
+               if admits(types))
+
+
+def _spell_of_kind(spell: Any, kind: str) -> bool:
+    """Is `spell`, as it is cast, of the kind a cast head names?"""
+    from .cards import CardType
     t = spell.template
-    kind = event.spell
     if kind == "any":
         return True
     if kind == "noncreature":
@@ -1142,7 +1182,7 @@ def dispatch_cast_triggers(game: Any, caster: int, spell: Any) -> set:
         controller = _ability_controller(src)
         for h, family in plan:
             fires = cast_matches(h.trigger.cast, controller, caster, spell,
-                                 game.active_player)
+                                 game.active_player, game=game)
             _audit_cast_trigger_fires(game, src, controller, h, fires,
                                       caster, spell)
             if not fires:
@@ -1202,8 +1242,9 @@ def performed_cast_triggers(game: Any, caster: int, spell: Any) -> list:
     return [(src, h) for src, _hosts, plan in _cast_trigger_plans(game)
             if plan is not None
             for h, _family in plan
-            if cast_matches(h.trigger.cast, src.controller, caster, spell,
-                            game.active_player)]
+            if cast_matches(h.trigger.cast, _ability_controller(src),
+                            caster, spell, game.active_player, game=game,
+                            projected=True)]
 
 
 def _counter_owner_performs(src: Any, host: Any) -> bool:
@@ -1230,8 +1271,9 @@ def _audit_unresolved_cast_trigger(game: Any, src: Any, hosts: Iterable[Any],
                 or _counter_owner_performs(src, h):
             continue
         c = h.trigger.cast
-        if c is not None and cast_matches(c, src.controller, caster, spell,
-                                          game.active_player):
+        if c is not None and cast_matches(c, _ability_controller(src),
+                                          caster, spell, game.active_player,
+                                          game=game):
             rules_audit.census("603.2/cast_trigger_unresolved", src.name,
                                detail=h.trigger.raw, game=game)
             return
@@ -1272,6 +1314,24 @@ def _audit_cast_trigger_fires(game: Any, src: Any, controller: int,
         "multicolored": len(colors) > 1,      # CR 105.4: two or more colours
     }.get(ev.spell, False)
     due = who and kind and when
+    if getattr(ev, "ordinal", 0):
+        # The caster's spells of the head's kind this turn, this one
+        # included, restated from the raw tally (CR 601.2i, 603.2).
+        wanted = {"any": None, "noncreature": None, "creature": {"creature"},
+                  "instant_or_sorcery": {"instant", "sorcery"},
+                  "artifact": {"artifact"},
+                  "enchantment": {"enchantment"}}.get(ev.spell, set())
+        tally = game.players[caster].spells_cast_this_turn_kinds
+        if ev.spell == "noncreature":
+            n = sum(1 for t, _s in tally if "creature" not in t)
+        else:
+            n = sum(1 for t, _s in tally if wanted is None or t & wanted)
+        due = due and n == ev.ordinal
+        rules_audit.check("603.2/ordinal_cast_head", fires == due,
+                          f"{src.name}: {host.trigger.raw!r} "
+                          f"{'triggered' if fires else 'did not trigger'} on "
+                          f"spell {n} of its kind (ordinal {ev.ordinal})",
+                          game=game)
     rules_audit.check("603.2/cast_trigger_once", fires == due,
                       f"{src.name}: {host.trigger.raw!r} "
                       f"{'triggered' if fires else 'did not trigger'} for "

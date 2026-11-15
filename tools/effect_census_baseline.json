@@ -1,7 +1,7 @@
 {
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
-  "deck_removal_ready_share": 0.284,
+  "deck_removal_ready_share": 0.2879,
   "deck_removal_typed_share": 0.8638,
   "deck_residue_by_code": {
    "target.keyword:flying": 1,
@@ -17,11 +17,11 @@
    "target.union:sorcery": 1,
    "target.unparsed": 5
   },
-  "deck_typed_share": 0.7611,
+  "deck_typed_share": 0.762,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 8,
    "CLAUSE": 25,
-   "CONDITION": 18,
+   "CONDITION": 17,
    "DURATION": 3,
    "FILTER": 29,
    "ITERATION": 2,
@@ -109,7 +109,7 @@
   "unmodelled_by_stage": {
    "AMOUNT": 682,
    "CLAUSE": 1693,
-   "CONDITION": 1109,
+   "CONDITION": 1108,
    "DELAY": 16,
    "DURATION": 53,
    "FILTER": 1532,
@@ -179,7 +179,7 @@
    },
    "TRIGGERED": {
     "share": 0.8023,
-    "specs": 15290,
+    "specs": 15289,
     "typed": 12267
    },
    "UNKNOWN": {
@@ -249,8 +249,8 @@
      "typed": 36
     },
     "TRIGGERED": {
-     "share": 0.8955,
-     "specs": 220,
+     "share": 0.8995,
+     "specs": 219,
      "typed": 197
     },
     "UNKNOWN": {
@@ -264,12 +264,12 @@
     "clauses": 257,
     "gate": 0.85,
     "met": false,
-    "ready": 73,
-    "ready_share": 0.284,
+    "ready": 74,
+    "ready_share": 0.2879,
     "typed": 222,
     "typed_share": 0.8638
    },
-   "specs": 921,
+   "specs": 920,
    "typed": 701
   },
   "keyword_lines": [
@@ -1190,7 +1190,7 @@
    ]
   ],
   "residue": 1176,
-  "specs": 44381,
+  "specs": 44380,
   "sub_abilities": [
    [
     "DELAYED",
@@ -1230,7 +1230,7 @@
    ]
   ],
   "typed": 32947,
-  "unmodelled": 11434,
+  "unmodelled": 11433,
   "unmodelled_row_count": 1939,
   "unmodelled_rows": [
    [
@@ -1595,5 +1595,5 @@
    ]
   ]
  },
- "session": "2026-11-08"
+ "session": "2026-11-15"
 }

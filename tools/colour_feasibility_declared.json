@@ -8,7 +8,7 @@
     "Ethersworn Canonist": "paid by Spire of Industry's 'pay 1 life: any colour' ability -- ENGINE GAP unit MA: the parsed mana_units drop costed/conditional mana abilities, so in the sim Spire taps for {C} only and this card is uncastable"
   },
   "Hollow One": {
-    "Vengevine": "discarded and returned by its own graveyard trigger, never cast -- ENGINE GAP unit GZ: abilities that function from the graveyard (CR 113.6k) are homed on the battlefield and never trigger",
+    "Vengevine": "discarded and returned by its own graveyard trigger on the second creature spell of a turn, never cast (units GZ, CR 113.6k, and OC, the ordinal cast head)",
     "Faerie Macabre": "used by its 'discard ~' ability from hand, never cast -- ENGINE GAP unit GZ: a hand-homed ability (CR 113.6k) is homed on the battlefield and cannot be activated"
   }
 }

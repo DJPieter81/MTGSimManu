@@ -13681,3 +13681,32 @@ The five root-cause fields:
 - Bloodghast-style landfall has no dispatcher carrier yet (the landfall path is legacy).
 - Pay-to-return shapes ("you may pay {B}. If you do, return ~").
 - Graveyard- and hand-homed activated abilities (Seasoned Pyromancer's exile ability, Faerie Macabre, Waker of Waves): unit GZ-2.
+
+## Unit OC: an ordinal cast trigger fires on the Nth spell of its kind (rules; CR 603.2, 603.4; 2026-11-15)
+
+This unit follows GZ: Vengevine's return was gated on an intervening "if" the grammar refused.
+
+The five root-cause fields:
+1. **Symptom:** "whenever you cast a spell, if it's the second creature spell you cast this turn, you may return ~ from your graveyard" never triggered.
+2. **Root cause:** the ordinal-cast condition was refused (UNMODELLED, `condition.history_event:ordinal`). The same event in its head phrasing ("whenever you cast your second spell each turn", 44 pool cards) was typed only by a legacy view. That view counted every spell the caster cast, whatever the head's kind.
+3. **Blind-spot class:** B2, a partial implementation. Two phrasings of one event had two owners, and one of them had none.
+4. **Detector:** the auditor invariant `603.2/ordinal_cast_head`, restated from the raw cast tally.
+5. **Sweep:** both phrasings are now one typed field. 16 ordinal-head cards and Vengevine move to the cast carrier, harness-proven. Colour-kind ordinals ("first multicolored spell", 1 card) stay untyped: the tally records types, not colours.
+
+**Built** (`tests/test_an_ordinal_cast_trigger_counts_the_casts_of_its_kind.py`, 11 tests; 10 red before the fix):
+- `CastEvent.ordinal` is read from the head phrasing (`structure._ORDINAL_CAST_EVENT_RE`). It is also read from the intervening "if" on a plain "whenever you cast a spell" head, which folds into the head (`_ORDINAL_CAST_IF_RE`). The history that "if" reads is fixed once the spell is cast, so checking it as the ability triggers is the same as checking it on resolution (CR 603.4).
+- `effect_carrier.cast_matches` fires only on the caster's Nth spell of the kind this turn (`spells_cast_this_turn_kinds`, which already holds this cast). The AI's pre-cast read (`performed_cast_triggers`) counts the spell it is about to cast (`projected`). That read now also takes the ability's controller from `_ability_controller` (CR 113.8), so a graveyard card's trigger is read for its owner.
+- The 603.2 cast audit restates the ordinal from the raw tally.
+- One old pin had recorded the ordinal head as a rider the table does not read (Cori-Steel Cutter). It now names the colour-kind ordinal, which is still unread.
+
+**Harness (OC):**
+- The switched-host harness now seeds the turn's cast tally before a CAST case. Without that, an ordinal head never fired on its single cast.
+- 17 pairs move to the cast carrier:
+  - 4 are proven identical: Clarion Spirit, Doomskar Oracle, Station Monitor, Wingblade Disciple.
+  - 13 are recorded as intended changes, each with its reason. For 8, the legacy ordinal path had no typed effect and did nothing. For Howling Moon, legacy read only the caster's own permanents, so an opponent's cast never triggered it. For Lotho, legacy made the Treasure but skipped the life loss. For 3, only the log wording differs. Vengevine is the 13th: it now returns, where legacy did nothing.
+
+**What the full checks caught after GZ's targeted runs passed** (each pushed as its own fix):
+- `5bb1a2f`: the executor-purity pin. The self-return wrote `card.tapped` itself instead of calling the card's own tap.
+- `6b9e6c0`: the CI harness step. The harness put every ability's source on the battlefield, so a graveyard-homed trigger never dispatched there. It now places a triggered case's source in its host's home zone.
+
+Both are B6, measurement blind spots, closed by the standing step: both chunks and the full pool harness run before a unit is called done, not only the unit's own tests.

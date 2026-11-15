@@ -612,6 +612,15 @@ def legacy_apply(game, template, case: HostCase) -> Any:
         if spell_t is None:
             return None
         spell = _add(game, spell_t, caster, "stack")
+        # The turn's cast tally holds this cast and, for an ordinal head
+        # ("your second spell each turn"), the earlier spells of its kind,
+        # so the cast is the one the head names (CR 601.2i, 603.2). The
+        # legacy apply and the switched carrier read the same history.
+        from engine.rules_query import spell_kind
+        for _ in range(max(1, getattr(head, "ordinal", 0) or 1)):
+            game.players[caster].spells_cast_this_turn_kinds.append(
+                spell_kind(spell_t))
+            game.players[caster].spells_cast_this_turn += 1
         return resolve_spell_cast_trigger(game, caster, spell)
     if case.kind == "COMBAT_DAMAGE":
         # the source deals combat damage to the opponent: the combat

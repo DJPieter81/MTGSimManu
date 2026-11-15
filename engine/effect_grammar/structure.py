@@ -92,6 +92,7 @@ function of the text, so the key is complete (A32).
 """
 from __future__ import annotations
 
+import dataclasses
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -527,6 +528,30 @@ _CAST_EVENT_RE = re.compile(
                                               reverse=True))))
 
 
+# An ordinal cast (CR 603.2): "whenever you cast your second spell each
+# turn". Its kinds are those the cast tally records (card types); a colour
+# kind ("multicolored") is left untyped.
+_ORDINAL_KINDS = {k: v for k, v in _CAST_SPELLS.items()
+                  if v not in ("colorless", "multicolored")}
+_ORDINAL_WORDS = {"first": 1, "second": 2, "third": 3, "fourth": 4,
+                  "fifth": 5}
+_ORDINAL_CAST_EVENT_RE = re.compile(
+    r"(?:whenever|when) (?P<who>%s) casts? (?:your|their|his or her) "
+    r"(?P<ord>%s) (?P<what>%s)spell each turn"
+    % ("|".join(_CASTERS), "|".join(_ORDINAL_WORDS),
+       "|".join(re.escape(k) for k in sorted(_ORDINAL_KINDS, key=len,
+                                              reverse=True))))
+# The same event as an intervening "if" on a plain "whenever you cast a
+# spell" head: "if it's the second creature spell you cast this turn". The
+# history it reads is fixed once the spell is cast, so checking it as the
+# ability triggers is checking it on resolution too (CR 603.4).
+_ORDINAL_CAST_IF_RE = re.compile(
+    r"if it's the (?P<ord>%s) (?P<what>%s)spell you(?:'ve)? cast this turn, "
+    % ("|".join(_ORDINAL_WORDS),
+       "|".join(re.escape(k) for k in sorted(_ORDINAL_KINDS, key=len,
+                                              reverse=True))))
+
+
 def _cast_event(head: str) -> Optional[CastEvent]:
     """The cast the head's one SPELL_CAST disjunct names, read from the
     closed table (`_CAST_EVENT_RE`); None when the head has no such
@@ -537,7 +562,12 @@ def _cast_event(head: str) -> Optional[CastEvent]:
         return None
     m = _CAST_EVENT_RE.fullmatch(parts[0])
     if m is None:
-        return None
+        m = _ORDINAL_CAST_EVENT_RE.fullmatch(parts[0])
+        if m is None:
+            return None
+        return CastEvent(caster=_CASTERS[m.group("who")],
+                         spell=_ORDINAL_KINDS[m.group("what")],
+                         ordinal=_ORDINAL_WORDS[m.group("ord")])
     return CastEvent(caster=_CASTERS[m.group("who")],
                      spell=_CAST_SPELLS[m.group("what")],
                      your_turn=m.group("turn") is not None)
@@ -981,7 +1011,18 @@ def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:
     while pos < n and t[pos] == " ":
         pos += 1
     intervening = None
-    if t.startswith("if ", pos):
+    ordinal = None
+    om = _ORDINAL_CAST_IF_RE.match(t, pos)
+    if om is not None and EventHint.SPELL_CAST in hints:
+        plain = _cast_event(head)
+        if plain is not None and plain.spell == "any" and not plain.ordinal \
+                and plain.caster == "you":
+            ordinal = dataclasses.replace(
+                plain, spell=_ORDINAL_KINDS[om.group("what")],
+                ordinal=_ORDINAL_WORDS[om.group("ord")])
+            b.consumed.append(("intervening_if", (pos, om.end() - 2)))
+            pos = om.end()
+    if ordinal is None and t.startswith("if ", pos):
         cnd = condition.parse_condition(t, (pos, n))
         if cnd is not None and cnd.value is not None:
             intervening = cnd.value
@@ -1003,6 +1044,9 @@ def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:
     b.extra["trigger"] = _head(hints, head, step=step,
                                intervening_if=intervening,
                                once_each_turn=once, frequency_raw=freq)
+    if ordinal is not None:
+        b.extra["trigger"] = dataclasses.replace(b.extra["trigger"],
+                                                 cast=ordinal)
     if EventHint.TAPPED_FOR_MANA in hints and \
             not target.target_words(t, (pos, n)) and \
             payload.adds_mana(t, (pos, n)):
