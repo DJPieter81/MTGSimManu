@@ -430,8 +430,8 @@
    "name": "Amulet Titan",
    "archetype": "combo",
    "meta_share": 7.0,
-   "flat_wr": 39.4,
-   "weighted_wr": 33.0,
+   "flat_wr": 39.6,
+   "weighted_wr": 32.9,
    "tier": "T4",
    "band": [
     45.0,
@@ -940,8 +940,8 @@
    "name": "4c Omnath",
    "archetype": "midrange",
    "meta_share": 0.5,
-   "flat_wr": 49.8,
-   "weighted_wr": 44.4,
+   "flat_wr": 49.6,
+   "weighted_wr": 44.0,
    "tier": "T3",
    "band": [
     30.0,
@@ -1355,8 +1355,8 @@
    "name": "Azorius Control",
    "archetype": "control",
    "meta_share": 7.0,
-   "flat_wr": 32.8,
-   "weighted_wr": 21.4,
+   "flat_wr": 33.0,
+   "weighted_wr": 21.9,
    "tier": "T4",
    "band": [
     30.0,
@@ -1440,8 +1440,8 @@
    "name": "Instant Reanimator",
    "archetype": "combo",
    "meta_share": 2.0,
-   "flat_wr": 41.4,
-   "weighted_wr": 46.3,
+   "flat_wr": 41.2,
+   "weighted_wr": 45.9,
    "tier": "T3",
    "band": [
     45.0,
@@ -1695,8 +1695,8 @@
    "name": "Broodscale Bloodchief",
    "archetype": "midrange",
    "meta_share": 13.0,
-   "flat_wr": 57.4,
-   "weighted_wr": 54.3,
+   "flat_wr": 57.2,
+   "weighted_wr": 53.9,
    "tier": "T2",
    "band": [
     45.0,
@@ -1950,8 +1950,8 @@
    "name": "Azorius Blink",
    "archetype": "aggro",
    "meta_share": 3.0,
-   "flat_wr": 42.0,
-   "weighted_wr": 37.7,
+   "flat_wr": 41.8,
+   "weighted_wr": 37.2,
    "tier": "T4",
    "band": [
     30.0,
@@ -2035,8 +2035,8 @@
    "name": "Hollow One",
    "archetype": "combo",
    "meta_share": 0.5,
-   "flat_wr": 28.2,
-   "weighted_wr": 30.7,
+   "flat_wr": 27.8,
+   "weighted_wr": 29.9,
    "tier": "T4",
    "band": [
     30.0,
@@ -16707,10 +16707,10 @@
    "deck": "Amulet Titan",
    "opp": "Goryo's Vengeance",
    "n": 20,
-   "wins": 7,
+   "wins": 6,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 30.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -16819,10 +16819,10 @@
    "deck": "Amulet Titan",
    "opp": "Domain Zoo",
    "n": 20,
-   "wins": 4,
+   "wins": 3,
    "draws": 0,
    "aborted": 0,
-   "wr": 20.0,
+   "wr": 15.0,
    "band": [
     40.0,
     55.0
@@ -17642,10 +17642,10 @@
    "deck": "Amulet Titan",
    "opp": "Azorius Control (WST v2)",
    "n": 20,
-   "wins": 11,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 55.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -18110,10 +18110,10 @@
    "deck": "Amulet Titan",
    "opp": "Boros Ponza",
    "n": 20,
-   "wins": 9,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 50.0,
    "band": [
     35.0,
     50.0
@@ -18225,10 +18225,10 @@
    "deck": "Amulet Titan",
    "opp": "Eldrazi Ramp",
    "n": 20,
-   "wins": 9,
+   "wins": 10,
    "draws": 0,
    "aborted": 0,
-   "wr": 45.0,
+   "wr": 50.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -33368,10 +33368,10 @@
    "deck": "4c Omnath",
    "opp": "Amulet Titan",
    "n": 20,
-   "wins": 13,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -47093,10 +47093,10 @@
    "deck": "Azorius Control",
    "opp": "Amulet Titan",
    "n": 20,
-   "wins": 5,
+   "wins": 6,
    "draws": 1,
    "aborted": 0,
-   "wr": 25.0,
+   "wr": 30.0,
    "band": [
     35.0,
     50.0
@@ -49842,10 +49842,10 @@
    "deck": "Instant Reanimator",
    "opp": "Amulet Titan",
    "n": 20,
-   "wins": 12,
+   "wins": 11,
    "draws": 0,
    "aborted": 0,
-   "wr": 60.0,
+   "wr": 55.0,
    "band": [
     40.0,
     60.0
@@ -58046,10 +58046,10 @@
    "deck": "Broodscale Bloodchief",
    "opp": "Amulet Titan",
    "n": 20,
-   "wins": 16,
+   "wins": 15,
    "draws": 0,
    "aborted": 0,
-   "wr": 80.0,
+   "wr": 75.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -66172,10 +66172,10 @@
    "deck": "Azorius Blink",
    "opp": "Amulet Titan",
    "n": 20,
-   "wins": 13,
+   "wins": 12,
    "draws": 0,
    "aborted": 0,
-   "wr": 65.0,
+   "wr": 60.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -68886,10 +68886,10 @@
    "deck": "Hollow One",
    "opp": "Amulet Titan",
    "n": 20,
-   "wins": 7,
+   "wins": 5,
    "draws": 0,
    "aborted": 0,
-   "wr": 35.0,
+   "wr": 25.0,
    "band": null,
    "band_verdict": "",
    "detail": {
@@ -71331,8 +71331,8 @@
   }
  ],
  "provenance": {
-  "generated": "2026-11-13T21:40:13.902034",
-  "commit": "bef2081",
+  "generated": "2026-11-15T07:43:59.447190",
+  "commit": "0f287b3",
   "format": "bo3",
   "n_per_pair": 20,
   "total_matches": 6500,
@@ -71341,7 +71341,7 @@
   "draws": 114,
   "aborted": 0,
   "rules_audit_violations": 0,
-  "command": "tools/resumable_matrix.py -n 20 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/dc-post_seed.jsonl"
+  "command": "tools/resumable_matrix.py -n 20 --workers 2 --checkpoint merged.jsonl --rules-audit --neutralise-deadline --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-rakdos-aggro.jsonl shards/row-ruby-storm.jsonl matrix_requests/pp-post_seed.jsonl"
  },
  "calibration": {
   "decks_in_band": 15,
@@ -72502,9 +72502,9 @@
    },
    "codebase": {
     "engine_modules": 74,
-    "engine_lines": 71622,
+    "engine_lines": 71625,
     "ai_modules": 93,
-    "ai_lines": 49221,
+    "ai_lines": 49307,
     "test_files": 845
    }
   },
@@ -75053,7 +75053,7 @@
     "engine/sba_manager.py": 291,
     "engine/turn_clock.py": 172,
     "engine/rules_query.py": 451,
-    "engine/optional_costs.py": 463,
+    "engine/optional_costs.py": 466,
     "engine/rules_audit.py": 114,
     "ai/ev_player.py": 5482,
     "ai/ev_evaluator.py": 3916,
