@@ -61,6 +61,67 @@ If three consecutive commits target the same outlier deck without moving the win
 
 The script `tools/check_abstraction.py` is the single source of truth — runnable standalone (`python tools/check_abstraction.py [--list]`) and called by all three layers above.
 
+## ROOT-CAUSE ANALYSIS (standing, from 2026-11-15) — fix the blind spot, not only the bug
+
+The simulator is mature: the defects that remain are the ones our checks
+cannot see. From 2026-11-08 to 2026-11-15, **every defect found had passed
+every existing check**: tests, ratchets, 0 rules-auditor violations in every
+field run, and green CI. Independent adversarial review and outlier-driven
+field diagnosis found them. So a fix is not finished when the bug is gone.
+It is finished when we know **why our process missed it** and the miss is
+closed for the whole class.
+
+Full analysis and ledger: `docs/design/2026-11-15_root_cause_blindspot_analysis.md`.
+
+**For every defect, record five things in its tracker section before the unit closes:**
+
+1. **Symptom:** card level, with the log line.
+2. **Root cause:** the mechanism, with no card name.
+3. **Blind-spot class**, and "why did every existing check pass?":
+   - **B1 a proxy for an owned question:** a second path answers what an
+     owner already answers, with a cheaper proxy. Castability → `GameState.can_cast`;
+     payability → `CastManager.mana_payable`; targetability →
+     `target_solver.can_be_targeted`; tap colours →
+     `ManaPayment.land_mana_units`; entering → `_handle_permanent_etb`; zone
+     changes → the zone funnel. Typical proxies: a creature count for "has a
+     target", a colour set for pips, a mana total for colours,
+     `produces_mana` for tap colours, `trigger_etb` for entering.
+   - **B2 a partial implementation:** a name-keyed or legacy handler does
+     what its author wrote, not what the card says; clauses it never mentions
+     are silently dropped (a delayed trigger, a restriction, an activation
+     made an enter effect).
+   - **B3 the wrong chooser or layer:** the engine makes a strategic pick, or
+     the chooser the rules name gets the wrong role.
+   - **B4 a valuation not in one currency:** type keys or hand-set weights in
+     place of position value or turns to win.
+   - **B5 data validity:** a list or gameplan that cannot do what it declares
+     (spells its own mana base cannot cast).
+   - **B6 a measurement blind spot:** the check only sees what it was told to
+     look for.
+   - Or a **new class**, defined in the analysis doc.
+4. **Generic detector** for the class (ratchet, census or invariant), or the
+   recorded reason none can exist.
+5. **Sweep:** run the detector over the whole codebase. Fix every sibling, or
+   list it with its reason. A root cause found once usually has siblings: in
+   this stretch, 6 defects shared B1.
+
+**Two standing steps (B6 is closed by doing them, not by intending to):**
+
+- **Adversarial review per rules or AI unit:** two independent reviewers, a
+  comprehensive-rules lens and a strategy lens. Each gets the diff and tests,
+  never the author's conclusions, and is told to refute (default "refuted"
+  when uncertain). A refutation becomes a failing test and a fix, a revert, or
+  a recorded correction. Round 2 (2026-11-13) refuted all three units it
+  reviewed, at least in part, and one was reverted.
+- **Outlier-driven diagnosis per field run:** the most out-of-band decks, in
+  both directions, get an independent replay diagnosis. It must cite seed,
+  game, turn and log line, classify each cause as a RULES or DECISION error,
+  and say what it ruled out. Its causes enter the ledger like any other.
+
+**Do not** keep tuning a deck's number with point fixes once field runs stop
+moving it (each of the last six units moved the field under 1.5pp). Diagnose
+the field as a whole, and close blind-spot classes.
+
 ## Sequencing rules (standing) — plan the run, not just the step
 
 Long measurements here cost 20 minutes to 4 hours. Three failures recur when
