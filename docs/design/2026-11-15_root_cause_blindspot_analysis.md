@@ -128,7 +128,8 @@ For every defect, before the unit closes, record five things in its tracker sect
 4. **Generic detector:** the ratchet, census or invariant that catches the class, or the recorded reason none can.
 5. **Sweep:** run the detector over the whole codebase. Fix every sibling, or list it with the reason it is left.
 
-And two standing steps:
+And three standing steps:
+- **Adversarial review of every plan** before it runs: an independent reviewer is given the plan and the code, not the author's reasoning, and told to refute it. Each objection is adopted or answered in the plan file first.
 - **Adversarial review per unit:** two independent reviewers (rules lens, strategy lens) on every rules or AI unit, told to refute. A refutation becomes a failing test and a fix, or a recorded correction.
 - **Outlier-driven diagnosis per field run:** after each field run, the most out-of-band decks (both directions) get an independent replay diagnosis that must cite log lines and classify each cause. A cause found this way enters this ledger like any other.
 

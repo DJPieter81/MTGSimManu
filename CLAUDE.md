@@ -105,7 +105,20 @@ Full analysis and ledger: `docs/design/2026-11-15_root_cause_blindspot_analysis.
    list it with its reason. A root cause found once usually has siblings: in
    this stretch, 6 defects shared B1.
 
-**Two standing steps (B6 is closed by doing them, not by intending to):**
+**Three standing steps (B6 is closed by doing them, not by intending to):**
+
+- **Adversarial review of every plan, before it is executed** (user directive,
+  2026-11-15: "always have an adversarial review of plans"). An independent
+  reviewer gets the plan and the code it touches, never the author's reasoning,
+  and is told to refute it: a wrong owner or layer, a class sized by the wrong
+  regex, a measurement that cannot see the effect, a sequencing trap (a
+  measurement invalidated by pending work), a cheaper or more general route.
+  Each objection is answered in the plan file (adopted, or rejected with the
+  reason) before the first step runs.
+- **Every plan carries a root-cause and blind-spot reflection** (user directive,
+  2026-11-15). For each step: the root cause it addresses (mechanism, no card
+  name), its blind-spot class, why every existing check passed, and the
+  detector that closes the class. A plan that only lists fixes is incomplete.
 
 - **Adversarial review per rules or AI unit:** two independent reviewers, a
   comprehensive-rules lens and a strategy lens. Each gets the diff and tests,
