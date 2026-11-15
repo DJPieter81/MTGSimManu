@@ -13572,3 +13572,13 @@ Storm's loss here is largely structural, not an AI error.
 - **Response path built.** `ai/response.ResponseDecider._enumerate_response_candidates` reads the same deferred-cost gate as the main phase. Pact of Negation with no blue source for its upkeep payment is no response. Test red without the gate; anchor and digest unchanged.
 - **Three pacts on the legacy path: measured, not built.** 58 pool spells hold a delayed trigger and are not dispatched. 17 of those triggers are executable, among them Pact of Negation, Slaughter Pact and Intervention Pact. Creating the trigger generically after a legacy resolution would schedule Goryo's Vengeance's end-step exile twice: it is the one registered-deck card in the 17, and its legacy path schedules the exile itself. No registered deck plays the three pacts. Build when a family switch takes those hosts.
 - **"Can't lose / can't win": measured, not built.** 7 pool cards print "can't lose the game" and 7 print "can't win the game", about 12 distinct. No registered deck plays one. Type it at load (a static on the battlefield) and read it in `GameState.end_game` when a deck carries one.
+
+**LG follow-up (b), built: a land search keeps a pending pay-or-lose cost payable** (AI; review round 2).
+- `ai/activation_ev._choose_land_delivery` ranks first a land that taps for a colour the pending costs are still short of. The shortfall comes from `ai/deferred_costs.short_colours`: the summed pending pips against the lands on the board plus the batch.
+- A land's colours come from the payment owner's per-source units (`tap_colours` → `ManaPayment.land_mana_units`), not `produces_mana`. The first version read `produces_mana`, which lists every colour for Crumbling Vestige (an any-colour enter mana on a land that taps for colourless); in s70028 Scapeshift still fetched three Vestiges.
+- With nothing pending, every land ties on this key and the ranking is unchanged.
+- **Tests:**
+  - the search closes a {G}{G} shortfall over a red/blue-hungry hand (red before the key);
+  - a Vestige does not close a green shortfall;
+  - no pending cost means no change.
+- **Measured:** Amulet goldfish n=40: 39 kills (1 pact loss) → 40 kills, median kill 7, go-off 5.5. Anchor and digest unchanged.

@@ -287,6 +287,10 @@ def _choose_land_delivery(game, player_idx, lands, batch=(),
     same question "which land do I most want next"). No card names, no
     new weights, no second land valuation.
 
+    Before all of them, a land that makes a colour a pending pay-or-lose
+    cost is still short of (`ai.deferred_costs.short_colours`): an unpaid
+    pact loses the game.
+
     Between those two, a land whose own ability grants haste
     (`grants_haste_activation`) ranks by the attack it converts THIS turn
     (`haste_grant_gain`, the activation scorer's own valuation), when it
@@ -337,10 +341,21 @@ def _choose_land_delivery(game, player_idx, lands, batch=(),
             return 0.0
         return haste_ev
 
+    # A pending pay-or-lose cost (CR 104.3c: an unpaid pact loses the
+    # game) outranks everything a pick weighs: a land that makes a colour
+    # the pending costs are still short of comes first. Nothing pending,
+    # nothing short: every land ties here and the ranking below decides.
+    from ai.deferred_costs import short_colours, tap_colours
+    short = short_colours(game, player_idx, list(batch))
+
+    def _closes_shortfall(c) -> bool:
+        return bool(short) and bool(short & tap_colours(game, player_idx, c))
+
     def _key(c):
         is_bounce = bool(getattr(c.template, 'etb_return_land', False))
         bounce_penalised = is_bounce and (not watcher or batch_has_bounce)
-        return (not bounce_penalised, _converts(c), _drop_value(c))
+        return (_closes_shortfall(c), not bounce_penalised, _converts(c),
+                _drop_value(c))
 
     return max(lands, key=_key)
 

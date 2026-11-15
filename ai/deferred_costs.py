@@ -77,6 +77,13 @@ def deferred_costs_payable(game: Any, player_idx: int, card: Any) -> bool:
     # Every such cost already pending is paid at the same upkeep from the
     # same board: the spell is payable only beside them (their sum).
     costs = [_total(pending_loss_costs(game, player_idx) + costs)]
+    return _upkeep_payable(game, player_idx, costs)
+
+
+def _upkeep_payable(game: Any, player_idx: int, costs: List[Any]) -> bool:
+    """Are `costs` payable from the player's board as it will stand at its
+    next upkeep: every permanent untapped (CR 502.3), creatures able to tap
+    (CR 302.6), the mana pool empty (CR 500.4)?"""
     from engine.cast_manager import CastManager
     player = game.players[player_idx]
     board = list(player.battlefield)
@@ -97,3 +104,62 @@ def deferred_costs_payable(game: Any, player_idx: int, card: Any) -> bool:
             c.tapped, c.summoning_sick = tapped, sick
         for k, v in saved_pool.items():
             setattr(pool, k, v)
+
+
+def keeps_pending_costs_payable(game: Any, player_idx: int,
+                                extra_lands: List[Any]) -> bool:
+    """Would every pay-or-lose cost already pending for the player be
+    payable at its next upkeep with `extra_lands` on the battlefield too
+    (a search delivering them)? True when none is pending. The board as
+    it will stand at that upkeep, as `deferred_costs_payable` reads it."""
+    pending = pending_loss_costs(game, player_idx)
+    if not pending:
+        return True
+    player = game.players[player_idx]
+    added = [c for c in extra_lands if c not in player.battlefield]
+    player.battlefield.extend(added)
+    try:
+        return _upkeep_payable(game, player_idx, [_total(pending)])
+    finally:
+        for c in added:
+            player.battlefield.remove(c)
+
+
+# A cost's coloured pips by the colour letter a mana unit offers (CR
+# 105.2: the five colours).
+_PIP_LETTERS = (("white", "W"), ("blue", "U"), ("black", "B"), ("red", "R"),
+                ("green", "G"))
+
+
+def tap_colours(game: Any, player_idx: int, land: Any) -> set:
+    """The colour letters `land` can tap for, read from the payment
+    owner's own per-source units (`ManaPayment.land_mana_units`, what an
+    upkeep payment actually spends): not `produces_mana`, which also lists
+    a colour the land adds only as it enters (an any-colour enter mana on
+    a land that taps for colourless)."""
+    from engine.mana_payment import ManaPayment
+    return {letter for unit in ManaPayment.land_mana_units(game, player_idx,
+                                                           land)
+            for letter in unit}
+
+
+def short_colours(game: Any, player_idx: int, extra_lands: List[Any]) -> set:
+    """The colours whose pips in the pending pay-or-lose costs outnumber
+    the lands that can tap for them, with `extra_lands` added to the board.
+    Each land counts once per colour it can tap for: the shortfall a
+    search still delivering lands one at a time must close. Empty when
+    nothing is pending."""
+    pending = pending_loss_costs(game, player_idx)
+    if not pending:
+        return set()
+    total = _total(pending)
+    lands = [c for c in game.players[player_idx].battlefield
+             if c.template.is_land] + list(extra_lands)
+    colours = [tap_colours(game, player_idx, c) for c in lands]
+    short = set()
+    for field, letter in _PIP_LETTERS:
+        need = getattr(total, field)
+        supply = sum(1 for cs in colours if letter in cs)
+        if need > supply:
+            short.add(letter)
+    return short

@@ -304,3 +304,55 @@ def test_an_instant_with_an_unpayable_deferred_cost_is_no_response(card_db):
     game.stack.push(item)
     decider = ResponseDecider(player_idx=0)
     assert pact not in decider._enumerate_response_candidates(game, item)
+
+
+def test_a_land_search_keeps_a_pending_deferred_cost_payable(card_db):
+    """A search delivering lands while a pact is pending picks lands that
+    pay it at the next upkeep (review round 2: Scapeshift sacrificed the
+    green sources and fetched lands that made no green; the player lost to
+    its own pact). Losing the game outweighs anything else a pick weighs."""
+    from ai.activation_ev import _choose_land_delivery
+    game = _game(card_db, 4)
+    _cast(game, card_db, PACT)                       # {2}{G}{G} pending
+    for c in list(game.players[0].battlefield):      # the lands sacrificed
+        game.players[0].battlefield.remove(c)
+    game.players[0].hand.clear()                     # needs red and blue only
+    for n in ("Lightning Bolt", "Counterspell", "Lightning Helix"):
+        _add(game, card_db, n, 0, "hand")
+    pool = [_add(game, card_db, n, 0, "library")
+            for n in ("Mountain", "Mountain", "Island", "Forest", "Forest",
+                      "Mountain")]
+    picked = []
+    for _ in range(4):
+        land = _choose_land_delivery(game, 0, pool, batch=tuple(picked))
+        picked.append(land)
+        pool = [c for c in pool if c is not land]
+    assert sum(1 for c in picked if c.name == "Forest") == 2, \
+        [c.name for c in picked]
+
+
+def test_with_no_pending_cost_the_land_search_ranking_is_unchanged(card_db):
+    from ai.deferred_costs import keeps_pending_costs_payable
+    game = _game(card_db, 0)
+    pool = [_add(game, card_db, n, 0, "library")
+            for n in ("Mountain", "Forest")]
+    assert all(keeps_pending_costs_payable(game, 0, [c]) for c in pool)
+
+
+def test_a_land_whose_colour_is_only_an_enter_mana_does_not_close_the_shortfall(
+        card_db):
+    """Crumbling Vestige adds one mana of any colour as it enters and taps
+    only for colourless: it cannot pay a pending {G} at the next upkeep, so
+    a search short of green takes the Forest (review round 2, Amulet
+    s70028: three Vestiges were fetched and the pact was lost)."""
+    from ai.activation_ev import _choose_land_delivery
+    from ai.deferred_costs import short_colours, tap_colours
+    game = _game(card_db, 4)
+    _cast(game, card_db, PACT)
+    for c in list(game.players[0].battlefield):
+        game.players[0].battlefield.remove(c)
+    vestige = _add(game, card_db, "Crumbling Vestige", 0, "library")
+    forest = _add(game, card_db, "Forest", 0, "library")
+    assert tap_colours(game, 0, vestige) == {"C"}
+    assert "G" in short_colours(game, 0, [vestige])
+    assert _choose_land_delivery(game, 0, [vestige, forest]) is forest
