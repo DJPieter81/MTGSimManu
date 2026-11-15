@@ -111,13 +111,13 @@ class TestWardTemplateField:
         assert kappa.ward_cost == 4
 
     def test_life_shaped_ward_card_has_zero(self, card_db):
-        """Sire of Seven Deaths' 'Ward—Pay 7 life' is a real ward of
-        an excluded cost shape — documented gap, not a false
-        negative."""
+        """Sire of Seven Deaths' 'Ward—Pay 7 life' has no MANA part; its
+        life part lives in `ward_life_cost` (tests/test_ward_cost_shapes.py)."""
         sire = card_db.get_card("Sire of Seven Deaths")
         if sire is None:
             pytest.skip("Sire of Seven Deaths not in DB")
         assert sire.ward_cost == 0
+        assert sire.ward_life_cost == 7
 
     def test_ward_conferred_by_equipment_not_on_equipment_itself(self, card_db):
         """Lavaspur Boots grants ward {1} to the EQUIPPED creature —
@@ -149,20 +149,23 @@ class TestWardTemplateField:
         """Regression guard at DB scale: a card whose only relation to
         the substring 'ward' is an unrelated word ('toward', 'award',
         '+1/+1 counter') must not be flagged. Every flagged card's
-        oracle text must contain a clause literally starting with the
-        word 'ward'."""
+        oracle text must carry the keyword "ward" as a keyword-list item
+        of its own: opening a clause, or after a comma ("Flying, ward
+        {2}"), never inside another word."""
+        import re
         from engine.oracle_clauses import split_clauses
         false_positives = []
         for name, tmpl in card_db.cards.items():
-            if getattr(tmpl, 'ward_cost', 0) <= 0:
+            if (getattr(tmpl, 'ward_cost', 0) <= 0
+                    and getattr(tmpl, 'ward_life_cost', 0) <= 0):
                 continue
             oracle = tmpl.oracle_text or ''
-            if not any(c.strip().lower().startswith('ward')
+            if not any(re.search(r'(?:^|,\s*)ward(?![a-z])', c.strip().lower())
                        for c in split_clauses(oracle)):
                 false_positives.append(name)
         assert not false_positives, (
-            f"{len(false_positives)} card(s) flagged ward_cost>0 "
-            f"without a clause starting with 'ward': {false_positives[:10]}"
+            f"{len(false_positives)} card(s) flagged with a ward cost "
+            f"without a ward keyword-list item: {false_positives[:10]}"
         )
 
 

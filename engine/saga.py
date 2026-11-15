@@ -22,7 +22,10 @@ LORE_COUNTER = "lore"
 
 
 def is_saga(card: "CardInstance") -> bool:
-    return "Saga" in (card.template.subtypes or [])
+    """A Saga is one on the face it shows: a Saga returned transformed is
+    its back face, a creature with no lore counters or chapters (CR
+    712.8e, 714)."""
+    return "Saga" in (card.effective_subtypes or [])
 
 
 def saga_enters(game: "GameState", card: "CardInstance",

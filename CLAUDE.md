@@ -2,6 +2,8 @@
 
 ## ABSTRACTION CONTRACT (read before any engine/AI code change)
 
+**Workflow: invoke the `abstract-first` skill (`.claude/skills/abstract-first/SKILL.md`) before any `engine/` or `ai/` change.** It turns a card-level symptom into a sized, typed, single-owner mechanic fix; size the class first with `python tools/class_census.py "<oracle regex>" [--field <typed field>]`.
+
 The slogan "no patches, solve holistically" does not bind. These rules do. They apply to every change in `engine/` and `ai/`. Before writing the diff, answer all four:
 
 1. **Class size** — how many of Modern's 20k+ cards could legitimately hit this code path? If fewer than 10, you are patching. Stop. Find the mechanic.
@@ -58,6 +60,80 @@ If three consecutive commits target the same outlier deck without moving the win
 3. **Pre-commit hook (optional, local only)** — `.git-hooks/pre-commit` calls the same script. Activated per-clone via `bash tools/install_hooks.sh`. Useful for fast feedback in local Claude Code sessions; redundant in fresh containers and irrelevant for github.dev / web UI commits.
 
 The script `tools/check_abstraction.py` is the single source of truth — runnable standalone (`python tools/check_abstraction.py [--list]`) and called by all three layers above.
+
+## ROOT-CAUSE ANALYSIS (standing, from 2026-11-15) — fix the blind spot, not only the bug
+
+The simulator is mature: the defects that remain are the ones our checks
+cannot see. From 2026-11-08 to 2026-11-15, **every defect found had passed
+every existing check**: tests, ratchets, 0 rules-auditor violations in every
+field run, and green CI. Independent adversarial review and outlier-driven
+field diagnosis found them. So a fix is not finished when the bug is gone.
+It is finished when we know **why our process missed it** and the miss is
+closed for the whole class.
+
+Full analysis and ledger: `docs/design/2026-11-15_root_cause_blindspot_analysis.md`.
+
+**For every defect, record five things in its tracker section before the unit closes:**
+
+1. **Symptom:** card level, with the log line.
+2. **Root cause:** the mechanism, with no card name.
+3. **Blind-spot class**, and "why did every existing check pass?":
+   - **B1 a proxy for an owned question:** a second path answers what an
+     owner already answers, with a cheaper proxy. Castability → `GameState.can_cast`;
+     payability → `CastManager.mana_payable`; targetability →
+     `target_solver.can_be_targeted`; tap colours →
+     `ManaPayment.land_mana_units`; entering → `_handle_permanent_etb`; zone
+     changes → the zone funnel. Typical proxies: a creature count for "has a
+     target", a colour set for pips, a mana total for colours,
+     `produces_mana` for tap colours, `trigger_etb` for entering.
+   - **B2 a partial implementation:** a name-keyed or legacy handler does
+     what its author wrote, not what the card says; clauses it never mentions
+     are silently dropped (a delayed trigger, a restriction, an activation
+     made an enter effect).
+   - **B3 the wrong chooser or layer:** the engine makes a strategic pick, or
+     the chooser the rules name gets the wrong role.
+   - **B4 a valuation not in one currency:** type keys or hand-set weights in
+     place of position value or turns to win.
+   - **B5 data validity:** a list or gameplan that cannot do what it declares
+     (spells its own mana base cannot cast).
+   - **B6 a measurement blind spot:** the check only sees what it was told to
+     look for.
+   - Or a **new class**, defined in the analysis doc.
+4. **Generic detector** for the class (ratchet, census or invariant), or the
+   recorded reason none can exist.
+5. **Sweep:** run the detector over the whole codebase. Fix every sibling, or
+   list it with its reason. A root cause found once usually has siblings: in
+   this stretch, 6 defects shared B1.
+
+**Three standing steps (B6 is closed by doing them, not by intending to):**
+
+- **Adversarial review of every plan, before it is executed** (user directive,
+  2026-11-15: "always have an adversarial review of plans"). An independent
+  reviewer gets the plan and the code it touches, never the author's reasoning,
+  and is told to refute it: a wrong owner or layer, a class sized by the wrong
+  regex, a measurement that cannot see the effect, a sequencing trap (a
+  measurement invalidated by pending work), a cheaper or more general route.
+  Each objection is answered in the plan file (adopted, or rejected with the
+  reason) before the first step runs.
+- **Every plan carries a root-cause and blind-spot reflection** (user directive,
+  2026-11-15). For each step: the root cause it addresses (mechanism, no card
+  name), its blind-spot class, why every existing check passed, and the
+  detector that closes the class. A plan that only lists fixes is incomplete.
+
+- **Adversarial review per rules or AI unit:** two independent reviewers, a
+  comprehensive-rules lens and a strategy lens. Each gets the diff and tests,
+  never the author's conclusions, and is told to refute (default "refuted"
+  when uncertain). A refutation becomes a failing test and a fix, a revert, or
+  a recorded correction. Round 2 (2026-11-13) refuted all three units it
+  reviewed, at least in part, and one was reverted.
+- **Outlier-driven diagnosis per field run:** the most out-of-band decks, in
+  both directions, get an independent replay diagnosis. It must cite seed,
+  game, turn and log line, classify each cause as a RULES or DECISION error,
+  and say what it ruled out. Its causes enter the ledger like any other.
+
+**Do not** keep tuning a deck's number with point fixes once field runs stop
+moving it (each of the last six units moved the field under 1.5pp). Diagnose
+the field as a whole, and close blind-spot classes.
 
 ## Sequencing rules (standing) — plan the run, not just the step
 
@@ -209,7 +285,7 @@ git commit -m "chore: refresh ModernAtomic for new sets"
 git push origin main
 ```
 
-**New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026), **Marvel Super Heroes (Jun 26 2026) — STILL MISSING from the DB**: the 2026-07-05 refresh attempt failed because mtgjson.com is blocked by the session egress proxy (CONNECT 403 policy denial); re-run `update_modern_atomic.py` from an environment that can reach mtgjson.com.
+**New Modern-legal sets to watch (2026):** Lorwyn Eclipsed (Jan 2026), TMNT (Feb 2026), Secrets of Strixhaven (Apr 24 2026), Marvel Super Heroes (Jun 26 2026), The Hobbit (Aug 14 2026), Reality Fracture (Oct 2 2026) — all in the DB as of the MTGJSON 5.3.0+20261031 refresh (2026-11-01; mtgjson.com is reachable from the session again). Next: Star Trek (Nov 13 2026).
 
 **Import a new deck:**
 ```bash
@@ -395,24 +471,21 @@ The 2026-04-11 6-expert panel report (~168 games, overall grade D+) lives at **`
 
 ## Dashboard — modern_meta_matrix_full.html
 
-The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
+The dashboard and the showcase are built together by ONE pipeline, `tools/meta_site/`, from ONE typed data file, `data/meta_site.json` (schema: `tools/meta_site/schema.py`). Standalone vanilla-JS pages; the data is embedded as a single `<script type="application/json" id="site-data">` block, so no deck or card name can break a script.
 
-**Data source:** `metagame_data.jsx` — the canonical D object with:
-- `wins[i][j]` — win counts (out of `matches_per_pair=100`)
-- `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
-- `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
-- `overall[idx]` — flat WR, weighted WR, meta share, delta
-- `meta_shares` — tournament representation %
+**Inputs** (`tools/meta_site/build_data.py`): `metagame_results.json` (cells, draws, aborts, provenance), `card_data.json` (card-level detail from `extract_card_data.py`), `decks/gameplans/*.json` (each deck's archetype), `decks/modern_meta.py` (meta shares), `tools/calibration_bands.json` (bands and verdicts), `replays/*.html`, and the hand-written narrative in `tools/meta_site/content/*.json` (timeline, architecture, roadmap, project). Every derived figure (flat and weighted WR, tier, band verdict) is computed there, once. Edit narrative as JSON, never in the generated HTML.
+
+**Outputs** (`tools/meta_site/render.py`, templates in `tools/meta_site/templates/`): `modern_meta_matrix_full.html`, `templates/reference_showcase.html`, `mtgsimmanu_showcase.html`, and `metagame_data.jsx` (the legacy D object, still read by `build_guide.py` and `meta_audit.py`). Every path is inside the repository the tool runs from.
 
 **Build command (each session):**
 ```bash
-# After a new matrix run — merge wins + preserve card detail, then build:
+# After a new matrix run (run_meta.py --matrix --save calls this itself):
 python3 build_dashboard.py --merge
 
-# Without a new run — just rebuild HTML from existing JSX:
+# Re-render the pages from the committed data/meta_site.json:
 python3 build_dashboard.py
 ```
-`--merge` reads `metagame_results.json`, merges wins into `metagame_data.jsx` (preserving all matchup_cards/deck_cards), recomputes WRs, then builds the HTML. Always use `--merge` after running `--matrix`.
+`--merge` refuses a partial run (`--decks N`) that would drop decks already on the site. Pinned by `tests/test_meta_site_pipeline.py`.
 
 **Dashboard features:**
 - Slide-in detail panel (CSS `translateX` transition, 420px)

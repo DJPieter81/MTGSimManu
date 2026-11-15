@@ -162,7 +162,7 @@ class TestStormRitualHeldWithoutFinisher:
         game.players[0].spells_cast_this_turn = 1
         game._global_storm_count = 1
         game.players[0].life = 20
-        game.players[1].life = 20
+        game.players[1].life = 3  # a lethal spot: the chain kills this turn
 
         player = EVPlayer(player_idx=0, deck_name="Ruby Storm",
                           rng=random.Random(0))

@@ -57,12 +57,22 @@ class TestStormFinisherHoldsForChain:
     """Grapeshot must NOT fire when storm < lethal AND a Past in
     Flames in hand promises a much bigger chain next turn."""
 
-    def test_grapeshot_held_when_pif_in_hand_and_storm_short(
+    def test_an_unpayable_flashback_grant_in_hand_adds_no_hold(
             self, card_db):
-        """Reproduces seed 50000 T3: storm=3, hand has Grapeshot +
-        2 Past in Flames + March of Reckless Joy + 1 mana floating.
-        Casting Grapeshot now = 4 damage. Holding for T4 PiF chain
-        promises 10+ damage. AI must defer Grapeshot."""
+        """Seed 50000 T3: storm=3, hand has Grapeshot + 2 Past in Flames
+        + March of Reckless Joy, 1 mana left. The grant costs 3 here, so
+        it cannot be cast this turn: it is no fuel for the finisher's
+        hold (its same-turn value is the granted casts it leaves mana
+        for, `test_a_flashback_grant_is_worth_the_granted_spells_it_
+        leaves_mana_for`). Grapeshot scores as it would without the two
+        grants in hand.
+
+        Formerly this asserted a hold for the NEXT turn's chain. That
+        hold existed only because the grant's cantrip tag fired the
+        chain-continuation signal on an uncastable grant; holding a
+        closer below lethal for a later turn is the falsified unit MA
+        (docs/diagnostics/2026-10-16_storm_closer_held_below_lethal_
+        falsified.md)."""
         game = GameState(rng=random.Random(0))
         # Storm side: 1 untapped mana (Sacred Foundry); Mountain x2
         # tapped (already used for the rituals this turn); Ruby
@@ -122,20 +132,11 @@ class TestStormFinisherHoldsForChain:
         me = game.players[0]
         opp = game.players[1]
         ev = player._score_spell(grapeshot, snap, game, me, opp)
-
-        # Storm pass_threshold is -5.0.  Grapeshot at storm=3 deals 4
-        # damage (1 + 3 copies); opp at 20 - 4 = 16.  Holding for T4
-        # PiF chain is strictly better, so Grapeshot's score must be
-        # below pass_threshold so the AI defers.
-        STORM_PASS_THRESHOLD = -5.0
-        assert ev < STORM_PASS_THRESHOLD, (
-            f"Grapeshot scored EV={ev:.2f} above STORM pass_threshold "
-            f"({STORM_PASS_THRESHOLD}); AI will fire for 4 damage "
-            f"and lose the PiF chain.  The fuel-counting branch in "
-            f"_combo_modifier should count PiF + GY flashback fuel "
-            f"that's playable NEXT TURN, not just what's castable "
-            f"with current 1-mana floor."
-        )
+        for c in [c for c in me.hand if c.name == "Past in Flames"]:
+            me.hand.remove(c)                  # the same hand size,
+            _add(game, card_db, "Mountain", controller=0, zone="hand")
+        snap = snapshot_from_game(game, 0)     # without the grants
+        assert player._score_spell(grapeshot, snap, game, me, opp) == ev
 
     def test_grapeshot_fires_for_lethal(self, card_db):
         """Regression anchor — Grapeshot at storm count >= opp_life

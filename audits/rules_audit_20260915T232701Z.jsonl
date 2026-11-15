@@ -1,0 +1,50 @@
+{"deck1": "Boros Energy", "deck2": "Jeskai Blink", "detail": "first seen on Ocelot Pride", "key": "ascend", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 11}
+{"deck1": "Boros Energy", "deck2": "Affinity", "detail": "first seen on Mox Opal", "key": "metalcraft", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 6}
+{"deck1": "Boros Energy", "deck2": "Amulet Titan", "detail": "first seen on Hanweir Battlements // Hanweir, the Writhing Township", "key": "meld", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 9}
+{"deck1": "Boros Energy", "deck2": "Goryo's Vengeance", "detail": "", "key": "Surgical Extraction", "kind": "census", "rule": "unhandled/spell", "seed": 52500, "turn": 8}
+{"deck1": "Boros Energy", "deck2": "Domain Zoo", "detail": "first seen on Stubborn Denial", "key": "ferocious", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 6}
+{"deck1": "Boros Energy", "deck2": "Domain Zoo", "detail": "", "key": "Practiced Offense", "kind": "census", "rule": "unhandled/spell", "seed": 51500, "turn": 8}
+{"deck1": "Boros Energy", "deck2": "Living End", "detail": "", "key": "Demonic Dread", "kind": "census", "rule": "unhandled/spell", "seed": 50000, "turn": 7}
+{"deck1": "Boros Energy", "deck2": "Izzet Prowess", "detail": "first seen on Lava Dart", "key": "flashback", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Boros Energy", "deck2": "Dimir Midrange", "detail": "first seen on Orcish Bowmasters", "key": "amass", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 10}
+{"deck1": "Boros Energy", "deck2": "Dimir Midrange", "detail": "", "key": "Dauthi Voidwalker", "kind": "census", "rule": "unhandled/replacement", "seed": 50500, "turn": 6}
+{"deck1": "Boros Energy", "deck2": "Azorius Control (WST)", "detail": "", "key": "Sanctifier en-Vec", "kind": "census", "rule": "unhandled/replacement", "seed": 50000, "turn": 11}
+{"deck1": "Boros Energy", "deck2": "Pinnacle Affinity", "detail": "first seen on Lavaspur Boots", "key": "ward", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 6}
+{"deck1": "Boros Energy", "deck2": "Eldrazi Ramp", "detail": "first seen on Sowing Mycospawn", "key": "devoid", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 10}
+{"deck1": "Boros Energy", "deck2": "Eldrazi Ramp", "detail": "first seen on Emrakul, the Promised End", "key": "protection from", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 10}
+{"deck1": "Boros Energy", "deck2": "Eldrazi Ramp", "detail": "first seen on Herigast, Erupting Nullkite", "key": "emerge", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 10}
+{"deck1": "Boros Energy", "deck2": "Creatures Toolbox", "detail": "first seen on Nature's Rhythm", "key": "harmonize", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Ruby Storm", "deck2": "Affinity", "detail": "first seen on Mox Opal", "key": "metalcraft", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 6}
+{"deck1": "Ruby Storm", "deck2": "Amulet Titan", "detail": "first seen on Hanweir Battlements // Hanweir, the Writhing Township", "key": "meld", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Ruby Storm", "deck2": "Domain Zoo", "detail": "first seen on Stubborn Denial", "key": "ferocious", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Ruby Storm", "deck2": "Living End", "detail": "", "key": "Demonic Dread", "kind": "census", "rule": "unhandled/spell", "seed": 50000, "turn": 8}
+{"deck1": "Ruby Storm", "deck2": "Izzet Prowess", "detail": "first seen on Lava Dart", "key": "flashback", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 5}
+{"deck1": "Ruby Storm", "deck2": "Dimir Midrange", "detail": "first seen on Orcish Bowmasters", "key": "amass", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Ruby Storm", "deck2": "Dimir Midrange", "detail": "", "key": "Dauthi Voidwalker", "kind": "census", "rule": "unhandled/replacement", "seed": 52500, "turn": 10}
+{"deck1": "Ruby Storm", "deck2": "Azorius Control (WST)", "detail": "", "key": "Sanctifier en-Vec", "kind": "census", "rule": "unhandled/replacement", "seed": 50000, "turn": 7}
+{"deck1": "Ruby Storm", "deck2": "Pinnacle Affinity", "detail": "first seen on Lavaspur Boots", "key": "ward", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 5}
+{"deck1": "Ruby Storm", "deck2": "Eldrazi Ramp", "detail": "first seen on Sowing Mycospawn", "key": "devoid", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Ruby Storm", "deck2": "Eldrazi Ramp", "detail": "first seen on Emrakul, the Promised End", "key": "protection from", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Ruby Storm", "deck2": "Eldrazi Ramp", "detail": "first seen on Herigast, Erupting Nullkite", "key": "emerge", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Ruby Storm", "deck2": "Creatures Toolbox", "detail": "first seen on Nature's Rhythm", "key": "harmonize", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Ruby Storm", "deck2": "Azorius Blink", "detail": "first seen on Ocelot Pride", "key": "ascend", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Affinity", "deck2": "Domain Zoo", "detail": "", "key": "Practiced Offense", "kind": "census", "rule": "unhandled/spell", "seed": 50500, "turn": 6}
+{"deck1": "Eldrazi Tron", "deck2": "Amulet Titan", "detail": "first seen on Hanweir Battlements // Hanweir, the Writhing Township", "key": "meld", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Eldrazi Tron", "deck2": "Domain Zoo", "detail": "first seen on Stubborn Denial", "key": "ferocious", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 9}
+{"deck1": "Eldrazi Tron", "deck2": "Domain Zoo", "detail": "", "key": "Practiced Offense", "kind": "census", "rule": "unhandled/spell", "seed": 50000, "turn": 9}
+{"deck1": "Eldrazi Tron", "deck2": "Living End", "detail": "", "key": "Demonic Dread", "kind": "census", "rule": "unhandled/spell", "seed": 50000, "turn": 13}
+{"deck1": "Eldrazi Tron", "deck2": "Izzet Prowess", "detail": "first seen on Lava Dart", "key": "flashback", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Eldrazi Tron", "deck2": "Dimir Midrange", "detail": "first seen on Orcish Bowmasters", "key": "amass", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Eldrazi Tron", "deck2": "Dimir Midrange", "detail": "", "key": "Dauthi Voidwalker", "kind": "census", "rule": "unhandled/replacement", "seed": 50000, "turn": 7}
+{"deck1": "Eldrazi Tron", "deck2": "Azorius Control (WST)", "detail": "", "key": "Sanctifier en-Vec", "kind": "census", "rule": "unhandled/replacement", "seed": 51000, "turn": 11}
+{"deck1": "Eldrazi Tron", "deck2": "Pinnacle Affinity", "detail": "first seen on Mox Opal", "key": "metalcraft", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Eldrazi Tron", "deck2": "Pinnacle Affinity", "detail": "first seen on Lavaspur Boots", "key": "ward", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Eldrazi Tron", "deck2": "Eldrazi Ramp", "detail": "first seen on Sowing Mycospawn", "key": "devoid", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Eldrazi Tron", "deck2": "Eldrazi Ramp", "detail": "first seen on Emrakul, the Promised End", "key": "protection from", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Eldrazi Tron", "deck2": "Eldrazi Ramp", "detail": "first seen on Herigast, Erupting Nullkite", "key": "emerge", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 8}
+{"deck1": "Eldrazi Tron", "deck2": "Creatures Toolbox", "detail": "first seen on Nature's Rhythm", "key": "harmonize", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 7}
+{"deck1": "Eldrazi Tron", "deck2": "Azorius Blink", "detail": "first seen on Ocelot Pride", "key": "ascend", "kind": "census", "rule": "keyword/unmodelled", "seed": 50000, "turn": 9}
+{"deck1": "Goryo's Vengeance", "deck2": "Boros Energy", "detail": "", "key": "Surgical Extraction", "kind": "census", "rule": "unhandled/spell", "seed": 59000, "turn": 8}
+{"deck1": "Goryo's Vengeance", "deck2": "Boros Ponza", "detail": "", "key": "Rest in Peace", "kind": "census", "rule": "unhandled/replacement", "seed": 50000, "turn": 6}
+{"deck1": "Living End", "deck2": "Azorius Control (WST)", "detail": "", "key": "Rest in Peace", "kind": "census", "rule": "unhandled/replacement", "seed": 50000, "turn": 8}
+{"deck1": "Azorius Control", "deck2": "Living End", "detail": "", "key": "Rest in Peace", "kind": "census", "rule": "unhandled/replacement", "seed": 50500, "turn": 6}

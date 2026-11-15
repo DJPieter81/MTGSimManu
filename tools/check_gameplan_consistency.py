@@ -102,6 +102,7 @@ TOP_NON_CARD: frozenset = frozenset({
     "mulligan_require_creature_cmc",
     "mulligan_cmc_profile",
     "_mulligan_combo_paths_doc",
+    "_mulligan_min_lands_doc",
 })
 
 # Goal object: dict keyed by card name (value = priority).

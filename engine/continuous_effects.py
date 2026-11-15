@@ -47,6 +47,19 @@ from .oracle_parser import COLOR_SET_SELF, COLOR_SET_YOUR_NONLAND
 ALL_COLORS = frozenset({Color.WHITE, Color.BLUE, Color.BLACK,
                         Color.RED, Color.GREEN})
 
+# Every characteristic this layer writes on a permanent (`CardInstance.cem_*`)
+# with the value that means "no effect applies". The layer writes them on
+# battlefield objects only; an object off the battlefield is a new object
+# (CR 400.7) and holds these values. Read by `_audit_off_battlefield`.
+_EFFECT_CHARACTERISTIC_DEFAULTS = (
+    ("cem_power_mod", 0), ("cem_toughness_mod", 0),
+    ("cem_keywords", frozenset()), ("cem_colors_set", None),
+    ("cem_land_type_set", None), ("cem_land_types_added", frozenset()),
+    ("cem_types_added", frozenset()), ("cem_subtypes_added", frozenset()),
+    ("cem_types_set", None), ("cem_subtypes_set", None),
+    ("cem_types_removed", frozenset()), ("cem_base_pt", None),
+)
+
 
 class Layer(Enum):
     """CR 613.1: The seven layers."""
@@ -91,7 +104,12 @@ class ContinuousEffect:
     apply: Optional[Callable] = None
     description: str = ""
     timestamp: int = 0
-    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat"
+    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat", "until_next_turn"
+    # For "until_next_turn" (CR 611.2b): the player whose next turn ends it.
+    controller: Optional[int] = None
+    # A resolved effect on a chosen object (CR 611.2c): (instance_id,
+    # battlefield_entry_seq). The object, not the card — CR 400.7.
+    target_obj: Optional[tuple] = None
 
 
 class ContinuousEffectsManager:
@@ -124,6 +142,87 @@ class ContinuousEffectsManager:
     def __init__(self):
         self._effects: List[ContinuousEffect] = []
         self._timestamp_counter: int = 0
+        # Resolved rule-modifying effects (engine/effect_model.Effect),
+        # stored until their Duration is expired by a clock event.
+        self._rule_effects: list = []
+
+    # ── rule-modifying effects (CR 101.2 / 611) ─────────────────────
+
+    def register_effect(self, effect) -> None:
+        """Store a resolved rule effect (engine/effect_model.Effect)."""
+        import dataclasses
+        self._timestamp_counter += 1
+        self._rule_effects.append(
+            dataclasses.replace(effect, timestamp=self._timestamp_counter))
+
+    def expire_rule_effects(self, event) -> None:
+        """The one expiry path: drop every stored effect whose Duration
+        this clock event ends."""
+        self._rule_effects = [e for e in self._rule_effects
+                              if not e.duration.expired_by(event)]
+
+    def drop_rule_effects(self, predicate) -> None:
+        self._rule_effects = [e for e in self._rule_effects if not predicate(e)]
+
+    def forget_object(self, instance_id: int) -> None:
+        """CR 400.7: an object a stored effect names (a permission to play
+        exiled cards, `effect_model.permit_play`) left the zone the effect
+        named, so the card is a new object the effect no longer names: it
+        leaves every stored effect's objects, and an effect left naming
+        none ends. Called where a card leaves exile -- the cast and the
+        land play from exile, and the zone funnel (`ZoneManager.move_card`).
+        Known gap, shared with `effect_resolver.Handle`: a card returned to
+        exile by a direct zone write (no funnel) after leaving it another
+        unfunnelled way is not seen leaving."""
+        import dataclasses
+        kept = []
+        for e in self._rule_effects:
+            objects = e.modification.get("objects")
+            if objects and instance_id in objects:
+                rest = tuple(o for o in objects if o != instance_id)
+                if not rest:
+                    continue
+                data = tuple((k, rest if k == "objects" else v)
+                             for k, v in e.modification.data)
+                e = dataclasses.replace(e, modification=dataclasses.replace(
+                    e.modification, data=data))
+            kept.append(e)
+        self._rule_effects = kept
+
+    def permits_zone(self, zone: str) -> bool:
+        """A stored permission names objects in `zone` (a resolved "you may
+        play ..." -- permissions are resolved effects, never statics)."""
+        from .effect_model import ModKind
+        return any(e.modification.kind is ModKind.PERMIT
+                   and e.modification.get("zone") == zone
+                   for e in self._rule_effects)
+
+    def spend_play(self, instance_id: int) -> None:
+        """An object was played under a permission that names it: a
+        permission bounded to `plays` plays ("you may play a card you own
+        from outside the game this turn": one) spends one, and ends when
+        none is left; then the object, now a new object (CR 400.7), leaves
+        every permission (`forget_object`)."""
+        import dataclasses
+        kept = []
+        for e in self._rule_effects:
+            objects = e.modification.get("objects")
+            plays = e.modification.get("plays")
+            if plays is not None and objects and instance_id in objects:
+                if plays <= 1:
+                    continue
+                data = tuple((k, plays - 1 if k == "plays" else v)
+                             for k, v in e.modification.data)
+                e = dataclasses.replace(e, modification=dataclasses.replace(
+                    e.modification, data=data))
+            kept.append(e)
+        self._rule_effects = kept
+        self.forget_object(instance_id)
+
+    def rule_effects(self, game: "GameState") -> list:
+        """Stored resolved effects plus the static ones permanents have
+        right now (derived fresh, never stored — CR 611.3a)."""
+        return list(self._rule_effects) + _derive_static_rule_effects(game)
 
     def register(self, effect: ContinuousEffect) -> None:
         """Register a new continuous effect."""
@@ -138,6 +237,13 @@ class ContinuousEffectsManager:
     def cleanup_end_of_turn(self) -> None:
         """Remove all end-of-turn effects."""
         self._effects = [e for e in self._effects if e.duration != "end_of_turn"]
+
+    def cleanup_until_next_turn(self, player_idx: int) -> None:
+        """CR 611.2b: effects that last "until your next turn" end as
+        their controller's next turn begins (called from that untap step)."""
+        self._effects = [e for e in self._effects
+                         if not (e.duration == "until_next_turn"
+                                 and e.controller == player_idx)]
 
     def cleanup_end_of_combat(self) -> None:
         """Remove all end-of-combat effects."""
@@ -196,6 +302,14 @@ class ContinuousEffectsManager:
                 card.cem_land_type_set = None
                 # Layer-4 land-type ADD: types on top of the printed ones
                 card.cem_land_types_added = set()
+                # Layer-4 type ADD ("in addition to its other types")
+                card.cem_types_added = set()
+                card.cem_subtypes_added = set()
+                # Layer-4 type SET / removal, layer-7b base P/T SET
+                card.cem_types_set = None
+                card.cem_subtypes_set = None
+                card.cem_types_removed = set()
+                card.cem_base_pt = None
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects + derived, key=lambda e: (
@@ -205,11 +319,23 @@ class ContinuousEffectsManager:
         ))
 
         # Apply effects in order
+        from .rules_audit import enabled as _audit_on
+        _audit = _audit_on()
         for effect in sorted_effects:
             if effect.affected and effect.apply:
                 for player in game.players:
                     for card in player.battlefield:
                         if effect.affected(game, card):
+                            if _audit and effect.target_obj is not None:
+                                # CR 400.7: an effect on a chosen object does
+                                # not apply to the card's later object.
+                                from .rules_audit import check as _audit_check
+                                _audit_check(
+                                    "400.7/effect_follows_old_object",
+                                    (card.instance_id, card.battlefield_entry_seq)
+                                    == tuple(effect.target_obj),
+                                    f"{effect.description} applied to a new "
+                                    f"object of {card.name}", game=game)
                             effect.apply(game, card)
             elif effect.affected is not None and effect.apply is None:
                 # A continuous/static effect that SELECTS cards but carries no
@@ -222,6 +348,33 @@ class ContinuousEffectsManager:
                 # turns the guardrail red instead of mis-playing in silence.
                 from .effect_diagnostics import record_unhandled_effect
                 record_unhandled_effect(effect.source_name, "static")
+        if _audit:
+            self._audit_off_battlefield(game)
+            _audit_self_type_changes(game)
+
+    @staticmethod
+    def _audit_off_battlefield(game: "GameState") -> None:
+        """CR 400.7, 611.3a, restated from raw fields: an object off the
+        battlefield -- a card in a hand, graveyard or exile, a spell on the
+        stack -- carries no characteristic a continuous effect gave it as a
+        permanent: no power or toughness change, keyword, colour or land
+        type set, land type or type added. The layer writes them on
+        battlefield objects only, so one off it holds them only when they
+        followed it out. Observation only."""
+        from .rules_audit import check as _audit_check
+        objects = [(zone, card) for player in game.players
+                   for zone in ("hand", "graveyard", "exile")
+                   for card in getattr(player, zone, ())]
+        objects += [("stack", item.source) for item in game.stack.items
+                    if getattr(item, "source", None) is not None
+                    and getattr(item.source, "zone", None) == "stack"]
+        for zone, card in objects:
+            kept = [name for name, default in _EFFECT_CHARACTERISTIC_DEFAULTS
+                    if getattr(card, name, default) != default]
+            _audit_check("400.7/effect_characteristic_off_battlefield",
+                         not kept,
+                         f"{card.name} in {zone} keeps {', '.join(kept)} "
+                         f"from its time as a permanent", game=game)
 
     def _derive_static_effects(self, game: "GameState") -> List[ContinuousEffect]:
         """Build the continuous effects that permanents currently on the
@@ -265,6 +418,8 @@ class ContinuousEffectsManager:
                         controller=controller,
                         timestamp=source.instance_id,
                     ))
+                derived.extend(_self_type_change_effects(game, controller,
+                                                         source))
         return derived
 
     def _cleanup_stale_effects(self, game: "GameState") -> None:
@@ -389,6 +544,43 @@ def create_forced_land_type_effect(source_id: int, source_name: str,
         apply=apply_type,
         description=f"{source_name}: nonbasic lands are {basic_type}s",
         timestamp=timestamp,
+    )]
+
+
+def create_type_adding_effect(source_id: int, source_name: str,
+                              target_id: int, target_seq: Optional[int],
+                              types=(), subtypes=(),
+                              duration: str = "end_of_turn",
+                              timestamp: int = 0) -> List[ContinuousEffect]:
+    """Layer-4 type ADD on one chosen object: it "becomes a <type> /
+    <subtype> in addition to its other types" while the effect lasts
+    (CR 205.1b, 613.1d). The object, not the card: one that left and
+    returned is a new object the effect does not name (CR 400.7, 611.2c).
+    `types` are CardType members; `subtypes` subtype names."""
+    types = frozenset(types)
+    subtypes = frozenset(subtypes)
+    target_obj = (target_id, target_seq) if target_seq is not None else None
+
+    def is_target(game, card):
+        return (card.instance_id == target_id
+                and (target_seq is None
+                     or card.battlefield_entry_seq == target_seq))
+
+    def apply_types(game, card):
+        card.cem_types_added |= types
+        card.cem_subtypes_added |= subtypes
+
+    names = sorted(t.value for t in types) + sorted(subtypes)
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.TYPE,
+        affected=is_target,
+        apply=apply_types,
+        description=f"{source_name}: becomes {', '.join(names)}",
+        timestamp=timestamp,
+        duration=duration,
+        target_obj=target_obj,
     )]
 
 
@@ -557,7 +749,9 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                               power_bonus: int = 0,
                               toughness_bonus: int = 0,
                               keyword_grants: Optional[Set[Keyword]] = None,
-                              duration: str = "end_of_turn") -> List[ContinuousEffect]:
+                              duration: str = "end_of_turn",
+                              controller: Optional[int] = None,
+                              target_seq: Optional[int] = None) -> List[ContinuousEffect]:
     """Create a pump spell effect (e.g., Giant Growth: +3/+3 until end of turn).
 
     Args:
@@ -570,9 +764,13 @@ def create_pump_spell_effect(source_id: int, source_name: str,
         duration: "end_of_turn" or "end_of_combat"
     """
     effects = []
+    target_obj = (target_id, target_seq) if target_seq is not None else None
 
     def is_target(game, card):
-        return card.instance_id == target_id
+        # CR 400.7 / 611.2c: the chosen object only — a card that left and
+        # returned is a new object (its battlefield_entry_seq moved on).
+        return (card.instance_id == target_id
+                and (target_seq is None or card.battlefield_entry_seq == target_seq))
 
     if power_bonus != 0:
         def apply_power(game, card):
@@ -587,6 +785,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_power,
             description=f"{source_name}: +{power_bonus}/+0",
             duration=duration,
+            controller=controller,
+            target_obj=target_obj,
         ))
 
     if toughness_bonus != 0:
@@ -602,6 +802,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_toughness,
             description=f"{source_name}: +0/+{toughness_bonus}",
             duration=duration,
+            controller=controller,
+            target_obj=target_obj,
         ))
 
     if keyword_grants:
@@ -617,6 +819,586 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                 apply=apply_keyword,
                 description=f"{source_name}: grants {kw.name}",
                 duration=duration,
+                controller=controller,
+                target_obj=target_obj,
             ))
 
     return effects
+
+
+# The printed static prohibitions the rule-effect read path enforces
+# (`rules_query`): casting (by spell filter), casting outside sorcery timing
+# or outside the caster's own turn (CR 101.2, 307.1), and activating the
+# abilities of named permanent types (CR 602.5).
+_RULE_ACTIONS = frozenset({"cast", "activate", "cast_outside_sorcery_timing",
+                           "cast_outside_own_turn"})
+# The grammar's printed cast objects, in the read path's filter vocabulary.
+_CAST_FILTERS = {"spells": "all", "noncreature spells": "noncreature",
+                 "creature spells": "creature"}
+# id(CardEffects) -> (that CardEffects, its per-face records).
+_PRINTED_RULES: dict = {}
+
+
+def _printed_prohibitions(perm) -> tuple:
+    """The rule prohibitions and turn-scoped cast caps a permanent's printed
+    static abilities state, on the face it shows, read from its parsed text
+    (CR 113.1, 604.1, 101.2): one ``(mod_kind, action, data, selector_kind,
+    condition)`` record per prohibited act or cap, `mod_kind` PROHIBIT or
+    LIMIT. A spec the read path cannot run whole -- an action, filter,
+    subject, count, duration or condition outside its vocabulary, or
+    residue -- yields nothing, never part of its rule. Memoised per
+    parsed-effects object."""
+    effects = perm.template.effects
+    hit = _PRINTED_RULES.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(_face_prohibitions(face)
+                              for face in effects.faces))
+        _PRINTED_RULES[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _face_prohibitions(hosts) -> tuple:
+    from .effect_conditions import rule_condition_supported
+    from .effect_model import DurationKind, Modification, ModKind, SelectorKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC:
+            continue
+        for s in iter_specs(host.specs):
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or s.residue:
+                continue
+            if mod.kind is ModKind.LIMIT:
+                cap = _cast_cap_record(s, mod)
+                if cap is not None:
+                    out.append(cap)
+                continue
+            if mod.kind is not ModKind.PROHIBIT:
+                continue
+            actions = tuple(mod.get("actions") or (mod.action,))
+            who = getattr(s.subject, "kind", None)
+            if not set(actions) <= _RULE_ACTIONS \
+                    or who not in (SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS) \
+                    or not rule_condition_supported(s.condition) \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+                continue
+            records = []
+            for action in actions:
+                if action == "cast":
+                    spell_filter = _CAST_FILTERS.get(mod.get("filter"))
+                    if spell_filter is None:
+                        break
+                    data = (("filter", spell_filter),)
+                elif action == "activate":
+                    if not mod.get("sources"):
+                        break
+                    data = (("sources", tuple(mod.get("sources"))),)
+                else:
+                    data = ()
+                records.append((ModKind.PROHIBIT, action, data, who,
+                                s.condition))
+            else:
+                out.extend(records)
+    return tuple(out)
+
+
+def _printed_counter_grants(perm) -> tuple:
+    """The "<description> can't be countered" prohibitions a permanent's
+    printed static abilities state, on the face it shows (CR 101.2, 604.1):
+    one spell description per prohibition (`rules_query.counter_text`)."""
+    from .rules_query import counter_text
+    faces = counter_text(perm.template)[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _face_counter_grants(hosts) -> tuple:
+    """One face's "can't be countered" spell descriptions. A description
+    outside the read path's vocabulary (`rules_query.COUNTER_FILTER_KEYS`:
+    a characteristic bound, a colour), a condition, a duration other than
+    the permanent's presence, or residue yields nothing."""
+    from .effect_model import DurationKind, Modification, ModKind, SelectorKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    from .rules_query import COUNTER_FILTER_KEYS
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC or host.from_zone != "battlefield":
+            continue
+        for s in iter_specs(host.specs):
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or s.residue or mod.kind is not ModKind.PROHIBIT \
+                    or mod.action != "be_countered" or s.condition is not None \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD) \
+                    or getattr(s.subject, "kind", None) is not SelectorKind.FILTER:
+                continue
+            f = dict(s.subject.filter or ())
+            if set(f) - COUNTER_FILTER_KEYS or f.get("zone") != "stack" \
+                    or f.get("controller") not in (None, "you"):
+                continue
+            out.append(tuple(s.subject.filter))
+    return tuple(out)
+
+
+# The acts a permanent's own restriction may prohibit it (CR 508.1c, 509.1a).
+_OBJECT_ACTIONS = frozenset({"attack", "block"})
+# id(CardEffects) -> (that CardEffects, its per-face restriction records).
+_PRINTED_OBJECT_RESTRICTIONS: dict = {}
+
+
+def printed_object_restrictions(perm) -> tuple:
+    """The restrictions a permanent's own printed static abilities put on it
+    attacking and blocking (CR 508.1c, 509.1a-b, 611.3a), on the face it
+    shows: one ``(action, only_with)`` record per prohibited act, `action`
+    'attack' or 'block' and `only_with` the keywords one of which an
+    attacking creature must have for the permanent to block it ("can block
+    only creatures with flying"), () for "can't". The one reader of a
+    permanent's restrictions on itself (`rules_query`). Memoised per
+    parsed-effects object, which is taken without re-deriving its parse key
+    once parsed (a card's printed text is fixed during a game, and this is
+    read in every attack and block enumeration)."""
+    template = perm.template
+    effects = getattr(template, "_effects", None)
+    if effects is None:
+        effects = template.effects
+    hit = _PRINTED_OBJECT_RESTRICTIONS.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(face_object_restrictions(face)
+                              for face in effects.faces))
+        _PRINTED_OBJECT_RESTRICTIONS[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def face_object_restrictions(hosts) -> tuple:
+    """One face's restrictions on the permanent itself (see
+    `printed_object_restrictions`)."""
+    from .effect_spec import HostKind
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC or host.from_zone != "battlefield":
+            continue
+        for s in host.specs:
+            out.extend(_spec_object_restrictions(s) or ())
+    return tuple(out)
+
+
+def object_restriction_host(host) -> bool:
+    """Is `host` a static ability every instruction of which is a
+    restriction the reader runs on the permanent itself (a token's granted
+    "This token can block only creatures with flying", CR 111.3, 509.1b)?"""
+    from .effect_spec import HostKind
+    return (host.kind is HostKind.STATIC and host.from_zone == "battlefield"
+            and bool(host.specs)
+            and all(_spec_object_restrictions(s) for s in host.specs))
+
+
+def _spec_object_restrictions(s) -> "tuple | None":
+    """The ``(action, only_with)`` records of one static instruction that
+    restricts the permanent itself, or None when it is not one the reader
+    runs whole: a subject other than the permanent itself, a condition, a
+    duration other than its presence, residue, a qualifier other than the
+    attacker's keywords, or a keyword the engine does not type."""
+    from .effect_model import DurationKind, Modification, ModKind
+    from .effect_spec import RefKind, Verb
+    mod = s.payload
+    if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+            or mod.kind is not ModKind.PROHIBIT:
+        return None
+    actions = tuple(mod.get("actions") or (mod.action,))
+    only = tuple(mod.get("only_with") or ())
+    if s.residue or getattr(s.ref, "kind", None) is not RefKind.SELF \
+            or s.subject is not None or s.condition is not None \
+            or s.then or s.otherwise or s.alternatives \
+            or (s.duration is not None and s.duration.kind
+                is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD) \
+            or not set(actions) <= _OBJECT_ACTIONS \
+            or {k for k, _ in mod.data} - {"actions", "only_with"} \
+            or (only and actions != ("block",)) \
+            or any(k not in _KEYWORD_BY_NAME for k in only):
+        return None
+    kws = tuple(_KEYWORD_BY_NAME[k] for k in only)
+    return tuple((action, kws) for action in actions)
+
+
+# A cast cap's filters the read path knows (rules_query.cast_filter_admits).
+_CAP_FILTERS = frozenset({None, "noncreature", "nonartifact", "non_phyrexian"})
+
+
+def _cast_cap_record(s, mod) -> "tuple | None":
+    """A printed "<players> can't cast more than N <filter> spells each
+    turn" (CR 101.2) as a rule record, or None when the read path can't run
+    it whole: a subject other than you, each opponent or each player (an
+    enchanted player), a count that is not a printed number, a filter
+    outside its vocabulary, an unsupported condition or duration."""
+    from .effect_conditions import rule_condition_supported
+    from .effect_model import DurationKind, ModKind, SelectorKind
+    from .effect_spec import AmountKind
+    who = getattr(s.subject, "kind", None)
+    n = mod.get("max")
+    if mod.action != "cast" \
+            or who not in (SelectorKind.PLAYER, SelectorKind.OPPONENTS,
+                           SelectorKind.ALL_PLAYERS) \
+            or getattr(n, "kind", None) is not AmountKind.LITERAL \
+            or mod.get("filter") not in _CAP_FILTERS \
+            or not rule_condition_supported(s.condition) \
+            or (s.duration is not None and s.duration.kind
+                is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+        return None
+    data = (("filter", mod.get("filter")), ("max", n.n))
+    return (ModKind.LIMIT, "cast", data, who, s.condition)
+
+
+def _derive_static_rule_effects(game: "GameState") -> list:
+    """Rule-modifying effects that permanents have by being on the
+    battlefield (CR 611.3a): cost reducers, draw limits and the printed
+    static prohibitions and cast caps (`_printed_prohibitions`) apply while
+    their source is there."""
+    from .effect_model import (Effect, Modification, OriginKind, Selector,
+                               SelectorKind, WHILE_SOURCE)
+    from .effect_model import ModKind, cost_delta_effect, draw_limit_effect
+    from .oracle_resolver import reduction_rules_of
+    out = []
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            for rule in reduction_rules_of(perm):
+                # CR 601.2f: a reducer static applies to the spells it names
+                # while the permanent shows the face that prints it.
+                out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
+                                             source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            obs = getattr(perm.template, 'attack_observer', None)
+            if obs and obs['duration'] == 'static':
+                # CR 611.3a / 603.2: a permanent's printed attack observer.
+                from .effect_model import observe_attacks
+                out.append(observe_attacks(controller, obs, WHILE_SOURCE,
+                                           source_id=perm.instance_id,
+                                           origin=OriginKind.STATIC))
+            rep = getattr(perm.template, 'draw_replacement', None)
+            if rep:
+                # CR 614.1a: a printed draw replacement covers its
+                # controller's draws while the permanent is there.
+                from .effect_model import draw_replacement_effect
+                out.append(draw_replacement_effect(
+                    controller, rep, WHILE_SOURCE,
+                    source_id=perm.instance_id, origin=OriginKind.STATIC))
+            lim = getattr(perm.template, 'draw_limit', None)
+            if lim:
+                # CR 101.2: "<players> can't draw more than N cards each
+                # turn" limits draws while the permanent is there.
+                out.append(draw_limit_effect(controller, lim['who'], lim['max'],
+                                             WHILE_SOURCE, source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            if "canonist_active" in perm.instance_tags:
+                # CR 101.2: "each player who has cast a nonartifact spell
+                # this turn can't cast additional nonartifact spells" -- a
+                # cap of one nonartifact spell. The grammar refuses a
+                # player set narrowed by a relative clause, so its legacy
+                # enter handler's tag carries the cap to the same owner.
+                out.append(Effect(
+                    Selector(SelectorKind.ALL_PLAYERS, player=controller),
+                    Modification(ModKind.LIMIT, action="cast",
+                                 data=(("filter", "nonartifact"), ("max", 1))),
+                    WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                    controller=controller, timestamp=perm.instance_id))
+            for kind, action, data, who, cond in _printed_prohibitions(perm):
+                # CR 101.2 / 604.1: a printed prohibition or cap binds the
+                # players it names, relative to this permanent's controller.
+                out.append(Effect(
+                    Selector(who, player=controller),
+                    Modification(kind, action=action, data=data),
+                    WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                    controller=controller, timestamp=perm.instance_id,
+                    condition=cond))
+    return out
+
+
+def _counter_grant_effects(controller: int, perm) -> list:
+    """CR 101.2: a permanent's "<kind> spells [you control] can't be
+    countered", as rule effects that cover the spells they describe while
+    the permanent is there (`rules_query.spell_can_be_countered`)."""
+    from .effect_model import (Effect, Modification, ModKind, OriginKind,
+                               Selector, SelectorKind, WHILE_SOURCE)
+    return [Effect(Selector(SelectorKind.FILTER, player=controller,
+                            filter=described),
+                   Modification(ModKind.PROHIBIT, action="be_countered"),
+                   WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                   controller=controller, timestamp=perm.instance_id)
+            for described in _printed_counter_grants(perm)]
+
+
+def counter_prohibitions(game: "GameState") -> list:
+    """The "can't be countered" rule effects in force: the stored ones a
+    resolved effect left and the static ones permanents have now (CR
+    611.3a). This is the one read of the `be_countered` action. Its static
+    effects are derived here alone, not in `_derive_static_rule_effects`,
+    which every cast and cost query runs, because only a counter or a cast
+    the AI weighs asks."""
+    from .effect_model import ModKind
+    out = [e for e in game.continuous_effects._rule_effects
+           if e.modification.kind is ModKind.PROHIBIT
+           and e.modification.action == "be_countered"]
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            if _printed_counter_grants(perm):
+                out.extend(_counter_grant_effects(controller, perm))
+    return out
+
+
+# ── A permanent's own type-changing static (CR 613.1d, 611.3a) ────────
+
+@dataclass(frozen=True)
+class _SelfTypeChange:
+    """One printed static ability that changes its own permanent's card
+    types while its condition holds: the types (and subtypes) it sets, the
+    ones it adds, the ones it says the permanent isn't, the base power and
+    toughness it sets and the keywords it lists."""
+    condition: object
+    set_types: Optional[Tuple[CardType, ...]] = None
+    set_subtypes: Optional[Tuple[str, ...]] = None
+    add_types: Tuple[CardType, ...] = ()
+    add_subtypes: Tuple[str, ...] = ()
+    remove_types: Tuple[CardType, ...] = ()
+    base_pt: Optional[Tuple[int, int]] = None
+    keywords: Tuple[Keyword, ...] = ()
+
+
+# id(CardEffects) -> (that CardEffects, its per-face records).
+_SELF_TYPE_CHANGES: dict = {}
+_CARD_TYPE_BY_NAME = {t.value: t for t in CardType}
+_KEYWORD_BY_NAME = {k.value: k for k in Keyword}
+_SET_KEYS = frozenset({"types", "subtypes", "power", "toughness",
+                       "keywords", "still"})
+
+
+def _printed_self_type_changes(perm) -> tuple:
+    """The static abilities a permanent prints that change its own card
+    types while a condition holds, on the face it shows, read once from its
+    parsed text. An ability the layer cannot apply whole -- a payload,
+    condition or duration outside this vocabulary, or residue -- yields
+    nothing, never part of its effect. Memoised per parsed-effects object."""
+    effects = getattr(perm.template, "effects", None)
+    if effects is None:
+        return ()
+    hit = _SELF_TYPE_CHANGES.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(_face_self_type_changes(face)
+                              for face in effects.faces))
+        _SELF_TYPE_CHANGES[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _literal_pt(amount) -> Optional[int]:
+    from .effect_spec import AmountKind
+    if amount is None or amount.kind is not AmountKind.LITERAL \
+            or amount.quantity is not None or amount.ref is not None \
+            or amount.inner is not None:
+        return None
+    return amount.n
+
+
+def _self_change_of(mod, condition) -> Optional[_SelfTypeChange]:
+    """The record of one type-changing payload, or None when any part of it
+    is outside the vocabulary."""
+    from .effect_model import ModKind
+    d = dict(mod.data)
+    types = d.get("types") or ()
+    if not all(t in _CARD_TYPE_BY_NAME for t in types):
+        return None
+    ctypes = tuple(_CARD_TYPE_BY_NAME[t] for t in types)
+    subtypes = tuple(st[:1].upper() + st[1:] for st in d.get("subtypes") or ())
+    if mod.kind is ModKind.REMOVE_TYPES:
+        if set(d) != {"types"} or not ctypes:
+            return None
+        return _SelfTypeChange(condition, remove_types=ctypes)
+    if mod.kind is ModKind.ADD_TYPES:
+        if set(d) - {"types", "subtypes"} or not (ctypes or subtypes):
+            return None
+        return _SelfTypeChange(condition, add_types=ctypes,
+                               add_subtypes=subtypes)
+    if set(d) - _SET_KEYS or not ctypes:
+        return None
+    still = d.get("still") or ()
+    if not all(t in _CARD_TYPE_BY_NAME for t in still):
+        return None
+    kws = d.get("keywords") or ()
+    if not all(param is None and kw in _KEYWORD_BY_NAME for kw, param in kws):
+        return None
+    pt = None
+    if "power" in d or "toughness" in d:
+        p, t = _literal_pt(d.get("power")), _literal_pt(d.get("toughness"))
+        if p is None or t is None:
+            return None
+        pt = (p, t)
+    if {CardType.ARTIFACT, CardType.CREATURE} <= set(ctypes):
+        # "an artifact creature" keeps every prior type and subtype
+        # (CR 205.1b): the change adds its types.
+        return _SelfTypeChange(
+            condition, add_types=ctypes, add_subtypes=subtypes, base_pt=pt,
+            keywords=tuple(_KEYWORD_BY_NAME[kw] for kw, _ in kws))
+    return _SelfTypeChange(
+        condition,
+        set_types=ctypes + tuple(_CARD_TYPE_BY_NAME[t] for t in still
+                                 if _CARD_TYPE_BY_NAME[t] not in ctypes),
+        set_subtypes=subtypes or None, base_pt=pt,
+        keywords=tuple(_KEYWORD_BY_NAME[kw] for kw, _ in kws))
+
+
+def _face_self_type_changes(hosts) -> tuple:
+    import dataclasses
+    from .effect_conditions import self_static_condition_supported
+    from .effect_model import DurationKind, Modification, ModKind
+    from .effect_spec import HostKind, RefKind, Verb, iter_specs
+    type_kinds = (ModKind.SET_TYPES, ModKind.ADD_TYPES, ModKind.REMOVE_TYPES)
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC:
+            continue
+        specs = list(iter_specs(host.specs))
+        changes, keywords, refused = [], {}, False
+        for s in specs:
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or mod.kind not in type_kinds + (ModKind.ADD_KEYWORDS,):
+                continue
+            if s.residue or getattr(s.ref, "kind", None) is not RefKind.SELF \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD) \
+                    or not self_static_condition_supported(s.condition):
+                refused = True
+                continue
+            if mod.kind is ModKind.ADD_KEYWORDS:
+                kws = mod.get("keywords") or ()
+                if not kws or not all(p is None and k in _KEYWORD_BY_NAME
+                                      for k, p in kws):
+                    refused = True
+                    continue
+                keywords.setdefault(id(s.condition), (s.condition, []))[1] \
+                    .extend(_KEYWORD_BY_NAME[k] for k, _ in kws)
+                continue
+            change = _self_change_of(mod, s.condition)
+            if change is None:
+                refused = True
+                continue
+            changes.append(change)
+        if refused or not changes:
+            continue
+        # A keyword the same ability lists under the same condition ("he's
+        # a 3/4 Ninja creature and has hexproof") rides on its change.
+        for i, change in enumerate(changes):
+            extra = [kw for cond, kws in keywords.values()
+                     if cond == change.condition for kw in kws]
+            if extra:
+                changes[i] = dataclasses.replace(
+                    change, keywords=change.keywords + tuple(extra))
+        out.extend(changes)
+    return tuple(out)
+
+
+def _self_type_change_effects(game: "GameState", controller: int,
+                              source) -> list:
+    """The layer 4, 6 and 7b effects of `source`'s own type-changing
+    statics whose condition holds now (CR 611.3a): derived every
+    recalculation, so the change starts and ends with its condition."""
+    from .effect_conditions import self_static_condition_holds
+    out = []
+    for change in _printed_self_type_changes(source):
+        if not self_static_condition_holds(game, controller, change.condition,
+                                           source):
+            continue
+        sid, name = source.instance_id, source.template.name
+
+        def is_source(g, c, _sid=sid):
+            return c.instance_id == _sid
+
+        def apply_types(g, c, ch=change):
+            if ch.set_types is not None:
+                c.cem_types_set = list(ch.set_types)
+                if ch.set_subtypes is not None:
+                    c.cem_subtypes_set = list(ch.set_subtypes)
+            c.cem_types_added |= set(ch.add_types)
+            c.cem_subtypes_added |= set(ch.add_subtypes)
+            c.cem_types_removed |= set(ch.remove_types)
+
+        out.append(ContinuousEffect(
+            source_id=sid, source_name=name, layer=Layer.TYPE,
+            affected=is_source, apply=apply_types, timestamp=sid,
+            description=f"{name}'s own type change"))
+        if change.keywords:
+            def apply_keywords(g, c, kws=change.keywords):
+                c.cem_keywords |= set(kws)
+            out.append(ContinuousEffect(
+                source_id=sid, source_name=name, layer=Layer.ABILITY,
+                affected=is_source, apply=apply_keywords, timestamp=sid,
+                description=f"{name}'s own keywords"))
+        if change.base_pt is not None:
+            def apply_pt(g, c, pt=change.base_pt):
+                c.cem_base_pt = pt
+            out.append(ContinuousEffect(
+                source_id=sid, source_name=name, layer=Layer.POWER_TOUGHNESS,
+                pt_sublayer=PTSublayer.SET_PT, affected=is_source,
+                apply=apply_pt, timestamp=sid,
+                description=f"{name}'s own base power and toughness"))
+    return out
+
+
+def _audit_self_type_changes(game: "GameState") -> None:
+    """CR 613.1d, 611.3a, restated from each permanent's parsed text: while
+    the condition of a permanent's own static that sets, adds or removes a
+    card type holds, the permanent has the types it names and lacks the
+    types it removes. Read from the template's typed hosts directly, never
+    through the layer's own reader. Observation only."""
+    from .effect_conditions import (self_static_condition_holds,
+                                    self_static_condition_supported)
+    from .effect_model import Modification, ModKind
+    from .effect_spec import HostKind, RefKind, Verb, iter_specs
+    from .rules_audit import check as _audit_check
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            effects = getattr(perm.template, "effects", None)
+            if effects is None or not effects.faces:
+                continue
+            face = effects.faces[1 if perm.is_transformed
+                                 and len(effects.faces) > 1 else 0]
+            for host in face:
+                if host.kind is not HostKind.STATIC:
+                    continue
+                for s in iter_specs(host.specs):
+                    mod = s.payload
+                    if s.verb is not Verb.CONTINUOUS \
+                            or not isinstance(mod, Modification) \
+                            or mod.kind is not ModKind.SET_TYPES \
+                            and mod.kind is not ModKind.REMOVE_TYPES \
+                            or getattr(s.ref, "kind", None) is not RefKind.SELF \
+                            or s.residue \
+                            or not self_static_condition_supported(s.condition):
+                        continue
+                    keys = {k for k, _ in mod.data}
+                    if keys - {"types", "subtypes", "power", "toughness",
+                               "keywords", "still"}:
+                        continue          # a variant the model refuses
+                    if not self_static_condition_holds(game, controller,
+                                                       s.condition, perm):
+                        continue
+                    named = {t for t in (mod.get("types") or ())}
+                    have = {t.value for t in perm.effective_card_types}
+                    ok = (not named & have if mod.kind is ModKind.REMOVE_TYPES
+                          else named <= have)
+                    _audit_check("613.1d/self_type_change", ok,
+                                 f"{perm.name}: its condition holds but its "
+                                 f"types are {sorted(have)} "
+                                 f"({mod.kind.value} {sorted(named)})",
+                                 game=game)

@@ -183,11 +183,12 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
             if swap is not None:
                 board_in_priority.append(swap)
 
-        # Counterspells vs combo
-        if any(w in opp_lower for w in ["storm", "living end", "goryo", "titan"]):
-            if any(w in card_lower for w in ["flusterstorm", "mystical dispute",
-                                               "spell pierce", "force of negation"]):
-                board_in_priority.append((card_name, count, 8))
+        # Counterspells: chosen by what they counter in the opponent's actual
+        # deck (`counter_answers_most`), never by the opponent's deck name.
+        _tmpl = _get_card_db().get_card(card_name)
+        if _tmpl is not None and getattr(_tmpl, 'is_counterspell', False) \
+                and counter_answers_most(_tmpl, _opp_templates(opponent_deck)):
+            board_in_priority.append((card_name, count, 8))
 
         # Board wipes vs creature decks (affinity/pinnacle get priority boost:
         # sweepers are the primary answer to their wide token boards)
@@ -197,11 +198,8 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
                 prio = 9 if any(w in opp_lower for w in ["affinity", "pinnacle"]) else 7
                 board_in_priority.append((card_name, count, prio))
 
-        # Counterspells + lifegain vs burn/aggro
+        # Lifegain vs burn/aggro (counterspells: the rule above)
         if any(w in opp_lower for w in ["energy", "zoo", "prowess", "affinity"]):
-            if any(w in card_lower for w in ["flusterstorm", "mystical dispute",
-                                               "spell pierce", "negate"]):
-                board_in_priority.append((card_name, count, 8))
             # Sheoldred is a house vs aggro (lifegain + drain)
             if "sheoldred" in card_lower:
                 board_in_priority.append((card_name, count, 9))
@@ -382,6 +380,65 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
 # ─────────────────────────────────────────────────────────────
 # Oracle-driven solver backend (SB_SOLVER=new)
 # ─────────────────────────────────────────────────────────────
+
+def _opp_templates(opponent_deck: str) -> list:
+    """The opponent's registered mainboard as templates, one per copy."""
+    from decks.modern_meta import MODERN_DECKS
+    deck = MODERN_DECKS.get(opponent_deck) or {}
+    db = _get_card_db()
+    out = []
+    for name, count in (deck.get("mainboard") or {}).items():
+        t = db.get_card(name)
+        if t is not None:
+            out.extend([t] * count)
+    return out
+
+
+def _counter_targets(counter, spell) -> bool:
+    """Can `counter` target `spell` (its typed `counter_target_kind`)?"""
+    kind = getattr(counter, 'counter_target_kind', '') or ''
+    if kind == 'noncreature_spell':
+        return not spell.is_creature
+    if kind == 'creature_spell':
+        return spell.is_creature
+    if kind == 'instant_or_sorcery_spell':
+        return spell.is_instant or spell.is_sorcery
+    return True
+
+
+def _effective_counter_cost(counter, spell) -> int:
+    """What `counter` costs to aim at `spell`: nothing with a free
+    alternative cost (`alternate_exile_color`); its mana value less a
+    reduction whose spell filter `spell` meets (`target_cost_reduction`,
+    read here by its colour condition); else its mana value."""
+    if getattr(counter, 'alternate_exile_color', None):
+        return 0
+    cost = counter.cmc or 0
+    tcr = getattr(counter, 'target_cost_reduction', None)
+    if tcr:
+        amount, filt = tcr
+        colours = getattr(filt, 'colors', None) or frozenset()
+        spell_colours = {getattr(c, 'value', c) for c in (spell.colors or ())}
+        if colours and spell_colours & set(colours):
+            cost = max(0, cost - amount)
+    return cost
+
+
+def counter_answers_most(counter, opp_templates: list) -> bool:
+    """Does `counter` answer most of the opponent's nonland spells
+    efficiently: each a spell it can target (`_counter_targets`) at an
+    effective cost no greater than that spell's mana value
+    (`_effective_counter_cost`)? A counter that trades up in mana against
+    a majority of what the opponent casts is worth the slot; one that
+    costs more than what it counters is not."""
+    spells = [t for t in opp_templates if not t.is_land]
+    if not spells:
+        return False
+    answered = sum(1 for t in spells
+                   if _counter_targets(counter, t)
+                   and _effective_counter_cost(counter, t) <= (t.cmc or 0))
+    return 2 * answered > len(spells)
+
 
 def _get_card_db():
     """The process-wide CardDatabase — SB planning needs template lookups.

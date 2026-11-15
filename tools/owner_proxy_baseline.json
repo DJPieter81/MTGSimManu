@@ -1,0 +1,7 @@
+{
+  "description": "Owner-proxy ratchet (blind-spot class B1): counts may only fall. See tools/check_owner_proxies.py.",
+  "enter_queue": 0,
+  "mana_total_pay": 0,
+  "tap_colours": 31,
+  "target_count": 0
+}

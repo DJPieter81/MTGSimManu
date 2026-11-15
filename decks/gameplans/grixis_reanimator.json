@@ -3,43 +3,62 @@
   "archetype": "combo",
   "goals": [
     {
-      "goal_type": "DEPLOY_ENGINE",
-      "description": "Deploy enablers and engines",
+      "goal_type": "FILL_RESOURCE",
+      "description": "Bin Archon of Cruelty: Faithless Looting, Thought Scour, Psychic Frog discard, or a hand attack aimed at our own hand",
       "card_roles": {
-        "engines": [],
+        "engines": [
+          "Psychic Frog"
+        ],
         "enablers": [
-          "Cling to Dust",
           "Faithless Looting",
           "Thought Scour",
-          "Unearth"
+          "Psychic Frog",
+          "Thoughtseize",
+          "Inquisition of Kozilek"
         ]
-      }
+      },
+      "resource_target": 1,
+      "resource_min_cmc": 7,
+      "resource_zone": "graveyard"
     },
     {
       "goal_type": "EXECUTE_PAYOFF",
-      "description": "Execute the combo",
+      "description": "Reanimate Archon of Cruelty with Persist (or Emperor of Bones from any graveyard)",
       "card_roles": {
         "payoffs": [
-          "Archon of Cruelty"
+          "Persist",
+          "Emperor of Bones"
         ],
         "enablers": [
-          "Cling to Dust",
           "Faithless Looting",
           "Thought Scour"
         ]
-      }
+      },
+      "resource_zone": "graveyard",
+      "resource_min_cmc": 7,
+      "min_turns": 1,
+      "min_mana_for_payoff": 2
     },
     {
       "goal_type": "PUSH_DAMAGE",
-      "description": "Close the game"
+      "description": "Attack with Archon, Oculus and Frogs; Fatal Push clears blockers",
+      "card_roles": {
+        "interaction": [
+          "Fatal Push",
+          "Spell Pierce"
+        ]
+      }
     }
   ],
   "mulligan_keys": [
-    "Emperor of Bones",
-    "Fatal Push",
+    "Persist",
+    "Faithless Looting",
+    "Thought Scour",
+    "Archon of Cruelty",
     "Psychic Frog"
   ],
-  "mulligan_min_lands": 1,
+  "mulligan_min_lands": 2,
+  "_mulligan_min_lands_doc": "2026-11-10: 1 -> 2. Goldfish n=60 paired (s70000): floor 2 moves the median go-off turn one turn earlier (Goryo's 6 -> 5, Grixis Reanimator 5 -> 4) and the mean kill turn down (8.93 -> 8.62, 6.68 -> 6.42). A 1-land seven with no card that finds a land stalls: Storm's 1-land keeps went off at 8.5 against 6 for two or more lands. Decks whose cheap cards find lands (Living End's cyclers) and Storm were measured and are not changed.",
   "mulligan_max_lands": 4,
   "reactive_only": [
     "Spell Pierce"

@@ -1,0 +1,16 @@
+{
+  "source": "expected = ai/llm_decision_weights.json row; band = decision_scorer_v2.md per-context prior",
+  "input": {
+    "archetype": "midrange",
+    "context": "cycling_free_cost_bonus"
+  },
+  "expected": {
+    "weight": 2.0
+  },
+  "bands": {
+    "weight": [
+      1.5,
+      2.5
+    ]
+  }
+}

@@ -8,15 +8,13 @@
       "card_priorities": {
         "Monastery Swiftspear": 22.0,
         "Dragon's Rage Channeler": 22.0,
-        "Slickshot Show-Off": 20.0,
         "Cori-Steel Cutter": 18.0
       },
       "card_roles": {
         "enablers": [
           "Cori-Steel Cutter",
           "Dragon's Rage Channeler",
-          "Monastery Swiftspear",
-          "Slickshot Show-Off"
+          "Monastery Swiftspear"
         ]
       }
     },
@@ -27,7 +25,6 @@
         "Lightning Bolt": 20.0,
         "Lava Dart": 18.0,
         "Unholy Heat": 16.0,
-        "Mutagenic Growth": 22.0,
         "Mishra's Bauble": 15.0,
         "Expressive Iteration": 14.0,
         "Preordain": 12.0
@@ -35,8 +32,7 @@
       "card_roles": {
         "enablers": [
           "Lava Dart",
-          "Mishra's Bauble",
-          "Mutagenic Growth"
+          "Mishra's Bauble"
         ],
         "interaction": [
           "Lightning Bolt",
@@ -60,8 +56,7 @@
   "mulligan_keys": [
     "Dragon's Rage Channeler",
     "Lightning Bolt",
-    "Monastery Swiftspear",
-    "Slickshot Show-Off"
+    "Monastery Swiftspear"
   ],
   "mulligan_min_lands": 1,
   "mulligan_max_lands": 4,

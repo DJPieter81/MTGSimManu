@@ -113,7 +113,8 @@ def test_helm_of_awakening_is_parsed():
     rule = parse_cost_reduction(oracle)
     assert rule is not None
     assert rule['amount'] == 1
-    assert rule['target'] == 'all'
+    assert rule['qualities'] == ((),)        # every spell
+    assert rule['who'] == 'all'              # no "you cast": every player's
 
 
 def test_goblin_electromancer_is_parsed():
@@ -122,7 +123,7 @@ def test_goblin_electromancer_is_parsed():
     rule = parse_cost_reduction(oracle)
     assert rule is not None
     assert rule['amount'] == 1
-    assert rule['target'] == 'instant_sorcery'
+    assert rule['qualities'] == (('instant',), ('sorcery',))
 
 
 def test_ruby_medallion_is_parsed():
@@ -131,7 +132,7 @@ def test_ruby_medallion_is_parsed():
     rule = parse_cost_reduction(oracle)
     assert rule is not None
     assert rule['amount'] == 1
-    assert rule['color'] == 'R'
+    assert rule['qualities'] == (('red',),)
 
 
 def test_two_mana_reduction_is_parsed():
@@ -140,7 +141,7 @@ def test_two_mana_reduction_is_parsed():
     rule = parse_cost_reduction(oracle)
     assert rule is not None
     assert rule['amount'] == 2
-    assert rule['target'] == 'creature'
+    assert rule['qualities'] == (('creature',),)
 
 
 # ─── Boundary: cards present in our 16 modern decks ──────────────────

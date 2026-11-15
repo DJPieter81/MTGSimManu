@@ -58,7 +58,10 @@ def _target_pick_hits(path: Path):
                                         "deal_damage(", "damage_marked +=",
                                         "_creature_dies(", ".tapped = True"))
         solver = any(m in body for m in ("can_be_targeted", "legal_targets",
-                                         "_removal_legal_pool", "enumerate_legal_targets"))
+                                         "_removal_legal_pool", "enumerate_legal_targets",
+                                         "pick_resolution_target",
+                                         "resolve_any_target_damage",
+                                         "has_legal_target_for_spell"))
         if picks and acts and not solver and "Not targeting" not in body \
                 and ALLOW not in body:
             hits.append((str(path.relative_to(REPO_ROOT)), node.lineno, node.name))

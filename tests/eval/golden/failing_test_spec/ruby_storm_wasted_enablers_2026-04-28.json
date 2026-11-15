@@ -1,0 +1,19 @@
+{
+  "source": "hypothesis = tests/eval/golden/diagnose_replay/ruby_storm_wasted_enablers_2026-04-28.json",
+  "input": {
+    "hypothesis": {
+      "observed_symptom": "Storm enablers cast repeatedly with no finisher in hand and no tutor to find one",
+      "suspected_subsystem": "ai.ev_evaluator",
+      "failing_test_rule": "combo enabler ev gated on payoff reachability via hand or tutor",
+      "confidence": 0.9
+    },
+    "conventions": "Tests live in tests/test_<rule>.py and use the session `card_db` fixture; a test builds a GameState directly, names cards only as fixture carriers, and asserts the mechanic. Red before the fix, green after."
+  },
+  "expected": {
+    "test_file": "tests/test_combo_enabler_ev_gated_on_payoff_reachability_via_hand_or_tutor.py",
+    "rule_name": "combo enabler ev gated on payoff reachability via hand or tutor",
+    "fixture_setup": "Combo player on main phase with ritual and cantrip enablers in hand, no payoff in hand, library, or sideboard reachable by a tutor in hand, and enough mana to cast the enablers.",
+    "assertion": "Each enabler's play EV is no higher than passing; with a tutor that can reach a payoff added to hand, the same enablers score above passing.",
+    "expected_status_before_fix": "fail"
+  }
+}

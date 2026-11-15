@@ -1,18 +1,18 @@
-"""Tests for Warp-exile recast availability in legal plays (CR 702.Warp).
+"""A warped card is offered from exile on a later turn (CR 702.185a).
 
 Mechanic under test
 -------------------
-A creature cast via Warp is exiled at the beginning of the next end step.
-"You may cast it from exile on a later turn." means on a later turn the card
-in exile (with _warped=True) must appear as a legal play when the Warp
-prerequisites are met (controller has an artifact, can pay the Warp cost).
+"If this spell's warp cost was paid, exile the permanent this spell becomes
+at the beginning of the next end step. Its owner may cast this card after
+the current turn has ended for as long as it remains exiled." The end-step
+exile registers that permission (`effect_model.permit_play`, from the next
+turn on) and every play gate reads it through `rules_query`: on a later
+turn the exiled card is a legal play when its MANA cost is payable (the
+warp cost is a cast from the hand only); never the turn it was exiled; and
+a card in exile no permission names -- a `_warped` flag alone -- is no play.
 
-Class size: any card with a Warp cost (33 cards in the current DB) — so this
-fix must use the _warped flag + template.warp_cost, not the card's name.
-
-Bug that this test pins: get_legal_plays only scanned hand/graveyard; warped
-cards in exile were never offered as legal plays, so the engine never re-cast
-them. The AI couldn't use Warp as a recurring source of tokens/bodies.
+Class size: every card with a Warp cost (32 in the current DB) -- the rule
+is read from the parsed `template.warp_cost`, never the card's name.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import random
 
 import pytest
 
-from engine.cards import CardInstance, CardType
+from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
 
 
@@ -31,18 +31,8 @@ def _make_card(game, template, owner=0, zone="hand"):
         instance_id=game.next_instance_id(), zone=zone,
     )
     card._game_state = game
+    getattr(game.players[owner], zone).append(card)
     return card
-
-
-def _add_to_zone(game, card, player_idx, zone):
-    p = game.players[player_idx]
-    card.zone = zone
-    if zone == "hand":
-        p.hand.append(card)
-    elif zone == "battlefield":
-        p.battlefield.append(card)
-    elif zone == "exile":
-        p.exile.append(card)
 
 
 def _add_mana(game, player_idx, **colors):
@@ -58,116 +48,54 @@ def db():
 
 
 @pytest.fixture
-def fresh_game():
+def warped(db):
+    """Pinnacle Emissary (Warp {U/R}, mana cost {1}{U}{R}) cast for its
+    warp cost on turn 5, resolved, and exiled at that turn's end step."""
     game = GameState(rng=random.Random(0))
     game.current_phase = Phase.MAIN1
     game.active_player = 0
-    return game
+    game.turn_number = 5
+    emissary = _make_card(game, db.cards["Pinnacle Emissary"])
+    _add_mana(game, 0, U=1)
+    assert game.cast_spell(0, emissary)
+    game.resolve_stack()
+    game.end_of_turn_cleanup()
+    assert emissary.zone == "exile"
+    game.players[0].mana_pool.empty()
+    return game, emissary
 
 
-class TestWarpExileRecastAppearsInLegalPlays:
-    """Warp-exiled cards must appear in get_legal_plays when prerequisites met.
+class TestWarpedCardFromExile:
 
-    The mechanic: any creature with warp_cost that ends up in exile via the
-    Warp exile trigger (card._warped is True) may be cast again. The
-    get_legal_plays function must scan player.exile for such cards so the AI
-    sees them as available plays.
-    """
+    def test_offered_on_a_later_turn_for_its_mana_cost(self, warped):
+        game, emissary = warped
+        game.turn_number = 7                      # the owner's next turn
+        _add_mana(game, 0, U=1, R=1, C=1)         # {1}{U}{R}
+        assert emissary in game.get_legal_plays(0)
+        assert game.cast_spell(0, emissary)
+        assert emissary.zone == "stack"
 
-    def test_warped_exile_card_appears_in_legal_plays(self, fresh_game, db):
-        """A warp-exiled creature is offered as a legal play on the next turn.
+    def test_not_offered_the_turn_it_was_exiled(self, warped):
+        game, emissary = warped
+        _add_mana(game, 0, U=1, R=1, C=1)
+        assert emissary not in game.get_legal_plays(0)
+        assert not game.can_cast(0, emissary)
 
-        Setup: Pinnacle Emissary in exile with _warped=True (simulates the
-        state after end-of-turn exile on the previous turn). Player controls
-        an artifact (satisfies the Warp has-artifact requirement) and has
-        enough mana to pay the Warp cost.
+    def test_the_warp_cost_is_no_option_from_exile(self, warped):
+        game, emissary = warped
+        game.turn_number = 7
+        _add_mana(game, 0, U=1)                   # the warp cost only
+        assert emissary not in game.get_legal_plays(0)
 
-        Expected: get_legal_plays includes the exile card.
-        """
-        game = fresh_game
-        t_emissary = db.cards["Pinnacle Emissary"]
-        t_artifact = db.cards["Mox Opal"]
-
-        # Pinnacle Emissary in exile with _warped=True
-        emissary = _make_card(game, t_emissary, zone="exile")
+    def test_a_card_in_exile_no_permission_names_is_no_play(self, db):
+        """A `_warped` flag on an exiled card grants nothing: the rule's
+        permission is what lets it be cast."""
+        game = GameState(rng=random.Random(0))
+        game.current_phase = Phase.MAIN1
+        game.active_player = 0
+        emissary = _make_card(game, db.cards["Pinnacle Emissary"],
+                              zone="exile")
         emissary._warped = True
-        _add_to_zone(game, emissary, 0, "exile")
-
-        # Artifact on battlefield (Warp prerequisite)
-        artifact = _make_card(game, t_artifact, zone="battlefield")
-        _add_to_zone(game, artifact, 0, "battlefield")
-
-        # Enough mana to pay Warp cost (cmc=1)
-        _add_mana(game, 0, U=1)
-
-        legal = game.get_legal_plays(0)
-        legal_names = [c.name for c in legal]
-        assert "Pinnacle Emissary" in legal_names, (
-            "Warp-exiled Pinnacle Emissary must appear in get_legal_plays "
-            f"when has-artifact + mana prerequisites are met. Got: {legal_names}"
-        )
-
-    def test_warped_exile_card_absent_without_artifact(self, fresh_game, db):
-        """Without an artifact, the warp-exiled card must not be a legal play."""
-        game = fresh_game
-        t_emissary = db.cards["Pinnacle Emissary"]
-
-        emissary = _make_card(game, t_emissary, zone="exile")
-        emissary._warped = True
-        _add_to_zone(game, emissary, 0, "exile")
-
-        # No artifact on battlefield; has mana but Warp needs an artifact
-        _add_mana(game, 0, U=2)
-
-        legal = game.get_legal_plays(0)
-        assert "Pinnacle Emissary" not in [c.name for c in legal], (
-            "Warp requires controlling an artifact; without one the exile card "
-            "must not appear in legal plays."
-        )
-
-    def test_warped_exile_card_absent_without_mana(self, fresh_game, db):
-        """Without enough mana, the warp-exiled card must not be a legal play."""
-        game = fresh_game
-        t_emissary = db.cards["Pinnacle Emissary"]
-        t_artifact = db.cards["Mox Opal"]
-
-        emissary = _make_card(game, t_emissary, zone="exile")
-        emissary._warped = True
-        _add_to_zone(game, emissary, 0, "exile")
-
-        artifact = _make_card(game, t_artifact, zone="battlefield")
-        _add_to_zone(game, artifact, 0, "battlefield")
-
-        # No mana — cannot pay Warp cost
-        legal = game.get_legal_plays(0)
-        assert "Pinnacle Emissary" not in [c.name for c in legal], (
-            "Warp requires paying the Warp cost; without mana the exile card "
-            "must not appear in legal plays."
-        )
-
-    def test_non_warped_exile_card_not_in_legal_plays(self, fresh_game, db):
-        """An exile card without _warped=True must not appear as a legal play
-        via the Warp path (it might be reachable via other mechanics, but not
-        this one)."""
-        game = fresh_game
-        t_emissary = db.cards["Pinnacle Emissary"]
-        t_artifact = db.cards["Mox Opal"]
-
-        # In exile but NOT warped (e.g. exiled by opponent's Prismatic Ending)
-        emissary = _make_card(game, t_emissary, zone="exile")
-        # _warped NOT set
-        _add_to_zone(game, emissary, 0, "exile")
-
-        artifact = _make_card(game, t_artifact, zone="battlefield")
-        _add_to_zone(game, artifact, 0, "battlefield")
-
-        _add_mana(game, 0, U=2)
-
-        legal = game.get_legal_plays(0)
-        # May appear via other paths (e.g. if the card has flash + exile casting
-        # ability), but NOT via the Warp path. The key check: if Pinnacle
-        # Emissary appears, its can_cast must return False for exile without
-        # _warped — we check can_cast directly.
-        assert not game.can_cast(0, emissary), (
-            "can_cast must return False for exile card without _warped flag"
-        )
+        _add_mana(game, 0, U=1, R=1, C=1)
+        assert emissary not in game.get_legal_plays(0)
+        assert not game.can_cast(0, emissary)

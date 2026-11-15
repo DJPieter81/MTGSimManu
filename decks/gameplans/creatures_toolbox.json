@@ -6,8 +6,12 @@
       "goal_type": "DEPLOY_ENGINE",
       "description": "Deploy enablers and engines",
       "card_roles": {
-        "engines": ["Devoted Druid"],
-        "enablers": ["Vizier of Remedies"]
+        "engines": [
+          "Devoted Druid"
+        ],
+        "enablers": [
+          "Vizier of Remedies"
+        ]
       }
     },
     {
@@ -15,8 +19,7 @@
       "description": "Execute the combo",
       "card_roles": {
         "payoffs": [
-          "Craterhoof Behemoth",
-          "Ouroboroid"
+          "Craterhoof Behemoth"
         ],
         "enablers": []
       }
@@ -37,7 +40,6 @@
   "reactive_only": [],
   "always_early": [
     "Birds of Paradise",
-    "Delighted Halfling",
-    "Walking Ballista"
+    "Delighted Halfling"
   ]
 }

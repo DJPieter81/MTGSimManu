@@ -1,0 +1,35 @@
+// Boros Ponza — mtgtop8 event=91250 deck=893009
+1 Castle Ardenvale
+4 Cori Mountain Monastery
+4 Demolition Field
+4 Field of Ruin
+1 Mountain
+2 Plains
+3 Sacred Foundry
+1 Snow-Covered Mountain
+2 Snow-Covered Plains
+4 Sunken Citadel
+4 Solitude
+3 Avengers Disassembled
+4 Cleansing Wildfire
+4 Erode
+3 Galvanic Discharge
+3 Path to Exile
+4 Price of Freedom
+4 Wrath of the Skies
+1 High Noon
+2 Relic of Progenitus
+1 Rest in Peace
+1 The Legend of Roku
+
+Sideboard
+1 Kaheera, the Orphanguard
+1 Avengers Disassembled
+1 Cursed Totem
+3 High Noon
+1 Rest in Peace
+2 Rule of Law
+2 Surgical Extraction
+2 The Stone Brain
+1 Wear / Tear
+1 Wrath of God

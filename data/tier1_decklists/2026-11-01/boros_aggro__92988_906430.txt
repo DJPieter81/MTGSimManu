@@ -1,0 +1,37 @@
+// Boros Aggro — mtgtop8 event=92988 deck=906430
+2 Arena of Glory
+4 Arid Mesa
+1 Dalkovan Encampment
+2 Elegant Parlor
+2 Flooded Strand
+4 Marsh Flats
+1 Mountain
+2 Plains
+3 Sacred Foundry
+1 Sunbaked Canyon
+4 Ajani, Nacatl Pariah
+4 Guide of Souls
+1 Haliya, Guided by Light
+4 Ocelot Pride
+4 Ragavan, Nimble Pilferer
+1 Ranger-Captain of Eos
+3 Seasoned Pyromancer
+3 Voice of Victory
+4 Galvanic Discharge
+3 Lightning Bolt
+2 Thraben Charm
+1 Blood Moon
+1 Fable of the Mirror-Breaker
+3 Goblin Bombardment
+
+Sideboard
+1 Celestial Purge
+1 Clarion Conqueror
+2 High Noon
+1 Meltdown
+4 Obsidian Charmaw
+1 Rest in Peace
+1 Sanctifier en-Vec
+1 The Legend of Roku
+2 Wear / Tear
+1 Wrath of the Skies

@@ -85,6 +85,9 @@ class TestCycleLogNamesDrawnCard:
 
         ok = game.activate_cycling(0, wraith)
         assert ok, "activate_cycling returned False on a legal cycle"
+        # The cycling ability resolves from the stack (CR 702.29a, 602.2).
+        while not game.stack.is_empty:
+            game.resolve_stack()
 
         # Find the cycle log line.
         cycle_lines = [l for l in game.log if "Cycle" in l]
@@ -112,6 +115,9 @@ class TestCycleLogNamesDrawnCard:
 
         ok = game.activate_cycling(0, censor)
         assert ok, "activate_cycling returned False on a legal cycle"
+        # The cycling ability resolves from the stack (CR 702.29a, 602.2).
+        while not game.stack.is_empty:
+            game.resolve_stack()
 
         cycle_lines = [l for l in game.log if "Cycle" in l]
         assert cycle_lines, f"no Cycle log line produced: {game.log}"

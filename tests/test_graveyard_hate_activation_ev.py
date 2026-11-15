@@ -21,7 +21,8 @@ typed fields only, in three tiers:
     battlefield recursion source (public information: a permanent on
     their battlefield or a spell already in their graveyard);
   * every card, once their owner has revealed a consumer of graveyard
-    SIZE (delve, delirium, a graveyard-scaling body).
+    SIZE (delve, delirium, a graveyard-scaling body, a cost that exiles
+    cards from their graveyard).
 
 The removed fuel is then priced at `card_clock_impact` — the exact term
 `position_value` uses to price one card of advantage — so a hate
@@ -89,14 +90,22 @@ def test_spent_cards_with_no_route_back_are_not_fuel():
 
 
 def test_cards_castable_from_the_graveyard_are_fuel_unconditionally():
-    """Flashback and escape need no second card — the graveyard IS the
-    hand for them."""
+    """Flashback needs no second card — the graveyard IS the hand for
+    it."""
     game = _game()
     fb = _add(game, "Lingering Souls", 1, "graveyard")
-    esc = _add(game, "Kroxa, Titan of Death's Hunger", 1, "graveyard")
     _add(game, "Lightning Bolt", 1, "graveyard")
-    fuel = graveyard_fuel(game, 1)
-    assert set(fuel) == {fb, esc}
+    assert graveyard_fuel(game, 1) == [fb]
+
+
+def test_an_escape_card_is_fuel_and_so_are_the_cards_its_cost_exiles():
+    """Escape is a cast from the graveyard whose cost exiles other cards
+    from it (CR 702.138a): the escape card is fuel, and its cost makes
+    every other card there fuel too."""
+    game = _game()
+    esc = _add(game, "Kroxa, Titan of Death's Hunger", 1, "graveyard")
+    bolt = _add(game, "Lightning Bolt", 1, "graveyard")
+    assert set(graveyard_fuel(game, 1)) == {esc, bolt}
 
 
 def test_creature_cards_become_fuel_once_recursion_is_revealed():

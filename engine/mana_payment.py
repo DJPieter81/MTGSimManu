@@ -40,6 +40,56 @@ BASIC_TYPES = {"Plains", "Island", "Swamp", "Mountain", "Forest"}
 METALCRAFT_THRESHOLD = 3
 
 
+def _sacrifice_mana_ability(perm):
+    """The typed mana ability of `perm` whose cost sacrifices it (CR 605.1a:
+    "Sacrifice this token: Add {C}", "{T}, Sacrifice this token: Add one mana
+    of any color"), or None."""
+    return next((a for a in (perm.template.activated_abilities or ())
+                 if a.is_mana_ability and a.cost.sacrifice_self), None)
+
+
+def _sacrifice_cost_payable(perm, ability) -> bool:
+    """Can `ability`'s cost be paid while its controller pays another cost
+    (CR 605.3a)? It holds nothing but sacrificing its source and a {T}: a
+    cost with mana in it is a conversion that needs the mana it makes, and
+    any other item is not paid here. A {T} needs the source untapped (CR
+    107.5) and, on a creature, under its controller's control since their
+    turn began (CR 302.6)."""
+    c = ability.cost
+    if c.mana.cmc or c.unpayable or c.x_count or c.life or c.untap_self \
+            or c.exile_self or c.sacrifice_another \
+            or c.sacrifice_type is not None or c.discard_cards \
+            or c.put_counter_kind is not None \
+            or c.remove_counter_kind is not None \
+            or c.exile_from_graveyard_cards:
+        return False
+    if c.tap_self and (perm.tapped or (perm.effective_is_creature
+                                       and perm.has_summoning_sickness)):
+        return False
+    return True
+
+
+def _audit_sacrifices(game, pending) -> None:
+    """CR 605.3a / 107.5, restated from each sacrificed source's raw ability
+    cost and its state before the payment began: a source sacrificed for
+    mana was one whose ability's cost could be paid -- no mana in it, and
+    untapped if the cost taps it. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    problems = []
+    for perm, _added, _tapped_now, was_tapped in pending:
+        ability = _sacrifice_mana_ability(perm)
+        if ability is None:
+            problems.append(f"{perm.name} has no sacrifice-for-mana ability")
+        elif ability.cost.mana.cmc:
+            problems.append(f"{perm.name}'s ability costs mana")
+        elif ability.cost.tap_self and was_tapped:
+            problems.append(f"{perm.name} was tapped for its {{T}} cost")
+    rules_audit.check("605.3a/sacrifice_mana_cost_paid", not problems,
+                      "; ".join(problems), game=game)
+
+
 class ManaPayment:
     """Mana cost payment manager. Stateless — the methods operate on a
     GameState passed in as the first argument."""
@@ -158,6 +208,30 @@ class ManaPayment:
         return base
 
     @staticmethod
+    def sacrifice_mana_sources(game: "GameState", player_idx: int,
+                               exclude_instance_id: Optional[int] = None
+                               ) -> list:
+        """The permanents `player_idx` can sacrifice for mana right now,
+        each with the units its ability makes: a mana ability that
+        sacrifices its source and whose own cost can be paid during a
+        payment (`_sacrifice_cost_payable`). The one owner of that set: the
+        payment path spends exactly these, and every estimate of what a
+        player can pay counts exactly these. A permanent the tap-for-mana
+        path already counts is not counted twice, and none pays for its own
+        ability."""
+        out = []
+        for perm in game.players[player_idx].battlefield:
+            units = perm.template.sacrifice_mana_units
+            if not units or perm.instance_id == exclude_instance_id \
+                    or perm.template.mana_units or perm.template.produces_mana:
+                continue
+            ability = _sacrifice_mana_ability(perm)
+            if ability is None or not _sacrifice_cost_payable(perm, ability):
+                continue
+            out.append((perm, [list(u) for u in units]))
+        return out
+
+    @staticmethod
     def tap_lands_for_mana(game: "GameState", player_idx: int,
                            cost: ManaCost,
                            card_name: str = None,
@@ -244,6 +318,72 @@ class ManaPayment:
                     f"{produced} mana")
 
     @staticmethod
+    def _apply_cost_reduction(cost: ManaCost, reduction: int) -> ManaCost:
+        """Apply a generic cost reduction (CR 601.2f): shrink the GENERIC
+        component only, leaving every coloured, colourless and hybrid pip
+        untouched. Owns the fold so the reduction-audit invariant can
+        recompute the surviving non-generic pips independently."""
+        from .mana import ManaCost as MC
+        return MC(
+            white=cost.white, blue=cost.blue, black=cost.black,
+            red=cost.red, green=cost.green, colorless=cost.colorless,
+            generic=max(0, cost.generic - reduction), hybrid=list(cost.hybrid),
+        )
+
+    @staticmethod
+    def _record_paid(game: "GameState", units: int) -> None:
+        """Count the mana a payment took from a pool (CR 601.2h): the
+        monotonic total a cast's mana spent is read from."""
+        if units > 0:
+            game.mana_paid_total = getattr(game, "mana_paid_total", 0) + units
+
+    @staticmethod
+    def _audit_improvise_payers(game: "GameState", player_idx: int,
+                                payers: list) -> None:
+        """CR 702.126a, 605.1a, restated from the raw permanents: an
+        artifact tapped for improvise is not one whose mana ability the
+        payment's capacity already counted (printed units, or colours the
+        payment resolves for it now), so no artifact pays twice.
+        Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        for a in payers:
+            counted = bool(a.template.mana_units
+                           or ManaPayment.effective_produces_mana(
+                               game, player_idx, a))
+            rules_audit.check("702.126a/improvise_pays_once", not counted,
+                              f"{a.name} tapped for improvise though its "
+                              f"mana was counted", game=game)
+
+    @staticmethod
+    def _audit_sources_offered(game: "GameState", player_idx: int,
+                               offered: list,
+                               exclude_instance_id: Optional[int]) -> None:
+        """CR 605.1a, 302.6, restated from the raw permanents: every
+        untapped permanent whose mana ability is live now -- printed units,
+        or the colours the payment resolves for it as it taps -- and that
+        is not a summoning-sick creature or the permanent paying for its own
+        ability is a source the payment may tap. Observation only."""
+        from . import rules_audit
+        if not rules_audit.enabled():
+            return
+        ids = {c.instance_id for c in offered}
+        for perm in game.players[player_idx].battlefield:
+            if perm.tapped or perm.instance_id == exclude_instance_id \
+                    or (CardType.CREATURE in perm.template.card_types
+                        and perm.has_summoning_sickness):
+                continue
+            live = bool(perm.template.mana_units
+                        or ManaPayment.effective_produces_mana(
+                            game, player_idx, perm))
+            if live:
+                rules_audit.check("605.1a/mana_source_offered",
+                                  perm.instance_id in ids,
+                                  f"{perm.name} can tap for mana but the "
+                                  f"payment did not offer it", game=game)
+
+    @staticmethod
     def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
                                   cost: ManaCost,
                                   card_name: str = None,
@@ -277,8 +417,19 @@ class ManaPayment:
         reduction = 0
         # Domain cost reduction (from oracle-derived template property)
         # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
+        # The zones a spell is cast from: hand, graveyard (flashback,
+        # escape) and exile (a permission to cast it, warp; CR 601.2a) --
+        # including a permitted card in another player's exile, where an
+        # exiled card stays (CR 400.3). A reduction applies wherever the
+        # spell is cast from (CR 601.2f), so the payment reads the same
+        # zones `can_cast` admits.
+        from . import rules_query as _rq
+        cast_zones = (game.players[player_idx].hand,
+                      game.players[player_idx].graveyard,
+                      game.players[player_idx].exile,
+                      _rq.permitted_cards(game, player_idx))
         if card_name:
-            for c in list(game.players[player_idx].hand) + list(game.players[player_idx].graveyard):
+            for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name and c.template.domain_reduction > 0:
                     domain = ManaPayment.count_domain(game, player_idx)
                     reduction += c.template.domain_reduction * domain
@@ -287,20 +438,17 @@ class ManaPayment:
         player = game.players[player_idx]
         has_improvise = False
         if card_name:
-            # Check hand, graveyard, and stack for the card (flashback casts are from GY)
-            all_cards = list(player.hand) + list(player.graveyard)
-            for c in all_cards:
+            # The card in the zone it is cast from (`cast_zones` above).
+            for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name:
                     # Generic cost reduction from permanents
                     from .oracle_resolver import (count_cost_reducers,
                                                   self_cost_reduction)
-                    reduction += count_cost_reducers(game, player_idx, c.template)
+                    from . import rules_query
+                    reduction += rules_query.cost_delta(game, player_idx, c.template)
                     # Self-scaling own-cost reduction (per-turn discard/
                     # cycle count, graveyard card types, ...).
                     reduction += self_cost_reduction(game, player_idx, c.template)
-                    # Temporary cost reduction (Ral PW +1 "until your next turn")
-                    if c.template.is_instant or c.template.is_sorcery:
-                        reduction += player.temp_cost_reduction
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(
@@ -320,33 +468,45 @@ class ManaPayment:
             # Every other pip — coloured, colourless, hybrid — survives
             # untouched (hybrid pips used to be folded into `generic`
             # upstream, which is how two reducers made {1}{R/G} free).
-            from .mana import ManaCost as MC
-            new_generic = max(0, cost.generic - reduction)
-            cost = MC(
-                white=cost.white, blue=cost.blue, black=cost.black,
-                red=cost.red, green=cost.green, colorless=cost.colorless,
-                generic=new_generic, hybrid=list(cost.hybrid),
-            )
+            _ng_before = cost.non_generic_pips
+            cost = ManaPayment._apply_cost_reduction(cost, reduction)
+            # Audit (observation-only, CR 601.2f): the reduction may not have
+            # eaten a coloured/colourless/hybrid pip. Recomputed from the new
+            # cost's own pip fields, independently of the fold above.
+            from .rules_audit import check as _audit_check
+            _audit_check("601.2f/reduction_pips_preserved",
+                         cost.non_generic_pips == _ng_before,
+                         "a cost reduction shrank a non-generic pip",
+                         game=game)
 
         # Improvise payment (Track H handoff): tap untapped non-land
         # artifacts to pay {1} of generic each — but only for the
         # shortfall that lands + pool cannot cover, so artifact
         # creatures / mana rocks stay untapped whenever lands suffice.
         if has_improvise and cost.generic > 0:
-            capacity = (player.untapped_mana_capacity()
+            # a sacrifice source is spent after an artifact taps for improvise
+            capacity = (player.untapped_mana_capacity(sacrifice=False)
                         + player.mana_pool.total()
                         + player._tron_mana_bonus())
             shortfall = max(0, cost.cmc - capacity)
             if shortfall > 0:
+                # An artifact that taps for mana is already in `capacity`
+                # and pays its own (perhaps coloured) mana; improvise taps
+                # the others (CR 702.126a, 605.1a).
+                sources = {c.instance_id
+                           for c in player.untapped_mana_sources}
                 improvise_payers = [
                     a for a in player.battlefield
                     if CardType.ARTIFACT in a.template.card_types
                     and not a.template.is_land
                     and not a.tapped
+                    and a.instance_id not in sources
                 ]
                 n_tap = min(len(improvise_payers), shortfall, cost.generic)
                 if n_tap > 0:
                     from .mana import ManaCost as MC
+                    ManaPayment._audit_improvise_payers(
+                        game, player_idx, improvise_payers[:n_tap])
                     for a in improvise_payers[:n_tap]:
                         a.tapped = True
                     cost = MC(
@@ -360,23 +520,30 @@ class ManaPayment:
                         f"Improvise — tap {n_tap} artifact(s) for "
                         f"{card_name}")
 
-        # One-shot sacrifice-for-mana permanents (CR 605): Eldrazi Spawn/Scion,
-        # Treasure, Lotus-style artifacts — 206 cards in the pool. Spending one
-        # CONSUMES it, so (exactly like Improvise above) only ever spend the
-        # SHORTFALL that repeatable sources plus the pool cannot already cover;
-        # otherwise a deck would eat its own ramp to pay costs its lands
-        # already afford. Tapped state is irrelevant — the cost is sacrifice,
-        # not {T} — which is why these are collected separately from
-        # `untapped` rather than appended to it.
-        # Permanents whose sacrifice-for-mana ability has been COMMITTED TO but
-        # not yet performed. Filled by the block below, then either performed
-        # (`_commit_sacrifices`, on every success path) or abandoned along with
-        # the mana it produced (`_refund_sacrifices`, on every failure path).
+        # One-shot sacrifice-for-mana sources (CR 605.1a): Treasure, Eldrazi
+        # Spawn and Scion, Lotus-style artifacts. Each is a mana ability its
+        # controller may activate while paying (CR 605.3a), so its units join
+        # the solver's unit pool below -- as a coloured pip's source too --
+        # but LAST: spending one CONSUMES it, so a repeatable source pays
+        # whenever one can, and a deck never eats its own ramp to pay a cost
+        # its lands afford. A source is one whose own cost can be paid now
+        # (`sacrifice_mana_sources`): a tapped Treasure cannot pay its {T}.
+        sac_sources = ManaPayment.sacrifice_mana_sources(
+            game, player_idx, exclude_instance_id)
+        # The sources whose units the solver used, each with the colours it
+        # added, whether it was tapped for its {T}, and whether it was tapped
+        # before the payment began: performed only on a success path
+        # (`_commit_sacrifices`), abandoned with the mana they produced on a
+        # failure path (`_refund_sacrifices`). Destroying a card for a spell
+        # that then fails to cast is strictly worse than declining the cast,
+        # and a card returning from the graveyard would be a new object (CR
+        # 400.7) that re-fires its ETB.
         pending_sacrifice = []
 
         def _commit_sacrifices():
             """Perform the deferred sacrifices — payment succeeded."""
-            for _perm in pending_sacrifice:
+            _audit_sacrifices(game, pending_sacrifice)
+            for _perm, _added, _tapped, _was in pending_sacrifice:
                 # A creature sacrificed for mana DIES (CR 700.4): it goes
                 # through the death funnel so its own dies clause and every
                 # observer ("whenever a creature dies") fire — the bare zone
@@ -395,46 +562,12 @@ class ManaPayment:
 
         def _refund_sacrifices():
             """Payment failed: un-add the mana, leave the permanents alone."""
-            for _perm in pending_sacrifice:
-                for _unit in (_perm.template.sacrifice_mana_units or []):
-                    player.mana_pool.remove(_unit[0], 1)
+            for _perm, _added, _tapped, _was in pending_sacrifice:
+                for _colour in _added:
+                    player.mana_pool.remove(_colour, 1)
+                if _tapped:
+                    _perm.tapped = False
             pending_sacrifice.clear()
-
-        sac_sources = [
-            perm for perm in player.battlefield
-            if getattr(perm.template, 'sacrifice_mana_units', None)
-        ]
-        if sac_sources:
-            capacity = (player.untapped_mana_capacity()
-                        + player.mana_pool.total()
-                        + player._tron_mana_bonus())
-            shortfall = max(0, cost.cmc - capacity)
-            if shortfall > 0:
-                spent = 0
-                for perm in sac_sources:
-                    if spent >= shortfall:
-                        break
-                    units = perm.template.sacrifice_mana_units or []
-                    if not units:
-                        continue
-                    # DEFERRED: the permanent is NOT moved here. This function
-                    # has failure returns further down (an unmeetable coloured
-                    # requirement; a generic remainder), and destroying a card
-                    # for a spell that then fails to cast is strictly worse
-                    # than declining the cast. Record the intent, add the mana
-                    # so the solver below can use it, and only actually
-                    # sacrifice on a success path (`_commit_sacrifices`).
-                    # Rolling back after the move is not an option: a card
-                    # returning from the graveyard would be a new object
-                    # (CR 400.7) and would re-fire its ETB.
-                    pending_sacrifice.append(perm)
-                    for unit in units:
-                        # A unit lists the colours it could produce; a
-                        # single-colour unit is fixed, a multi-colour unit is
-                        # the "any colour" shape. Add the first option and let
-                        # the pool's own payment logic sort out the rest.
-                        player.mana_pool.add(unit[0], 1)
-                        spent += 1
 
         # CR 726.4 loop shortcut. An unbounded mana engine (a mana source
         # whose self-untap cost depletes nothing — see
@@ -448,35 +581,27 @@ class ManaPayment:
         ManaPayment._run_loop_shortcut(game, player_idx, cost,
                                        exclude_instance_id)
 
-        untapped = [l for l in player.lands if not l.tapped
-                    and l.instance_id != exclude_instance_id]
+        # The untapped mana sources -- lands, mana rocks and mana creatures
+        # (summoning sickness gates a creature's {T}, CR 302.6), including a
+        # source whose ability is live only under a condition evaluated as
+        # it taps (metalcraft, CR 702.98) -- come from the one owner of the
+        # list, `PlayerState.untapped_mana_sources`, so what the payment
+        # taps and what every capacity estimate counts are the same set.
+        untapped = [src for src in player.untapped_mana_sources
+                    if src.instance_id != exclude_instance_id]
+        ManaPayment._audit_sources_offered(game, player_idx, untapped,
+                                           exclude_instance_id)
 
-        # Non-land mana sources: mana rocks (Talisman, Mind Stone) and mana
-        # creatures (Birds, Llanowar, Devoted Druid). A permanent whose
-        # template exposes a plain "{T}: Add" ability (produces_mana /
-        # mana_units populated for non-lands, CR 605) is tappable for mana
-        # exactly like a land. Creature mana abilities carry the tap symbol,
-        # so summoning sickness gates them (CR 302.6 / 605.3a).
-        for perm in player.battlefield:
-            if perm.tapped or perm.template.is_land:
-                continue
-            if perm.instance_id == exclude_instance_id:
-                continue  # cannot tap a permanent to pay for its own ability
-            if not (perm.template.mana_units or perm.template.produces_mana):
-                continue
-            if (CardType.CREATURE in perm.template.card_types
-                    and perm.has_summoning_sickness):
-                continue
-            untapped.append(perm)
-
-        if not untapped and player.mana_pool.total() == 0:
+        if not untapped and not sac_sources and player.mana_pool.total() == 0:
             _ok = cost.cmc == 0
             _commit_sacrifices() if _ok else _refund_sacrifices()
             return _ok
 
         # Check if mana pool already has enough (from rituals)
         if player.mana_pool.can_pay(cost):
+            _before = player.mana_pool.total()
             _paid = player.mana_pool.pay(cost)
+            ManaPayment._record_paid(game, _before - player.mana_pool.total())
             _commit_sacrifices() if _paid else _refund_sacrifices()
             return _paid
 
@@ -563,6 +688,15 @@ class ManaPayment:
             for ui, options in enumerate(
                     ManaPayment.land_mana_units(game, player_idx, land)):
                 unit_pool.append([land, ui, list(options), None])
+        # A sacrifice-for-mana source's units are units like any other; it
+        # is sacrificed, not tapped, and assigned last (`_is_sacrifice`).
+        sac_ids = {id(perm) for perm, _units in sac_sources}
+        for perm, units in sac_sources:
+            for ui, options in enumerate(units):
+                unit_pool.append([perm, ui, list(options), None])
+
+        def _is_sacrifice(source) -> int:
+            return 1 if id(source) in sac_ids else 0
 
         def _unit_matches(pip, options):
             return any(o in options for o in pip)
@@ -595,7 +729,8 @@ class ManaPayment:
                     produces_held = 1 if any(
                         c in _held and c not in pip
                         for c in _produces(land)) else 0
-                    key = (flex, produces_held, _is_creature_source(land))
+                    key = (_is_sacrifice(land), flex, produces_held,
+                           _is_creature_source(land))
                     if key < best_key:
                         best_key = key
                         best_unit = unit
@@ -634,7 +769,10 @@ class ManaPayment:
         bonus_counted = set(committed_lands)
 
         def _generic_order(unit):
-            on_committed = 0 if id(unit[0]) in committed_lands else 1
+            # committed sources' spare units first; then repeatable sources;
+            # a sacrifice source last
+            on_committed = 0 if id(unit[0]) in committed_lands else \
+                1 + _is_sacrifice(unit[0])
             return (on_committed, _is_creature_source(unit[0]), len(unit[2]))
 
         for unit in sorted((u for u in unit_pool if u[3] is None),
@@ -669,7 +807,12 @@ class ManaPayment:
 
         tapped_names = []
         for land in lands_to_tap:
-            land.tap()
+            sacrificed = id(land) in sac_ids
+            was_tapped = land.tapped
+            tapped_for_it = not sacrificed or \
+                _sacrifice_mana_ability(land).cost.tap_self
+            if tapped_for_it:
+                land.tap()
             land_units = [u for u in unit_pool if u[0] is land]
             yielded = []
             for _l, _ui, options, assigned in land_units:
@@ -680,15 +823,25 @@ class ManaPayment:
                 player.mana_pool.add(color)
                 yielded.append(color)
             tapped_names.append(f'{land.name}→{"".join(yielded)}')
+            if sacrificed:
+                # performed once the whole cost is paid (`_commit_sacrifices`)
+                pending_sacrifice.append((land, yielded, tapped_for_it,
+                                          was_tapped))
+                continue
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
-            # Pain land: self-damage when tapping for colored mana
+            # Pain land: self-damage when tapping for colored mana -- the
+            # land deals it to its controller through the damage owner,
+            # so it is life lost this turn (CR 120.3a).
             if land.template.tap_damage > 0 and any(
                     c != "C" for c in yielded):
-                player.life -= land.template.tap_damage
+                from .damage import deal_damage
+                deal_damage(land, player, land.template.tap_damage)
 
+        _before = player.mana_pool.total()
         ok = player.mana_pool.pay(cost)
+        ManaPayment._record_paid(game, _before - player.mana_pool.total())
 
         # Verbose: log which lands were tapped, and what is left AFTER
         # this cost is paid. Emitted post-payment on purpose: measured
@@ -699,8 +852,12 @@ class ManaPayment:
         # finding in
         # docs/diagnostics/2026-08-27_dimir_overperformance_root_cause.md).
         if getattr(game, 'verbose', False) and tapped_names and card_name:
+            # a source this payment sacrifices is mana already spent
+            spent = sum(len(perm.template.sacrifice_mana_units or ())
+                        for perm, _a, tapped, _w in pending_sacrifice
+                        if not tapped)
             remaining_mana = (player.untapped_mana_capacity()
-                              + player.mana_pool.total())
+                              + player.mana_pool.total() - spent)
             game.log.append(f'    [Mana] Tap {", ".join(tapped_names)} '
                             f'(paying for {card_name}, {remaining_mana} mana remaining)')
 

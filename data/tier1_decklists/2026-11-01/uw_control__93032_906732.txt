@@ -1,0 +1,37 @@
+// UW Control — mtgtop8 event=93032 deck=906732
+3 Arid Mesa
+1 Celestial Colonnade
+4 Flooded Strand
+1 Geier Reach Sanitarium
+1 Godless Shrine
+2 Hallowed Fountain
+2 Island
+2 Meticulous Archive
+1 Monumental Henge
+1 Mystic Gate
+1 Otawara, Soaring City
+2 Plains
+1 Thundering Falls
+4 Solitude
+3 Day's Undoing
+2 Erode
+2 Lórien Revealed
+4 Orim's Chant
+3 Preordain
+2 Prismatic Ending
+3 Silence
+1 Supreme Verdict
+3 Wrath of the Skies
+1 Isochron Scepter
+4 Narset, Parter of Veils
+1 Teferi, Hero of Dominaria
+4 Teferi, Time Raveler
+1 The Mind Stone
+
+Sideboard
+3 Consign to Memory
+3 Mystical Dispute
+3 Rest in Peace
+4 Sanctum Prelate
+1 The Wandering Emperor
+1 Wrath of the Skies

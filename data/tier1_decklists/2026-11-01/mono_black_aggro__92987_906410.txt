@@ -1,0 +1,39 @@
+// Mono Black Aggro — mtgtop8 event=92987 deck=906410
+2 Bloodstained Mire
+2 Castle Locthwain
+1 Hive of the Eye Tyrant
+2 Marsh Flats
+2 Spymaster's Vault
+3 Swamp
+1 Takenuma, Abandoned Mire
+2 Underground Mortuary
+4 Urza's Saga
+2 Verdant Catacombs
+1 Boggart Trawler
+4 Dark Matter Manipulator
+4 Emperor of Bones
+4 Nethergoyf
+4 Orcish Bowmasters
+2 Bitter Triumph
+4 Fatal Push
+3 Inquisition of Kozilek
+4 Thoughtseize
+2 Liliana of the Veil
+4 Mishra's Bauble
+1 Nihil Spellbomb
+1 Pithing Needle
+1 Shadowspear
+
+Sideboard
+1 Ashiok, Dream Render
+3 Break the Ice
+1 Dauthi Voidwalker
+1 Day of Black Sun
+1 Expedition Map
+1 Ghost Vacuum
+1 Haywire Mite
+1 Pithing Needle
+1 Strategic Betrayal
+2 Surgical Extraction
+1 Toxic Deluge
+1 Vexing Bauble

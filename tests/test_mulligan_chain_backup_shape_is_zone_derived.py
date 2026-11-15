@@ -49,11 +49,12 @@ def test_storm_chain_backup_rule_does_not_apply_to_non_storm_combo_gameplan(card
 def test_storm_zone_gameplan_still_requires_chain_backup(card_db):
     ge = create_goal_engine("Ruby Storm")
     d = MulliganDecider(ArchetypeStrategy.COMBO, ge)
-    # 3 lands, no Medallion, a draw spell and two finishers but NO ritual:
-    # the storm chain cannot start → the backup rule must still reject.
+    # 3 lands, no cost reducer, a draw spell and two finishers but NO
+    # ritual: the storm chain cannot start → the backup rule must still
+    # reject. (Ral, Monsoon Mage once stood where Hex Magic is; its static
+    # reduction makes it a reducer, CR 302.6, and waives the backup.)
     hand = _hand(card_db, ["Mountain", "Mountain", "Scalding Tarn",
-                           "Reckless Impulse", "Wish",
-                           "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+                           "Reckless Impulse", "Wish", "Hex Magic",
                            "Grapeshot"])
     keep = d.decide(hand, 7)
     assert not keep

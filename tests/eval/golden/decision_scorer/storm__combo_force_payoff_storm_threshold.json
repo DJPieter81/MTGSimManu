@@ -1,0 +1,16 @@
+{
+  "source": "expected = ai/llm_decision_weights.json row; band = decision_scorer_v2.md per-context prior",
+  "input": {
+    "archetype": "storm",
+    "context": "combo_force_payoff_storm_threshold"
+  },
+  "expected": {
+    "weight": 5.0
+  },
+  "bands": {
+    "weight": [
+      4.0,
+      6.0
+    ]
+  }
+}

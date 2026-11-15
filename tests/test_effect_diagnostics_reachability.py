@@ -118,18 +118,21 @@ def test_alternative_cast_records_unparseable_suspend_clause():
 
 
 def test_replacement_records_unmodeled_graveyard_exile_static():
-    """When a card is put into a graveyard while a permanent with the
-    "would be put into a graveyard, exile it instead" static (Rest in Peace /
-    Leyline of the Void family) is on the battlefield, the engine does not model
-    that replacement. The replacement path must record the unmodeled static."""
+    """When a card is put into a graveyard while a permanent prints a
+    "would be put into a graveyard ... exile it" static the engine refused to
+    type (an unusual variant: "instead exile it with a void counter on it"),
+    the replacement did not run. The replacement path must record the
+    unmodeled static. (A typed static exiles the card instead; see
+    tests/test_a_graveyard_bound_object_is_exiled_instead.py.)"""
     from engine.zone_manager import ZoneManager
 
     effect_diagnostics.reset()
     hate = SimpleNamespace(
-        instance_id=1,
+        instance_id=1, zone="battlefield",
         template=SimpleNamespace(
             name="SyntheticGraveyardExiler",
             exiles_cards_bound_for_graveyard=True,
+            graveyard_exile_replacements=(),
         ),
     )
     p0 = _fake_player()

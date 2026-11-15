@@ -224,3 +224,18 @@ class TestCounterTaxIsOfferedWhenPayable:
         assert opt is not None
         assert opt.cost.kind == "mana"
         assert opt.cost.amount == counter.template.counter_tax_amount
+
+
+def test_a_tax_is_offered_to_a_payer_whose_mana_is_floating(card_db):
+    """Mana already in the payer's pool pays the tax as well as an untapped
+    land does (CR 106.4: mana in a pool can pay costs). The offer gate read
+    the untapped sources only (`available_mana_estimate`), so a player with
+    floating mana -- a ritual chain mid-turn -- was never asked. It now asks
+    the one affordability owner, `CastManager.mana_payable`, which counts
+    the pool (blind-spot class B1, root-cause analysis 2026-11-15)."""
+    cb = _RecordingPayCallbacks()
+    game = _make_game(cb)
+    game.players[0].mana_pool.add("R", 3)            # floating, no lands
+    taxed, counter = _stack_soft_counter_on_spell(game, card_db)
+    offer_counter_tax(game, counter, taxed)
+    assert cb.offered, "a payer with floating mana must be offered the tax"

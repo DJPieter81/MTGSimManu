@@ -95,13 +95,6 @@
       ],
       "reason": ""
     },
-    "limits_opponent_spell_timing": {
-      "cards": [
-        "Teferi, Mage of Zhalfir",
-        "Teferi, Time Raveler"
-      ],
-      "reason": ""
-    },
     "prevents_graveyard_etb": {
       "cards": [
         "Grafdigger's Cage",

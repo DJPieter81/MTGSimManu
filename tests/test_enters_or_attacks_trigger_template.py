@@ -108,12 +108,15 @@ def test_other_creatures_attack_trigger_is_not_claimed():
 
 
 def test_ramp_finisher_attack_land_search_fires():
-    """End-to-end: the flag-gated attack land-search actually executes."""
+    """End-to-end: once attackers are declared, the attack trigger goes on
+    the stack and its land search is performed as it resolves (CR 508.2,
+    603.3; the attack carrier, unit TU), not by the retired name-keyed
+    search at trigger time."""
     import random
     from engine.cards import CardInstance
+    from engine.combat_manager import CombatManager
     from engine.game_state import GameState, Phase
     from engine.card_database import CardDatabase
-    from engine.triggers import TriggerManager
 
     db = CardDatabase()
 
@@ -144,7 +147,9 @@ def test_ramp_finisher_attack_land_search_fires():
 
     before = len([c for c in game.players[0].battlefield
                   if c.template.is_land])
-    TriggerManager.trigger_attack(game, attacker, 0)
+    CombatManager().declare_attackers(game, [attacker], 0)
+    while game.stack.items:
+        game.resolve_stack()
     after = len([c for c in game.players[0].battlefield
                  if c.template.is_land])
     assert after > before, (

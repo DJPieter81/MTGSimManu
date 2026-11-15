@@ -21,24 +21,37 @@ mechanically as data accumulates.
         │   ├── affinity_overperf_2026-04-21.json
         │   ├── living_end_underperf_2026-04-24.json
         │   └── ruby_storm_wasted_enablers_2026-04-28.json
-        └── handler_audit/
-            ├── thraben_charm.json
-            ├── territorial_kavu.json
-            └── pick_your_poison.json
+        ├── handler_audit/            (3 pairs)
+        ├── audit_doc_freshness/      (3 pairs)
+        ├── failing_test_spec/        (3 pairs)
+        ├── classify_oracle/          (5 pairs)
+        └── decision_scorer/          (6 pairs)
 
-Each golden pair is `{ "input": {...}, "expected": {...} }`.  The
-`input` is the raw prompt input the agent receives; `expected` is a
-schema-validated dict that the run output is compared against.
+Every `ai.llm_models.LLMTask` has goldens (pinned by
+`tests/test_llm_agent_contract.py`).
+
+Each golden pair is `{ "input": {...}, "expected": {...} }`, plus an
+optional `"bands": {field: [lo, hi]}` and a `"source"` note.  The
+`input` validates against the task's typed input
+(`ai.llm_inputs.TASK_INPUT_TYPES`) and is rendered by that task's
+production renderer — the eval exercises the exact prompt the tools
+send.  `expected` is compared against the run output in the task's
+canonical schema (`ai.llm_agents.canonical_output`), so a decision
+model's decision-shaped answer is scored like a language model's.
 
 ## Scoring
 
-For each pair, score := closed-set exact-match score (per-field) +
-free-text similarity score (cosine over normalized text).  The pair
-"passes" when overall score >= the per-task threshold (default 0.6).
+For each pair, score := structured score (exact closed-set fields,
+numeric fields, set fields) + free-text similarity score (cosine over
+normalized text), each half the weight when both are present.  The
+pair "passes" when overall score >= the per-task threshold.
 
 * Closed-set fields (`Subsystem`, `Severity`, `HandlerTiming`,
   `archetype`, `current_status`, `should_change_to`) must match
   exactly — these are the high-signal labels.
+* Numeric fields (`decision_scorer.weight`) score 1 inside the pair's
+  band (or on the exact value when the pair gives no band), else 0.
+* Set fields (`classify_oracle.tags`) score by Jaccard overlap.
 * Free-text fields (`failing_test_rule`, `reason`, descriptions) are
   compared via lowercased, punctuation-stripped, whitespace-normalized
   cosine similarity over a token-frequency vector (a degenerate but
@@ -53,14 +66,14 @@ The smoke tests in `tests/test_eval_harness_smoke.py` use
 pydantic-ai's `TestModel` to verify the harness wires up correctly
 without making any real API call.
 
-To run against a real foundation model:
+To run against each task's default model (`ai.llm_models`; needs the
+provider keys — the decision scorer's default reads TYPESAFE_API_KEY):
 
-    MTG_LLM_MODEL=anthropic:claude-sonnet-4-6 \\
-        pytest tests/eval/ --run-eval -q
+    pytest tests/eval/ --run-eval -q
 
-To pin a specific model for one task:
+To pin a specific model for one task (or `MTG_LLM_MODEL` for all):
 
-    MTG_LLM_MODEL_HANDLER_AUDIT=anthropic:claude-haiku-4-5 \\
+    MTG_LLM_MODEL_HANDLER_AUDIT=<provider:model-id> \\
         pytest tests/eval/ --run-eval -q
 
 ## Adding a new golden pair
@@ -81,7 +94,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ai.llm_agents import build_agent
+from ai.llm_agents import build_agent, canonical_output
+from ai.llm_inputs import task_input
 from ai.llm_models import LLMTask
 from ai.llm_schemas import (
     BugHypothesis,
@@ -110,11 +124,9 @@ DEFAULT_THRESHOLD: dict[str, float] = {
     # match scoring path dominates and the cosine fallback rarely
     # fires.  Same 0.6 threshold as the other extraction tasks.
     "classify_oracle":     0.6,
-    # Phase 1 refactor — decision_scorer.  The output is a single
-    # float weight + short rationale; the closed-set comparison on
-    # `(archetype, context) → weight` is the dominant signal.  Same
-    # 0.6 bar as the rest of the suite until we have golden pairs
-    # to calibrate a more specific number.
+    # decision_scorer goldens carry only the numeric `weight`, scored
+    # in-band or not, so a pair's score is 0 or 1 and the threshold
+    # only separates those two outcomes.
     "decision_scorer":     0.6,
 }
 
@@ -123,18 +135,28 @@ DEFAULT_THRESHOLD: dict[str, float] = {
 _CLOSED_FIELDS_BY_TASK: dict[str, set[str]] = {
     "synth_gameplan":      {"archetype", "archetype_subtype"},
     "diagnose_replay":     {"suspected_subsystem"},
-    "audit_doc_freshness": {"current_status", "should_change_to", "doc_path"},
+    "audit_doc_freshness": {"current_status", "should_change_to", "doc_path",
+                            "replacement_doc"},
     "handler_audit":       {"timing", "severity", "card_name"},
-    "failing_test_spec":   {"expected_status_before_fix"},
-    # The card_name is the closed-set anchor for classify_oracle; the
-    # tags list is a closed-set-of-strings that the eval harness
-    # compares structurally.
+    # `test_file` is the naming rule applied to the hypothesis's rule
+    # (the renderer states it) and `rule_name` must echo that rule, so
+    # both are exact; fixture and assertion pseudocode are free text.
+    "failing_test_spec":   {"expected_status_before_fix", "test_file",
+                            "rule_name"},
     "classify_oracle":     {"card_name"},
-    # Phase 1 refactor: decision_scorer emits a numeric `weight` plus
-    # a short rationale.  There is no closed-set categorical field;
-    # the eval harness compares the numeric weight via free-text
-    # similarity (good enough until we add golden pairs).
     "decision_scorer":     set(),
+}
+
+# Numeric fields per task — in the pair's `bands[field]` = [lo, hi]
+# scores 1, outside 0; with no band the value must match exactly.
+_NUMERIC_FIELDS_BY_TASK: dict[str, set[str]] = {
+    "decision_scorer":     {"weight"},
+}
+
+# Set-valued fields per task — scored by Jaccard overlap, so a missing
+# or an extra tag costs proportionally and order does not matter.
+_SET_FIELDS_BY_TASK: dict[str, set[str]] = {
+    "classify_oracle":     {"tags"},
 }
 
 _OUTPUT_TYPES = {
@@ -236,7 +258,8 @@ def run_eval(
             pid = pair["_pair_id"]
             try:
                 output = _run_one(agent, task, pair["input"])
-                pr = _score_pair(task, output, pair["expected"], pair_id=pid)
+                pr = _score_pair(task, output, pair["expected"], pair_id=pid,
+                                 bands=pair.get("bands"))
             except Exception as exc:  # pragma: no cover — exercised only when a real model is used
                 pr = PairResult(
                     pair_id=pid,
@@ -272,28 +295,57 @@ def _agent_model_id(agent) -> str:
 
 def _run_one(agent, task: str, input_blob: Dict[str, Any]):
     """Run the agent against one pair's input.  Caller is responsible
-    for the override context."""
-    user_prompt = json.dumps(input_blob, indent=2, sort_keys=True)
-    result = agent.run_sync(user_prompt)
-    return result.output
+    for the override context.
+
+    The input is validated into the task's typed input and rendered by
+    the production renderer; the output is mapped to the task's
+    canonical schema (a decision model answers in a decision shape)."""
+    inp = task_input(task, input_blob)
+    result = agent.run_sync(inp.render())
+    return canonical_output(task, result.output, inp)
 
 
 def _score_pair(
-    task: str, output: Any, expected: Dict[str, Any], *, pair_id: str
+    task: str,
+    output: Any,
+    expected: Dict[str, Any],
+    *,
+    pair_id: str,
+    bands: Optional[Dict[str, List[float]]] = None,
 ) -> PairResult:
     """Score one output vs. its expected dict.  Returns a PairResult.
 
     `output` is whatever the agent emitted (a pydantic model, a list,
     or — for TestModel runs against `list[BugHypothesis]` — a list of
-    pydantic models).  Convert to dict via `from_json_dict` round
-    trip and apply the per-task closed/free-text split."""
+    pydantic models).  Convert to a dict and apply the per-task split:
+    structured fields (closed-set, numeric, set) and free text.  When
+    a pair's `expected` has both kinds, each is half the score; when it
+    has only one kind, that kind is the whole score."""
     output_dict = _to_comparable_dict(task, output)
 
     closed_fields = _CLOSED_FIELDS_BY_TASK[task]
+    numeric_fields = _NUMERIC_FIELDS_BY_TASK.get(task, set())
+    set_fields = _SET_FIELDS_BY_TASK.get(task, set())
+    structured = closed_fields | numeric_fields | set_fields
 
-    closed_score = _exact_match_score(output_dict, expected, closed_fields)
-    free_text_score = _free_text_score(output_dict, expected, closed_fields)
-    overall = 0.5 * closed_score + 0.5 * free_text_score
+    parts: List[float] = []
+    parts += [1.0 if output_dict.get(f) == expected[f] else 0.0
+              for f in closed_fields if f in expected]
+    parts += [_numeric_score(output_dict.get(f), expected[f],
+                             (bands or {}).get(f))
+              for f in numeric_fields if f in expected]
+    parts += [_jaccard(output_dict.get(f), expected[f])
+              for f in set_fields if f in expected]
+    has_free = any(f not in structured for f in expected)
+
+    closed_score = sum(parts) / len(parts) if parts else 1.0
+    free_text_score = _free_text_score(output_dict, expected, structured)
+    if parts and has_free:
+        overall = 0.5 * closed_score + 0.5 * free_text_score
+    elif parts:
+        overall = closed_score
+    else:
+        overall = free_text_score
 
     return PairResult(
         pair_id=pair_id,
@@ -323,19 +375,6 @@ def _to_comparable_dict(task: str, output: Any) -> Dict[str, Any]:
     return {}
 
 
-def _exact_match_score(
-    output: Dict[str, Any], expected: Dict[str, Any], closed_fields: set
-) -> float:
-    """Fraction of `closed_fields` present in `expected` that match
-    exactly between output and expected.  Returns 1.0 if `expected`
-    has no closed fields (the test is then driven by free text only)."""
-    relevant = [f for f in closed_fields if f in expected]
-    if not relevant:
-        return 1.0
-    hits = sum(1 for f in relevant if output.get(f) == expected[f])
-    return hits / len(relevant)
-
-
 def _free_text_score(
     output: Dict[str, Any], expected: Dict[str, Any], closed_fields: set
 ) -> float:
@@ -353,6 +392,28 @@ def _free_text_score(
     out_text = " ".join(_stringify(output.get(f)) for f in free_fields)
     exp_text = " ".join(_stringify(expected.get(f)) for f in free_fields)
     return _cosine(out_text, exp_text)
+
+
+def _numeric_score(out: Any, exp: Any, band: Optional[List[float]]) -> float:
+    """1.0 when `out` lies in `band` ([lo, hi], inclusive) — or equals
+    `exp` when no band is given — else 0.0."""
+    try:
+        value = float(out)
+    except (TypeError, ValueError):
+        return 0.0
+    if band is not None:
+        lo, hi = band
+        return 1.0 if lo <= value <= hi else 0.0
+    return 1.0 if value == float(exp) else 0.0
+
+
+def _jaccard(out: Any, exp: Any) -> float:
+    """|out ∩ exp| / |out ∪ exp| over the two collections; two empty
+    collections agree completely."""
+    a, b = set(out or ()), set(exp or ())
+    if not a and not b:
+        return 1.0
+    return len(a & b) / len(a | b)
 
 
 def _stringify(v: Any) -> str:

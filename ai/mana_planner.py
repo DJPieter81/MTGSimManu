@@ -327,9 +327,13 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
         if card.template.is_land:
             continue
         cmc = card.template.cmc or 0
-        if cmc >= PAYOFF_HIGH_CMC_THRESHOLD and len(card.template.color_identity) >= 2:
+        # The mana symbols the card prints -- its cost, alternative costs
+        # (flashback, a split card's other half) and abilities: a mana
+        # demand, not the card's colour.
+        symbols = card.template.color_identity  # color-identity-allow: mana symbols the card prints, a mana demand, not a colour rule
+        if cmc >= PAYOFF_HIGH_CMC_THRESHOLD and len(symbols) >= 2:
             card_colors = set()
-            for c in card.template.color_identity:
+            for c in symbols:
                 card_colors.add(c.value if hasattr(c, 'value') else str(c))
             missing = card_colors - all_land_colors
             needs.payoff_missing_colors |= missing

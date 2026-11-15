@@ -7,18 +7,17 @@
       "description": "Deploy creatures on curve",
       "card_roles": {
         "enablers": [
-          "Guide of Souls",
-          "Momo, Friendly Flier",
-          "Ocelot Pride",
+          "Emperor of Bones",
           "Phelia, Exuberant Shepherd"
         ],
         "payoffs": [
+          "Overlord of the Balemurk",
           "Quantum Riddler",
-          "Solitude",
-          "Starfield Shepherd"
+          "Solitude"
         ],
         "interaction": [
-          "March of Otherworldly Light"
+          "Fatal Push",
+          "Pest Control"
         ]
       }
     },
@@ -27,7 +26,8 @@
       "description": "Attack aggressively, remove blockers",
       "card_roles": {
         "interaction": [
-          "March of Otherworldly Light",
+          "Fatal Push",
+          "Pest Control",
           "Consign to Memory"
         ]
       }
@@ -38,10 +38,9 @@
     }
   ],
   "mulligan_keys": [
-    "Guide of Souls",
-    "March of Otherworldly Light",
-    "Momo, Friendly Flier",
-    "Ocelot Pride",
+    "Emperor of Bones",
+    "Fatal Push",
+    "Pest Control",
     "Phelia, Exuberant Shepherd"
   ],
   "mulligan_min_lands": 2,
@@ -49,10 +48,5 @@
   "reactive_only": [
     "Consign to Memory"
   ],
-  "always_early": [
-    "Guide of Souls",
-    "March of Otherworldly Light",
-    "Momo, Friendly Flier",
-    "Ocelot Pride"
-  ]
+  "always_early": []
 }

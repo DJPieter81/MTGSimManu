@@ -1,0 +1,38 @@
+// Amulet Titan — mtgtop8 event=91038 deck=891429
+3 Boseiju, Who Endures
+4 Crumbling Vestige
+1 Echoing Deeps
+3 Forest
+4 Gruul Turf
+1 Hanweir Battlements
+1 Mirrorpool
+1 Shifting Woodland
+3 Simic Growth Chamber
+3 The Mycosynth Gardens
+1 Tolaria West
+4 Urza's Saga
+1 Valakut, the Molten Pinnacle
+1 Vesuva
+1 Aftermath Analyst
+4 Arboreal Grazer
+1 Cultivator Colossus
+1 Dryad of the Ilysian Grove
+3 Primeval Titan
+2 Sakura-Tribe Scout
+3 Green Sun's Zenith
+4 Scapeshift
+2 Summoner's Pact
+4 Amulet of Vigor
+4 Spelunking
+
+Sideboard
+1 Bojuka Bog
+1 Boseiju, Who Endures
+2 Cursed Totem
+3 Dismember
+1 Elvish Reclaimer
+2 Endurance
+1 Fire Magic
+1 Force of Vigor
+1 Tireless Tracker
+2 Vexing Bauble

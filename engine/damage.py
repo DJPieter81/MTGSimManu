@@ -230,7 +230,17 @@ def deal_damage(source: Any, target: Any, amount: int,
     # "if isinstance(target, Player): player.life -= x else: …"
     # pattern that proliferated across the engine. New target
     # types just implement `take_damage`.
+    from .rules_audit import enabled as _audit_on
+    before = None
+    if _audit_on() and hasattr(effective_target, 'damage_marked') \
+            and hasattr(effective_target, 'template'):
+        before = (effective_target.damage_marked,
+                  effective_target.loyalty_counters)
     effective_target.take_damage(effective_amount, source)
+    if before is not None:
+        _audit_damage_result(effective_target, effective_amount, before,
+                             _find_game_state(effective_target)
+                             or _find_game_state(source))
 
     # ── Schedule state-based actions ──
     #
@@ -260,6 +270,49 @@ def deal_damage(source: Any, target: Any, amount: int,
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────
+
+
+def _audit_damage_result(perm: Any, amount: int, before: tuple,
+                         game: Any) -> None:
+    """CR 120.3c, 120.3e, 712.8, restated from raw fields: damage dealt to
+    a permanent marks that much damage on it while it is a creature, and
+    removes that many loyalty counters while it is a planeswalker, by the
+    types it has now -- its back face's while transformed, or the ones an
+    effect sets in their place, plus any an effect adds and less any an
+    effect says it isn't (CR 613.1d), a creature while animated.
+    Observation only."""
+    from .cards import CardType
+    from .rules_audit import check as _audit_check
+    t = perm.template
+    face = (t.back_face_types if perm.is_transformed and t.back_face_types
+            else t.card_types)
+    if perm.cem_types_set is not None:
+        face = perm.cem_types_set
+    types = ((set(face) | set(perm.cem_types_added))
+             - set(perm.cem_types_removed))
+    creature = CardType.CREATURE in types or perm.is_animated
+    walker = CardType.PLANESWALKER in types
+    marked, loyalty = before
+    ok = (perm.damage_marked - marked == (amount if creature else 0)
+          and max(perm.loyalty_counters, 0)
+          == max(loyalty - (amount if walker else 0), 0))
+    _audit_check("120.3/damage_result", ok,
+                 f"{perm.name} dealt {amount}: damage marked "
+                 f"{marked} -> {perm.damage_marked}, loyalty {loyalty} -> "
+                 f"{perm.loyalty_counters} (creature={creature}, "
+                 f"planeswalker={walker})", game=game)
+
+
+def lose_life(game: Any, player_idx: int, amount: int) -> None:
+    """`player` loses `amount` life (CR 119.3). Loss of life is not damage:
+    no prevention, no lifelink, no damage triggers — but it counts toward
+    "life lost this turn" and can end the game (CR 704.5a)."""
+    if amount <= 0:
+        return
+    player = game.players[player_idx]
+    player.life -= amount
+    player.life_lost_this_turn += amount
+    _request_sba_check(game)
 
 
 def _find_game_state(obj: Any) -> Any:

@@ -251,6 +251,18 @@ def _eval_kick(game, me, a: BoardAssessment, ctx: dict,
     return 1.0  # dig count-bump: cheap card advantage
 
 
+def _legal_removal_targets(game, source, controller: int) -> list:
+    """The opposing creatures `source` (controlled by `controller`) may
+    target -- hexproof (CR 702.11d) and protection (702.16b) read through
+    the one targetability owner, `engine.target_solver.can_be_targeted`.
+    A removal effect whose only opposing creatures are outside this list
+    has no legal target (CR 115.1, 601.2c)."""
+    from engine.target_solver import can_be_targeted
+    opp = game.players[1 - controller]
+    return [c for c in opp.creatures
+            if can_be_targeted(c, source, controller)]
+
+
 def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
                  *, player_idx: int) -> float:
     """Evoke (sacrifice for ETB) vs wait to hard-cast?
@@ -273,12 +285,21 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     if card is None:
         return 0.0
 
+    # A cast-triggered counter that names this evoke (CR 603.2, 701.6):
+    # the evoke spends its evoke cost's mana -- none for one that exiles a
+    # card -- so "if no mana was spent" counters it, and the evoke loses
+    # the creature and its exiled card for nothing.
+    from ai.effective_cmc import CAST_MODE_EVOKE, counter_on_cast
+    if counter_on_cast(card, game=game, player_idx=player_idx,
+                       cast_mode=CAST_MODE_EVOKE) is not None:
+        return -BOARD_EVAL_HARD_VETO
+
     cmc = card.template.cmc or 0
     tags = getattr(card.template, 'tags', set())
 
     opp_idx = 1 - player_idx
     opp = game.players[opp_idx]
-    
+
     # Stack-targeting ETBs (e.g. "target creature spell or planeswalker
     # spell" on Subtlety): the word "spell" after the target type means
     # the ETB targets the STACK, not the battlefield.  When the stack
@@ -315,14 +336,27 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
             return -BOARD_EVAL_HARD_VETO  # ETB fizzles → pitch cost is wasted
 
     # Battlefield-targeting ETBs (e.g. "target creature" — no "spell"):
-    # if the opponent has no creatures, the ETB fizzles.
-    elif getattr(card.template, 'requires_creature_target', False) and 'removal' not in tags:
-        if not opp.creatures:
+    # if the opponent has no creatures, the ETB fizzles — removal or not.
+    # The engine does not refuse such an evoke: the targets are the enter
+    # trigger's, chosen after the creature enters (CR 603.3d), so whether
+    # the evoke buys anything is this decision's. An opposing creature
+    # spell still on the stack is no target: the evoked creature's
+    # trigger resolves first.
+    elif getattr(card.template, 'requires_creature_target', False):
+        if not _legal_removal_targets(game, card, me.player_idx):
             return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     
+    # Graveyard-hate ETBs ("up to one target player puts all the cards
+    # from their graveyard on the bottom of their library"): with nothing
+    # but lands in the opposing graveyard the trigger acts on nothing, and
+    # the evoke spends two cards for it.
+    if 'graveyard_hate' in tags and not any(
+            not c.template.is_land for c in opp.graveyard):
+        return -BOARD_EVAL_HARD_VETO
+
     # Removal ETBs (Solitude, Fury): check if opponent has creatures
     if 'removal' in tags and card.template.is_creature:
-        if not opp.creatures and not opp.battlefield:
+        if not opp.creatures and not opp.battlefield:  # owner-proxy-allow: nothing at all to remove; legal targets gated above
             return -BOARD_EVAL_HARD_VETO  # No targets to remove
         # Removal ETBs that heal the opponent (oracle: "gains life equal to its power")
         # are a poor trade when the target is small: 2 cards spent to exile a 1/1

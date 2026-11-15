@@ -1,0 +1,19 @@
+{
+  "source": "hypothesis = tests/eval/golden/diagnose_replay/affinity_overperf_2026-04-21.json",
+  "input": {
+    "hypothesis": {
+      "observed_symptom": "Control deck taps out on own turn with counterspell in hand, leaves no untapped mana for opponent's priority window",
+      "suspected_subsystem": "ai.ev_player",
+      "failing_test_rule": "control deck holds mana for counter when reactive-only card in hand",
+      "confidence": 0.85
+    },
+    "conventions": "Tests live in tests/test_<rule>.py and use the session `card_db` fixture; a test builds a GameState directly, names cards only as fixture carriers, and asserts the mechanic. Red before the fix, green after."
+  },
+  "expected": {
+    "test_file": "tests/test_control_deck_holds_mana_for_counter_when_reactive_only_card_in_hand.py",
+    "rule_name": "control deck holds mana for counter when reactive-only card in hand",
+    "fixture_setup": "Build a game on the control player's main phase: untapped lands equal to a reactive-only counterspell's cost plus one more mana, the counterspell in hand, and a sorcery-speed permanent spell castable only by tapping the mana the counter needs. Opponent has threats in library and an empty board.",
+    "assertion": "The main-phase decision does not cast the sorcery-speed spell that would tap below the counterspell's cost; enough untapped mana to cast the reactive-only card remains at end of turn.",
+    "expected_status_before_fix": "fail"
+  }
+}

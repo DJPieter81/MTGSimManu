@@ -1,0 +1,36 @@
+// Rakdos Aggro — mtgtop8 event=93409 deck=909618
+1 Blazemire Verge
+3 Blood Crypt
+4 Bloodstained Mire
+2 Marsh Flats
+1 Polluted Delta
+2 Raucous Theater
+2 Swamp
+2 Verdant Catacombs
+4 Dark Matter Manipulator
+4 Detective's Phoenix
+4 Fear of Missing Out
+4 Moonshadow
+4 Nethergoyf
+4 Street Wraith
+2 Troll of Khazad-dûm
+1 Fatal Push
+4 Lightning Bolt
+4 Thoughtseize
+2 Unholy Heat
+4 Mishra's Bauble
+1 Nihil Spellbomb
+1 Ob Nixilis, the Adversary
+
+Sideboard
+1 End of the Hunt
+1 Fatal Push
+2 Glistening Deluge
+1 Grafdigger's Cage
+1 Ingot Chewer
+1 Inquisition of Kozilek
+2 Meltdown
+1 Nihil Spellbomb
+1 Ob Nixilis, the Adversary
+3 Obsidian Charmaw
+1 Strategic Betrayal

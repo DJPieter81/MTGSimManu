@@ -233,8 +233,13 @@ class MulliganDecider:
         from engine.cards import CardType
         from ai.strategy_profile import ArchetypeStrategy
 
-        lands = [c for c in hand if c.template.is_land]
-        spells = [c for c in hand if not c.template.is_land]
+        # A modal double-faced card's land face is a land option (CR 712).
+        # The lands are the ones that stay once played: a bounce land with
+        # no other land beside it returns itself, so it is neither a land
+        # nor a spell of the keep (`predicates.staying_lands`).
+        from ai.predicates import is_land_option, staying_lands
+        lands = staying_lands(hand)
+        spells = [c for c in hand if not is_land_option(c)]
         # Legend rule (CR 704.5j): duplicate copies of the same legendary
         # permanent are dead on resolution — only one survives.  For
         # mulligan evaluation, treat each excess copy as not present.
@@ -529,26 +534,33 @@ class MulliganDecider:
                     and cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
                     and self._policy().requires_combo_backup
                     and gameplan_has_storm_chain):
-                # Include only IMMEDIATE cost-reducers: the always_early
-                # list (curated per deck — e.g. Ruby Medallion) plus any
-                # non-creature cost_reducer-tagged card in hand.
-                # Creatures tagged as cost_reducer (e.g. Ral, Monsoon Mage)
-                # need to be cast AND flipped/attacked to actually reduce
-                # costs — they don't make a ritual-less hand playable.
-                # Rule: summoning-sick creatures don't contribute mana on
-                # their first turn, so they're not "immediate" mana engines.
+                # Immediate cost-reducers: the always_early list (the
+                # deck's declared early plays) plus any card whose static
+                # ability reduces its controller's spell costs (the typed
+                # `cost_reduction_rules`, unit CR). A static ability
+                # applies from the moment its permanent is on the
+                # battlefield; summoning sickness stops only attacking and
+                # {T} abilities (CR 302.6), so a creature reducer counts
+                # exactly as an artifact does.
                 reducer_names = gp.always_early | {
                     n for n in hand_names
-                    if any('cost_reducer' in getattr(c.template, 'tags', set())
-                           and not c.template.is_creature
+                    if any(any(rule.get('who') == 'you'
+                               for rule in (c.template.cost_reduction_rules
+                                            or ()))
                            for c in hand if c.name == n)
                 }
                 if not (hand_names & reducer_names):
                     has_ritual = any('ritual' in getattr(c.template, 'tags', set())
                                      for c in spells)
-                    has_cantrip = any('cantrip' in getattr(c.template, 'tags', set())
-                                      or 'draw' in getattr(c.template, 'tags', set())
-                                      for c in spells)
+                    # A dig finds the next piece: a spell that draws for
+                    # its caster or exposes cards to play, read from its
+                    # typed effects (`predicates.spell_draws`,
+                    # `has_draw_effect`), never a tag.
+                    from ai.predicates import spell_draws
+                    has_cantrip = any(
+                        getattr(c.template, 'has_draw_effect', False)
+                        or spell_draws(c.template)
+                        for c in spells)
                     from engine.cards import Keyword
                     has_finisher = any(
                         Keyword.STORM in getattr(c.template, 'keywords', set())
@@ -967,7 +979,10 @@ class MulliganDecider:
         if self.goal_engine and self.goal_engine.gameplan:
             min_lands = (self.goal_engine.gameplan.mulligan_min_lands
                          or DEFAULT_MULLIGAN_MIN_LANDS)
-        lands_in_hand = [c for c in hand if c.template.is_land]
+        # A modal double-faced card's land face is a land option (CR 712),
+        # counted here as the keep counts it.
+        from ai.predicates import is_land_option
+        lands_in_hand = [c for c in hand if is_land_option(c)]
         kept_count = len(hand) - count
         # Protect at least min(min_lands, total_lands_available) lands in
         # the kept hand. We can't guarantee a floor if the hand doesn't
@@ -977,7 +992,7 @@ class MulliganDecider:
         bottom = [c for c, _ in scored[:count]]
         # Count lands we'd be bottoming; if too many, swap lowest-scored
         # non-land in the kept hand for the lowest-scored land in bottom.
-        bottomed_lands = [c for c in bottom if c.template.is_land]
+        bottomed_lands = [c for c in bottom if is_land_option(c)]
         kept_lands = len(lands_in_hand) - len(bottomed_lands)
         if kept_lands < land_floor and bottomed_lands:
             # Find non-lands in the kept hand, bottom the lowest-scored
@@ -989,7 +1004,7 @@ class MulliganDecider:
             # protection and swap a declared piece into the bottom.
             kept_nonland_scored = [
                 (c, s) for c, s in scored[count:]
-                if not c.template.is_land
+                if not is_land_option(c)
             ]  # scored is sorted ascending, so this is too
             needed = land_floor - kept_lands
             # Swap bottom lands for kept non-lands (lowest-scored first)
@@ -1006,42 +1021,32 @@ class MulliganDecider:
     # be uncastable if the lands don't cover the union of pip
     # requirements.  This applies to every combo deck, not Goryo's
     # specifically (Living End cycler U/B + cascade R, Ruby Storm RR,
-    # Niv-Mizzet shells, etc.).  Implementation is oracle-driven:
+    # Niv-Mizzet shells, etc.).  Implementation reads typed fields:
     #   - lands with `produces_mana` populated → those colors directly
-    #   - fetchlands (sac-search basic land types) → colors of the
-    #     basic types named in their oracle text, since the deck
-    #     necessarily runs duals matching at least one such type
+    #     (a modal double-faced card's land face, CR 712, is the land)
+    #   - fetchlands (sac-search basic land types) → the colors of the
+    #     basic types their typed search names (`template.fetchland`),
+    #     since the deck necessarily runs duals matching such a type
     # Zero hardcoded card names; zero magic numbers.
-
-    _BASIC_TYPE_TO_COLOR = {
-        'Plains': 'W', 'Island': 'U', 'Swamp': 'B',
-        'Mountain': 'R', 'Forest': 'G',
-    }
 
     @classmethod
     def _land_supplies_colors(cls, land: "CardInstance") -> set:
         """Set of WUBRG colors the land can supply (directly or via
         fetch).  Empty for colorless / Wastes-style lands."""
-        t = land.template
+        # A modal double-faced card played as a land is its land face (CR
+        # 712), so its colours are that face's.
+        t = getattr(land.template, 'playable_land_face', None) or land.template
         # Direct producers — duals, basics, tri-lands, shock lands.
         direct = {c.upper() for c in (t.produces_mana or [])
                   if c.upper() in 'WUBRG'}
         if direct:
             return direct
-        # Fetchland heuristic: oracle text "Search your library for a
-        # <basic-type> ... card".  Detected by basic-land-type tokens
-        # present in the search clause.  This is a mechanic, not a
-        # cardname list — applies to every fetchland printed past or
-        # future (Modern fetches, Onslaught fetches, Mirage fetches,
-        # surveil lands with fetch riders, etc.).
-        oracle = (getattr(t, 'oracle_text', '') or '').lower()
-        if 'search your library' not in oracle:
+        # A fetchland: the colours of the basic land types its typed search
+        # may find (`CardTemplate.fetchland`, parsed at load).
+        profile = getattr(t, 'fetchland', None)
+        if profile is None:
             return set()
-        colors = set()
-        for basic, color in cls._BASIC_TYPE_TO_COLOR.items():
-            if basic.lower() in oracle:
-                colors.add(color)
-        return colors
+        return {c.upper() for c in profile.colors if c.upper() in 'WUBRG'}
 
     @classmethod
     def _hand_color_supply(cls, lands: List["CardInstance"]) -> set:

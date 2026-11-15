@@ -64,16 +64,10 @@ def _make_vanilla_card(game: GameState, name: str, controller: int,
 
 
 def _make_bowmasters_proxy(game: GameState, controller: int) -> CardInstance:
-    """Build an opponent-side permanent that the trigger fan-out will
-    recognise as an on-opponent-draw damage source.
-
-    Uses the real card name `Orcish Bowmasters` so the oracle
-    classifier's `Tag.ON_DRAW_DAMAGE` lookup succeeds (the smoke cache
-    populated this entry).  The synthetic oracle text below is what the
-    fan-out parses for the damage amount AFTER the tag confirms the
-    card is a valid source — the dispatch is by tag, the amount is
-    parsed targetedly.
-    """
+    """Build an opponent-side permanent whose printed text is an
+    on-opponent-draw damage trigger. The draw fan-out reads the trigger
+    from this text (its typed head and spec), never from a classifier
+    tag, so the text is the card's printed wording."""
     tmpl = CardTemplate(
         name="Orcish Bowmasters",
         card_types=[CardType.CREATURE],
@@ -83,14 +77,13 @@ def _make_bowmasters_proxy(game: GameState, controller: int) -> CardInstance:
         keywords=set(), abilities=[],
         color_identity=set(), produces_mana=[],
         enters_tapped=False,
-        # Match the "whenever an opponent draws" oracle shape — the
-        # engine's fan-out keys off this phrase, not the card name.
-        # The "except the first" clause is preserved so the
-        # draw-step-first-draw exemption fires.
+        # The printed text: "any target" goes to the drawer's face by
+        # default, and the draw-step exemption is part of the head.
         oracle_text=(
-            "Whenever an opponent draws a card, except the first one "
-            "they draw in each of their draw steps, this creature deals "
-            "1 damage to that player."
+            "Flash\nWhen this creature enters and whenever an opponent "
+            "draws a card except the first one they draw in each of "
+            "their draw steps, this creature deals 1 damage to any "
+            "target. Then amass Orcs 1."
         ),
         tags=set(),
     )

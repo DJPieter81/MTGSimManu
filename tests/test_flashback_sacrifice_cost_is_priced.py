@@ -79,7 +79,9 @@ def test_the_cast_path_pays_the_typed_sacrifice(card_db):
     assert len(game.players[0].lands) == lands_before - 1
 
 
-def test_a_flashback_cast_charges_the_land_it_sacrifices(card_db):
+def test_a_flashback_cast_charges_the_land_it_sacrifices(card_db, monkeypatch):
+    import ai.land_denial as land_denial
+    from ai.effective_cmc import cast_mode_of, effective_cmc
     from ai.ev_evaluator import snapshot_from_game
     from ai.ev_player import EVPlayer
     from ai.land_denial import own_land_loss_value
@@ -101,10 +103,19 @@ def test_a_flashback_cast_charges_the_land_it_sacrifices(card_db):
     land = next(l for l in me.lands)
     loss = own_land_loss_value(game, 0, land, snap)
     assert loss > 0
-    from_hand = ai._score_spell(in_hand, snap, game, me, opp)
     from_graveyard = ai._score_spell(in_gy, snap, game, me, opp)
-    # The graveyard cast is charged exactly the land it gives up.
-    assert from_hand - from_graveyard == pytest.approx(loss, abs=1e-6)
+    # The graveyard cast is charged exactly the land it gives up ...
+    monkeypatch.setattr(land_denial, "own_land_loss_value",
+                        lambda *a, **k: 0.0)
+    unpriced = ai._score_spell(in_gy, snap, game, me, opp)
+    assert unpriced - from_graveyard == pytest.approx(loss, abs=1e-6)
+    # ... and its route's mana, which for this flashback is none (CR
+    # 702.33a): the hand cast pays {R}.
+    def spent(card):
+        return effective_cmc(card, snap, game=game, player_idx=0,
+                             cast_mode=cast_mode_of(card, snap, game=game,
+                                                    player_idx=0))
+    assert (spent(in_hand), spent(in_gy)) == (1, 0)
 
 
 def test_a_flooded_caster_with_a_spare_source_pays_little(card_db):

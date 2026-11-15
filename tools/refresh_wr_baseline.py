@@ -72,6 +72,9 @@ MATCHUPS: list[tuple[str, str, int]] = [
     # Hollow One (Aug 2026, unblocked by refresh_card_db.yml).
     ("Hollow One",            "Eldrazi Ramp",            53500),
     ("Broodscale Bloodchief", "Hollow One",              53500),
+    # Nov 2026 meta refresh — Rakdos Aggro, against the next two shares.
+    ("Rakdos Aggro",          "Broodscale Bloodchief",   54000),
+    ("Affinity",              "Rakdos Aggro",            54000),
 ]
 
 
@@ -83,7 +86,7 @@ def main() -> None:
         from engine.game_runner import GameRunner
 
         # Neutralise the safety budget for the SAME reason the anchor test
-        # does (tests/test_wr_baseline_anchor.py::_ANCHOR_TIMEOUT_SECONDS,
+        # does (ai.scoring_constants.SEEDED_REPLAY_TIMEOUT_SECONDS via the anchor test,
         # and its `_replay` docstring): the engine's GAME_TIMEOUT_SECONDS
         # (CPU time via engine.game_budget since 2026-09-06; wall-clock
         # before) breaks out of the turn loop and abandons the game, so a
@@ -100,8 +103,8 @@ def main() -> None:
         # identically. The constant is imported rather than duplicated so the
         # tool and the test cannot silently diverge.
         import ai.constants as _ai_constants
-        from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
-        _ai_constants.GAME_TIMEOUT_SECONDS = _ANCHOR_TIMEOUT_SECONDS
+        from ai.scoring_constants import SEEDED_REPLAY_TIMEOUT_SECONDS
+        _ai_constants.GAME_TIMEOUT_SECONDS = SEEDED_REPLAY_TIMEOUT_SECONDS
 
         db = CardDatabase()
         runner = GameRunner(db)

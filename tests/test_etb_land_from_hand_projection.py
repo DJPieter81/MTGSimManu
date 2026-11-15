@@ -34,6 +34,12 @@ Pre-fix: `_project_spell` ignores the ETB clause entirely -- `my_total_lands`
 is unchanged. The EV is negative because mana cost > body value.
 Post-fix: `my_total_lands` increases by 1 and the mana value is credited,
 making the EV non-negative for a creature that provides genuine ramp.
+
+Since unit SP.2, the land put is read from the typed host the engine
+performs (`ai.land_put`), not from an oracle tag. That covers a spell's
+instruction and any permanent's enter trigger, and charges no card. The
+tag this file once pinned is retired; the typed read is pinned by
+tests/test_a_land_put_from_hand_is_valued_as_the_land_it_delivers.py.
 """
 from __future__ import annotations
 
@@ -147,31 +153,4 @@ class TestEtbLandFromHandProjection:
             f"forward value of having one more land). "
             f"Pre-fix: no ETB recovery, so delta == -casting_cost == {-casting_cost}. "
             f"Post-fix: ETB_LAND_FROM_HAND_MANA_VALUE is added back to my_mana."
-        )
-
-    def test_etb_land_from_hand_tag_derived_from_oracle(self, card_db):
-        """The 'etb_land_from_hand' tag must be present on any creature
-        whose oracle text contains the 'put land from hand onto battlefield'
-        ETB pattern.
-
-        Pre-fix: `derive_tags_from_oracle` in engine/oracle_parser.py does
-        not recognise this pattern -- the tag is absent.
-        Post-fix: the tag is derived from oracle text automatically, so
-        Arboreal Grazer and every future card with the same ETB phrasing
-        carries the tag without needing an explicit TAG_OVERRIDE entry.
-
-        Class scope: any creature with oracle text matching
-          'when * enters' + 'put' + 'land' + 'from your hand' + 'onto the battlefield'
-        in a single ability clause should carry this tag after card load.
-        """
-        tmpl = card_db.get_card("Arboreal Grazer")
-        assert tmpl is not None, "Arboreal Grazer missing from card DB"
-        tags = getattr(tmpl, 'tags', set())
-        assert 'etb_land_from_hand' in tags, (
-            f"Arboreal Grazer (oracle: {tmpl.oracle_text!r}) is missing the "
-            f"'etb_land_from_hand' tag. Expected `derive_tags_from_oracle` "
-            f"in engine/oracle_parser.py to recognise the pattern "
-            f"'when * enters ... put ... land ... from your hand ... onto the "
-            f"battlefield' and add the tag automatically. "
-            f"Current tags: {tags}"
         )

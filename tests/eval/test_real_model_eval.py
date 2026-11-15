@@ -4,8 +4,11 @@ By default these tests are skipped (see `tests/conftest.py` —
 `pytest_collection_modifyitems` strips them unless the flag is
 passed).  Run with:
 
-    MTG_LLM_MODEL=anthropic:claude-sonnet-4-6 \\
-        pytest tests/eval/ --run-eval -q
+    pytest tests/eval/ --run-eval -q
+
+Each task runs on its default model (`ai.llm_models.DEFAULT_MODELS`,
+so the decision scorer runs on the decision model and needs its key);
+`MTG_LLM_MODEL_<TASK>` / `MTG_LLM_MODEL` pin another.
 
 Each task's report's pass-rate must clear a per-task floor.  When a
 foundation-model upgrade lands, run this suite to confirm the new
@@ -25,6 +28,10 @@ _PASS_RATE_FLOOR = {
     "synth_gameplan":      0.5,
     "diagnose_replay":     0.5,
     "handler_audit":       0.5,
+    "audit_doc_freshness": 0.5,
+    "failing_test_spec":   0.5,
+    "classify_oracle":     0.5,
+    "decision_scorer":     0.5,
 }
 
 

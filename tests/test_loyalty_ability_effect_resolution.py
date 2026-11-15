@@ -104,8 +104,10 @@ def test_loyalty_ability_returning_a_permanent_moves_it_to_owners_hand():
     game = _fresh_game()
     walker = _put(game, _walker_template(
         "Bounce Walker",
-        "[+1]: Until your next turn, you may cast sorcery spells as "
-        "though they had flash.\n"
+        # (An emblem line — still unexecutable. The flash-permission line
+        # these fixtures once used became executable with S3a.)
+        "[+1]: You get an emblem with \"At the beginning of your "
+        "upkeep, draw a card.\"\n"
         "[-3]: Return up to one target artifact, creature, or "
         "enchantment to its owner's hand. Draw a card."),
         0, "battlefield")
@@ -164,8 +166,10 @@ def test_loyalty_ability_the_resolver_cannot_execute_costs_no_loyalty():
     game = _fresh_game()
     walker = _put(game, _walker_template(
         "Unimplemented Walker",
-        "[+1]: Until your next turn, you may cast sorcery spells as "
-        "though they had flash.\n"
+        # (An emblem line — still unexecutable. The flash-permission line
+        # these fixtures once used became executable with S3a.)
+        "[+1]: You get an emblem with \"At the beginning of your "
+        "upkeep, draw a card.\"\n"
         "[-2]: Target opponent chooses a permanent they control and "
         "returns it to its owner's hand. Then they shuffle each "
         "nonland permanent they control into its owner's library."),
@@ -233,8 +237,10 @@ def test_an_unaffordable_executable_line_does_not_fall_back_to_a_dead_one(
     walker = _put(game, _walker_template(
         "Unaffordable Walker",
         # Dead line, loyalty-positive — the fallback slot.
-        "[+1]: Until your next turn, you may cast sorcery spells as "
-        "though they had flash.\n"
+        # (An emblem line — still unexecutable. The flash-permission line
+        # these fixtures once used became executable with S3a.)
+        "[+1]: You get an emblem with \"At the beginning of your "
+        "upkeep, draw a card.\"\n"
         # Live line, but it costs more loyalty than the walker has.
         "[-3]: Return target creature to its owner's hand."),
         0, "battlefield")
@@ -260,8 +266,10 @@ def test_no_loyalty_line_executable_means_the_walker_is_left_alone(
     game = _fresh_game()
     walker = _put(game, _walker_template(
         "Inert Walker",
-        "[+1]: Until your next turn, you may cast sorcery spells as "
-        "though they had flash.\n"
+        # (An emblem line — still unexecutable. The flash-permission line
+        # these fixtures once used became executable with S3a.)
+        "[+1]: You get an emblem with \"At the beginning of your "
+        "upkeep, draw a card.\"\n"
         "[-3]: Target opponent chooses a permanent they control and "
         "returns it to its owner's hand."),
         0, "battlefield")

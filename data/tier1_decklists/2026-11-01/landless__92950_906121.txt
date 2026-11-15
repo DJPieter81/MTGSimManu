@@ -1,0 +1,33 @@
+// Landless — mtgtop8 event=92950 deck=906121
+4 Hydroelectric Specimen
+4 Tameshi, Reality Architect
+2 Tamiyo, Inquisitive Student
+1 Beyeen Veil
+1 Counterspell
+4 Disrupting Shoal
+3 Into the Flood Maw
+3 Jwari Disruption
+3 Preordain
+4 Sea Gate Restoration
+4 Sink into Stupor
+2 Spell Snare
+2 Stern Scolding
+4 Suppression Ray
+3 Waterlogged Teachings
+4 Whir of Invention
+4 Goblin Charbelcher
+4 Lotus Bloom
+4 Talisman of Progress
+
+Sideboard
+1 Commandeer
+3 Consign to Memory
+2 Engineered Explosives
+1 Flusterstorm
+1 Harbinger of the Seas
+1 Island
+1 Mystical Dispute
+1 Tezzeret the Seeker
+1 Threads of Disloyalty
+1 Tormod's Crypt
+2 Unable to Scream

@@ -31,9 +31,11 @@ test suite.
 """
 from __future__ import annotations
 
+import re
+from functools import lru_cache
 from typing import Annotated, Dict, List, Literal, Optional, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 
 # ─── Base class ──────────────────────────────────────────────────────
@@ -400,6 +402,56 @@ class OracleTagClassification(_LLMBase):
     )
 
 
+# ─── Decision-model shape of the oracle-tag task ─────────────────────
+#
+# A decision model (e.g. TypeSafe's Jev) answers typed questions —
+# booleans and closed choices — and refuses any output with a free-text
+# field, so `OracleTagClassification` (a list of strings) is not
+# askable.  For such a model the classify_oracle task asks one boolean
+# per closed-set tag instead; `decision_to_tags` maps the answers back
+# to the same tag list the committed cache stores.  The question wording
+# is the tag's row in the versioned prompt's tag table, so the tag
+# definitions keep one source.
+
+_TAG_TABLE_ROW = re.compile(r"^\|\s*`([A-Z0-9_]+)`\s*\|\s*(.+?)\s*\|\s*$")
+
+
+@lru_cache(maxsize=None)
+def oracle_tag_table() -> Dict[str, str]:
+    """Tag name -> its 'Mechanic' cell in the latest classify_oracle
+    prompt's closed tag table."""
+    from ai.llm_prompts import latest_version, load_prompt
+
+    prompt = load_prompt("classify_oracle", latest_version("classify_oracle"))
+    table: Dict[str, str] = {}
+    for line in prompt.splitlines():
+        m = _TAG_TABLE_ROW.match(line)
+        if m:
+            table[m.group(1)] = m.group(2)
+    return table
+
+
+@lru_cache(maxsize=None)
+def oracle_tag_decision_model() -> type:
+    """One boolean field per `Tag` (field name = lower-cased tag name),
+    each described by the tag's prompt-table row."""
+    from ai.oracle_classifier import Tag
+
+    table = oracle_tag_table()
+    fields = {
+        tag.name.lower(): (bool, Field(..., description=table[tag.name]))
+        for tag in Tag
+    }
+    return create_model("OracleTagDecision", __base__=_LLMBase, **fields)
+
+
+def decision_to_tags(answers: BaseModel) -> List[str]:
+    """Tag names answered true, in `Tag` declaration order."""
+    from ai.oracle_classifier import Tag
+
+    return [t.name for t in Tag if getattr(answers, t.name.lower())]
+
+
 class DecisionScoringWeights(_LLMBase):
     """One scaling-weight scoring decision from the `decision_scorer`
     agent.
@@ -450,9 +502,74 @@ class DecisionScoringWeights(_LLMBase):
     )
 
 
+# ─── Decision-model shape of the decision-scorer task ────────────────
+#
+# A decision model answers a typed question with a pick, a yes/no, a
+# probability in [0, 1] or a small whole-number rubric — never an
+# unbounded float, and never free text.  `DecisionScoringWeights.weight`
+# is an unbounded float with a free-text rationale, so on a decision
+# model the decision_scorer task asks one pick-one question instead:
+# which value on the weight grid fits.  The grid is the scorer's own
+# contract, not a tuning knob: its range is the documented weight
+# range on `DecisionScoringWeights`, its resolution the "round to 1dp"
+# rule in the versioned scorer prompt.  `decision_to_weights` maps the
+# pick back onto `DecisionScoringWeights`, the shape the cache, the
+# committed weights file and every caller read.
+
+DECISION_WEIGHT_MAX = 20
+"""Upper end of the weight grid: the documented [0.0, 20.0] range of
+`DecisionScoringWeights.weight`."""
+
+DECISION_WEIGHT_DECIMALS = 1
+"""Grid resolution in decimal places: the scorer prompt's 1dp rounding."""
+
+
+@lru_cache(maxsize=None)
+def decision_weight_options() -> tuple:
+    """The weight grid as option labels, "0.0" … "20.0", ascending."""
+    per_unit = 10 ** DECISION_WEIGHT_DECIMALS
+    return tuple(
+        f"{step / per_unit:.{DECISION_WEIGHT_DECIMALS}f}"
+        for step in range(DECISION_WEIGHT_MAX * per_unit + 1)
+    )
+
+
+@lru_cache(maxsize=None)
+def decision_weight_decision_model() -> type:
+    """One pick-one field, `weight`, over `decision_weight_options()`."""
+    options = decision_weight_options()
+    weight_field = (
+        Literal[options],  # type: ignore[valid-type]
+        Field(
+            ...,
+            description="The scaling weight for this archetype in this "
+            "decision context, as defined by the scorer instructions: "
+            "0.0 = the context does not apply to the archetype, 1.0 = "
+            "neutral, larger values scale the call site's primitive up.",
+        ),
+    )
+    return create_model(
+        "DecisionWeightDecision", __base__=_LLMBase, weight=weight_field,
+    )
+
+
+def decision_to_weights(answers: BaseModel) -> DecisionScoringWeights:
+    """Map a decision-shaped answer onto `DecisionScoringWeights`.
+
+    A decision model reports its confidence outside the answer and
+    writes no rationale, so those keep their schema defaults (the
+    advisory neutral confidence and an empty rationale)."""
+    return DecisionScoringWeights(weight=float(answers.weight))
+
+
 class FailingTestSpec(_LLMBase):
-    """Reserved for G-5 (deferred). Defined now so the schema surface
-    is complete for `ai/llm_agents.py`."""
+    """One rule-phrased failing test for a `BugHypothesis` (G-5).
+
+    The test name describes the mechanic, never the card — the
+    abstraction contract's rule 3 — and the file is
+    `tests/test_<rule>.py`, `<rule>` being `rule_name` lower-cased with
+    each non-alphanumeric character replaced by an underscore (the
+    versioned prompt's naming rule; `ai.llm_inputs.rule_test_file`)."""
 
     test_file: str = Field(
         ...,
@@ -573,8 +690,16 @@ __all__ = [
     "HandlerGapReport",
     "DocFreshnessReport",
     "DecisionScoringWeights",
+    "DECISION_WEIGHT_MAX",
+    "DECISION_WEIGHT_DECIMALS",
+    "decision_weight_options",
+    "decision_weight_decision_model",
+    "decision_to_weights",
     "FailingTestSpec",
     "OracleTagClassification",
+    "oracle_tag_table",
+    "oracle_tag_decision_model",
+    "decision_to_tags",
     "to_json_dict",
     "from_json_dict",
     "to_prompt_section",

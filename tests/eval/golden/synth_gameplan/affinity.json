@@ -77,27 +77,267 @@
   },
   "input": {
     "deck_name": "Affinity",
-    "mainboard": {
-      "Cranial Plating": 4,
-      "Darksteel Citadel": 4,
-      "Engineered Explosives": 2,
-      "Frogmite": 2,
-      "Island": 1,
-      "Memnite": 4,
-      "Mistvault Bridge": 2,
-      "Mox Opal": 4,
-      "Nettlecyst": 2,
-      "Ornithopter": 4,
-      "Razortide Bridge": 2,
-      "Signal Pest": 4,
-      "Silverbluff Bridge": 2,
-      "Sojourner's Companion": 4,
-      "Spire of Industry": 3,
-      "Springleaf Drum": 4,
-      "Tanglepool Bridge": 2,
-      "Thought Monitor": 4,
-      "Treasure Vault": 2,
-      "Urza's Saga": 4
-    }
+    "cards": [
+      {
+        "name": "Cranial Plating",
+        "quantity": 4,
+        "cmc": 2,
+        "flags": [
+          "combo_payoff"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "oracle_excerpt": "Equipped creature gets +1/+0 for each artifact you control. ",
+        "db_miss": false
+      },
+      {
+        "name": "Darksteel Citadel",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Land"
+        ],
+        "oracle_excerpt": "Indestructible {T}: Add {C}.",
+        "db_miss": false
+      },
+      {
+        "name": "Engineered Explosives",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [
+          "removal",
+          "sweeper"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "oracle_excerpt": "Sunburst (This artifact enters with a charge counter on it f",
+        "db_miss": false
+      },
+      {
+        "name": "Frogmite",
+        "quantity": 2,
+        "cmc": 4,
+        "flags": [
+          "combo_payoff",
+          "combo_enabler"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "oracle_excerpt": "Affinity for artifacts (This spell costs {1} less to cast fo",
+        "db_miss": false
+      },
+      {
+        "name": "Island",
+        "quantity": 1,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Basic",
+          "Land"
+        ],
+        "oracle_excerpt": "({T}: Add {U}.)",
+        "db_miss": false
+      },
+      {
+        "name": "Memnite",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "oracle_excerpt": "",
+        "db_miss": false
+      },
+      {
+        "name": "Mistvault Bridge",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped. Indestructible",
+        "db_miss": false
+      },
+      {
+        "name": "Mox Opal",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [
+          "ramp",
+          "combo_enabler"
+        ],
+        "types": [
+          "Legendary",
+          "Artifact"
+        ],
+        "oracle_excerpt": "Metalcraft — {T}: Add one mana of any color. Activate only i",
+        "db_miss": false
+      },
+      {
+        "name": "Nettlecyst",
+        "quantity": 2,
+        "cmc": 3,
+        "flags": [
+          "combo_payoff"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "oracle_excerpt": "Living weapon (When this Equipment enters, create a 0/0 blac",
+        "db_miss": false
+      },
+      {
+        "name": "Ornithopter",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "oracle_excerpt": "Flying",
+        "db_miss": false
+      },
+      {
+        "name": "Razortide Bridge",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped. Indestructible",
+        "db_miss": false
+      },
+      {
+        "name": "Signal Pest",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "oracle_excerpt": "Battle cry (Whenever this creature attacks, each other attac",
+        "db_miss": false
+      },
+      {
+        "name": "Silverbluff Bridge",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped. Indestructible",
+        "db_miss": false
+      },
+      {
+        "name": "Sojourner's Companion",
+        "quantity": 4,
+        "cmc": 7,
+        "flags": [
+          "card_draw",
+          "tutor"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "oracle_excerpt": "Affinity for artifacts Artifact landcycling {2} ({2}, Discar",
+        "db_miss": false
+      },
+      {
+        "name": "Spire of Industry",
+        "quantity": 3,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Land"
+        ],
+        "oracle_excerpt": "{T}: Add {C}. {T}, Pay 1 life: Add one mana of any color. Ac",
+        "db_miss": false
+      },
+      {
+        "name": "Springleaf Drum",
+        "quantity": 4,
+        "cmc": 1,
+        "flags": [
+          "ramp"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "oracle_excerpt": "{T}, Tap an untapped creature you control: Add one mana of a",
+        "db_miss": false
+      },
+      {
+        "name": "Tanglepool Bridge",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Land"
+        ],
+        "oracle_excerpt": "This land enters tapped. Indestructible",
+        "db_miss": false
+      },
+      {
+        "name": "Thought Monitor",
+        "quantity": 4,
+        "cmc": 7,
+        "flags": [
+          "card_draw",
+          "combo_payoff",
+          "combo_enabler"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "oracle_excerpt": "Affinity for artifacts (This spell costs {1} less to cast fo",
+        "db_miss": false
+      },
+      {
+        "name": "Treasure Vault",
+        "quantity": 2,
+        "cmc": 0,
+        "flags": [],
+        "types": [
+          "Artifact",
+          "Land"
+        ],
+        "oracle_excerpt": "{T}: Add {C}. {X}{X}, {T}, Sacrifice this land: Create X Tre",
+        "db_miss": false
+      },
+      {
+        "name": "Urza's Saga",
+        "quantity": 4,
+        "cmc": 0,
+        "flags": [
+          "tutor",
+          "combo_payoff"
+        ],
+        "types": [
+          "Enchantment",
+          "Land"
+        ],
+        "oracle_excerpt": "(As this Saga enters and after your draw step, add a lore co",
+        "db_miss": false
+      }
+    ]
   }
 }

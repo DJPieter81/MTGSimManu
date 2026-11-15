@@ -1,7 +1,9 @@
 {
   "deck_name": "Amulet Titan",
   "archetype": "combo",
-  "strategy_tags": ["ramp_into_payoff"],
+  "strategy_tags": [
+    "ramp_into_payoff"
+  ],
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",
@@ -103,8 +105,7 @@
       "goal_type": "PUSH_DAMAGE",
       "description": "Plan B: attack with ramp creatures (Grazer, Aftermath Analyst)",
       "card_priorities": {
-        "Arboreal Grazer": 8.0,
-        "Aftermath Analyst": 12.0
+        "Arboreal Grazer": 8.0
       }
     }
   ],

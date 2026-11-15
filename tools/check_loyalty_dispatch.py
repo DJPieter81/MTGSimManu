@@ -49,6 +49,7 @@ def census(db=None) -> dict:
     """
     sys.path.insert(0, str(ROOT))
     from engine.cards import LoyaltyEffectKind
+    from engine.effect_carrier import loyalty_family
 
     if db is None:
         from engine.card_database import CardDatabase
@@ -63,12 +64,20 @@ def census(db=None) -> dict:
         for slot, ability in abilities.items():
             total += 1
             by_kind[ability.effect_kind.value] += 1
-            if ability.effect_kind is LoyaltyEffectKind.UNCLASSIFIED:
-                unclassified_texts.append((name, slot, ability.text))
+            if ability.effect_kind is not LoyaltyEffectKind.UNCLASSIFIED:
+                continue
+            # An unclassified line the loyalty carrier performs from its
+            # typed instructions (unit LY) is executable.
+            effects = getattr(template, "effects", None)
+            host = effects.loyalty(slot, 0) if effects is not None else None
+            if loyalty_family(ability, host) is not None:
+                by_kind["dispatched"] += 1
+                continue
+            unclassified_texts.append((name, slot, ability.text))
 
     return {
         "total": total,
-        "unclassified": by_kind[LoyaltyEffectKind.UNCLASSIFIED.value],
+        "unclassified": len(unclassified_texts),
         "by_kind": by_kind,
         "unclassified_texts": unclassified_texts,
     }

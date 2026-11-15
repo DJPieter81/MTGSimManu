@@ -1,0 +1,15 @@
+{
+  "source": "expected tags = decks/gameplans/_oracle_classifier.json",
+  "input": {
+    "name": "Wrenn's Resolve",
+    "mana_cost": "{1}{R}",
+    "type_line": "Sorcery",
+    "oracle_text": "Exile the top two cards of your library. Until the end of your next turn, you may play those cards."
+  },
+  "expected": {
+    "card_name": "Wrenn's Resolve",
+    "tags": [
+      "IMPULSE_DRAW"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+// Affinity — mtgtop8 event=93409 deck=909610
+3 Fiery Islet
+3 Shivan Reef
+1 Snow-Covered Island
+4 Spirebluff Canal
+4 Urza's Saga
+4 Arcbound Ravager
+4 Kappa Cannoneer
+4 Memnite
+4 Ornithopter
+4 Pinnacle Emissary
+1 Sink into Stupor
+1 Thoughtcast
+2 Claws of Gix
+4 Engineered Explosives
+4 Mishra's Bauble
+4 Mox Opal
+1 Skateboard
+4 Springleaf Drum
+4 Weapons Manufacturing
+
+Sideboard
+3 Consign to Memory
+3 Damping Sphere
+1 Galvanic Blast
+1 Grafdigger's Cage
+3 Metallic Rebuke
+1 Mystic Forge
+1 Pithing Needle
+1 Shadowspear
+1 Tormod's Crypt

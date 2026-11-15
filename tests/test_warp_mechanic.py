@@ -1,9 +1,9 @@
 """Tests for the Warp alternative-cast mechanic (CR 702.Warp).
 
-Rule: A creature with Warp {X} may be cast from hand for {X} instead of its
-normal mana cost, provided the caster controls at least one artifact.  Warped
-creatures are exiled at the beginning of the next end step; they may be cast
-again from exile on a later turn.
+Rule (CR 702.185a): a creature with Warp {X} may be cast from hand for {X}
+instead of its mana cost; nothing else gates it (no artifact is needed).
+Warped creatures are exiled at the beginning of the next end step; their
+owner may cast them from exile, for their mana cost, on a later turn.
 
 Fixture card: Pinnacle Emissary (Warp {U/R}, normal cost {1}{U}{R}) — the
 specific card whose infinite-loop regression is being fixed.  Class size: 33
@@ -96,7 +96,7 @@ class TestCardTemplateWarpCost:
 
 
 # ---------------------------------------------------------------------------
-# 3. can_cast legality: Warp requires (a) has artifact, (b) warp cost payable
+# 3. can_cast legality: Warp needs only its warp cost, cast from hand
 # ---------------------------------------------------------------------------
 
 def _make_card(game, template, owner=0, zone="hand"):
@@ -145,7 +145,7 @@ def fresh_game():
 
 
 class TestCanCastWarp:
-    """can_cast returns True only when Warp prerequisites are met."""
+    """can_cast admits a warp cast exactly when the warp cost is payable."""
 
     def test_can_cast_via_warp_with_artifact_and_mana(self, fresh_game, db):
         game = fresh_game
@@ -165,17 +165,19 @@ class TestCanCastWarp:
             "can_cast should return True: has artifact + 1 mana covers Warp {U/R}"
         )
 
-    def test_cannot_cast_via_warp_without_artifact(self, fresh_game, db):
+    def test_warp_needs_no_artifact(self, fresh_game, db):
+        """CR 702.185a asks only for the warp cost: with no artifact on the
+        battlefield and only the warp cost's mana, the cast is legal."""
         game = fresh_game
         t_emissary = db.cards["Pinnacle Emissary"]
 
         emissary = _make_card(game, t_emissary)
         _add_to_zone(game, emissary, 0, "hand")
-        # No artifact on battlefield; 1 mana available but not enough for normal cost
+        # No artifact on battlefield; 1 mana: the warp cost, not the mana cost
         _add_mana(game, 0, U=1)
 
-        assert not game.can_cast(0, emissary), (
-            "can_cast must return False: no artifact on battlefield for Warp"
+        assert game.can_cast(0, emissary), (
+            "can_cast must return True: the warp cost alone is payable"
         )
 
     def test_cannot_cast_via_warp_without_mana(self, fresh_game, db):

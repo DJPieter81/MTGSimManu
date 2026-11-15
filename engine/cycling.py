@@ -4,9 +4,11 @@ Cycling — extracted from engine/game_state.py (Commit 6).
 Owns the cycling mechanic:
 - can_cycle: legality check for the cycling activated ability
   (oracle text parsing + mana/life availability).
-- activate_cycling: pay cycling cost, exile the card, draw 1 (or
-  execute the cycling-replacement effect for Lorien Revealed-style
-  "search for an Island" variants).
+- activate_cycling: pay the cycling cost (discarding the card) and put
+  the ability on the stack.
+- resolve_cycling: the ability resolves -- draw 1 (or execute the
+  cycling-replacement effect for Lorien Revealed-style "search for an
+  Island" variants).
 - _cycling_tutor_search: library search for typecycling /
   landcycling variants.
 
@@ -14,10 +16,12 @@ Static methods; take game: GameState as first argument.
 """
 from __future__ import annotations
 
+import functools
 import re
 from typing import TYPE_CHECKING, Dict, Optional
 
 from .cards import CardInstance, CardType, Keyword
+from .stack import StackItem, StackItemType
 
 if TYPE_CHECKING:
     from .game_state import GameState
@@ -66,16 +70,21 @@ class CyclingManager:
 
     @staticmethod
     def activate_cycling(game: "GameState", player_idx: int, card: "CardInstance") -> bool:
-        """Activate cycling: pay cost, discard card, draw a card.
-        
-        Cycling is a special action (not casting a spell). The card goes
-        to the graveyard and the player draws a card. This does NOT count
-        as casting a spell (no storm count, no prowess triggers).
+        """Activate cycling (CR 702.29a): pay the cost -- discarding the
+        card is part of it -- and put the ability on the stack; it draws a
+        card (or, for typecycling, searches) when it resolves
+        (`resolve_cycling`). Cycling is an activated ability, not a cast
+        (no storm count, no prowess triggers).
+
+        A trigger the cost payment set off -- a cycled madness card's
+        (CR 702.35b) -- goes on the stack above the ability, so it
+        resolves first (CR 602.2e, 603.3).
         """
         if not game.can_cycle(player_idx, card):
             return False
         cost = card.template.cycling_cost_data or {"mana": 0, "life": 0, "colors": set()}
         player = game.players[player_idx]
+        stack_depth = len(game.stack.items)
         # Pay life cost
         if cost["life"] > 0:
             player.life -= cost["life"]
@@ -117,9 +126,26 @@ class CyclingManager:
         # Flourishing Fox, Curator of Mysteries, and any future card
         # with has_cycling_watch_trigger=True on its template.
         CyclingManager._fire_cycling_watch_triggers(game, player_idx)
-        # Landcycling / typecycling tutors; plain cycling draws.
+        cost_desc = (f"pay {cost['life']} life" if cost["life"] > 0
+                     else f"pay {cost['mana']} mana")
+        cycling = StackItem(
+            item_type=StackItemType.ACTIVATED_ABILITY, source=card,
+            controller=player_idx, ability=None, description="cycling",
+            effect=functools.partial(CyclingManager.resolve_cycling,
+                                     cost_desc=cost_desc))
+        game.stack.push(cycling)
+        game.stack.below_waiting_triggers(cycling, stack_depth)
+        return True
+
+    @staticmethod
+    def resolve_cycling(game: "GameState", source: "CardInstance",
+                        controller: int, targets=None, *,
+                        cost_desc: str) -> None:
+        """The cycling ability resolves (CR 702.29a): landcycling and
+        typecycling search the library; plain cycling draws a card."""
+        card, player_idx = source, controller
+        player = game.players[player_idx]
         variant = card.template.cycling_variant_data
-        cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
         if variant is not None:
             found = game._cycling_tutor_search(player_idx, variant)
             # CR 701.18d — shuffle after the search, whether or not a
@@ -135,7 +161,7 @@ class CyclingManager:
                 game.log.append(f"T{game.display_turn} P{player_idx+1}: "
                                f"Cycle {card.name} ({cost_desc}, "
                                f"tutor: none found)")
-            return True
+            return
         # Plain cycling — draw a card; include the drawn card's name in
         # the log so that any card "appearing from nowhere" on a later
         # turn can be traced back to the cycle that produced it
@@ -144,7 +170,6 @@ class CyclingManager:
         drawn_name = drawn[0].name if drawn else "—"
         game.log.append(f"T{game.display_turn} P{player_idx+1}: "
                        f"Cycle {card.name} ({cost_desc}, draw: {drawn_name})")
-        return True
 
 
     @staticmethod

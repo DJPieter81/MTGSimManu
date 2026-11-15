@@ -1,0 +1,16 @@
+{
+ "name": "MTGSimManu",
+ "tagline": "A Modern Magic: The Gathering simulator with an EV-driven AI and a rules engine that audits itself.",
+ "links": {
+  "matrix": "https://djpieter81.github.io/MTGSimManu/modern_meta_matrix_full.html",
+  "deck_guide": "https://djpieter81.github.io/MTGSimManu/templates/reference_deck_guide.html",
+  "replays_base": "https://djpieter81.github.io/MTGSimManu/",
+  "legacy": "https://djpieter81.github.io/MTGSimClaude/results/mtgsimclaude_showcase.html",
+  "repo": "https://github.com/DJPieter81/MTGSimManu"
+ },
+ "credits": "Engine shell by ManusAI · strategy, EV scoring, rules programme and outputs by Claude · owned by DJPieter81",
+ "legacy": {
+  "title": "MTGSimClaude — the Legacy sister project",
+  "body": "38 Legacy decks at about 2.5 ms per game with per-deck strategy functions. The two projects share the clock evaluator, Bayesian hand inference, the strategic logger and declarative gameplans."
+ }
+}

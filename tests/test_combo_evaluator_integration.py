@@ -35,6 +35,7 @@ class MockTemplate:
     tags: Set[str] = field(default_factory=set)
     keywords: Set = field(default_factory=set)
     color_identity: Set = field(default_factory=set)
+    colors: Set = field(default_factory=set)
     power: Optional[int] = None
     toughness: Optional[int] = None
     ritual_mana: Optional[tuple] = None
@@ -289,5 +290,6 @@ class TestChainProgressCredit:
         # Verify cache populated with SB-aware projection
         cached = list(_BASELINE_CACHE.values())
         assert len(cached) == 1
-        proj, _ids = cached[0]
+        # entry = (snapshot ref, {id(player): (player, value)})
+        ((_player, (proj, _ids)),) = cached[0][1].values()
         assert proj.expected_damage > 0.0

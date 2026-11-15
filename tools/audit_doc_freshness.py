@@ -45,6 +45,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from ai.llm_agents import build_agent
+from ai.llm_inputs import DocFreshnessInput, SiblingDoc
 from ai.llm_schemas import DocFreshnessReport
 
 
@@ -162,14 +163,10 @@ def _keywords_from_frontmatter(fm: dict, fallback_title: str) -> list[str]:
     return keywords[:MAX_KEYWORDS]
 
 
-def build_freshness_input(doc_path: Path) -> str:
-    """Construct the prompt payload for one doc.
-
-    The prompt block carries: frontmatter status/priority, days since
-    last commit, the (optionally truncated) body, and the list of
-    newer sibling docs in the same domain.  Each section is a
-    Markdown subheading so the model can lock onto the structure.
-    """
+def freshness_input(doc_path: Path) -> DocFreshnessInput:
+    """Gather the typed prompt input for one doc: frontmatter
+    status/priority, days since last commit, the (optionally truncated)
+    body, and the newer sibling docs in the same domain."""
     fm = parse_frontmatter(doc_path)
     age = doc_age_days(doc_path)
     title = fm.get("title", doc_path.name)
@@ -183,31 +180,28 @@ def build_freshness_input(doc_path: Path) -> str:
     if len(body) > PROMPT_BODY_CHAR_LIMIT:
         body = body[:PROMPT_BODY_CHAR_LIMIT] + "\n... [truncated]"
 
-    parts: list[str] = [
-        f"# Doc to assess: {doc_path}",
-        f"Frontmatter status: {fm.get('status', '<missing>')}",
-        f"Frontmatter priority: {fm.get('priority', '<missing>')}",
-        f"Days since last commit: {age}",
-        "",
-    ]
-    if siblings:
-        parts.append("## Newer sibling docs (same domain)")
-        for s in siblings[:MAX_SIBLINGS_IN_PROMPT]:
-            sf = parse_frontmatter(s)
-            parts.append(
-                f"- {s} (last modified {doc_age_days(s)}d ago) — "
-                f"{sf.get('title', '')}"
+    return DocFreshnessInput(
+        doc_path=str(doc_path),
+        status=str(fm.get("status", "<missing>")),
+        priority=str(fm.get("priority", "<missing>")),
+        age_days=int(age),
+        siblings=[
+            SiblingDoc(
+                path=str(s),
+                age_days=int(doc_age_days(s)),
+                title=str(parse_frontmatter(s).get("title", "")),
             )
-        parts.append("")
-    parts.append("## This doc's body")
-    parts.append(body)
-    parts.append("")
-    parts.append(
-        "Emit a DocFreshnessReport.  `should_change_to` is None if the doc "
-        "is genuinely still active.  Cite specific evidence (newer doc path, "
-        "age, frontmatter signal) in `reason`."
+            for s in siblings[:MAX_SIBLINGS_IN_PROMPT]
+        ],
+        body=body,
     )
-    return "\n".join(parts)
+
+
+def build_freshness_input(doc_path: Path) -> str:
+    """The rendered prompt payload for one doc.  Each section is a
+    Markdown subheading so the model can lock onto the structure; the
+    typed `ai.llm_inputs.DocFreshnessInput` owns the format."""
+    return freshness_input(doc_path).render()
 
 
 # ─── Per-doc assessment ──────────────────────────────────────────────

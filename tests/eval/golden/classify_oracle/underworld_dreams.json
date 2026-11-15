@@ -1,0 +1,15 @@
+{
+  "source": "expected tags = decks/gameplans/_oracle_classifier.json",
+  "input": {
+    "name": "Underworld Dreams",
+    "mana_cost": "{B}{B}{B}",
+    "type_line": "Enchantment",
+    "oracle_text": "Whenever an opponent draws a card, this enchantment deals 1 damage to that player."
+  },
+  "expected": {
+    "card_name": "Underworld Dreams",
+    "tags": [
+      "ON_DRAW_DAMAGE"
+    ]
+  }
+}

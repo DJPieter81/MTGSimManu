@@ -191,11 +191,14 @@ def test_counter_kinds_the_instance_model_cannot_hold_are_refused():
 
 def test_mass_and_ridered_put_counter_sentences_stay_unclassified():
     """ANCHORED to the full sentence, like every other activation
-    classifier: a mass shape ("each creature you control") and a trailing
-    rider are DIFFERENT effects, and executing them as a bare single-target
-    put would silently drop the rest."""
+    classifier: an unbounded or X-bound count and a trailing rider are
+    DIFFERENT effects, and executing them as a bare single-target put would
+    silently drop the rest. (The plain mass shape — "each creature you
+    control" — is its own executable scope since the TEAM kind landed; see
+    tests/test_put_counter_team_activation.py.)"""
     for phrase in (
-            "Put a +1/+1 counter on each creature you control.",
+            "Put a +1/+1 counter on each creature you control. "
+            "They gain trample until end of turn.",
             "Put a +1/+1 counter on target creature. It gains flying "
             "until end of turn.",
             "Put a +1/+1 counter on any number of target creatures.",

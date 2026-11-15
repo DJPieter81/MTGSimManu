@@ -12,8 +12,9 @@ or 'creature spell'.
 
 # Mechanic: alternate exile cost (rule, not a card)
 
-parse_has_alternate_exile_cost fires for 'exile a' + 'rather than pay'
-alternate-cost pattern (Grief / Solitude / Ephemerate elementals).
+parse_alternate_exile_cost types the alternative cost "exile a <colour>
+card from your hand rather than pay this spell's mana cost" (CR 118.9) as
+its colour and its printed "if it's not your turn" condition.
 
 # Existing fields used by consumers (no new parse functions)
 
@@ -28,7 +29,7 @@ import pytest
 from engine.oracle_parser import (
     parse_prevents_graveyard_etb,
     parse_requires_creature_target,
-    parse_has_alternate_exile_cost,
+    parse_alternate_exile_cost,
 )
 
 
@@ -78,32 +79,33 @@ class TestParseRequiresCreatureTarget:
         assert parse_requires_creature_target(None) is False
 
 
-class TestParseHasAlternateExileCost:
-    def test_force_of_virtue_pattern_detected(self):
-        # Force of Virtue
-        assert parse_has_alternate_exile_cost(
+class TestParseAlternateExileCost:
+    def test_an_unconditioned_cost_is_typed_with_its_colour(self):
+        from engine.mana import Color
+        assert parse_alternate_exile_cost(
             "Exile a white card from your hand rather than pay this spell's "
             "mana cost."
-        ) is True
+        ) == (Color.WHITE, False)
 
-    def test_force_of_negation_pattern_detected(self):
+    def test_a_not_your_turn_cost_carries_its_condition(self):
         # Force of Negation
-        assert parse_has_alternate_exile_cost(
+        from engine.mana import Color
+        assert parse_alternate_exile_cost(
             "If it's not your turn, you may exile a blue card from your hand "
             "rather than pay this spell's mana cost."
-        ) is True
+        ) == (Color.BLUE, True)
 
-    def test_regular_spell_is_false(self):
-        assert parse_has_alternate_exile_cost(
+    def test_regular_spell_is_none(self):
+        assert parse_alternate_exile_cost(
             "Destroy target creature."
-        ) is False
+        ) is None
 
-    def test_exile_without_rather_than_is_false(self):
+    def test_exile_without_rather_than_is_none(self):
         # Leyline Binding exiles, but not as an alternate cost
-        assert parse_has_alternate_exile_cost(
+        assert parse_alternate_exile_cost(
             "Exile target nonland nontoken permanent."
-        ) is False
+        ) is None
 
-    def test_empty_oracle_is_false(self):
-        assert parse_has_alternate_exile_cost("") is False
-        assert parse_has_alternate_exile_cost(None) is False
+    def test_empty_oracle_is_none(self):
+        assert parse_alternate_exile_cost("") is None
+        assert parse_alternate_exile_cost(None) is None

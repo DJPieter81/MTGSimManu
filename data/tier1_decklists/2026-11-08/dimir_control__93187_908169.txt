@@ -1,0 +1,28 @@
+// Dimir Control — mtgtop8 event=93187 deck=908169
+2 Bloodstained Mire
+4 Darkslick Shores
+1 Island
+1 Otawara, Soaring City
+4 Polluted Delta
+3 Swamp
+1 Takenuma, Abandoned Mire
+4 Undercity Sewers
+4 Watery Grave
+2 Fallen Shinobi
+4 Orcish Bowmasters
+4 Psychic Frog
+2 Sheoldred, the Apocalypse
+3 Tamiyo, Inquisitive Student
+3 Tourach, Dread Cantor
+4 Fatal Push
+4 Inquisition of Kozilek
+3 Sheoldred's Edict
+4 Thoughtseize
+3 Liliana of the Veil
+
+Sideboard
+3 Break the Ice
+4 Consign to Memory
+1 Flusterstorm
+4 Leyline of the Void
+3 Toxic Deluge

@@ -12,8 +12,7 @@
         "Mishra's Bauble": 16.0,
         "Tormod's Crypt": 14.0,
         "Claws of Gix": 14.0,
-        "Welding Jar": 12.0,
-        "Preordain": 10.0
+        "Welding Jar": 12.0
       },
       "card_roles": {
         "engines": [
@@ -25,8 +24,7 @@
           "Mishra's Bauble",
           "Tormod's Crypt",
           "Claws of Gix",
-          "Welding Jar",
-          "Preordain"
+          "Welding Jar"
         ]
       },
       "min_turns": 1
@@ -89,7 +87,14 @@
     "Urza's Saga": 3.0
   },
   "mulligan_combo_sets": [
-    ["Pinnacle Emissary", "Mox Opal", "Mishra's Bauble", "Tormod's Crypt", "Claws of Gix", "Welding Jar"]
+    [
+      "Pinnacle Emissary",
+      "Mox Opal",
+      "Mishra's Bauble",
+      "Tormod's Crypt",
+      "Claws of Gix",
+      "Welding Jar"
+    ]
   ],
   "always_early": [
     "Pinnacle Emissary",

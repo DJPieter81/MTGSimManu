@@ -46,6 +46,7 @@ class MockTemplate:
     tags: Set[str] = field(default_factory=set)
     keywords: Set = field(default_factory=set)
     color_identity: Set = field(default_factory=set)
+    colors: Set = field(default_factory=set)
     power: Optional[int] = None
     toughness: Optional[int] = None
     ritual_mana: Optional[tuple] = None

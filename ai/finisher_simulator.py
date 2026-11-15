@@ -266,10 +266,9 @@ def _project_storm(
     from engine.cards import Keyword as Kw
 
     payoff_names = _payoff_names_from_hand(hand)
-    medallions = sum(
-        1 for c in battlefield
-        if 'cost_reducer' in getattr(c.template, 'tags', set())
-    )
+    # No game here: the reducers in play are counted by their rules
+    # (unit CC, `effective_cmc.chain_cost`).
+    in_play = tuple(battlefield)
 
     # Detect storm pattern: at least one ritual / chain-fuel card OR a
     # storm-keyword card OR a tutor with finisher access OR a PiF-like
@@ -307,7 +306,7 @@ def _project_storm(
     chains = find_all_chains(
         hand=hand,
         available_mana=snap.my_mana,
-        medallion_count=medallions,
+        reducers=in_play,
         payoff_names=payoff_names,
         base_storm=storm_count,
     )
@@ -409,7 +408,7 @@ def _project_storm(
     next_chains = find_all_chains(
         hand=hand,
         available_mana=next_snap.my_mana,
-        medallion_count=medallions,
+        reducers=in_play,
         payoff_names=payoff_names,
         base_storm=0,
     )
@@ -546,10 +545,9 @@ def _project_storm_with_tutor_access(
     # the storm-damage calculation, plus accounts for the tutor
     # cost (the tutor itself is one spell on the chain).
     payoff_names = {closer_card.template.name}
-    medallions = sum(
-        1 for c in battlefield
-        if 'cost_reducer' in getattr(c.template, 'tags', set())
-    )
+    # No game here: the reducers in play are counted by their rules
+    # (unit CC, `effective_cmc.chain_cost`).
+    in_play = tuple(battlefield)
 
     # Synthesise a hand that includes the closer (the tutor would
     # fetch it).  We pass the actual tutor card too so the chain
@@ -560,7 +558,7 @@ def _project_storm_with_tutor_access(
     chains = find_all_chains(
         hand=synth_hand,
         available_mana=snap.my_mana,
-        medallion_count=medallions,
+        reducers=in_play,
         payoff_names=payoff_names,
         base_storm=storm_count,
     )

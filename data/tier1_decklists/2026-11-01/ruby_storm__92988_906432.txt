@@ -1,0 +1,32 @@
+// Ruby Storm — mtgtop8 event=92988 deck=906432
+3 Arid Mesa
+1 Blood Crypt
+3 Bloodstained Mire
+1 Elegant Parlor
+3 Mountain
+1 Raucous Theater
+1 Sacred Foundry
+2 Scalding Tarn
+3 Wooded Foothills
+4 Ral, Monsoon Mage
+4 Desperate Ritual
+4 Hex Magic
+4 Manamorphose
+3 Past in Flames
+4 Pyretic Ritual
+4 Reckless Impulse
+2 Twinned Vision
+2 Valakut Awakening
+2 Wish
+4 Wrenn's Resolve
+1 Artist's Talent
+4 Ruby Medallion
+
+Sideboard
+1 Empty the Warrens
+1 Fatal Push
+1 Grapeshot
+1 Past in Flames
+4 Prismatic Ending
+4 Thoughtseize
+3 Wear / Tear

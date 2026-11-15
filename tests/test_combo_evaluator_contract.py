@@ -388,6 +388,9 @@ class TestRitualPatienceAtStormGeqOne:
                       zone="hand")
         # Draw spell in hand → can still dig for the finisher.
         _add(game, card_db, "Reckless Impulse", controller=0, zone="hand")
+        # ... and the library holds the finisher it digs for.
+        for _ in range(10):
+            _add(game, card_db, "Grapeshot", controller=0, zone="library")
 
         ev = card_combo_modifier(
             ritual, _assessment(), snap, game.players[0], game, 0)

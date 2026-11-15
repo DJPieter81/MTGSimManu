@@ -8,7 +8,6 @@
       "card_priorities": {
         "Expedition Map": 24.0,
         "Chalice of the Void": 22.0,
-        "Glaring Fleshraker": 15.0,
         "Mind Stone": 14.0
       },
       "card_roles": {
@@ -17,7 +16,6 @@
         ],
         "enablers": [
           "Chalice of the Void",
-          "Glaring Fleshraker",
           "Mind Stone"
         ]
       },
@@ -28,20 +26,16 @@
       "goal_type": "CURVE_OUT",
       "description": "Deploy Eldrazi threats: TKS strips hand, Karn locks and tutors, Devourer closes fast",
       "card_priorities": {
-        "Thought-Knot Seer": 24.0,
         "Karn, the Great Creator": 22.0,
         "Devourer of Destiny": 18.0,
-        "Walking Ballista": 15.0,
-        "Glaring Fleshraker": 12.0
+        "Walking Ballista": 15.0
       },
       "card_roles": {
         "payoffs": [
           "Devourer of Destiny",
-          "Karn, the Great Creator",
-          "Thought-Knot Seer"
+          "Karn, the Great Creator"
         ],
         "enablers": [
-          "Glaring Fleshraker",
           "Walking Ballista"
         ]
       }
@@ -66,9 +60,7 @@
   "mulligan_keys": [
     "Chalice of the Void",
     "Eldrazi Temple",
-    "Expedition Map",
-    "Glaring Fleshraker",
-    "Thought-Knot Seer"
+    "Expedition Map"
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 4,

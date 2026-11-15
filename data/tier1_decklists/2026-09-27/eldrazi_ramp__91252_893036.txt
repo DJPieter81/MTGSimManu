@@ -1,0 +1,36 @@
+// Eldrazi Ramp — mtgtop8 event=91252 deck=893036
+1 Bojuka Bog
+4 Eldrazi Temple
+4 Forest
+1 Ghost Quarter
+1 Misty Rainforest
+2 Overgrown Tomb
+1 Sanctum of Ugin
+4 Ugin's Labyrinth
+1 Underground Mortuary
+1 Verdant Catacombs
+1 Windswept Heath
+1 Wooded Foothills
+3 Devourer of Destiny
+3 Emrakul, the Promised End
+2 Icetill Explorer
+2 Sire of Seven Deaths
+4 Sowing Mycospawn
+3 Fatal Push
+4 Kozilek's Command
+4 Malevolent Rumble
+3 Karn, the Great Creator
+4 Talisman of Resilience
+2 Ugin, Eye of the Storms
+4 Utopia Sprawl
+
+Sideboard
+1 Chalice of the Void
+1 Cursed Totem
+1 Grafdigger's Cage
+1 Liquimetal Coating
+2 Sheoldred's Edict
+3 Thoughtseize
+1 Tormod's Crypt
+2 Toxic Deluge
+3 Trinisphere
