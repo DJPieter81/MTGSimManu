@@ -13588,3 +13588,11 @@ Storm's loss here is largely structural, not an AI error.
 - Only 11 cells changed.
 - Amulet Titan 38.4 → 39.0 (+0.6); every other deck within ±0.2.
 - As expected: a pact broken by a later land search is rare in the field (1 game in 40 in goldfish).
+
+**"Can't lose / can't win the game": known gap, below the class floor (CLAUDE.md abstraction contract, rule 1).** The whole family is 8 pool cards in four shapes, and no registered deck plays one:
+- a permanent's static: Platinum Angel, Herald of Eternal Dawn, Abyssal Persecutor, Lich's Mastery;
+- a granted ability: Cloudsteel Kirin, The Book of Exalted Deeds;
+- an emblem: Gideon of the Trials;
+- a one-turn effect: Angel's Grace.
+
+A correct build must also stop the state-based losses: life at 0 and an empty-library draw (CR 104.3b, 704.5a/b), not just effect-driven ones in `GameState.end_game`. So it is a cross-owner change for a sub-10 class. Build it when a registered deck carries one. The same holds for the three legacy-path pacts (5 cards, no registered deck; a generic post-resolution trigger would double Goryo's Vengeance's own exile).
