@@ -894,8 +894,8 @@ def _return_self_from_graveyard(ctx: Resolution, s: EffectSpec) -> Outcome:
                                    cause=cause,
                                    controller_override=ctx.controller):
         return Outcome(False, {})
-    if s.dest.tapped:
-        card.tapped = True
+    if s.dest.tapped:                # CR 614.1c: it enters tapped
+        card.tap()
     game.log.append(f"T{game.display_turn} P{ctx.controller+1}: {cause}"
                     f"{' tapped' if s.dest.tapped else ''}")
     game._handle_permanent_etb(card, ctx.controller)

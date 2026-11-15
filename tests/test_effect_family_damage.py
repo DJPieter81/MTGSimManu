@@ -297,11 +297,13 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                              and root.id in ("EXECUTORS", "CONDITION_EVALUATORS",
                                              "EXECUTOR_FILTER_KEYS",
                                              "EXECUTOR_DESCRIPTIONS"))
-                # an executor's declarations: the shapes it binds, that it
+                # an executor's declarations: the shapes it binds (with the
+                # host's home zone, `supports_from`), that it
                 # picks an unbound slot itself, the families a shape is
                 # switched in, and whose result a shape binds
                 own_attr = (isinstance(t, ast.Attribute)
-                            and t.attr in ("supports", "picks_unbound_slots",
+                            and t.attr in ("supports", "supports_from",
+                                           "picks_unbound_slots",
                                            "allowed_families", "result_verbs")
                             and isinstance(t.value, ast.Name))
                 assert own_table or own_attr, f"line {node.lineno}"
