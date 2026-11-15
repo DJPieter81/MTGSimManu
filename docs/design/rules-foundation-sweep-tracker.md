@@ -13582,3 +13582,9 @@ Storm's loss here is largely structural, not an AI error.
   - a Vestige does not close a green shortfall;
   - no pending cost means no change.
 - **Measured:** Amulet goldfish n=40: 39 kills (1 pact loss) → 40 kills, median kill 7, go-off 5.5. Anchor and digest unchanged.
+
+**`pp-post`** (n=20 Bo3, full field, against `dc-post`; land search keeps a pending pact payable, response-path gate, colour-checked offer):
+- 0 violations (544 findings).
+- Only 11 cells changed.
+- Amulet Titan 38.4 → 39.0 (+0.6); every other deck within ±0.2.
+- As expected: a pact broken by a later land search is rare in the field (1 game in 40 in goldfish).
