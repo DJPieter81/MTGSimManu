@@ -251,6 +251,18 @@ def _eval_kick(game, me, a: BoardAssessment, ctx: dict,
     return 1.0  # dig count-bump: cheap card advantage
 
 
+def _legal_removal_targets(game, source, controller: int) -> list:
+    """The opposing creatures `source` (controlled by `controller`) may
+    target -- hexproof (CR 702.11d) and protection (702.16b) read through
+    the one targetability owner, `engine.target_solver.can_be_targeted`.
+    A removal effect whose only opposing creatures are outside this list
+    has no legal target (CR 115.1, 601.2c)."""
+    from engine.target_solver import can_be_targeted
+    opp = game.players[1 - controller]
+    return [c for c in opp.creatures
+            if can_be_targeted(c, source, controller)]
+
+
 def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
                  *, player_idx: int) -> float:
     """Evoke (sacrifice for ETB) vs wait to hard-cast?
@@ -331,7 +343,7 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     # spell still on the stack is no target: the evoked creature's
     # trigger resolves first.
     elif getattr(card.template, 'requires_creature_target', False):
-        if not opp.creatures:
+        if not _legal_removal_targets(game, card, me.player_idx):
             return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     
     # Graveyard-hate ETBs ("up to one target player puts all the cards

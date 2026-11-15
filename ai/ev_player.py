@@ -226,6 +226,18 @@ def _as_its_land_face(card):
     return view
 
 
+def _no_legal_creature_target(game, card, player_idx: int) -> bool:
+    """A creature-targeting effect (`requires_creature_target`) whose
+    opposing creatures are all outside what it may target -- hexproof,
+    protection (`ai.board_eval._legal_removal_targets`, read through
+    `engine.target_solver.can_be_targeted`): no legal target."""
+    if game is None or not getattr(card.template, 'requires_creature_target',
+                                   False):
+        return False
+    from ai.board_eval import _legal_removal_targets
+    return not _legal_removal_targets(game, card, player_idx)
+
+
 class EVPlayer:
     """EV-based AI player. All decisions are EV comparisons.
 
@@ -1404,8 +1416,14 @@ class EVPlayer:
             # But if we're dying, evoking removal is still worth it
             if snap.am_dead_next:
                 ev += EVOKE_DESPERATE_BONUS
-            elif snap.opp_creature_count == 0 and 'removal' in tags:
-                ev -= EVOKE_NO_TARGET_PENALTY  # never evoke removal with no targets
+            elif 'removal' in tags and (
+                    snap.opp_creature_count == 0
+                    or _no_legal_creature_target(game, card,
+                                                 self.player_idx)):
+                # Never evoke removal with no target -- counted among the
+                # creatures it may legally target (hexproof, protection:
+                # `target_solver.can_be_targeted`), not all of them.
+                ev -= EVOKE_NO_TARGET_PENALTY
 
         # Oracle text lower-cased once for all downstream checks.
         t_oracle = (t.oracle_text or '').lower()

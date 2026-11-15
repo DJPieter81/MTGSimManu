@@ -13596,3 +13596,30 @@ Storm's loss here is largely structural, not an AI error.
 - a one-turn effect: Angel's Grace.
 
 A correct build must also stop the state-based losses: life at 0 and an empty-library draw (CR 104.3b, 704.5a/b), not just effect-driven ones in `GameState.end_game`. So it is a cross-owner change for a sub-10 class. Build it when a registered deck carries one. The same holds for the three legacy-path pacts (5 cards, no registered deck; a generic post-resolution trigger would double Goryo's Vengeance's own exile).
+
+## Field diagnosis 1: Domain Zoo over-performance, and unit HX (2026-11-15)
+
+**Diagnosis (independent agent, 29 replayed games against Azorius Blink, Azorius Control and 4c Omnath; Zoo won 21):**
+
+| Zoo's start | Zoo games won |
+|---|---|
+| Leyline of the Guildpact on the battlefield at game start | 12 of 13 |
+| Scion of Draco on turn 2–3 | 8 of 8 |
+| No Leyline | 8 of 15 (about 53%, inside the band) |
+
+Leyline makes every Zoo land every basic type, so Scion grants every Zoo creature hexproof. The rules for domain, Scion's cost, the keyword grant and hexproof enforcement were all verified correct.
+
+**Unit HX (AI): a creature-targeting removal effect with no legal target is not evoked or deployed for it** (CR 115.1, 601.2c, 702.11d).
+- **Defect:** the defenders evoked Solitude into a board of hexproof creatures, exiling a second card for an enter trigger with no legal target. About 5 of Zoo's 21 wins.
+- **Cause:** the no-target guards counted the opponent's creatures, not the ones the effect may target: `ai/board_eval._eval_evoke` (the `requires_creature_target` gate) and `EVPlayer._score_spell`'s evoke penalty.
+- **Fix:** both read `ai/board_eval._legal_removal_targets`, the opposing creatures `engine/target_solver.can_be_targeted` admits. That covers hexproof and protection.
+- **Tests:** `tests/test_a_removal_with_no_legal_target_is_not_cast.py`.
+  - The evoke test and the helper test were red first.
+  - The flash-deploy test was already green in its fixture (that path declined for other reasons); it is kept as a regression guard.
+- **Pins:** anchor and digest unchanged.
+- **Replay:** Azorius Control vs Domain Zoo s50500 g1 no longer evokes into hexproof (Zoo still wins, on turn 22 instead of turn 5). s50000 g1's turn-3 evoke had legal targets (Ragavan, Emperor of Bones; no Scion).
+
+**Also found, not yet built:**
+- **Rules:** a blinked permanent returned at end of turn (Phelia's return) does not re-trigger its enters ability (CR 603.6a): `game.trigger_etb` queues template abilities with `effect=None` and never runs the registered enter effect. Flickerwisp's own enter exiled nothing in 7 resolutions. Next rules unit.
+- **AI:** Omnath's Leyline Binding exiled a ground creature over the flier that killed it at 2 life (`ai/permanent_threat.py`).
+- **Remainder:** the rest of Zoo's edge looks like the real power of Leyline into Scion, which only sweepers or removing Leyline itself answer.
