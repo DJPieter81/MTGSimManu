@@ -1,0 +1,32 @@
+// UR Aggro — mtgtop8 event=93862 deck=912760
+1 Fiery Islet
+2 Flooded Strand
+3 Island
+2 Polluted Delta
+2 Scalding Tarn
+4 Spirebluff Canal
+3 Steam Vents
+1 Theorist's Sanctum
+4 Dragon's Rage Channeler
+3 Murktide Regent
+4 Ragavan, Nimble Pilferer
+2 Subtlety
+4 Counterspell
+4 Expressive Iteration
+1 Force of Negation
+3 Lightning Bolt
+4 Preordain
+1 Spell Pierce
+3 Spell Snare
+4 Unholy Heat
+1 Blood Moon
+4 Mishra's Bauble
+
+Sideboard
+1 Chandra, Chill of Compliance
+4 Consign to Memory
+1 Engineered Explosives
+3 Mystical Dispute
+4 Obsidian Charmaw
+1 Surgical Extraction
+1 Test of Talents

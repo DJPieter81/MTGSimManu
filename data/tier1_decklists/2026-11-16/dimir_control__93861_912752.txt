@@ -1,0 +1,36 @@
+// Dimir Control — mtgtop8 event=93861 deck=912752
+3 Bloodstained Mire
+2 Island
+1 Misty Rainforest
+1 Otawara, Soaring City
+4 Polluted Delta
+1 Swamp
+1 Theorist's Sanctum
+2 Undercity Sewers
+1 Verdant Catacombs
+4 Watery Grave
+1 Harbinger of the Seas
+1 Murktide Regent
+2 Orcish Bowmasters
+4 Psychic Frog
+4 Quantum Riddler
+4 Subtlety
+2 Tamiyo, Inquisitive Student
+1 Cling to Dust
+3 Counterspell
+1 Drown in the Loch
+4 Fatal Push
+4 Force of Negation
+1 Preordain
+2 Sink into Stupor
+1 Spell Snare
+4 Thoughtseize
+1 Kaito, Bane of Nightmares
+
+Sideboard
+4 Consign to Memory
+1 Engineered Explosives
+2 Harbinger of the Seas
+4 Leyline of the Void
+3 Mystical Dispute
+1 Toxic Deluge

@@ -1,0 +1,37 @@
+// 4/5c Aggro — mtgtop8 event=93858 deck=912717
+1 Breeding Pool
+4 Flooded Strand
+1 Forest
+1 Indatha Triome
+1 Island
+1 Lush Portico
+3 Misty Rainforest
+1 Plains
+1 Sacred Foundry
+1 Steam Vents
+1 Stomping Ground
+1 Temple Garden
+1 Thundering Falls
+4 Wooded Foothills
+1 Elesh Norn, Mother of Machines
+2 Endurance
+4 Magmatic Hellkite
+4 Omnath, Locus of Creation
+4 Quantum Riddler
+4 Shardless Agent
+4 Solitude
+3 Subtlety
+2 Witch Enchanter
+2 Force of Negation
+4 Birthing Ritual
+4 Leyline Binding
+
+Sideboard
+1 Brotherhood's End
+2 Clarion Conqueror
+1 Elesh Norn, Mother of Machines
+2 High Noon
+2 Mystical Dispute
+3 Obsidian Charmaw
+2 Rest in Peace
+2 Wear / Tear

@@ -1,0 +1,37 @@
+// Affinity — mtgtop8 event=93818 deck=912469
+1 Fiery Islet
+2 Flooded Strand
+1 Island
+1 Mountain
+2 Polluted Delta
+4 Scalding Tarn
+2 Steam Vents
+1 Thundering Falls
+4 Urza's Saga
+4 Emry, Lurker of the Loch
+4 Tamiyo, Inquisitive Student
+1 Thassa's Oracle
+4 Boomerang Basics
+2 Galvanic Blast
+4 Repeal
+4 Anthropological Mission
+1 Conjurer's Bauble
+4 Cori-Steel Cutter
+4 Mishra's Bauble
+3 Mox Amber
+4 Mox Opal
+1 Skateboard
+1 Soul-Guide Lantern
+1 Tormod's Crypt
+
+Sideboard
+1 Aether Spellbomb
+4 Consign to Memory
+1 Fire Magic
+1 Flame of Anor
+2 Force of Negation
+2 Metallic Rebuke
+1 Pithing Needle
+1 Pyroclasm
+1 Shadowspear
+1 Test of Talents
